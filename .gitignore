@@ -1,0 +1,3 @@
+application.properties
+target/
+*.DS_Store
