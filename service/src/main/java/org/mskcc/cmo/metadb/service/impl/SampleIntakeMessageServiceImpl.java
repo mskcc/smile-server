@@ -2,7 +2,7 @@ package org.mskcc.cmo.metadb.service.impl;
 
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
-import org.mskcc.cmo.messaging.model.SampleMetadataEntity;
+import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
 import org.mskcc.cmo.metadb.service.SampleIntakeMessageService;
 
 import org.apache.commons.logging.Log;

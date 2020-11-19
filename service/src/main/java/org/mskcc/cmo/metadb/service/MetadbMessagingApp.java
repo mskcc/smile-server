@@ -1,16 +1,13 @@
 package org.mskcc.cmo.metadb.service;
 
-import org.mskcc.cmo.messaging.model.LinkedPatient;
-import org.mskcc.cmo.messaging.model.LinkedSample;
-import org.mskcc.cmo.messaging.model.PatientMetadata;
-import org.mskcc.cmo.messaging.model.SampleMetadataEntity;
+import org.mskcc.cmo.shared.neo4j.Patient;
+import org.mskcc.cmo.shared.neo4j.Sample;
+import org.mskcc.cmo.shared.neo4j.PatientMetadata;
+import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
 import org.mskcc.cmo.metadb.persistence.GeneralGraphDbRepository;
 import org.mskcc.cmo.metadb.persistence.PatientMetadataRepository;
 import org.mskcc.cmo.metadb.persistence.SampleMetadataRepository;
 
-import java.util.List;
-import junit.framework.Assert;
-import org.mskcc.cmo.messaging.Gateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -33,19 +30,16 @@ public class MetadbMessagingApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("\n\nCleaning up graphdb...");
-        generalGraphDbRepository.deleteAllFromGraphDb();
+//        System.out.println("\n\nCleaning up graphdb...");
+//        generalGraphDbRepository.deleteAllFromGraphDb();
 
         PatientMetadata patient1 = mockPatientMetadata("patient1");
         SampleMetadataEntity sample1 = mockSampleMetadata("sample1");
         sample1.setPatient(patient1);
         System.out.println("\n\nSaving or merging sample #1 to graphdb");
+
         patientMetadataRepository.savePatientMetadata(patient1);
         sampleMetadataRepository.saveSampleMetadata(sample1);
-
-        System.out.println("\n\nFetching samples from graphdb");
-        List<String> samples = sampleMetadataRepository.findAllSampleNames();
-        Assert.assertEquals(1, samples.size());
 
         System.out.println("Exiting application...");
         System.exit(0);
@@ -62,16 +56,17 @@ public class MetadbMessagingApp implements CommandLineRunner {
         sMetadata.setSpecimenType("");
         sMetadata.setTissueLocation("");
         sMetadata.setTumorOrNormal("TUMOR");
-        sMetadata.linkSample(new LinkedSample("DMP_SAMPLE_" + sampleId, "DMP"));
-        sMetadata.linkSample(new LinkedSample("DARWIN_" + sampleId, "DARWIN"));
+        sMetadata.addSample(new Sample("P-0002978-IM5-T02", "DMP"));
+        sMetadata.addSample(new Sample("DrilA_NTRK_X_0001_JV_P1", "DARWIN"));
+        sMetadata.addSample(new Sample("s_C_000520_X001_d", "CMO"));
         return sMetadata;
     }
 
     private PatientMetadata mockPatientMetadata(String patientId) {
         PatientMetadata pMetadata = new PatientMetadata();
         pMetadata.setInvestigatorPatientId(patientId);
-        pMetadata.linkPatient(new LinkedPatient("DMP_PATIENT_" + patientId, "DMP"));
-        pMetadata.linkPatient(new LinkedPatient("DARWIN_" + patientId, "DARWIN"));
+        pMetadata.addPatient(new Patient("P-0002978", "DMP"));
+        pMetadata.addPatient(new Patient("215727", "DARWIN"));
         return pMetadata;
     }
 

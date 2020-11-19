@@ -31,6 +31,8 @@
     <jackson.version>2.9.5</jackson.version>
     <slf4j.version>1.7.30</slf4j.version>
     <maven.compiler.version>1.8</maven.compiler.version>
+    <messaging.java.groupId>com.github.ao508</messaging.java.groupId>
+    <messaging.java.version>4170d5a78126bb05955c76545f59b1681b53c86d</messaging.java.version>
   </properties>
 
   <dependencies>
@@ -75,9 +77,9 @@
     </dependency>
     <!-- cmo messaging library -->
     <dependency>
-      <groupId>com.github.ao508</groupId>
+      <groupId>${messaging.java.groupId}</groupId>
       <artifactId>messaging-java</artifactId>
-      <version>236e44fb3c6138e0bf62da43e7fe7b7cb4505fd8</version>
+      <version>${messaging.java.version}</version>
     </dependency>
   </dependencies>
 
