@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.mskcc.cmo.metadb</groupId>
+  <artifactId>master</artifactId>
+  <packaging>pom</packaging>
+  <name>MSKCC CMO MetaDB Master</name>
+  <version>0.1.0</version>
+  <description>master maven module</description>
+  <url>https://github.mskcc.org/cmo/metadb/</url>
+
+  <modules>
+    <module>persistence</module>
+    <module>service</module>
+  </modules>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.2.1.RELEASE</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <spring.version>5.2.6.RELEASE</spring.version>
+    <jackson.version>2.9.5</jackson.version>
+    <slf4j.version>1.7.30</slf4j.version>
+    <maven.compiler.version>1.8</maven.compiler.version>
+    <messaging.java.groupId>com.github.ao508</messaging.java.groupId>
+    <messaging.java.version>4170d5a78126bb05955c76545f59b1681b53c86d</messaging.java.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <!-- java nats streaming -->
+    <dependency>
+      <groupId>io.nats</groupId>
+      <artifactId>java-nats-streaming</artifactId>
+      <version>2.2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>io.nats</groupId>
+      <artifactId>jnats</artifactId>
+      <version>2.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.6</version>
+    </dependency>
+    <!-- neo4j -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-neo4j</artifactId>
+    </dependency>
+    <!-- cmo messaging library -->
+    <dependency>
+      <groupId>${messaging.java.groupId}</groupId>
+      <artifactId>messaging-java</artifactId>
+      <version>${messaging.java.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.6.1</version>
+        <configuration>
+          <source>${maven.compiler.version}</source>
+          <target>${maven.compiler.version}</target>
+          <compilerArgument>-Xlint:deprecation</compilerArgument>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
