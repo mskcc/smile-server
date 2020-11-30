@@ -1,0 +1,19 @@
+version: 2.1
+
+orbs:
+  maven: circleci/maven@1.0.3
+
+jobs:
+  run_checkstyle:
+    steps:
+      - run:
+          name: "Run checkstyle plugin"
+          command:  |
+            mvn checkstyle:checkstyle
+
+workflows:
+  version: 2
+  maven_test:
+    jobs:
+      - maven/test # checkout, build, test, and upload test results
+      - run_checkstyle
