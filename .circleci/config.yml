@@ -1,0 +1,34 @@
+defaults: &defaults
+    docker:
+        - image: cimg/openjdk:8.0.275
+
+version: 2.1
+
+orbs:
+  maven: circleci/maven@1.0.3
+
+jobs:
+  run_checkstyle:
+    <<: *defaults
+    working_directory: /tmp/repos/cmo-metadb
+    steps:
+      - checkout
+      - run:
+          name: "Build project"
+          command: mvn clean install
+      - run:
+          name: "Run checkstyle plugin"
+          command: mvn checkstyle:checkstyle
+      - run:
+          name: "Merge checkstyle reports"
+          command: |
+            find * -name checkstyle_report.txt -print | xargs grep -v -E "^Starting audit|^Audit done" > checkstyle_report_compiled.txt
+      - store_artifacts:
+          path: /tmp/repos/cmo-metadb/checkstyle_report_compiled.txt
+          destination: /checkstyle_report.txt
+
+workflows:
+  run_mvn_checkstyle:
+    jobs:
+        - run_checkstyle
+
