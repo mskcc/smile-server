@@ -105,6 +105,7 @@
               <consoleOutput>true</consoleOutput>
               <failsOnError>true</failsOnError>
               <linkXRef>false</linkXRef>
+              <useFile>checkstyle_report.txt</useFile>
           </configuration>
           <executions>
               <execution>

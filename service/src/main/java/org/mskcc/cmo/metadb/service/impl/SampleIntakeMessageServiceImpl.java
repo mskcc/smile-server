@@ -1,12 +1,11 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import org.mskcc.cmo.messaging.Gateway;
-import org.mskcc.cmo.messaging.MessageConsumer;
-import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
-import org.mskcc.cmo.metadb.service.SampleIntakeMessageService;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mskcc.cmo.messaging.Gateway;
+import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.cmo.metadb.service.SampleIntakeMessageService;
+import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,8 @@ public class SampleIntakeMessageServiceImpl implements SampleIntakeMessageServic
     @Override
     public void onSampleIntakeMessage() throws Exception {
         messagingGateway.subscribe(NEW_SAMPLE_INTAKE, SampleMetadataEntity.class, this);
-        SampleMetadataEntity sampleMetadata = (SampleMetadataEntity) messagingGateway.request(NEW_SAMPLE_INTAKE, SampleMetadataEntity.class);
+        SampleMetadataEntity sampleMetadata = (SampleMetadataEntity) messagingGateway
+                .request(NEW_SAMPLE_INTAKE, SampleMetadataEntity.class);
         messagingGateway.publish(NEW_SAMPLE_SUBMISSION, sampleMetadata);
     }
 
