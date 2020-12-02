@@ -21,7 +21,7 @@ jobs:
           command: mvn checkstyle:checkstyle
       - run:
           name: "Validating checkstyle plugin report..."
-          command: bash test/scripts/generate_checkstyle_report.sh
+          command: bash test/scripts/generate_checkstyle_report.sh /tmp/repos/cmo-metadb
       - store_artifacts:
           path: /tmp/repos/cmo-metadb/checkstyle_report_compiled.txt
           destination: /checkstyle_report.txt

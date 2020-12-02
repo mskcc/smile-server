@@ -1,4 +1,4 @@
 application.properties
 target/
 *.DS_Store
-*checkstyle_report.txt
+*checkstyle_report*.txt
