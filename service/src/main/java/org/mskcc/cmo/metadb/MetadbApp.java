@@ -1,17 +1,17 @@
-package org.mskcc.cmo.messaging_application;
-
-import org.mskcc.cmo.messaging.Gateway;
-import org.mskcc.cmo.messaging.MessageConsumer;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+package org.mskcc.cmo.metadb;
 
 import java.util.concurrent.CountDownLatch;
+import org.mskcc.cmo.messaging.Gateway;
+import org.mskcc.cmo.metadb.service.consumer.SampleIntakeMessageConsumer;
+import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = "org.mskcc.cmo.messaging")
 public class MetadbApp implements CommandLineRunner {
+    private final String NEW_SAMPLE_INTAKE = "igo.new-sample-intake";
 
     @Autowired
     private Gateway messagingGateway;
@@ -20,25 +20,25 @@ public class MetadbApp implements CommandLineRunner {
     final CountDownLatch metadbAppClose = new CountDownLatch(1);
 
     @Override
-    public void run(String... args) {
-
+    public void run(String... args) throws Exception {
+        System.out.println("Starting up MetaDB application...");
         try {
             installShutdownHook();
-            messagingGateway.initialize();
-            // maybe create subscriber interface and pass these to messageGateway.subscribe?
-            setupTestSubjectOneSubscription();
-            setupTestSubjectTwoSubscription();
+            messagingGateway.connect();
+
+            // maybe create subscriber interface and pass handlers to messageGateway.subscribe?
+            messagingGateway.subscribe(NEW_SAMPLE_INTAKE, SampleMetadataEntity.class,
+                    new SampleIntakeMessageConsumer(messagingGateway));
             metadbAppClose.await();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
         }
     }
 
     private void installShutdownHook() {
-        shutdownHook = 
+        shutdownHook =
             new Thread() {
                 public void run() {
                     System.err.printf("\nCaught CTRL-C, shutting down gracefully...\n");
@@ -51,30 +51,6 @@ public class MetadbApp implements CommandLineRunner {
                 }
             };
         Runtime.getRuntime().addShutdownHook(shutdownHook);
-    }
-
-    private void setupTestSubjectOneSubscription() throws Exception {
-        messagingGateway.subscribe("test-subject-1", String.class, new MessageConsumer() {
-            public void onMessage(Object message) {
-                System.out.printf("*** Message received on test-subject-1 topic ***\n");
-                System.out.printf("%s\n", message);
-                System.out.printf("Publishing on topic: test-subject-2\n");
-                try {
-                    messagingGateway.publish("test-subject-2", "\"message from test-subject-1 handler to test-subject-2\"");
-                } catch (Exception ignored) {}
-                System.out.printf("*** End message received ***\n");
-            }
-        });
-    }
-
-    private void setupTestSubjectTwoSubscription() throws Exception {
-        messagingGateway.subscribe("test-subject-2", String.class, new MessageConsumer() {
-            public void onMessage(Object message) {
-                System.out.printf("*** Message received on test-subject-2 topic ***\n");
-                System.out.printf("%s\n", message);
-                System.out.printf("*** End message received ***\n");
-            }
-        });
     }
 
     public static void main(String[] args) {
