@@ -1,6 +1,7 @@
 # nats server
-nats.connection_url=
-nats.flush_duration=5
+nats.clusterid=
+nats.clientid=
+nats.url=
 
 # spring data neo4j
 spring.data.neo4j.username=
