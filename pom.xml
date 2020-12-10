@@ -26,13 +26,22 @@
     </repository>
   </repositories>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <properties>
     <spring.version>5.2.6.RELEASE</spring.version>
     <jackson.version>2.9.5</jackson.version>
     <slf4j.version>1.7.30</slf4j.version>
     <maven.compiler.version>1.8</maven.compiler.version>
-    <messaging.java.groupId>com.github.mskcc</messaging.java.groupId>
-    <messaging.java.version>b88a0cdd435c79a8aab7c4ffe480472de5bac4a6</messaging.java.version>
+    <!-- metadb common centralized config properties -->
+    <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
+    <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
+    <cmo_metadb_common.version>v1.0-alpha</cmo_metadb_common.version>
   </properties>
 
   <dependencies>
@@ -75,11 +84,10 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-neo4j</artifactId>
     </dependency>
-    <!-- cmo messaging library -->
     <dependency>
-      <groupId>${messaging.java.groupId}</groupId>
-      <artifactId>cmo-messaging-java</artifactId>
-      <version>${messaging.java.version}</version>
+      <groupId>${cmo_metadb_common.groupId}</groupId>
+      <artifactId>${cmo_metadb_common.artifactId}</artifactId>
+      <version>${cmo_metadb_common.version}</version>
     </dependency>
   </dependencies>
 
@@ -99,8 +107,15 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>3.1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>${cmo_metadb_common.groupId}</groupId>
+            <artifactId>${cmo_metadb_common.artifactId}</artifactId>
+            <version>${cmo_metadb_common.version}</version>
+          </dependency>
+        </dependencies>
         <configuration>
-          <configLocation>src/main/resources/checkstyle.xml</configLocation>
+          <configLocation>checkstyle.xml</configLocation>
           <encoding>UTF-8</encoding>
           <consoleOutput>true</consoleOutput>
           <failsOnError>true</failsOnError>
@@ -119,20 +134,4 @@
       </plugin>
     </plugins>
   </build>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.1</version>
-        <configuration>
-          <configLocation>src/main/resources/checkstyle.xml</configLocation>
-          <encoding>UTF-8</encoding>
-          <consoleOutput>true</consoleOutput>
-          <failsOnError>true</failsOnError>
-          <linkXRef>false</linkXRef>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
 </project>
