@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.service.consumer;
 
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
@@ -8,25 +9,22 @@ import org.mskcc.cmo.metadb.persistence.SampleMetadataRepository;
 import org.mskcc.cmo.shared.neo4j.Patient;
 import org.mskcc.cmo.shared.neo4j.PatientMetadata;
 import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import com.google.gson.Gson;
 
 /**
  *
  * @author ochoaa
  */
 @Service
-@ComponentScan(basePackages="org.mskcc.cmo.metadb.persistence")
+@ComponentScan(basePackages = "org.mskcc.cmo.metadb.persistence")
 public class SampleIntakeMessageConsumer implements MessageConsumer {
     private Gateway messagingGateway;
     private final Log LOG = LogFactory.getLog(SampleIntakeMessageConsumer.class);
     private SampleMetadataRepository sampleMetadataRepository;
 
-    public SampleIntakeMessageConsumer(Gateway messagingGateway, SampleMetadataRepository sampleMetadataRepository) {
+    public SampleIntakeMessageConsumer(Gateway messagingGateway, 
+            SampleMetadataRepository sampleMetadataRepository) {
         this.messagingGateway = messagingGateway;
         this.sampleMetadataRepository = sampleMetadataRepository;
     }
@@ -59,7 +57,8 @@ public class SampleIntakeMessageConsumer implements MessageConsumer {
         try {
             LOG.info("*** Persisting to NEO4j ***\n");
             Gson gson = new Gson();
-            SampleMetadataEntity sampleMetadata = gson.fromJson(gson.toJson(message), SampleMetadataEntity.class);
+            SampleMetadataEntity sampleMetadata = gson.fromJson(gson.toJson(message),
+                    SampleMetadataEntity.class);
             sampleMetadata.setPatient(mockPatientMetadata("12345"));
             sampleMetadataRepository.saveSampleMetadata(sampleMetadata);
             return true;

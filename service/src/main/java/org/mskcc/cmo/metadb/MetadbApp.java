@@ -11,7 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
-@EnableNeo4jRepositories(basePackages="org.mskcc.cmo.metadb.persistence")
+@EnableNeo4jRepositories(basePackages = "org.mskcc.cmo.metadb.persistence")
 @SpringBootApplication(scanBasePackages = "org.mskcc.cmo.messaging")
 public class MetadbApp implements CommandLineRunner {
     private final String NEW_SAMPLE_INTAKE = "igo.new-sample-intake";
