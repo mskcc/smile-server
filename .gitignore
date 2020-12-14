@@ -2,3 +2,8 @@ application.properties
 target/
 *.DS_Store
 *checkstyle_report*.txt
+*/.project
+*/.settings/
+.project
+.settings/
+*/.classpath
