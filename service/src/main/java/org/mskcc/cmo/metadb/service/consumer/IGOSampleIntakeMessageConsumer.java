@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @ComponentScan(basePackages = "org.mskcc.cmo.metadb.persistence")
-public class SampleIntakeMessageConsumer implements MessageConsumer {
+public class IGOSampleIntakeMessageConsumer implements MessageConsumer {
     private Gateway messagingGateway;
-    private final Log LOG = LogFactory.getLog(SampleIntakeMessageConsumer.class);
+    private final Log LOG = LogFactory.getLog(IGOSampleIntakeMessageConsumer.class);
     private SampleMetadataRepository sampleMetadataRepository;
 
-    public SampleIntakeMessageConsumer(Gateway messagingGateway, 
+    public IGOSampleIntakeMessageConsumer(Gateway messagingGateway, 
             SampleMetadataRepository sampleMetadataRepository) {
         this.messagingGateway = messagingGateway;
         this.sampleMetadataRepository = sampleMetadataRepository;
@@ -34,7 +34,10 @@ public class SampleIntakeMessageConsumer implements MessageConsumer {
         
         LOG.info("*** Message received on igo.new-sample-intake topic ***\n");
         LOG.info(message);
-        if (addSampleMetadata(message)) {
+        Gson gson = new Gson();
+        SampleMetadataEntity sampleMetadata = gson.fromJson(gson.toJson(message),
+                SampleMetadataEntity.class);
+        if (addSampleMetadata(sampleMetadata)) {
             try {
                 LOG.info("Publishing on topic: cmo.new-sample-submission\n");
                 messagingGateway.publish("cmo.new-sample-submission",
@@ -53,12 +56,9 @@ public class SampleIntakeMessageConsumer implements MessageConsumer {
         return pMetadata;
     }
     
-    private boolean addSampleMetadata(Object message) {
+    private boolean addSampleMetadata(SampleMetadataEntity sampleMetadata) {
         try {
             LOG.info("*** Persisting to NEO4j ***\n");
-            Gson gson = new Gson();
-            SampleMetadataEntity sampleMetadata = gson.fromJson(gson.toJson(message),
-                    SampleMetadataEntity.class);
             sampleMetadata.setPatient(mockPatientMetadata("12345"));
             sampleMetadataRepository.saveSampleMetadata(sampleMetadata);
             return true;

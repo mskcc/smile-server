@@ -38,5 +38,5 @@ public interface SampleMetadataRepository extends Neo4jRepository<SampleMetadata
         + "MERGE (pm)-[:PX_TO_SP]->(sm)"
         + "RETURN sm"
     )
-    void saveSampleMetadata(@Param("sample") SampleMetadataEntity sample); 
+    SampleMetadataEntity saveSampleMetadata(@Param("sample") SampleMetadataEntity sample); 
 }
