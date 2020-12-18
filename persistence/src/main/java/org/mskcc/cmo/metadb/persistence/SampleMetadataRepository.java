@@ -5,11 +5,14 @@ import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author ochoaa
  */
+
+@Repository
 public interface SampleMetadataRepository extends Neo4jRepository<SampleMetadataEntity, UUID> {
     @Query(
         "MATCH (s:cmo_metadb_sample_metadata) WHERE $igoId = s.igoId RETURN s"
@@ -35,5 +38,5 @@ public interface SampleMetadataRepository extends Neo4jRepository<SampleMetadata
         + "MERGE (pm)-[:PX_TO_SP]->(sm)"
         + "RETURN sm"
     )
-    void saveSampleMetadata(@Param("sample") SampleMetadataEntity sample);
+    SampleMetadataEntity saveSampleMetadata(@Param("sample") SampleMetadataEntity sample); 
 }
