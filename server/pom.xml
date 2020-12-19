@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <name>MSKCC CMO MetaDB Server</name>
+  <description>MetaDB Server</description>
+  <artifactId>server</artifactId>
+  <version>0.1.0</version>
+  <packaging>jar</packaging>
+  <parent>
+    <groupId>org.mskcc.cmo.metadb</groupId>
+    <artifactId>master</artifactId>
+    <version>0.1.0</version>
+  </parent>
+
+  <dependencies>
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-test</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.mskcc.cmo.metadb</groupId>
+          <artifactId>service</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.mskcc.cmo.metadb</groupId>
+          <artifactId>persistence</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+  </dependencies>
+  <build>
+      <resources>
+          <resource>
+              <directory>${project.basedir}/../src/main/resources</directory>
+              <includes>
+                  <include>*.properties</include>
+              </includes>
+              <excludes>
+                  <exclude>*.properties.EXAMPLE</exclude>
+              </excludes>
+          </resource>
+      </resources>
+      <plugins>
+          <plugin>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-maven-plugin</artifactId>
+              <configuration>
+                  <mainClass>org.mskcc.cmo.metadb.MetadbApp</mainClass>
+              </configuration>
+          </plugin>
+      </plugins>
+  </build>
+</project>
