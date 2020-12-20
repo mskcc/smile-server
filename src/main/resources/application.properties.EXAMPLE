@@ -3,10 +3,6 @@ nats.clusterid=
 nats.clientid=
 nats.url=
 
-# messaging configuration
-igo.new.sample.topic=
-num.new.sample.handler.threads=
-
 # spring data neo4j
 spring.data.neo4j.username=
 spring.data.neo4j.password=

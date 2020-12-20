@@ -19,4 +19,24 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${project.basedir}/../src/main/resources</directory>
+        <includes>
+           <include>*.properties</include>
+         </includes>
+         <excludes>
+           <exclude>*.properties.EXAMPLE</exclude>
+         </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
