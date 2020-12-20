@@ -2,9 +2,7 @@ package org.mskcc.cmo.metadb;
 
 import java.util.concurrent.CountDownLatch;
 import org.mskcc.cmo.messaging.Gateway;
-import org.mskcc.cmo.metadb.persistence.SampleMetadataRepository;
-import org.mskcc.cmo.metadb.service.consumer.SampleIntakeMessageConsumer;
-import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
+import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,15 +10,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 @EnableNeo4jRepositories(basePackages = "org.mskcc.cmo.metadb.persistence")
-@SpringBootApplication(scanBasePackages = "org.mskcc.cmo.messaging")
+@SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging", "org.mskcc.cmo.metadb.service"})
 public class MetadbApp implements CommandLineRunner {
-    private final String NEW_SAMPLE_INTAKE = "igo.new-sample-intake";
 
     @Autowired
     private Gateway messagingGateway;
-    
+
     @Autowired
-    private SampleMetadataRepository sampleMetadataRepository;
+    private MessageHandlingService messageHandlingService;
 
     private Thread shutdownHook;
     final CountDownLatch metadbAppClose = new CountDownLatch(1);
@@ -31,10 +28,7 @@ public class MetadbApp implements CommandLineRunner {
         try {
             installShutdownHook();
             messagingGateway.connect();
-
-            // maybe create subscriber interface and pass handlers to messageGateway.subscribe?
-            messagingGateway.subscribe(NEW_SAMPLE_INTAKE, SampleMetadataEntity.class,
-                    new SampleIntakeMessageConsumer(messagingGateway, sampleMetadataRepository));
+            messageHandlingService.initialize(messagingGateway);
             metadbAppClose.await();
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,6 +44,7 @@ public class MetadbApp implements CommandLineRunner {
                     System.err.printf("\nCaught CTRL-C, shutting down gracefully...\n");
                     try {
                         messagingGateway.shutdown();
+                        messageHandlingService.shutdown();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
