@@ -2,6 +2,7 @@ package org.mskcc.cmo.metadb;
 
 import java.util.concurrent.CountDownLatch;
 import org.mskcc.cmo.messaging.Gateway;
+import org.mskcc.cmo.metadb.service.LimsRestService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -17,6 +18,9 @@ public class MetadbApp implements CommandLineRunner {
     private Gateway messagingGateway;
 
     @Autowired
+    private LimsRestService limsRestService;
+
+    @Autowired
     private MessageHandlingService messageHandlingService;
 
     private Thread shutdownHook;
@@ -29,6 +33,7 @@ public class MetadbApp implements CommandLineRunner {
             installShutdownHook();
             messagingGateway.connect();
             messageHandlingService.initialize(messagingGateway);
+            limsRestService.initialize(messagingGateway);
             metadbAppClose.await();
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,6 +50,7 @@ public class MetadbApp implements CommandLineRunner {
                     try {
                         messagingGateway.shutdown();
                         messageHandlingService.shutdown();
+                        limsRestService.shutdown();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

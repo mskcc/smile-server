@@ -3,9 +3,14 @@ nats.clusterid=
 nats.clientid=
 nats.url=
 
-# messaging configuration
+# message handling service
 igo.new.sample.topic=
 num.new.sample.handler.threads=
+
+# limsrest service 
+cmo.new.request.topic=
+limsrest.poll.interval=
+path.to.getdelivery.endpoint.date=
 
 # spring data neo4j
 spring.data.neo4j.username=
