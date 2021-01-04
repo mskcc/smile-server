@@ -11,7 +11,7 @@ import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.SampleService;
-import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
+import org.mskcc.cmo.shared.neo4j.SampleManifestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,8 +32,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     private static volatile boolean shutdownInitiated;
 
     private static final ExecutorService exec = Executors.newCachedThreadPool();
-    private static final BlockingQueue<SampleMetadataEntity> newSampleQueue =
-        new LinkedBlockingQueue<SampleMetadataEntity>();
+    private static final BlockingQueue<SampleManifestEntity> newSampleQueue =
+        new LinkedBlockingQueue<SampleManifestEntity>();
     private static CountDownLatch newSampleHandlerShutdownLatch;
 
     private class NewSampleHandler implements Runnable {
@@ -50,7 +50,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             phaser.arrive();
             while (true) {
                 try {
-                    SampleMetadataEntity sample = newSampleQueue.poll(100, TimeUnit.MILLISECONDS);
+                    SampleManifestEntity sample = newSampleQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (sample != null) {
                         // validate
                         // id gen
@@ -59,7 +59,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         } else {
                             sample = sampleService.insertSampleMetadata(sample);
                         }
-                        
+
                         // pass to aggregate
                     }
                     if (interrupted && newSampleQueue.isEmpty()) {
@@ -89,7 +89,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     }
 
     @Override
-    public void newSampleHandler(SampleMetadataEntity sample) throws Exception {
+    public void newSampleHandler(SampleManifestEntity sample) throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
@@ -124,10 +124,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
     private void setupIgoNewSampleHandler(Gateway gateway, MessageHandlingService messageHandlingService)
         throws Exception {
-        gateway.subscribe(IGO_NEW_SAMPLE, SampleMetadataEntity.class, new MessageConsumer() {
+        gateway.subscribe(IGO_NEW_SAMPLE, SampleManifestEntity.class, new MessageConsumer() {
             public void onMessage(Object message) {
                 try {
-                    messageHandlingService.newSampleHandler((SampleMetadataEntity)message);
+                    messageHandlingService.newSampleHandler((SampleManifestEntity)message);
                 } catch (Exception e) {
                     System.err.printf("Cannot process IGO_NEW_SAMPLE:\n%s\n", message);
                     System.err.printf("Exception during processing:\n%s\n", e.getMessage());

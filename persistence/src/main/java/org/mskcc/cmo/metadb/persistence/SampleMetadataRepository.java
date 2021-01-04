@@ -1,7 +1,7 @@
 package org.mskcc.cmo.metadb.persistence;
 
 import java.util.UUID;
-import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
+import org.mskcc.cmo.shared.neo4j.SampleManifestEntity;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
@@ -13,11 +13,11 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface SampleMetadataRepository extends Neo4jRepository<SampleMetadataEntity, UUID> {
+public interface SampleMetadataRepository extends Neo4jRepository<SampleManifestEntity, UUID> {
     @Query(
         "MATCH (s:cmo_metadb_sample_metadata) WHERE $igoId = s.igoId RETURN s"
     )
-    SampleMetadataEntity findSampleByIgoId(@Param("igoId") String igoId);
+    SampleManifestEntity findSampleByIgoId(@Param("igoId") String igoId);
 
     @Query(
             "CREATE (sm:cmo_metadb_sample_metadata {time: timestamp(), uuid:apoc.create.uuid(),"
@@ -36,8 +36,8 @@ public interface SampleMetadataRepository extends Neo4jRepository<SampleMetadata
             + "MERGE (s_id)-[:SAMPLE_METADATA]->(sm)"
             + "RETURN sm"
     )
-    SampleMetadataEntity insertSampleMetadata(@Param("sample") SampleMetadataEntity sample);
-    
+    SampleManifestEntity insertSampleMetadata(@Param("sample") SampleManifestEntity sample);
+
     @Query(
             "MATCH (s_id:cmo_metadb_sample_metadata_id {igoId:$sample.igoId})"
             + "MATCH (sm_old_node:cmo_metadb_sample_metadata)<-[:SAMPLE_METADATA]-(sm)"
@@ -53,5 +53,5 @@ public interface SampleMetadataRepository extends Neo4jRepository<SampleMetadata
             + "MERGE(sm)-[:SAMPLE_METADATA]->(sm_old_node)"
             + "RETURN sm"
     )
-    SampleMetadataEntity updateSampleMetadata(@Param("sample") SampleMetadataEntity sample);
+    SampleManifestEntity updateSampleMetadata(@Param("sample") SampleManifestEntity sample);
 }
