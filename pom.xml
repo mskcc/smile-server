@@ -55,6 +55,12 @@
       <artifactId>${cmo_metadb_common.artifactId}</artifactId>
       <version>${cmo_metadb_common.version}</version>
     </dependency>
+    <!-- cmo metadb shared entities -->
+    <dependency>
+      <groupId>${cmo_metadb_shared_entities.groupId}</groupId>
+      <artifactId>${cmo_metadb_shared_entities.artifactId}</artifactId>
+      <version>${cmo_metadb_shared_entities.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -79,12 +85,6 @@
                   <artifactId>${cmo_metadb_common.artifactId}</artifactId>
                   <version>${cmo_metadb_common.version}</version>
                 </dependency>
-                <!-- cmo metadb shared entities -->
-    			<dependency>
-      		      <groupId>${cmo_metadb_shared_entities.groupId}</groupId>
-      			  <artifactId>${cmo_metadb_shared_entities.artifactId}</artifactId>
-      			  <version>${cmo_metadb_shared_entities.version}</version>
-     		     </dependency>
               </dependencies>
               <configuration>
                   <configLocation>checkstyle.xml</configLocation>
