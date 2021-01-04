@@ -42,7 +42,11 @@
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
-    <cmo_metadb_common.version>v1.0-alpha</cmo_metadb_common.version>
+    <cmo_metadb_common.version>17e9e79607f2ad5568a8f42ff733a6832eb7ee73</cmo_metadb_common.version>
+    <!-- metadb shared entities properties -->
+    <cmo_metadb_shared_entities.groupId>com.github.ao508</cmo_metadb_shared_entities.groupId>
+    <cmo_metadb_shared_entities.artifactId>cmo-metadb-shared-entities</cmo_metadb_shared_entities.artifactId>
+    <cmo_metadb_shared_entities.version>ed7f0dd31b</cmo_metadb_shared_entities.version>
   </properties>
 
   <dependencies>
@@ -70,11 +74,17 @@
               <artifactId>maven-checkstyle-plugin</artifactId>
               <version>3.1.1</version>
               <dependencies>
-                  <dependency>
-                      <groupId>${cmo_metadb_common.groupId}</groupId>
-                      <artifactId>${cmo_metadb_common.artifactId}</artifactId>
-                      <version>${cmo_metadb_common.version}</version>
-                  </dependency>
+                <dependency>
+                  <groupId>${cmo_metadb_common.groupId}</groupId>
+                  <artifactId>${cmo_metadb_common.artifactId}</artifactId>
+                  <version>${cmo_metadb_common.version}</version>
+                </dependency>
+                <!-- cmo metadb shared entities -->
+    			<dependency>
+      		      <groupId>${cmo_metadb_shared_entities.groupId}</groupId>
+      			  <artifactId>${cmo_metadb_shared_entities.artifactId}</artifactId>
+      			  <version>${cmo_metadb_shared_entities.version}</version>
+     		     </dependency>
               </dependencies>
               <configuration>
                   <configLocation>checkstyle.xml</configLocation>

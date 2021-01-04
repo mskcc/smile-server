@@ -54,8 +54,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     if (sample != null) {
                         // validate
                         // id gen
-                        // persist
-                        sample = sampleService.saveSampleMetadata(sample);
+                        if (sampleService.findSampleByIgoId(sample.getIgoId()) != null) {
+                            sample = sampleService.updateSampleMetadata(sample);
+                        } else {
+                            sample = sampleService.insertSampleMetadata(sample);
+                        }
+                        
                         // pass to aggregate
                     }
                     if (interrupted && newSampleQueue.isEmpty()) {

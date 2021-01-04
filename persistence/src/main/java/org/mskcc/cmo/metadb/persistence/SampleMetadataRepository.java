@@ -20,23 +20,38 @@ public interface SampleMetadataRepository extends Neo4jRepository<SampleMetadata
     SampleMetadataEntity findSampleByIgoId(@Param("igoId") String igoId);
 
     @Query(
-        "MERGE (sm:cmo_metadb_sample_metadata {igoId: $sample.igoId}) "
-        + "ON MATCH SET sm.sampleName = $sample.sampleName "
-        + "ON CREATE SET "
-            + "sm.timestamp = timestamp(), sm.uuid = apoc.create.uuid(), "
-            + "sm.igoId = $sample.igoId, sm.investigatorSampleId = $sample.investigatorSampleId, "
-            + "sm.sampleName = $sample.sampleName, sm.sampleOrigin = $sample.sampleOrigin, "
-            + "sm.sex = $sample.sex, sm.species = $sample.species, "
-            + "sm.specimenType = $sample.specimenType, sm.tissueLocation = $sample.tissueLocation, "
-            + "sm.tubeId = $sample.tubeId, sm.tumorOrNormal = $sample.tumorOrNormal "
-            + "FOREACH (n_sample IN $sample.sampleList | "
-                + "MERGE (s:sample {sampleId:n_sample.sampleId, idSource:n_sample.idSource}) "
-                + "MERGE (s)-[:SP_TO_SP]->(sm) "
-            + ") "
-        + "MERGE (pm:cmo_metadb_patient_metadata "
-            + "{investigatorPatientId: $sample.patient.investigatorPatientId}) "
-        + "MERGE (pm)-[:PX_TO_SP]->(sm)"
-        + "RETURN sm"
+            "CREATE (sm:cmo_metadb_sample_metadata {time: timestamp(), uuid:apoc.create.uuid(),"
+                    + "igoId:$sample.igoId, investigatorSampleId:$sample.investigatorSampleId,"
+                    + "sampleName:$sample.sampleName, sampleOrigin:$sample.sampleOrigin, sex:$sample.sex,"
+                    + "species:$sample.species, specimenType:$sample.specimenType, tissueLocation:$sample.tissueLocation,"
+                    + "tubeId:$sample.tubeId, tumorOrNormal:$sample.tumorOrNormal"
+                    + "FOREACH (n_sample IN $sample.sampleList | "
+                        + "MERGE (s:sample {sampleId:n_sample.sampleId, idSource:n_sample.idSource}) "
+                        + "MERGE (s)-[:SP_TO_SP]->(sm)"
+                    + "})"
+            + "CREATE (s_id:cmo_metadb_sample_metadata_id {igoId:$sample.igoId})"
+            + "MERGE (pm:cmo_metadb_patient_metadata "
+                + "{investigatorPatientId: $sample.patient.investigatorPatientId}) "
+            + "MERGE (pm)-[:PX_TO_SP]->(s_id)"
+            + "MERGE (s_id)-[:SAMPLE_METADATA]->(sm)"
+            + "RETURN sm"
     )
-    SampleMetadataEntity saveSampleMetadata(@Param("sample") SampleMetadataEntity sample); 
+    SampleMetadataEntity insertSampleMetadata(@Param("sample") SampleMetadataEntity sample);
+    
+    @Query(
+            "MATCH (s_id:cmo_metadb_sample_metadata_id {igoId:$sample.igoId})"
+            + "MATCH (sm_old_node:cmo_metadb_sample_metadata)<-[:SAMPLE_METADATA]-(sm)"
+            + "WITH s_id, sm_old_node"
+            + "MATCH (s_id)-[r:SAMPLE_METADATA]->(sm_old_node)"
+            + "DELETE r"
+            + "CREATE (sm:cmo_metadb_sample_metadata {time: timestamp(), uuid:apoc.create.uuid(),"
+                    + "igoId:$sample.igoId, investigatorSampleId:$sample.investigatorSampleId,"
+                    + "sampleName:$sample.sampleName, sampleOrigin:$sample.sampleOrigin, sex:$sample.sex,"
+                    + "species:$sample.species, specimenType:$sample.specimenType, tissueLocation:$sample.tissueLocation,"
+                    + "tubeId:$sample.tubeId, tumorOrNormal:$sample.tumorOrNormal })"
+            + "MERGE(s_id)-[:SAMPLE_METADATA]->(sm)"
+            + "MERGE(sm)-[:SAMPLE_METADATA]->(sm_old_node)"
+            + "RETURN sm"
+    )
+    SampleMetadataEntity updateSampleMetadata(@Param("sample") SampleMetadataEntity sample);
 }

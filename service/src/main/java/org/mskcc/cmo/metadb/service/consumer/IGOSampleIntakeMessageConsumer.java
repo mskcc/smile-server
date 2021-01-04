@@ -60,7 +60,7 @@ public class IGOSampleIntakeMessageConsumer implements MessageConsumer {
         try {
             LOG.info("*** Persisting to NEO4j ***\n");
             sampleMetadata.setPatient(mockPatientMetadata("12345"));
-            sampleMetadataRepository.saveSampleMetadata(sampleMetadata);
+            //sampleMetadataRepository.saveSampleMetadata(sampleMetadata);
             return true;
         } catch (Exception e) {
             LOG.error("Error encountered during persistence of sampleMetadata to graphDB", e);
