@@ -13,17 +13,16 @@ public class SampleServiceImpl implements SampleService {
     private SampleMetadataRepository sampleMetadataRepository;
 
     @Override
-    public SampleManifestEntity insertSampleMetadata(SampleManifestEntity sample) {
+    public SampleManifestEntity saveSampleMetadata(SampleManifestEntity sample) {
         // create prerequisite request, patient nodes with the help of other services
         // sample, metadata, nodes etc
-        return sampleMetadataRepository.insertSampleMetadata(sample);
-    }
-
-    @Override
-    public SampleManifestEntity updateSampleMetadata(SampleManifestEntity sample) {
-        // create prerequisite request, patient nodes with the help of other services
-        // sample, metadata, nodes etc
-        return sampleMetadataRepository.updateSampleMetadata(sample);
+        if (sampleMetadataRepository.findSampleByIgoId(sample.getIgoId()) == null) {
+            return sampleMetadataRepository.save(sample);
+        } else { 
+            //update samplemetadata
+        }
+        
+        return null;
     }
 
     @Override

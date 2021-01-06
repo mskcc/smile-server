@@ -4,8 +4,7 @@ nats.clientid=
 nats.url=
 
 # messaging configuration
-igo.new.sample.topic=
-num.new.sample.handler.threads=
+igo.new_request_topic=
 
 # spring data neo4j
 spring.data.neo4j.username=

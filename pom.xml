@@ -44,9 +44,9 @@
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
     <cmo_metadb_common.version>17e9e79607f2ad5568a8f42ff733a6832eb7ee73</cmo_metadb_common.version>
     <!-- metadb shared entities properties -->
-    <cmo_metadb_shared_entities.groupId>com.github.ao508</cmo_metadb_shared_entities.groupId>
+    <cmo_metadb_shared_entities.groupId>com.github.divyamadala30</cmo_metadb_shared_entities.groupId>
     <cmo_metadb_shared_entities.artifactId>cmo-metadb-shared-entities</cmo_metadb_shared_entities.artifactId>
-    <cmo_metadb_shared_entities.version>ed7f0dd31b</cmo_metadb_shared_entities.version>
+    <cmo_metadb_shared_entities.version>d510393bd3e410b2ab4c744d03fc2bbd5f9e2267</cmo_metadb_shared_entities.version>
   </properties>
 
   <dependencies>
