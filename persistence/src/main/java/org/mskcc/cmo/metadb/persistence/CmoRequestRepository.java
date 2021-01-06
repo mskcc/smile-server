@@ -12,5 +12,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CmoRequestRepository extends Neo4jRepository<CmoRequestEntity, Long> {
-
+    @Query("CREATE (n:cmo_metadb_request {requestId: $requestId})")
+    public void saveNewCmoRequest(@Param("requestId") String requestId);
 }

@@ -36,11 +36,11 @@
   </pluginRepositories>
 
   <properties>
+    <java.version>1.8</java.version>
+    <maven.compiler.version>1.8</maven.compiler.version>
     <spring.version>5.2.6.RELEASE</spring.version>
     <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
-    <jackson.version>2.9.5</jackson.version>
-    <slf4j.version>1.7.30</slf4j.version>
-    <maven.compiler.version>1.8</maven.compiler.version>
+    <neo4j-ogm.version>3.2.19</neo4j-ogm.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.version>81258a16d63cea640e4d80efb5df5100a6ff4dea</cmo_metadb_messaging_java.version>
     <cmo_metadb_shared_entities.version>267f859442b6d17d36919cfd4b6bea24664383fa</cmo_metadb_shared_entities.version>
@@ -61,18 +61,29 @@
       <artifactId>cmo-metadb-shared-entities</artifactId>
       <version>${cmo_metadb_shared_entities.version}</version>
     </dependency>
-    <!-- neo4j dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-neo4j</artifactId>
       <version>${spring.boot.version}</version>
     </dependency>
+    <!-- neo4j dependencies -->
     <dependency>
       <groupId>org.neo4j</groupId>
       <artifactId>neo4j-ogm</artifactId>
-      <version>1.1.0</version>
+      <version>${neo4j-ogm.version}</version>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-ogm-core</artifactId>
+      <version>${neo4j-ogm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-ogm-embedded-driver</artifactId>
+      <version>${neo4j-ogm.version}</version>
+    </dependency>
+    <!-- neo4j plugin for built-in uuid generation -->
     <dependency>
       <groupId>com.graphaware.neo4j</groupId>
       <artifactId>server-community</artifactId>

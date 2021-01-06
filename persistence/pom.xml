@@ -12,10 +12,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-neo4j</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.mskcc.cmo.metadb</groupId>
       <artifactId>model</artifactId>
       <version>${project.version}</version>
