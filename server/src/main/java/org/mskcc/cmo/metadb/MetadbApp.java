@@ -9,11 +9,16 @@ import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.shared.neo4j.CmoRequestEntity;
 import org.mskcc.cmo.shared.neo4j.SampleManifestEntity;
+import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 @EntityScan(basePackages = "org.mskcc.cmo.shared.neo4j")
@@ -32,6 +37,17 @@ public class MetadbApp implements CommandLineRunner {
 
     private Thread shutdownHook;
     final CountDownLatch metadbAppClose = new CountDownLatch(1);
+
+    @Value("${spring.neo4j.uri}")
+    private String springNeo4jUri;
+    @Value("${spring.neo4j.authentication.username}")
+    private String username;
+    @Value("${spring.neo4j.authentication.password}")
+    private String password;
+    @Bean
+    public Driver driver() {
+        return GraphDatabase.driver(springNeo4jUri, AuthTokens.basic(username, password));
+    }
 
     @Override
     public void run(String... args) throws Exception {
