@@ -8,7 +8,12 @@ igo.new_request_topic=
 num.new_request_handler_threads=
 cmo.new_request_submission_topic=
 
-# spring data neo4j
-spring.data.neo4j.username=
-spring.data.neo4j.password=
-spring.data.neo4j.uri=
+# spring data neo4j // THIS IS FOR VERSION 2.*
+#spring.data.neo4j.username=
+#spring.data.neo4j.password=
+#spring.data.neo4j.uri=
+
+# spring data neo4j v. 6.0.2
+spring.neo4j.uri=
+spring.neo4j.authentication.username=
+spring.neo4j.authentication.password=
