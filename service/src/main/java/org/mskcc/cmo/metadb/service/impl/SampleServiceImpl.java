@@ -1,8 +1,8 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import org.mskcc.cmo.metadb.persistence.SampleMetadataRepository;
+import org.mskcc.cmo.metadb.persistence.SampleManifestRepository;
 import org.mskcc.cmo.metadb.service.SampleService;
-import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
+import org.mskcc.cmo.shared.neo4j.SampleManifestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 public class SampleServiceImpl implements SampleService {
 
     @Autowired
-    private SampleMetadataRepository sampleMetadataRepository;
+    private SampleManifestRepository sampleManifestRepository;
 
     @Override
-    public SampleMetadataEntity saveSampleMetadata(SampleMetadataEntity sample) {
+    public SampleManifestEntity saveSampleManifest(SampleManifestEntity sample) {
         // create prerequisite request, patient nodes with the help of other services
         // sample, metadata, nodes etc
-        return sampleMetadataRepository.saveSampleMetadata(sample);
+        return sampleManifestRepository.saveSampleManifest(sample);
     }
 }

@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.google.gson.Gson;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -9,9 +10,9 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
-import org.mskcc.cmo.metadb.service.SampleService;
-import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
+import org.mskcc.cmo.shared.neo4j.CmoRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,29 +20,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageHandlingServiceImpl implements MessageHandlingService {
 
-    @Value("${igo.new.sample.topic}")
-    private String IGO_NEW_SAMPLE;
+    @Value("${igo.new_request_topic}")
+    private String IGO_NEW_REQUEST_TOPIC;
 
-    @Value("${num.new.sample.handler.threads}")
-    private int NUM_NEW_SAMPLE_HANDLERS;
+    @Value("${num.new_request_handler_threads}")
+    private int NUM_NEW_REQUEST_HANDLERS;
 
     @Autowired
-    private SampleService sampleService;
+    private CmoRequestService requestService;
 
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
 
     private static final ExecutorService exec = Executors.newCachedThreadPool();
-    private static final BlockingQueue<SampleMetadataEntity> newSampleQueue =
-        new LinkedBlockingQueue<SampleMetadataEntity>();
-    private static CountDownLatch newSampleHandlerShutdownLatch;
+    private static final BlockingQueue<CmoRequestEntity> newRequestQueue =
+        new LinkedBlockingQueue<CmoRequestEntity>();
+    private static CountDownLatch newRequestHandlerShutdownLatch;
 
-    private class NewSampleHandler implements Runnable {
+    private class NewCmoRequestHandler implements Runnable {
 
         final Phaser phaser;
         boolean interrupted = false;
 
-        NewSampleHandler(Phaser phaser) {
+        NewCmoRequestHandler(Phaser phaser) {
             this.phaser = phaser;
         }
 
@@ -50,25 +51,28 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             phaser.arrive();
             while (true) {
                 try {
-                    SampleMetadataEntity sample = newSampleQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if (sample != null) {
+                    CmoRequestEntity request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (request != null) {
                         // validate
                         // id gen
                         // persist
-                        sample = sampleService.saveSampleMetadata(sample);
+                        Gson gson = new Gson();
+                        System.out.println("This is where we would persist the request to neo4j...");
+                        System.out.println(gson.toJson(request).toString());
+                        // request = requestService.saveRequest(request);
                         // pass to aggregate
                     }
-                    if (interrupted && newSampleQueue.isEmpty()) {
+                    if (interrupted && newRequestQueue.isEmpty()) {
                         break;
                     }
                 } catch (InterruptedException e) {
                     interrupted = true;
                 } catch (Exception e) {
                     // TBD requeue?
-                    System.err.printf("Error during sample handling: %s\n", e.getMessage());
+                    System.err.printf("Error during request handling: %s\n", e.getMessage());
                 }
             }
-            newSampleHandlerShutdownLatch.countDown();
+            newRequestHandlerShutdownLatch.countDown();
         }
     }
 
@@ -76,8 +80,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     public void initialize(Gateway gateway) throws Exception {
 
         if (!initialized) {
-            setupIgoNewSampleHandler(gateway, this);
-            initializeNewSampleHandlers();
+            setupIgoNewRequestHandler(gateway, this);
+            initializeNewRequestHandlers();
             initialized = true;
         } else {
             System.err.printf("Messaging Handler Service has already been initialized, ignoring request.\n");
@@ -85,15 +89,15 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     }
 
     @Override
-    public void newSampleHandler(SampleMetadataEntity sample) throws Exception {
+    public void newRequestHandler(CmoRequestEntity request) throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         if (!shutdownInitiated) {
-            newSampleQueue.put(sample);
+            newRequestQueue.put(request);
         } else {
-            System.err.printf("Shutdown initiated, not accepting sample: %s\n", sample);
-            throw new IllegalStateException("Shutdown initiated, not handling any more samples");
+            System.err.printf("Shutdown initiated, not accepting request: %s\n", request);
+            throw new IllegalStateException("Shutdown initiated, not handling any more requests");
         }
     }
 
@@ -103,29 +107,29 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         exec.shutdownNow();
-        newSampleHandlerShutdownLatch.await();
+        newRequestHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
-    private void initializeNewSampleHandlers() throws Exception {
-        newSampleHandlerShutdownLatch = new CountDownLatch(NUM_NEW_SAMPLE_HANDLERS);
+    private void initializeNewRequestHandlers() throws Exception {
+        newRequestHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
         final Phaser newSamplePhaser = new Phaser();
         newSamplePhaser.register();
-        for (int lc = 0; lc < NUM_NEW_SAMPLE_HANDLERS; lc++) {
+        for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
             newSamplePhaser.register();
-            exec.execute(new NewSampleHandler(newSamplePhaser));
+            exec.execute(new NewCmoRequestHandler(newSamplePhaser));
         }
         newSamplePhaser.arriveAndAwaitAdvance();
     }
 
-    private void setupIgoNewSampleHandler(Gateway gateway, MessageHandlingService messageHandlingService)
+    private void setupIgoNewRequestHandler(Gateway gateway, MessageHandlingService messageHandlingService)
         throws Exception {
-        gateway.subscribe(IGO_NEW_SAMPLE, SampleMetadataEntity.class, new MessageConsumer() {
+        gateway.subscribe(IGO_NEW_REQUEST_TOPIC, CmoRequestEntity.class, new MessageConsumer() {
             public void onMessage(Object message) {
                 try {
-                    messageHandlingService.newSampleHandler((SampleMetadataEntity)message);
+                    messageHandlingService.newRequestHandler((CmoRequestEntity)message);
                 } catch (Exception e) {
-                    System.err.printf("Cannot process IGO_NEW_SAMPLE:\n%s\n", message);
+                    System.err.printf("Cannot process IGO_NEW_REQUEST:\n%s\n", message);
                     System.err.printf("Exception during processing:\n%s\n", e.getMessage());
                 }
             }

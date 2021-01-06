@@ -1,8 +1,8 @@
 package org.mskcc.cmo.metadb.service;
 
-import org.mskcc.cmo.shared.neo4j.SampleMetadataEntity;
+import org.mskcc.cmo.shared.neo4j.SampleManifestEntity;
 
 public interface SampleService {
 
-    SampleMetadataEntity saveSampleMetadata(SampleMetadataEntity sample) throws Exception;
+    SampleManifestEntity saveSampleManifest(SampleManifestEntity sample) throws Exception;
 }

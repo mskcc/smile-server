@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.1.RELEASE</version>
+    <version>2.3.3.RELEASE</version>
   </parent>
 
   <repositories>
@@ -47,53 +47,58 @@
 
   <dependencies>
     <dependency>
-      <groupId>${cmo_metadb_common.groupId}</groupId>
-      <artifactId>${cmo_metadb_common.artifactId}</artifactId>
-      <version>${cmo_metadb_common.version}</version>
+      <groupId>com.github.mskcc</groupId>
+      <artifactId>cmo-messaging-java</artifactId>
+      <version>81258a16d63cea640e4d80efb5df5100a6ff4dea</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.ao508</groupId>
+      <artifactId>cmo-metadb-shared-entities</artifactId>
+      <version>54e464066952386c7c4c8660ecc24aa069b1d1e4</version>
     </dependency>
   </dependencies>
 
   <build>
-      <plugins>
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <version>3.6.1</version>
-              <configuration>
-                  <source>${maven.compiler.version}</source>
-                  <target>${maven.compiler.version}</target>
-                  <compilerArgument>-Xlint:deprecation</compilerArgument>
-              </configuration>
-          </plugin>
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-checkstyle-plugin</artifactId>
-              <version>3.1.1</version>
-              <dependencies>
-                  <dependency>
-                      <groupId>${cmo_metadb_common.groupId}</groupId>
-                      <artifactId>${cmo_metadb_common.artifactId}</artifactId>
-                      <version>${cmo_metadb_common.version}</version>
-                  </dependency>
-              </dependencies>
-              <configuration>
-                  <configLocation>checkstyle.xml</configLocation>
-                  <encoding>UTF-8</encoding>
-                  <consoleOutput>true</consoleOutput>
-                  <failsOnError>true</failsOnError>
-                  <linkXRef>false</linkXRef>
-                  <useFile>checkstyle_report.txt</useFile>
-              </configuration>
-              <executions>
-                  <execution>
-                      <id>validate</id>
-                      <phase>validate</phase>
-                      <goals>
-                          <goal>check</goal>
-                      </goals>
-                  </execution>
-              </executions>
-          </plugin>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.6.1</version>
+        <configuration>
+          <source>${maven.compiler.version}</source>
+          <target>${maven.compiler.version}</target>
+          <compilerArgument>-Xlint:deprecation</compilerArgument>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>${cmo_metadb_common.groupId}</groupId>
+            <artifactId>${cmo_metadb_common.artifactId}</artifactId>
+            <version>${cmo_metadb_common.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+          <useFile>checkstyle_report.txt</useFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
