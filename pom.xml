@@ -48,6 +48,8 @@
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
     <cmo_metadb_common.version>v1.1-alpha</cmo_metadb_common.version>
+    <neo4j-ogm.version>3.1.2</neo4j-ogm.version>
+    <neo4j-java-driver.version>4.2.0</neo4j-java-driver.version>
   </properties>
 
   <dependencies>
@@ -85,9 +87,25 @@
     </dependency>
     <dependency>
       <groupId>org.neo4j</groupId>
-      <artifactId>neo4j</artifactId>
-      <version>3.2.9</version>
+      <artifactId>neo4j-ogm</artifactId>
+      <version>3.2.19</version>
+      <type>pom</type>
     </dependency>
+<!--    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-ogm-core</artifactId>
+      <version>${neo4j-ogm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-ogm-embedded-driver</artifactId>
+      <version>${neo4j-ogm.version}</version>
+    </dependency>-->
+<!--    <dependency>
+      <groupId>org.neo4j.driver</groupId>
+      <artifactId>neo4j-java-driver</artifactId>
+      <version>${neo4j-java-driver.version}</version>
+    </dependency>-->
   </dependencies>
 
   <build>

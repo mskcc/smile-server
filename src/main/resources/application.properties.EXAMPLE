@@ -1,3 +1,6 @@
+# required to prevent embedded spring boot web server from starting up
+spring.main.web-application-type=none
+
 # nats server
 nats.clusterid=
 nats.clientid=
