@@ -1,6 +1,6 @@
 package org.mskcc.cmo.metadb.service;
 
-import org.mskcc.cmo.shared.neo4j.SampleManifestEntity;
+import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 
 public interface SampleService {
 

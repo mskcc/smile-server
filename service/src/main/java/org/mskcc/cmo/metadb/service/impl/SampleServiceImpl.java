@@ -1,8 +1,8 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.persistence.SampleManifestRepository;
 import org.mskcc.cmo.metadb.service.SampleService;
-import org.mskcc.cmo.shared.neo4j.SampleManifestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

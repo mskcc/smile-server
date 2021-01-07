@@ -12,6 +12,7 @@
     <module>persistence</module>
     <module>service</module>
     <module>server</module>
+    <module>model</module>
   </modules>
 
   <parent>
@@ -36,25 +37,51 @@
 
   <properties>
     <spring.version>5.2.6.RELEASE</spring.version>
+    <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
     <jackson.version>2.9.5</jackson.version>
     <slf4j.version>1.7.30</slf4j.version>
     <maven.compiler.version>1.8</maven.compiler.version>
+    <!-- metadb messaging and shared entities dependency versions -->
+    <cmo_metadb_messaging_java.version>81258a16d63cea640e4d80efb5df5100a6ff4dea</cmo_metadb_messaging_java.version>
+    <cmo_metadb_shared_entities.version>267f859442b6d17d36919cfd4b6bea24664383fa</cmo_metadb_shared_entities.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
-    <cmo_metadb_common.version>v1.0-alpha</cmo_metadb_common.version>
+    <cmo_metadb_common.version>v1.1-alpha</cmo_metadb_common.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.github.mskcc</groupId>
       <artifactId>cmo-messaging-java</artifactId>
-      <version>81258a16d63cea640e4d80efb5df5100a6ff4dea</version>
+      <version>${cmo_metadb_messaging_java.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.ao508</groupId>
+      <groupId>com.github.mskcc</groupId>
       <artifactId>cmo-metadb-shared-entities</artifactId>
-      <version>54e464066952386c7c4c8660ecc24aa069b1d1e4</version>
+      <version>${cmo_metadb_shared_entities.version}</version>
+    </dependency>
+    <!-- neo4j dependencies -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-neo4j</artifactId>
+      <version>${spring.boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-ogm</artifactId>
+      <version>1.1.0</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>com.graphaware.neo4j</groupId>
+      <artifactId>server-community</artifactId>
+      <version>2.2.6.35</version>
+    </dependency>
+    <dependency>
+      <groupId>com.graphaware.neo4j</groupId>
+      <artifactId>uuid</artifactId>
+      <version>2.2.6.35.7</version>
     </dependency>
   </dependencies>
 
