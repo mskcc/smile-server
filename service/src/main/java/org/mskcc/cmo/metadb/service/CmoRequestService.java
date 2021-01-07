@@ -7,5 +7,5 @@ import org.mskcc.cmo.metadb.model.CmoRequestEntity;
  * @author ochoaa
  */
 public interface CmoRequestService {
-    CmoRequestEntity saveRequest(CmoRequestEntity request);
+    void saveRequest(CmoRequestEntity request);
 }

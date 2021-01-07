@@ -59,7 +59,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         Gson gson = new Gson();
                         System.out.println("This is where we would persist the request to neo4j...");
                         System.out.println(gson.toJson(request).toString());
-                        // request = requestService.saveRequest(request);
+                        requestService.saveRequest(request);
                         // pass to aggregate
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
