@@ -19,6 +19,6 @@ public class CmoRequestServiceImpl implements CmoRequestService {
 
     @Override
     public void saveRequest(CmoRequestEntity request) {
-        cmoRequestRepository.saveNewCmoRequest(request.getRequestId());
+        cmoRequestRepository.save(request);
     }
 }
