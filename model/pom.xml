@@ -9,4 +9,39 @@
     <artifactId>master</artifactId>
     <version>0.1.0</version>
   </parent>
+  <dependencies>
+    <!-- neo4j dependencies -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-neo4j</artifactId>
+      <version>${spring.boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-ogm</artifactId>
+      <version>${neo4j-ogm.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-ogm-core</artifactId>
+      <version>${neo4j-ogm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-ogm-embedded-driver</artifactId>
+      <version>${neo4j-ogm.version}</version>
+    </dependency>
+    <!-- neo4j plugin for built-in uuid generation -->
+    <dependency>
+      <groupId>com.graphaware.neo4j</groupId>
+      <artifactId>server-community</artifactId>
+      <version>2.2.6.35</version>
+    </dependency>
+    <dependency>
+      <groupId>com.graphaware.neo4j</groupId>
+      <artifactId>uuid</artifactId>
+      <version>2.2.6.35.7</version>
+    </dependency>
+  </dependencies>
 </project>
