@@ -22,12 +22,12 @@ public class SampleManifestEntity extends SampleManifest {
     @Relationship(type = "PX_TO_SP", direction = Relationship.INCOMING)
     private PatientMetadata patient;
     @Relationship(type = "SAMPLE_MANIFEST", direction = Relationship.OUTGOING)
-    private SampleManifest sampleManifest;
+    private SampleManifestJsonEntity sampleManifestJsonEntity;
 
     public SampleManifestEntity() {
         super();
     }
-
+    
     /**
      * SampleManifestEntity constructor.
      * @param sampleManifest 
@@ -154,26 +154,15 @@ public class SampleManifestEntity extends SampleManifest {
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
-
-    public List<Sample> getSampleList() {
-        return sampleList;
-    }
-
+    
     public void setSampleList(List<Sample> sampleList) {
         this.sampleList = sampleList;
     }
-
-    /**
-     * Add sample to array.
-     * @param sample
-     */
-    public void addSample(Sample sample) {
-        if (sampleList == null) {
-            sampleList = new ArrayList<>();
-        }
-        sampleList.add(sample);
+    
+    public void getSampleList(List<Sample> s) {
+        this.sampleList = s;  
     }
-
+    
     public PatientMetadata getPatient() {
         return patient;
     }
@@ -181,5 +170,40 @@ public class SampleManifestEntity extends SampleManifest {
     public void setPatient(PatientMetadata patient) {
         this.patient = patient;
     }
-
+    
+    public void setSampleManifestJsonEntity(SampleManifestJsonEntity s) {
+        this.sampleManifestJsonEntity = s;
+    }
+    
+    public SampleManifestJsonEntity getSampleManifestJsonEntity() {
+        return sampleManifestJsonEntity;
+    }
+    
+    public void setPatientUuid(UUID uuid) {
+        this.patient.setUuid(uuid);
+    }
+    
+    /**
+     * 
+     * @return SampleIgoId
+     */
+    public Sample getSampleIgoId() {
+        for (Sample s: sampleList) {
+            if (s.getIdSource() == "igoId") {
+                return s;
+            }
+        }
+        return null;
+    }
+    
+    /**     
+     * Add sample to array.
+     * @param sample    
+     */ 
+    public void addSample(Sample sample) {
+        if (sampleList == null) {   
+            sampleList = new ArrayList<>(); 
+        }   
+        sampleList.add(sample);
+    }
 }
