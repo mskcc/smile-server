@@ -1,7 +1,9 @@
 package org.mskcc.cmo.metadb.persistence;
 
 import java.util.UUID;
+import org.mskcc.cmo.metadb.model.Sample;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
+import org.mskcc.cmo.metadb.model.SampleManifestJsonEntity;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
@@ -14,29 +16,29 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SampleManifestRepository extends Neo4jRepository<SampleManifestEntity, UUID> {
-    @Query(
-        "MATCH (s:cmo_metadb_sample_metadata) WHERE $igoId = s.igoId RETURN s"
-    )
-    SampleManifestEntity findSampleByIgoId(@Param("igoId") String igoId);
+    @Query("MATCH (s: sample {value: $igoId.sampleId, idSource: 'igoId'}) "
+        + "MATCH (s)-[:SP_TO_SP]->(sm) "
+        + "RETURN sm")
+    SampleManifestEntity findSampleByIgoId(@Param("igoId") Sample igoId);
 
-    @Query(
-        "MERGE (sm:cmo_metadb_sample_metadata {igoId: $sample.igoId}) "
-        + "ON MATCH SET sm.sampleName = $sample.sampleName "
-        + "ON CREATE SET "
-            + "sm.timestamp = timestamp(), sm.uuid = apoc.create.uuid(), "
-            + "sm.igoId = $sample.igoId, sm.investigatorSampleId = $sample.investigatorSampleId, "
-            + "sm.sampleName = $sample.sampleName, sm.sampleOrigin = $sample.sampleOrigin, "
-            + "sm.sex = $sample.sex, sm.species = $sample.species, "
-            + "sm.specimenType = $sample.specimenType, sm.tissueLocation = $sample.tissueLocation, "
-            + "sm.tubeId = $sample.tubeId, sm.tumorOrNormal = $sample.tumorOrNormal "
-            + "FOREACH (n_sample IN $sample.sampleList | "
-                + "MERGE (s:sample {sampleId:n_sample.sampleId, idSource:n_sample.idSource}) "
-                + "MERGE (s)-[:SP_TO_SP]->(sm) "
-            + ") "
-        + "MERGE (pm:cmo_metadb_patient_metadata "
-            + "{investigatorPatientId: $sample.patient.investigatorPatientId}) "
-        + "MERGE (pm)-[:PX_TO_SP]->(sm)"
-        + "RETURN sm"
-    )
-    SampleManifestEntity saveSampleManifest(@Param("sample") SampleManifestEntity sample);
+    @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
+            + "MATCH (sm)-[SP_TO_SP]->(s)"
+            + "WHERE s.idSource = 'igoId' RETURN s;")
+    Sample findSampleIgoId(@Param("uuid") UUID uuid);
+
+    @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
+            + "MATCH (sm)-[SP_TO_SP]->(s)"
+            + "WHERE s.idSource = 'investigatorId' RETURN s;")
+    Sample findInvestigatorId(@Param("uuid") UUID uuid);
+
+    @Query("MATCH(sm: cmo_metadb_sample_metadata{uuid: $uuid}) "
+            + "MATCH (json)<-[r:SAMPLE_MANIFEST]-(sm) "
+            + "DELETE r "
+            + "CREATE (new_json: sample_manifest_json "
+            + "{sampleManifestJson: $sampleManifestJson.sampleManifestJson}) "
+            + "MERGE(sm)-[:SAMPLE_METADATA]->(new_json) "
+            + "MERGE(new_json)-[:SAMPLE_METADATA]->(json)")
+    SampleManifestEntity updateSampleManifestJson(
+            @Param("sampleManifestJson")SampleManifestJsonEntity sampleManifestJson,
+            @Param("uuid") UUID uuid);
 }

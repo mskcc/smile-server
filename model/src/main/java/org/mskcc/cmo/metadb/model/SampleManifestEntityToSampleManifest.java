@@ -12,14 +12,14 @@ import org.neo4j.ogm.annotation.StartNode;
  *
  * @author ochoaa
  */
-@RelationshipEntity(type = "SAMPLE_METADATA")
+@RelationshipEntity(type = "SAMPLE_MANIFEST")
 public class SampleManifestEntityToSampleManifest implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @StartNode
     private SampleManifestEntity sampleManifestEntity;
     @EndNode
-    private SampleManifest sampleManifest;
+    private SampleManifestJsonEntity sampleManifestJsonEntity;
 
     public SampleManifestEntityToSampleManifest() {}
 
@@ -31,12 +31,12 @@ public class SampleManifestEntityToSampleManifest implements Serializable {
         this.sampleManifestEntity = sampleManifestEntity;
     }
 
-    public SampleManifest getSampleManifest() {
-        return sampleManifest;
+    public SampleManifestJsonEntity getSampleManifestJsonEntity() {
+        return sampleManifestJsonEntity;
     }
 
-    public void setSampleManifest(SampleManifest sampleManifest) {
-        this.sampleManifest = sampleManifest;
+    public void setSampleManifestJsonEntity(SampleManifestJsonEntity sampleManifestJsonEntity) {
+        this.sampleManifestJsonEntity = sampleManifestJsonEntity;
     }
 
 }

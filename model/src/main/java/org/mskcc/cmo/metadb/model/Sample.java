@@ -56,5 +56,4 @@ public class Sample implements Serializable {
     public void setSampleMetadata(SampleManifestEntity sampleMetadata) {
         this.sampleMetadata = sampleMetadata;
     }
-
 }

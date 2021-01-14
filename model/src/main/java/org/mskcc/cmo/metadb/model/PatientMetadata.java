@@ -93,5 +93,4 @@ public class PatientMetadata implements Serializable {
         }
         patientList.add(patient);
     }
-
 }

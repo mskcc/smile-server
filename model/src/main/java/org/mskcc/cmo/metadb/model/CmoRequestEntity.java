@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -55,5 +56,15 @@ public class CmoRequestEntity {
     public void setRequestJson(String requestJson) {
         this.requestJson = requestJson;
     }
-
+    
+    /**
+     * 
+     * @param sampleManifestEntity
+     */
+    public void addSampleManifest(SampleManifestEntity sampleManifestEntity) {
+        if (sampleManifestList == null) {
+            sampleManifestList = new ArrayList<>();
+        }
+        sampleManifestList.add(sampleManifestEntity); 
+    }
 }
