@@ -13,7 +13,7 @@ import org.neo4j.ogm.annotation.StartNode;
  * @author ochoaa
  */
 @RelationshipEntity(type = "SAMPLE_MANIFEST")
-public class SampleManifestEntityToSampleManifest implements Serializable {
+public class SampleManifestEntityToSampleManifestJsonEntity implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @StartNode
@@ -21,7 +21,15 @@ public class SampleManifestEntityToSampleManifest implements Serializable {
     @EndNode
     private SampleManifestJsonEntity sampleManifestJsonEntity;
 
-    public SampleManifestEntityToSampleManifest() {}
+    public SampleManifestEntityToSampleManifestJsonEntity() {}
+    
+    private Long getId() {
+        return id;
+    }
+
+    private void setId(Long id) {
+        this.id = id;
+    }
 
     public SampleManifestEntity getSampleManifestEntity() {
         return sampleManifestEntity;
@@ -38,5 +46,4 @@ public class SampleManifestEntityToSampleManifest implements Serializable {
     public void setSampleManifestJsonEntity(SampleManifestJsonEntity sampleManifestJsonEntity) {
         this.sampleManifestJsonEntity = sampleManifestJsonEntity;
     }
-
 }

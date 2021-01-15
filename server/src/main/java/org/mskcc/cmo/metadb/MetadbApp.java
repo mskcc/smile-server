@@ -1,19 +1,8 @@
 package org.mskcc.cmo.metadb;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import org.mskcc.cmo.messaging.Gateway;
-import org.mskcc.cmo.metadb.model.CmoRequestEntity;
-import org.mskcc.cmo.metadb.model.PatientMetadata;
-import org.mskcc.cmo.metadb.model.Sample;
-import org.mskcc.cmo.metadb.model.SampleManifestEntity;
-import org.mskcc.cmo.metadb.model.SampleManifestJsonEntity;
-import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
-import org.mskcc.cmo.metadb.service.SampleService;
-import org.mskcc.cmo.shared.SampleManifest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -31,12 +20,6 @@ public class MetadbApp implements CommandLineRunner {
 
     @Autowired
     private MessageHandlingService messageHandlingService;
-
-    @Autowired
-    private CmoRequestService requestService;
-    
-    @Autowired
-    private SampleService sampleService;
     
     private Thread shutdownHook;
     final CountDownLatch metadbAppClose = new CountDownLatch(1);
