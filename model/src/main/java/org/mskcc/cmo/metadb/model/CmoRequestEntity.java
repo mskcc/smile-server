@@ -16,6 +16,8 @@ public class CmoRequestEntity {
     private String requestId;
     @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
     private List<SampleManifestEntity> sampleManifestList;
+    @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
+    private CmoProjectEntity projectEntity;
     private String requestJson;
 
     public CmoRequestEntity() {}
@@ -26,10 +28,11 @@ public class CmoRequestEntity {
      * @param sampleManifestList
      * @param requestJson 
      */
-    public CmoRequestEntity(String requestId, List<SampleManifestEntity> sampleManifestList,
-            String requestJson) {
+    public CmoRequestEntity(String requestId, List<SampleManifestEntity> sampleManifestList, 
+            CmoProjectEntity projectEntity, String requestJson) {
         this.requestId = requestId;
         this.sampleManifestList = sampleManifestList;
+        this.projectEntity = projectEntity;
         this.requestJson = requestJson;
     }
 
@@ -47,6 +50,14 @@ public class CmoRequestEntity {
 
     public void setSampleManifestList(List<SampleManifestEntity> sampleManifestList) {
         this.sampleManifestList = sampleManifestList;
+    }
+    
+    public CmoProjectEntity getProjectEntity() {
+        return projectEntity;
+    }
+
+    public void setProjectEntity(CmoProjectEntity projectEntity) {
+        this.projectEntity = projectEntity;
     }
 
     public String getRequestJson() {

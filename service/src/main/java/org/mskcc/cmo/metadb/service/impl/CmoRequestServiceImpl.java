@@ -24,10 +24,12 @@ public class CmoRequestServiceImpl implements CmoRequestService {
 
     @Override
     public void saveRequest(CmoRequestEntity request) {
-        CmoRequestEntity savedRequest = getIgoRequest(request.getRequestId());
+        CmoRequestEntity savedRequest = getCmoRequest(request.getRequestId());
         if (savedRequest == null) {
-            for (SampleManifestEntity s: request.getSampleManifestList()) {
-                sampleManifestRepository.save(s);
+            if (request.getSampleManifestList() != null) {
+                for (SampleManifestEntity s: request.getSampleManifestList()) {
+                    sampleManifestRepository.save(s);
+                }
             }
             cmoRequestRepository.save(request);
         } else {
@@ -42,7 +44,7 @@ public class CmoRequestServiceImpl implements CmoRequestService {
     }
     
     @Override
-    public CmoRequestEntity getIgoRequest(String requestId) {
+    public CmoRequestEntity getCmoRequest(String requestId) {
         return cmoRequestRepository.findByRequestId(requestId);
     }
 }

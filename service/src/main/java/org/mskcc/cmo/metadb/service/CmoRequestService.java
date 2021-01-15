@@ -10,6 +10,6 @@ public interface CmoRequestService {
     
     void saveRequest(CmoRequestEntity request);
     
-    CmoRequestEntity getIgoRequest(String requestId);
+    CmoRequestEntity getCmoRequest(String requestId);
     
 }
