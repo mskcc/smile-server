@@ -27,16 +27,16 @@ public class CmoRequestEntity extends IgoRequest {
      * CmoRequestEntity constructor.
      * @param requestId
      * @param sampleManifestList
-     * @param requestJson 
+     * @param requestJson
      */
-    public CmoRequestEntity(String requestId, List<SampleManifestEntity> sampleManifestList, 
+    public CmoRequestEntity(String requestId, List<SampleManifestEntity> sampleManifestList,
             CmoProjectEntity projectEntity, String requestJson) {
         super(requestId);
         this.sampleManifestList = sampleManifestList;
         this.projectEntity = projectEntity;
         this.requestJson = requestJson;
     }
-    
+
     /**
      * CmoRequestEntity constructor
      * @param requestId
@@ -58,15 +58,15 @@ public class CmoRequestEntity extends IgoRequest {
      * @param projectEntity
      * @param requestJson
      */
-    public CmoRequestEntity(String requestId, String recipe, String projectManagerName, 
-            String piEmail, String labHeadName, String labHeadEmail, 
+    public CmoRequestEntity(String requestId, String recipe, String projectManagerName,
+            String piEmail, String labHeadName, String labHeadEmail,
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
-            String qcAccessEmails, String strand, String libraryType, 
-            List<SampleManifestEntity> sampleManifestList, 
+            String qcAccessEmails, String strand, String libraryType,
+            List<SampleManifestEntity> sampleManifestList,
             CmoProjectEntity projectEntity, String requestJson) {
         super(requestId,
-                recipe, 
+                recipe,
                 projectManagerName,
                 piEmail,
                 labHeadName,
@@ -100,7 +100,7 @@ public class CmoRequestEntity extends IgoRequest {
     public void setSampleManifestList(List<SampleManifestEntity> sampleManifestList) {
         this.sampleManifestList = sampleManifestList;
     }
-    
+
     public CmoProjectEntity getProjectEntity() {
         return projectEntity;
     }
@@ -116,15 +116,15 @@ public class CmoRequestEntity extends IgoRequest {
     public void setRequestJson(String requestJson) {
         this.requestJson = requestJson;
     }
-    
+
     /**
-     * 
+     *
      * @param sampleManifestEntity
      */
     public void addSampleManifest(SampleManifestEntity sampleManifestEntity) {
         if (sampleManifestList == null) {
             sampleManifestList = new ArrayList<>();
         }
-        sampleManifestList.add(sampleManifestEntity); 
+        sampleManifestList.add(sampleManifestEntity);
     }
 }

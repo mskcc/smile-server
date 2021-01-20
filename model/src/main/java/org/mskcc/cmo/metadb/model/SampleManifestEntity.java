@@ -29,10 +29,10 @@ public class SampleManifestEntity extends SampleManifest {
     public SampleManifestEntity() {
         super();
     }
-    
+
     /**
      * SampleManifestEntity constructor.
-     * @param sampleManifest 
+     * @param sampleManifest
      */
     public SampleManifestEntity(SampleManifest sampleManifest) {
         this.mrn = sampleManifest.getMrn();
@@ -95,33 +95,33 @@ public class SampleManifestEntity extends SampleManifest {
      * @param sampleList
      * @param patient
      */
-    public SampleManifestEntity(UUID uuid, String igoId, String cmoInfoIgoId, String cmoSampleName, 
-            String sampleName, String cmoSampleClass, String cmoPatientId, String investigatorSampleId, 
-            String oncotreeCode, String tumorOrNormal, String tissueLocation, String specimenType, 
-            String sampleOrigin, String preservation, String collectionYear, String sex, 
-            String species, String tubeId, String cfDNA2dBarcode, String baitSet, 
-            List<QcReport> qcReports, List<Library> libraries, 
+    public SampleManifestEntity(UUID uuid, String igoId, String cmoInfoIgoId, String cmoSampleName,
+            String sampleName, String cmoSampleClass, String cmoPatientId, String investigatorSampleId,
+            String oncotreeCode, String tumorOrNormal, String tissueLocation, String specimenType,
+            String sampleOrigin, String preservation, String collectionYear, String sex,
+            String species, String tubeId, String cfDNA2dBarcode, String baitSet,
+            List<QcReport> qcReports, List<Library> libraries,
             List<Sample> sampleList, PatientMetadata patient) {
-        super(igoId, 
-                cmoInfoIgoId, 
-                cmoSampleName, 
+        super(igoId,
+                cmoInfoIgoId,
+                cmoSampleName,
                 sampleName,
-                cmoSampleClass, 
-                cmoPatientId, 
-                investigatorSampleId, 
+                cmoSampleClass,
+                cmoPatientId,
+                investigatorSampleId,
                 oncotreeCode,
-                tumorOrNormal, 
-                tissueLocation, 
-                specimenType, 
+                tumorOrNormal,
+                tissueLocation,
+                specimenType,
                 sampleOrigin,
-                preservation, 
-                collectionYear, 
-                sex, 
-                species, 
+                preservation,
+                collectionYear,
+                sex,
+                species,
                 tubeId,
-                cfDNA2dBarcode, 
-                baitSet, 
-                qcReports, 
+                cfDNA2dBarcode,
+                baitSet,
+                qcReports,
                 libraries);
         this.uuid = uuid;
         this.sampleList = sampleList;
@@ -135,15 +135,15 @@ public class SampleManifestEntity extends SampleManifest {
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
-    
+
     public void setSampleList(List<Sample> sampleList) {
         this.sampleList = sampleList;
     }
-    
+
     public void getSampleList(List<Sample> s) {
-        this.sampleList = s;  
+        this.sampleList = s;
     }
-    
+
     public PatientMetadata getPatient() {
         return patient;
     }
@@ -151,21 +151,21 @@ public class SampleManifestEntity extends SampleManifest {
     public void setPatient(PatientMetadata patient) {
         this.patient = patient;
     }
-    
+
     public void setSampleManifestJsonEntity(SampleManifestJsonEntity s) {
         this.sampleManifestJsonEntity = s;
     }
-    
+
     public SampleManifestJsonEntity getSampleManifestJsonEntity() {
         return sampleManifestJsonEntity;
     }
-    
+
     public void setPatientUuid(UUID uuid) {
         this.patient.setUuid(uuid);
     }
-    
+
     /**
-     * 
+     *
      * @return SampleIgoId
      */
     public Sample getSampleIgoId() {
@@ -176,15 +176,15 @@ public class SampleManifestEntity extends SampleManifest {
         }
         return null;
     }
-    
-    /**     
+
+    /**
      * Add sample to array.
-     * @param sample    
-     */ 
+     * @param sample
+     */
     public void addSample(Sample sample) {
-        if (sampleList == null) {   
-            sampleList = new ArrayList<>(); 
-        }   
+        if (sampleList == null) {
+            sampleList = new ArrayList<>();
+        }
         sampleList.add(sample);
     }
 }
