@@ -2,6 +2,7 @@ package org.mskcc.cmo.metadb.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.mskcc.cmo.shared.IgoRequest;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
@@ -11,7 +12,7 @@ import org.neo4j.ogm.annotation.Relationship;
  * @author ochoaa
  */
 @NodeEntity(label = "cmo_metadb_request")
-public class CmoRequestEntity {
+public class CmoRequestEntity extends IgoRequest {
     @Id
     private String requestId;
     @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
@@ -30,7 +31,55 @@ public class CmoRequestEntity {
      */
     public CmoRequestEntity(String requestId, List<SampleManifestEntity> sampleManifestList, 
             CmoProjectEntity projectEntity, String requestJson) {
-        this.requestId = requestId;
+        super(requestId);
+        this.sampleManifestList = sampleManifestList;
+        this.projectEntity = projectEntity;
+        this.requestJson = requestJson;
+    }
+    
+    /**
+     * CmoRequestEntity constructor
+     * @param requestId
+     * @param recipe
+     * @param projectManagerName
+     * @param piEmail
+     * @param labHeadName
+     * @param labHeadEmail
+     * @param investigatorName
+     * @param investigatorEmail
+     * @param dataAnalystName
+     * @param dataAnalystEmail
+     * @param otherContactEmails
+     * @param dataAccessEmails
+     * @param qcAccessEmails
+     * @param strand
+     * @param libraryType
+     * @param sampleManifestList
+     * @param projectEntity
+     * @param requestJson
+     */
+    public CmoRequestEntity(String requestId, String recipe, String projectManagerName, 
+            String piEmail, String labHeadName, String labHeadEmail, 
+            String investigatorName, String investigatorEmail, String dataAnalystName,
+            String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
+            String qcAccessEmails, String strand, String libraryType, 
+            List<SampleManifestEntity> sampleManifestList, 
+            CmoProjectEntity projectEntity, String requestJson) {
+        super(requestId,
+                recipe, 
+                projectManagerName,
+                piEmail,
+                labHeadName,
+                labHeadEmail,
+                investigatorName,
+                investigatorEmail,
+                dataAnalystName,
+                dataAnalystEmail,
+                otherContactEmails,
+                dataAccessEmails,
+                qcAccessEmails,
+                strand,
+                libraryType);
         this.sampleManifestList = sampleManifestList;
         this.projectEntity = projectEntity;
         this.requestJson = requestJson;

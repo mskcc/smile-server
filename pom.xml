@@ -43,7 +43,7 @@
     <neo4j-ogm.version>3.2.19</neo4j-ogm.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.version>81258a16d63cea640e4d80efb5df5100a6ff4dea</cmo_metadb_messaging_java.version>
-    <cmo_metadb_shared_entities.version>267f859442b6d17d36919cfd4b6bea24664383fa</cmo_metadb_shared_entities.version>
+    <cmo_metadb_shared_entities.version>f4e0093e75e41bc733a0017791b80015ac493b24</cmo_metadb_shared_entities.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
