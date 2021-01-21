@@ -26,7 +26,7 @@ public class PatientMetadata implements Serializable {
     @Relationship(type = "PX_TO_SP", direction = Relationship.OUTGOING)
     private List<SampleManifestEntity> sampleManifestList;
     @Relationship(type = "PX_TO_NORMAL", direction = Relationship.OUTGOING)
-    private List<SampleManifestEntity> normalSampleManifestList;
+    private List<NormalSampleManifestEntity> normalSampleManifestList;
     @Relationship(type = "PX_TO_PX", direction = Relationship.INCOMING)
     private List<Patient>  patientList;
 
@@ -56,22 +56,11 @@ public class PatientMetadata implements Serializable {
         this.sampleManifestList = sampleManifestList;
     }
 
-    /**
-     * Link a SampleManifest instance to this PatientMetadata.
-     * @param sampleManifest
-     */
-    public void linkSampleManifest(SampleManifestEntity sampleManifest) {
-        if (sampleManifestList == null) {
-            sampleManifestList = new ArrayList<>();
-        }
-        sampleManifestList.add(sampleManifest);
-    }
-
-    public List<SampleManifestEntity> getNormalSampleManifestList() {
+    public List<NormalSampleManifestEntity> getNormalSampleManifestList() {
         return normalSampleManifestList;
     }
 
-    public void setNormalSampleManifestList(List<SampleManifestEntity> normalSampleManifestList) {
+    public void setNormalSampleManifestList(List<NormalSampleManifestEntity> normalSampleManifestList) {
         this.normalSampleManifestList = normalSampleManifestList;
     }
 
@@ -92,5 +81,27 @@ public class PatientMetadata implements Serializable {
             patientList = new ArrayList<>();
         }
         patientList.add(patient);
+    }
+    
+    /**
+     * Add normal sample to array list.
+     * @param normalSampleManifestEntity
+     */
+    public void addNormalSample(NormalSampleManifestEntity normalSampleManifestEntity) {
+        if (normalSampleManifestList == null) {
+            normalSampleManifestList = new ArrayList<>();
+        }
+        normalSampleManifestList.add(normalSampleManifestEntity);
+    }
+    
+    /**
+     * Add sample to array list.
+     * @param sampleManifest
+     */
+    public void addSampleManifest(SampleManifestEntity sampleManifest) {
+        if (sampleManifestList == null) {
+            sampleManifestList = new ArrayList<>();
+        }
+        sampleManifestList.add(sampleManifest);
     }
 }
