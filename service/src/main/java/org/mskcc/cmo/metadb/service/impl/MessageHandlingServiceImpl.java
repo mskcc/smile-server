@@ -70,6 +70,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 } catch (Exception e) {
                     // TBD requeue?
                     System.err.printf("Error during request handling: %s\n", e.getMessage());
+                    e.printStackTrace();
                 }
             }
             newRequestHandlerShutdownLatch.countDown();
@@ -78,7 +79,6 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
     @Override
     public void initialize(Gateway gateway) throws Exception {
-
         if (!initialized) {
             setupIgoNewRequestHandler(gateway, this);
             initializeNewRequestHandlers();
@@ -124,10 +124,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
     private void setupIgoNewRequestHandler(Gateway gateway, MessageHandlingService messageHandlingService)
         throws Exception {
-        gateway.subscribe(IGO_NEW_REQUEST_TOPIC, CmoRequestEntity.class, new MessageConsumer() {
+        gateway.subscribe(IGO_NEW_REQUEST_TOPIC, Object.class, new MessageConsumer() {
             public void onMessage(Object message) {
                 try {
-                    messageHandlingService.newRequestHandler((CmoRequestEntity)message);
+                    Gson gson = new Gson();
+                    messageHandlingService.newRequestHandler(gson.fromJson(message.toString(),
+                            CmoRequestEntity.class));
                 } catch (Exception e) {
                     System.err.printf("Cannot process IGO_NEW_REQUEST:\n%s\n", message);
                     System.err.printf("Exception during processing:\n%s\n", e.getMessage());

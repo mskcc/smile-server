@@ -169,6 +169,9 @@ public class SampleManifestEntity extends SampleManifest {
      * @return SampleIgoId
      */
     public Sample getSampleIgoId() {
+        if (sampleList == null) {
+            this.sampleList = new ArrayList<>();
+        }
         for (Sample s: sampleList) {
             if (s.getIdSource() == "igoId") {
                 return s;

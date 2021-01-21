@@ -20,6 +20,8 @@ public class CmoRequestEntity extends IgoRequest {
     private List<SampleManifestEntity> sampleManifestList;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
     private CmoProjectEntity projectEntity;
+    // need this field to deserialize message from IGO_NEW_REQUEST properly
+    protected String projectId;
     private String requestJson;
 
     public CmoRequestEntity() {}
@@ -34,7 +36,7 @@ public class CmoRequestEntity extends IgoRequest {
             CmoProjectEntity projectEntity, String requestJson) {
         super(requestId);
         this.sampleManifestList = sampleManifestList;
-        this.projectEntity = projectEntity;
+        this.projectEntity = new CmoProjectEntity(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
 
@@ -82,7 +84,7 @@ public class CmoRequestEntity extends IgoRequest {
                 strand,
                 libraryType);
         this.sampleManifestList = sampleManifestList;
-        this.projectEntity = projectEntity;
+        this.projectEntity = new CmoProjectEntity(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
 
@@ -108,6 +110,14 @@ public class CmoRequestEntity extends IgoRequest {
 
     public void setProjectEntity(CmoProjectEntity projectEntity) {
         this.projectEntity = projectEntity;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public String getRequestJson() {
