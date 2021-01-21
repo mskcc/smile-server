@@ -3,6 +3,8 @@ package org.mskcc.cmo.metadb.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.mskcc.cmo.shared.Library;
+import org.mskcc.cmo.shared.QcReport;
 import org.mskcc.cmo.shared.SampleManifest;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -27,10 +29,10 @@ public class SampleManifestEntity extends SampleManifest {
     public SampleManifestEntity() {
         super();
     }
-    
+
     /**
      * SampleManifestEntity constructor.
-     * @param sampleManifest 
+     * @param sampleManifest
      */
     public SampleManifestEntity(SampleManifest sampleManifest) {
         this.mrn = sampleManifest.getMrn();
@@ -67,81 +69,60 @@ public class SampleManifestEntity extends SampleManifest {
     }
 
     /**
-     * SampleManifestEntity constructor.
+     * SampleManifestEntity constructor
      * @param uuid
-     * @param mrn
-     * @param cmoPatientId
-     * @param cmoSampleId
      * @param igoId
-     * @param investigatorSampleId
-     * @param species
-     * @param sex
-     * @param tumorOrNormal
-     * @param sampleType
-     * @param preservation
-     * @param tumorType
-     * @param parentTumorType
-     * @param specimenType
-     * @param sampleOrigin
-     * @param tissueSource
-     * @param tissueLocation
-     * @param recipe
-     * @param baitset
-     * @param fastqPath
-     * @param principalInvestigator
-     * @param ancestorSample
-     * @param doNotUse
-     * @param sampleStatus
      * @param cmoInfoIgoId
      * @param cmoSampleName
      * @param sampleName
      * @param cmoSampleClass
+     * @param cmoPatientId
+     * @param investigatorSampleId
      * @param oncotreeCode
+     * @param tumorOrNormal
+     * @param tissueLocation
+     * @param specimenType
+     * @param sampleOrigin
+     * @param preservation
      * @param collectionYear
+     * @param sex
+     * @param species
      * @param tubeId
      * @param cfDNA2dBarcode
+     * @param baitSet
+     * @param qcReports
+     * @param libraries
      * @param sampleList
      * @param patient
      */
-    public SampleManifestEntity(UUID uuid, String mrn, String cmoPatientId, String cmoSampleId, String igoId,
-            String investigatorSampleId, String species, String sex, String tumorOrNormal, String sampleType,
-            String preservation, String tumorType, String parentTumorType, String specimenType,
-            String sampleOrigin, String tissueSource, String tissueLocation, String recipe, String baitset,
-            String fastqPath, String principalInvestigator, String ancestorSample, boolean doNotUse,
-            String sampleStatus, String cmoInfoIgoId, String cmoSampleName, String sampleName,
-            String cmoSampleClass, String oncotreeCode, String collectionYear, String tubeId,
-            String cfDNA2dBarcode, List<Sample> sampleList, PatientMetadata patient) {
-        super(mrn,
-            cmoPatientId,
-            cmoSampleId,
-            igoId,
-            investigatorSampleId,
-            species,
-            sex,
-            tumorOrNormal,
-            sampleType,
-            preservation,
-            tumorType,
-            parentTumorType,
-            specimenType,
-            sampleOrigin,
-            tissueSource,
-            tissueLocation,
-            recipe,
-            baitset,
-            fastqPath,
-            principalInvestigator,
-            ancestorSample,
-            doNotUse,
-            sampleStatus,
-            cmoInfoIgoId,
-            cmoSampleName,
-            sampleName,
-            cmoSampleClass,
-            oncotreeCode,
-            collectionYear,
-            tubeId,
-            cfDNA2dBarcode);
+    public SampleManifestEntity(UUID uuid, String igoId, String cmoInfoIgoId, String cmoSampleName,
+            String sampleName, String cmoSampleClass, String cmoPatientId, String investigatorSampleId,
+            String oncotreeCode, String tumorOrNormal, String tissueLocation, String specimenType,
+            String sampleOrigin, String preservation, String collectionYear, String sex,
+            String species, String tubeId, String cfDNA2dBarcode, String baitSet,
+            List<QcReport> qcReports, List<Library> libraries,
+            List<Sample> sampleList, PatientMetadata patient) {
+        super(igoId,
+                cmoInfoIgoId,
+                cmoSampleName,
+                sampleName,
+                cmoSampleClass,
+                cmoPatientId,
+                investigatorSampleId,
+                oncotreeCode,
+                tumorOrNormal,
+                tissueLocation,
+                specimenType,
+                sampleOrigin,
+                preservation,
+                collectionYear,
+                sex,
+                species,
+                tubeId,
+                cfDNA2dBarcode,
+                baitSet,
+                qcReports,
+                libraries);
         this.uuid = uuid;
         this.sampleList = sampleList;
         this.patient = patient;
@@ -154,15 +135,15 @@ public class SampleManifestEntity extends SampleManifest {
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
-    
+
     public void setSampleList(List<Sample> sampleList) {
         this.sampleList = sampleList;
     }
-    
+
     public void getSampleList(List<Sample> s) {
-        this.sampleList = s;  
+        this.sampleList = s;
     }
-    
+
     public PatientMetadata getPatient() {
         return patient;
     }
@@ -170,21 +151,21 @@ public class SampleManifestEntity extends SampleManifest {
     public void setPatient(PatientMetadata patient) {
         this.patient = patient;
     }
-    
+
     public void setSampleManifestJsonEntity(SampleManifestJsonEntity s) {
         this.sampleManifestJsonEntity = s;
     }
-    
+
     public SampleManifestJsonEntity getSampleManifestJsonEntity() {
         return sampleManifestJsonEntity;
     }
-    
+
     public void setPatientUuid(UUID uuid) {
         this.patient.setUuid(uuid);
     }
-    
+
     /**
-     * 
+     *
      * @return SampleIgoId
      */
     public Sample getSampleIgoId() {
@@ -195,15 +176,15 @@ public class SampleManifestEntity extends SampleManifest {
         }
         return null;
     }
-    
-    /**     
+
+    /**
      * Add sample to array.
-     * @param sample    
-     */ 
+     * @param sample
+     */
     public void addSample(Sample sample) {
-        if (sampleList == null) {   
-            sampleList = new ArrayList<>(); 
-        }   
+        if (sampleList == null) {
+            sampleList = new ArrayList<>();
+        }
         sampleList.add(sample);
     }
 }
