@@ -17,13 +17,14 @@ public class CmoRequestServiceImpl implements CmoRequestService {
 
     @Autowired
     private CmoRequestRepository cmoRequestRepository;
-    
-    @Autowired 
+
+    @Autowired
     private SampleManifestRepository sampleManifestRepository;
 
 
     @Override
     public void saveRequest(CmoRequestEntity request) {
+        //TODO: NEED TO PERSIST THE PROJECT DATA AS WELL
         CmoRequestEntity savedRequest = getCmoRequest(request.getRequestId());
         if (savedRequest == null) {
             if (request.getSampleManifestList() != null) {
@@ -34,7 +35,8 @@ public class CmoRequestServiceImpl implements CmoRequestService {
             cmoRequestRepository.save(request);
         } else {
             for (SampleManifestEntity s: request.getSampleManifestList()) {
-                if (cmoRequestRepository.findSampleManifest(request.getRequestId(), 
+                if (s.getSampleIgoId() != null
+                        && cmoRequestRepository.findSampleManifest(request.getRequestId(),
                         s.getSampleIgoId().getSampleId()) == null) {
                     savedRequest.addSampleManifest(s);
                     cmoRequestRepository.save(savedRequest);
@@ -42,7 +44,7 @@ public class CmoRequestServiceImpl implements CmoRequestService {
             }
         }
     }
-    
+
     @Override
     public CmoRequestEntity getCmoRequest(String requestId) {
         return cmoRequestRepository.findByRequestId(requestId);
