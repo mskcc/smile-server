@@ -2,6 +2,8 @@ package org.mskcc.cmo.metadb.service;
 
 import java.util.List;
 import org.mskcc.cmo.metadb.model.NormalSampleManifestEntity;
+import java.util.UUID;
+
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 
 public interface SampleService {
@@ -12,4 +14,8 @@ public interface SampleService {
             throws Exception;
 
     List<String> findPooledNormalSample(SampleManifestEntity sampleManifestEntity) throws Exception;
+        
+    SampleManifestEntity setUpSampleManifest(SampleManifestEntity sample) throws Exception;
+    
+    SampleManifestEntity findSampleManifest(UUID uuid);
 }

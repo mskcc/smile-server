@@ -25,10 +25,14 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
+    
+    @Value("${cmo.new_request_topic}")
+    private String CMO_NEW_REQUEST;
 
     @Autowired
     private CmoRequestService requestService;
 
+    private Gateway messagingGateway;
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
 
@@ -37,12 +41,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         new LinkedBlockingQueue<CmoRequestEntity>();
     private static CountDownLatch newRequestHandlerShutdownLatch;
 
-    private class NewCmoRequestHandler implements Runnable {
+    private class NewIgoRequestHandler implements Runnable {
 
         final Phaser phaser;
         boolean interrupted = false;
 
-        NewCmoRequestHandler(Phaser phaser) {
+        NewIgoRequestHandler(Phaser phaser) {
             this.phaser = phaser;
         }
 
@@ -53,14 +57,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     CmoRequestEntity request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        // validate
-                        // id gen
-                        // persist
                         Gson gson = new Gson();
                         System.out.println("This is where we would persist the request to neo4j...");
                         System.out.println(gson.toJson(request).toString());
                         requestService.saveRequest(request);
-                        // pass to aggregate
+                        System.out.println(requestService.getCmoRequest(request.getRequestId()).toString());
+                        messagingGateway.publish(CMO_NEW_REQUEST, requestService.getCmoRequest(request.getRequestId()));
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
                         break;
@@ -80,7 +82,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Override
     public void initialize(Gateway gateway) throws Exception {
         if (!initialized) {
-            setupIgoNewRequestHandler(gateway, this);
+            messagingGateway = gateway;
+            setupIgoNewRequestHandler(messagingGateway, this);
             initializeNewRequestHandlers();
             initialized = true;
         } else {
@@ -117,7 +120,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         newSamplePhaser.register();
         for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
             newSamplePhaser.register();
-            exec.execute(new NewCmoRequestHandler(newSamplePhaser));
+            exec.execute(new NewIgoRequestHandler(newSamplePhaser));
         }
         newSamplePhaser.arriveAndAwaitAdvance();
     }

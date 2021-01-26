@@ -3,6 +3,7 @@ package org.mskcc.cmo.metadb.persistence;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.NormalSampleManifestEntity;
+import org.mskcc.cmo.metadb.model.PatientMetadata;
 import org.mskcc.cmo.metadb.model.Sample;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.model.SampleManifestJsonEntity;
@@ -22,16 +23,30 @@ public interface SampleManifestRepository extends Neo4jRepository<SampleManifest
         + "MATCH (s)-[:SP_TO_SP]->(sm) "
         + "RETURN sm")
     SampleManifestEntity findSampleByIgoId(@Param("igoId") Sample igoId);
+    
+    @Query("MATCH (s: cmo_metadb_sample_metadata {uuid: $uuid}) "
+            + "RETURN s")
+        SampleManifestEntity findSampleByUuid(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
-            + "MATCH (sm)-[SP_TO_SP]->(s)"
+            + "MATCH (sm)-[:SP_TO_SP]->(s)"
             + "WHERE s.idSource = 'igoId' RETURN s;")
     Sample findSampleIgoId(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
-            + "MATCH (sm)-[SP_TO_SP]->(s)"
+            + "MATCH (sm)-[:SP_TO_SP]->(s)"
             + "WHERE s.idSource = 'investigatorId' RETURN s;")
     Sample findInvestigatorId(@Param("uuid") UUID uuid);
+    
+    @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
+            + "MATCH (sm)-[:PX_TO_SP]->(p)"
+            + "RETURN p;")
+    PatientMetadata findPatientMetadata(@Param("uuid") UUID uuid);
+    
+    @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
+            + "MATCH (sm)-[:SAMPLE_MANIFEST]->(json)"
+            + "RETURN json;")
+    SampleManifestJsonEntity findSampleManifestJson(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: cmo_metadb_sample_metadata{uuid: $uuid}) "
             + "MATCH (json)<-[r:SAMPLE_MANIFEST]-(sm) "

@@ -1,7 +1,9 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+
 import java.util.List;
 import org.mskcc.cmo.metadb.model.NormalSampleManifestEntity;
+import java.util.UUID;
 import org.mskcc.cmo.metadb.model.PatientMetadata;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.persistence.PatientMetadataRepository;
@@ -47,5 +49,25 @@ public class SampleServiceImpl implements SampleService {
     @Override
     public List<String> findPooledNormalSample(SampleManifestEntity sampleManifestEntity) throws Exception {
         return sampleManifestRepository.findPooledNormals(sampleManifestEntity);
+    }
+
+    @Override
+    public SampleManifestEntity setUpSampleManifest(SampleManifestEntity sample) throws Exception {
+        //patient
+        PatientMetadata patient = new PatientMetadata();
+        patient.setInvestigatorPatientId(sample.getCmoPatientId());
+        
+        //sample
+        return sample;
+    }
+    
+    @Override
+    public SampleManifestEntity findSampleManifest(UUID uuid) {
+        SampleManifestEntity sampleManifest = sampleManifestRepository.findSampleByUuid(uuid);
+        sampleManifest.addSample(sampleManifestRepository.findInvestigatorId(uuid));
+        sampleManifest.addSample(sampleManifestRepository.findSampleIgoId(uuid));
+        sampleManifest.setPatient(sampleManifestRepository.findPatientMetadata(uuid));
+        sampleManifest.setSampleManifestJsonEntity(sampleManifestRepository.findSampleManifestJson(uuid));
+        return sampleManifest;
     }
 }

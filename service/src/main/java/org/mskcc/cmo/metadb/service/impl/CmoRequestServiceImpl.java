@@ -5,6 +5,7 @@ import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.persistence.CmoRequestRepository;
 import org.mskcc.cmo.metadb.persistence.SampleManifestRepository;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
+import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,9 @@ public class CmoRequestServiceImpl implements CmoRequestService {
 
     @Autowired
     private SampleManifestRepository sampleManifestRepository;
+    
+    @Autowired
+    private SampleService sampleService;
 
 
     @Override
@@ -47,6 +51,12 @@ public class CmoRequestServiceImpl implements CmoRequestService {
 
     @Override
     public CmoRequestEntity getCmoRequest(String requestId) {
-        return cmoRequestRepository.findByRequestId(requestId);
+        CmoRequestEntity request = cmoRequestRepository.findByRequestId(requestId);
+        for (SampleManifestEntity sample:cmoRequestRepository.findAllSampleManifests(requestId)) {
+            sample = sampleService.findSampleManifest(sample.getUuid());
+            request.addSampleManifest(sample);
+        }
+        request.setProjectEntity(cmoRequestRepository.findProjectEntity(requestId));
+        return request;
     }
 }
