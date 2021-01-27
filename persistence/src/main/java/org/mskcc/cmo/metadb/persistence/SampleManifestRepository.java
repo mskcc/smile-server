@@ -1,6 +1,8 @@
 package org.mskcc.cmo.metadb.persistence;
 
+import java.util.List;
 import java.util.UUID;
+import org.mskcc.cmo.metadb.model.NormalSampleManifestEntity;
 import org.mskcc.cmo.metadb.model.Sample;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.model.SampleManifestJsonEntity;
@@ -31,7 +33,7 @@ public interface SampleManifestRepository extends Neo4jRepository<SampleManifest
             + "WHERE s.idSource = 'investigatorId' RETURN s;")
     Sample findInvestigatorId(@Param("uuid") UUID uuid);
 
-    @Query("MATCH(sm: cmo_metadb_sample_metadata{uuid: $uuid}) "
+    @Query("MATCH (sm: cmo_metadb_sample_metadata{uuid: $uuid}) "
             + "MATCH (json)<-[r:SAMPLE_MANIFEST]-(sm) "
             + "DELETE r "
             + "CREATE (new_json: sample_manifest_json "
@@ -41,4 +43,16 @@ public interface SampleManifestRepository extends Neo4jRepository<SampleManifest
     SampleManifestEntity updateSampleManifestJson(
             @Param("sampleManifestJson")SampleManifestJsonEntity sampleManifestJson,
             @Param("uuid") UUID uuid);
+
+    @Query("MATCH (s: cmo_metadb_sample_metadata{uuid: $sampleManifestEntity.uuid})"
+            + "MATCH (s)<-[:PX_TO_SP]-(p:cmo_metadb_patient_metadata)"
+            + "MATCH (n)<-[:PX_TO_NORMAL]-(p) "
+            + "RETURN n")
+    List<NormalSampleManifestEntity> findMatchedNormals(
+            @Param("sampleManifestEntity") SampleManifestEntity sampleManifestEntity);
+
+    @Query("MATCH (s: cmo_metadb_sample_metadata{uuid: $sampleManifestEntity.uuid}) "
+            + "MATCH (s)<-[:REQUEST_TO_SP]-(r:cmo_metadb_request) "
+            + "RETURN r.pooledNormals")
+    List<String> findPooledNormals(@Param("sampleManifestEntity") SampleManifestEntity sampleManifestEntity);
 }
