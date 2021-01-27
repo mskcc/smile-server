@@ -17,16 +17,17 @@ public class NormalSampleServiceImpl implements NormalSampleService {
 
     @Autowired
     private NormalSampleRepository normalSampleRepository;
-    
+
     @Autowired
     private PatientMetadataRepository patientMetadataRepository;
 
     @Override
     public NormalSampleManifestEntity saveNormalSampleManifest(NormalSampleManifestEntity normalSampleEntity)
             throws Exception {
-        NormalSampleManifestEntity updatedNormalSampleManifestEntity = setUpNormalSampleManifest(normalSampleEntity);
+        NormalSampleManifestEntity updatedNormalSampleManifestEntity =
+                setUpNormalSampleManifest(normalSampleEntity);
 
-        NormalSampleManifestEntity foundSample = 
+        NormalSampleManifestEntity foundSample =
                 normalSampleRepository.findSampleByIgoId(updatedNormalSampleManifestEntity.getSampleIgoId());
         if (foundSample == null) {
             PatientMetadata patient = patientMetadataRepository.findPatientByInvestigatorId(
@@ -54,12 +55,12 @@ public class NormalSampleServiceImpl implements NormalSampleService {
         igoId.setIdSource("igoId");
         igoId.setSampleId(normalSampleEntity.getIgoId());
         normalSampleEntity.addSample(igoId);
-        
+
         Sample investigatorId = new Sample();
         investigatorId.setIdSource("igoId");
         investigatorId.setSampleId(normalSampleEntity.getInvestigatorSampleId());
         normalSampleEntity.addSample(investigatorId);
-        
+
         SampleManifestJsonEntity sampleJson = new SampleManifestJsonEntity();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         sampleJson.setCreationDate(String.valueOf(timestamp.getTime()));

@@ -140,15 +140,15 @@ public class CmoRequestEntity extends IgoRequest {
         }
         sampleManifestList.add(sampleManifestEntity);
     }
-    
+
     /**
-    *
-    * @param normalSampleManifestEntity
-    */
-   public void addNormalSampleManifest(NormalSampleManifestEntity normalSampleManifestEntity) {
-       if (normalSampleManifestList == null) {
-           normalSampleManifestList = new ArrayList<>();
-       }
-       normalSampleManifestList.add(normalSampleManifestEntity);
-   }
+     *
+     * @param normalSampleManifestEntity
+     */
+    public void addNormalSampleManifest(NormalSampleManifestEntity normalSampleManifestEntity) {
+        if (normalSampleManifestList == null) {
+            normalSampleManifestList = new ArrayList<>();
+        }
+        normalSampleManifestList.add(normalSampleManifestEntity);
+    }
 }

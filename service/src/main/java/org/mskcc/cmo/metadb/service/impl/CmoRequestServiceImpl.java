@@ -1,21 +1,18 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.mskcc.cmo.metadb.model.CmoProjectEntity;
 import org.mskcc.cmo.metadb.model.CmoRequestEntity;
 import org.mskcc.cmo.metadb.model.NormalSampleManifestEntity;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.persistence.CmoRequestRepository;
-import org.mskcc.cmo.metadb.persistence.SampleManifestRepository;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.NormalSampleService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.gson.Gson;
 
 /**
  *
@@ -29,7 +26,7 @@ public class CmoRequestServiceImpl implements CmoRequestService {
 
     @Autowired
     private SampleService sampleService;
-    
+
     @Autowired
     private NormalSampleService normalSampleService;
 
@@ -47,7 +44,8 @@ public class CmoRequestServiceImpl implements CmoRequestService {
                         removeSamples.add(s);
                         Gson gson = new Gson();
                         String normalSampleJson = gson.toJson(s);
-                        NormalSampleManifestEntity normalSampleManifest = gson.fromJson(normalSampleJson, NormalSampleManifestEntity.class);
+                        NormalSampleManifestEntity normalSampleManifest = gson.fromJson(
+                                normalSampleJson, NormalSampleManifestEntity.class);
                         request.addNormalSampleManifest(normalSampleManifest);
                         normalSampleService.saveNormalSampleManifest(normalSampleManifest);
                     } else {
@@ -57,7 +55,7 @@ public class CmoRequestServiceImpl implements CmoRequestService {
                 for (SampleManifestEntity sample: removeSamples) {
                     request.getSampleManifestList().remove(sample);
                 }
-                
+
             }
             cmoRequestRepository.save(request);
         } else {

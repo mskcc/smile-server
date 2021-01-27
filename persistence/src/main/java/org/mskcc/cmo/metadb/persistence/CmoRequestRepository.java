@@ -1,7 +1,6 @@
 package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
-
 import org.mskcc.cmo.metadb.model.CmoProjectEntity;
 import org.mskcc.cmo.metadb.model.CmoRequestEntity;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
@@ -18,17 +17,17 @@ import org.springframework.stereotype.Repository;
 public interface CmoRequestRepository extends Neo4jRepository<CmoRequestEntity, Long> {
     @Query("MATCH (r: cmo_metadb_request {requestId: $reqId}) RETURN r;")
     CmoRequestEntity findByRequestId(@Param("reqId") String reqId);
-    
+
     @Query("Match (r: cmo_metadb_request{requestId: $reqId})"
             + "<-[:PR_TO_REQUEST]-(p) "
             + "RETURN p ;")
     CmoProjectEntity findProjectEntity(@Param("reqId") String reqId);
-    
+
     @Query("Match (r: cmo_metadb_request{requestId: $reqId})-[:REQUEST_TO_SP]->"
             + "(c: cmo_metadb_sample_metadata) "
             + "RETURN c ;")
     List<SampleManifestEntity> findAllSampleManifests(@Param("reqId") String reqId);
-    
+
     @Query("MATCH(r:cmo_metadb_request {requestId: $reqId}) "
             + "MATCH(r)-[:REQUEST_TO_SP]->(sm) "
             + "MATCH (sm)<-[:SP_TO_SP]-(s: sample{idSource: 'igoId', value: $igoId}) "

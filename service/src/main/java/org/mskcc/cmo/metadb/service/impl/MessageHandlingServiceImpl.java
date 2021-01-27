@@ -25,7 +25,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
-    
+
     @Value("${cmo.new_request_topic}")
     private String CMO_NEW_REQUEST;
 
@@ -62,7 +62,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         System.out.println(gson.toJson(request).toString());
                         requestService.saveRequest(request);
                         System.out.println(requestService.getCmoRequest(request.getRequestId()).toString());
-                        messagingGateway.publish(CMO_NEW_REQUEST, requestService.getCmoRequest(request.getRequestId()));
+                        messagingGateway.publish(CMO_NEW_REQUEST, requestService.getCmoRequest(
+                                request.getRequestId()));
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
                         break;
