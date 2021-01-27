@@ -18,6 +18,8 @@ public class CmoRequestEntity extends IgoRequest {
     private Long id;
     @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
     private List<SampleManifestEntity> sampleManifestList;
+    @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
+    private List<NormalSampleManifestEntity> normalSampleManifestList;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
     private CmoProjectEntity projectEntity;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
@@ -138,4 +140,15 @@ public class CmoRequestEntity extends IgoRequest {
         }
         sampleManifestList.add(sampleManifestEntity);
     }
+    
+    /**
+    *
+    * @param normalSampleManifestEntity
+    */
+   public void addNormalSampleManifest(NormalSampleManifestEntity normalSampleManifestEntity) {
+       if (normalSampleManifestList == null) {
+           normalSampleManifestList = new ArrayList<>();
+       }
+       normalSampleManifestList.add(normalSampleManifestEntity);
+   }
 }

@@ -19,8 +19,8 @@ public interface CmoRequestRepository extends Neo4jRepository<CmoRequestEntity, 
     @Query("MATCH (r: cmo_metadb_request {requestId: $reqId}) RETURN r;")
     CmoRequestEntity findByRequestId(@Param("reqId") String reqId);
     
-    @Query("Match (r: cmo_metadb_request{requestId: $reqId})<-[:PR_TO_REQUEST]-"
-            + "(p: cmo_metadb_project) "
+    @Query("Match (r: cmo_metadb_request{requestId: $reqId})"
+            + "<-[:PR_TO_REQUEST]-(p) "
             + "RETURN p ;")
     CmoProjectEntity findProjectEntity(@Param("reqId") String reqId);
     

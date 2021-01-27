@@ -8,7 +8,7 @@ import org.mskcc.cmo.metadb.model.CmoRequestEntity;
  */
 public interface CmoRequestService {
     
-    void saveRequest(CmoRequestEntity request);
+    void saveRequest(CmoRequestEntity request) throws Exception;
     
     CmoRequestEntity getCmoRequest(String requestId);
     

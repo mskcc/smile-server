@@ -1,7 +1,6 @@
 package org.mskcc.cmo.metadb.model;
 
 import java.io.Serializable;
-import org.mskcc.cmo.shared.SampleManifest;
 import org.neo4j.ogm.annotation.EndNode;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;

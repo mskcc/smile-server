@@ -4,8 +4,10 @@ import java.io.Serializable;
 import org.neo4j.ogm.annotation.EndNode;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
+import org.neo4j.ogm.annotation.RelationshipEntity;
 import org.neo4j.ogm.annotation.StartNode;
 
+@RelationshipEntity(type = "PX_TO_REQUEST")
 public class CmoProjectEntityToCmoRequestEntity implements Serializable {
     @Id @GeneratedValue
     private Long id;
@@ -14,7 +16,7 @@ public class CmoProjectEntityToCmoRequestEntity implements Serializable {
     @EndNode
     private CmoRequestEntity cmoRequestEntity;
     
-    CmoProjectEntityToCmoRequestEntity() {}
+    public CmoProjectEntityToCmoRequestEntity() {}
     
     private Long getId() {
         return id;
