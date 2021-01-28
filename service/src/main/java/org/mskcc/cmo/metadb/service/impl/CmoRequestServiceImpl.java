@@ -1,10 +1,11 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import org.mskcc.cmo.metadb.model.CmoProjectEntity;
 import org.mskcc.cmo.metadb.model.CmoRequestEntity;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.persistence.CmoRequestRepository;
-import org.mskcc.cmo.metadb.persistence.SampleManifestRepository;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
+import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,17 +20,20 @@ public class CmoRequestServiceImpl implements CmoRequestService {
     private CmoRequestRepository cmoRequestRepository;
 
     @Autowired
-    private SampleManifestRepository sampleManifestRepository;
+    private SampleService sampleService;
 
 
     @Override
-    public void saveRequest(CmoRequestEntity request) {
-        //TODO: NEED TO PERSIST THE PROJECT DATA AS WELL
+    public void saveRequest(CmoRequestEntity request) throws Exception {
+        CmoProjectEntity project = new CmoProjectEntity();
+        project.setprojectId(request.getProjectId());
+        request.setProjectEntity(project);
+
         CmoRequestEntity savedRequest = getCmoRequest(request.getRequestId());
         if (savedRequest == null) {
             if (request.getSampleManifestList() != null) {
                 for (SampleManifestEntity s: request.getSampleManifestList()) {
-                    sampleManifestRepository.save(s);
+                    sampleService.saveSampleManifest(s);
                 }
             }
             cmoRequestRepository.save(request);
