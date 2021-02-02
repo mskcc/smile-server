@@ -14,14 +14,14 @@ import org.neo4j.ogm.annotation.StartNode;
  * @author ochoaa
  */
 
-@RelationshipEntity(type = "PX_TO_PX")
+@RelationshipEntity(type = "IS_ALIAS")
 public class PatientToPatientEntity implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @Property(name = "value")
     private Collection<String> patientIds;
     @StartNode
-    private Patient patient;
+    private PatientAlias patientAlias;
     @EndNode
     private PatientMetadata patientMetadata;
 
@@ -35,12 +35,12 @@ public class PatientToPatientEntity implements Serializable {
         this.patientIds = patientIds;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public PatientAlias getPatientAlias() {
+        return patientAlias;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPatientAlias(PatientAlias patientAlias) {
+        this.patientAlias = patientAlias;
     }
 
     public PatientMetadata getPatientMetadata() {

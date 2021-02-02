@@ -11,7 +11,7 @@ import org.neo4j.ogm.annotation.StartNode;
  *
  * @author ochoaa
  */
-@RelationshipEntity("PX_TO_SP")
+@RelationshipEntity("HAS_SAMPLE")
 public class PatientToSampleEntity implements Serializable {
     @Id @GeneratedValue
     private Long id;

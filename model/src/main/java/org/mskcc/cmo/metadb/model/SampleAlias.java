@@ -11,24 +11,24 @@ import org.neo4j.ogm.annotation.Relationship;
  * @author ochoaa
  */
 
-@NodeEntity(label = "sample")
-public class Sample implements Serializable {
+@NodeEntity(label = "sample_alias")
+public class SampleAlias implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @Property(name = "value")
     private String sampleId;
     private String idSource;
-    @Relationship(type = "SP_TO_SP", direction = Relationship.OUTGOING)
+    @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
     private SampleManifestEntity sampleMetadata;
 
-    public Sample() {}
+    public SampleAlias() {}
 
     /**
      * Sample constructor.
      * @param sampleId
      * @param idSource
      */
-    public Sample(String sampleId, String idSource) {
+    public SampleAlias(String sampleId, String idSource) {
         this.sampleId = sampleId;
         this.idSource = idSource;
     }

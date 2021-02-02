@@ -23,10 +23,10 @@ public class PatientMetadata implements Serializable {
     @Convert(UuidStringConverter.class)
     private UUID uuid;
     private String investigatorPatientId;
-    @Relationship(type = "PX_TO_SP", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
     private List<SampleManifestEntity> sampleManifestList;
-    @Relationship(type = "PX_TO_PX", direction = Relationship.INCOMING)
-    private List<Patient>  patientList;
+    @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
+    private List<PatientAlias>  patientAliases;
 
     public PatientMetadata() {}
 
@@ -54,23 +54,23 @@ public class PatientMetadata implements Serializable {
         this.sampleManifestList = sampleManifestList;
     }
 
-    public List<Patient> getPatientList() {
-        return patientList;
+    public List<PatientAlias> getPatientAliases() {
+        return patientAliases;
     }
 
-    public void setPatientList(List<Patient> linkedPatientList) {
-        this.patientList = linkedPatientList;
+    public void setPatientAliases(List<PatientAlias> patientAliases) {
+        this.patientAliases = patientAliases;
     }
 
     /**
      * Add patient to array list.
      * @param patient
      */
-    public void addPatient(Patient patient) {
-        if (patientList == null) {
-            patientList = new ArrayList<>();
+    public void addPatientAlias(PatientAlias patientAlias) {
+        if (patientAliases == null) {
+            patientAliases = new ArrayList<>();
         }
-        patientList.add(patient);
+        patientAliases.add(patientAlias);
     }
 
     /**
