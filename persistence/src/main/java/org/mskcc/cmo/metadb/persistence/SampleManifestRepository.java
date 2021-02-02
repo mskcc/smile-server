@@ -2,7 +2,6 @@ package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
 import java.util.UUID;
-import org.mskcc.cmo.metadb.model.NormalSampleManifestEntity;
 import org.mskcc.cmo.metadb.model.Sample;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.model.SampleManifestJsonEntity;
@@ -46,9 +45,10 @@ public interface SampleManifestRepository extends Neo4jRepository<SampleManifest
 
     @Query("MATCH (s: cmo_metadb_sample_metadata{uuid: $sampleManifestEntity.uuid})"
             + "MATCH (s)<-[:PX_TO_SP]-(p:cmo_metadb_patient_metadata)"
-            + "MATCH (n)<-[:PX_TO_NORMAL]-(p) "
+            + "MATCH (n)<-[:PX_TO_SP]-(p) "
+            + "WHERE n.tumorOrNormal = 'Normal'"
             + "RETURN n")
-    List<NormalSampleManifestEntity> findMatchedNormals(
+    List<SampleManifestEntity> findSamplesWithSamePatient(
             @Param("sampleManifestEntity") SampleManifestEntity sampleManifestEntity);
 
     @Query("MATCH (s: cmo_metadb_sample_metadata{uuid: $sampleManifestEntity.uuid}) "

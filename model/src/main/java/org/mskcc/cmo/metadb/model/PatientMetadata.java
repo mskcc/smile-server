@@ -25,8 +25,6 @@ public class PatientMetadata implements Serializable {
     private String investigatorPatientId;
     @Relationship(type = "PX_TO_SP", direction = Relationship.OUTGOING)
     private List<SampleManifestEntity> sampleManifestList;
-    @Relationship(type = "PX_TO_NORMAL", direction = Relationship.OUTGOING)
-    private List<NormalSampleManifestEntity> normalSampleManifestList;
     @Relationship(type = "PX_TO_PX", direction = Relationship.INCOMING)
     private List<Patient>  patientList;
 
@@ -56,14 +54,6 @@ public class PatientMetadata implements Serializable {
         this.sampleManifestList = sampleManifestList;
     }
 
-    public List<NormalSampleManifestEntity> getNormalSampleManifestList() {
-        return normalSampleManifestList;
-    }
-
-    public void setNormalSampleManifestList(List<NormalSampleManifestEntity> normalSampleManifestList) {
-        this.normalSampleManifestList = normalSampleManifestList;
-    }
-
     public List<Patient> getPatientList() {
         return patientList;
     }
@@ -82,18 +72,7 @@ public class PatientMetadata implements Serializable {
         }
         patientList.add(patient);
     }
-    
-    /**
-     * Add normal sample to array list.
-     * @param normalSampleManifestEntity
-     */
-    public void addNormalSample(NormalSampleManifestEntity normalSampleManifestEntity) {
-        if (normalSampleManifestList == null) {
-            normalSampleManifestList = new ArrayList<>();
-        }
-        normalSampleManifestList.add(normalSampleManifestEntity);
-    }
-    
+
     /**
      * Add sample to array list.
      * @param sampleManifest
