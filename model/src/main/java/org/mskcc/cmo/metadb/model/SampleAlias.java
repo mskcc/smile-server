@@ -19,7 +19,7 @@ public class SampleAlias implements Serializable {
     private String sampleId;
     private String idSource;
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
-    private SampleManifestEntity sampleMetadata;
+    private MetaDbSample sampleMetadata;
 
     public SampleAlias() {}
 
@@ -49,11 +49,11 @@ public class SampleAlias implements Serializable {
         this.idSource = idSource;
     }
 
-    public SampleManifestEntity getSampleMetadata() {
+    public MetaDbSample getSampleMetadata() {
         return sampleMetadata;
     }
 
-    public void setSampleMetadata(SampleManifestEntity sampleMetadata) {
+    public void setSampleMetadata(MetaDbSample sampleMetadata) {
         this.sampleMetadata = sampleMetadata;
     }
 }

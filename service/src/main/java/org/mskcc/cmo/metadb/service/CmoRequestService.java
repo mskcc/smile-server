@@ -1,6 +1,6 @@
 package org.mskcc.cmo.metadb.service;
 
-import org.mskcc.cmo.metadb.model.CmoRequestEntity;
+import org.mskcc.cmo.metadb.model.MetaDbRequest;
 
 /**
  *
@@ -8,8 +8,8 @@ import org.mskcc.cmo.metadb.model.CmoRequestEntity;
  */
 public interface CmoRequestService {
 
-    void saveRequest(CmoRequestEntity request) throws Exception;
+    void saveRequest(MetaDbRequest request) throws Exception;
 
-    CmoRequestEntity getCmoRequest(String requestId);
+    MetaDbRequest getCmoRequest(String requestId);
 
 }

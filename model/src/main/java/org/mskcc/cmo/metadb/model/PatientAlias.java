@@ -20,7 +20,7 @@ public class PatientAlias implements Serializable {
     private String patientId;
     private String idSource;
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
-    private PatientMetadata patientMetadata;
+    private MetaDbPatient metaDbPatient;
 
     public PatientAlias() {}
 
@@ -45,12 +45,12 @@ public class PatientAlias implements Serializable {
         this.idSource = idSource;
     }
 
-    public PatientMetadata getPatientMetadata() {
-        return patientMetadata;
+    public MetaDbPatient getPatientMetadata() {
+        return metaDbPatient;
     }
 
-    public void setPatientMetadata(PatientMetadata patientMetadata) {
-        this.patientMetadata = patientMetadata;
+    public void setPatientMetadata(MetaDbPatient metaDbPatient) {
+        this.metaDbPatient = metaDbPatient;
     }
 
 }

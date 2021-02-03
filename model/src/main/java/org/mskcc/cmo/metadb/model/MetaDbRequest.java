@@ -13,18 +13,18 @@ import org.neo4j.ogm.annotation.Relationship;
  * @author ochoaa
  */
 @NodeEntity
-public class CmoRequestEntity extends IgoRequest {
+public class MetaDbRequest extends IgoRequest {
     @Id @GeneratedValue
     private Long id;
     @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
-    private List<SampleManifestEntity> sampleManifestList;
+    private List<MetaDbSample> sampleManifestList;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
-    private CmoProjectEntity projectEntity;
+    private MetaDbProject projectEntity;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
     protected String projectId;
     private String requestJson;
 
-    public CmoRequestEntity() {}
+    public MetaDbRequest() {}
 
     /**
      * CmoRequestEntity constructor.
@@ -32,11 +32,11 @@ public class CmoRequestEntity extends IgoRequest {
      * @param sampleManifestList
      * @param requestJson
      */
-    public CmoRequestEntity(String requestId, List<SampleManifestEntity> sampleManifestList,
-            CmoProjectEntity projectEntity, String requestJson) {
+    public MetaDbRequest(String requestId, List<MetaDbSample> sampleManifestList,
+            MetaDbProject projectEntity, String requestJson) {
         super(requestId);
         this.sampleManifestList = sampleManifestList;
-        this.projectEntity = new CmoProjectEntity(requestId.split("_")[0]);
+        this.projectEntity = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
 
@@ -61,13 +61,13 @@ public class CmoRequestEntity extends IgoRequest {
      * @param projectEntity
      * @param requestJson
      */
-    public CmoRequestEntity(String requestId, String recipe, String projectManagerName,
+    public MetaDbRequest(String requestId, String recipe, String projectManagerName,
             String piEmail, String labHeadName, String labHeadEmail,
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
-            List<SampleManifestEntity> sampleManifestList,
-            CmoProjectEntity projectEntity, String requestJson) {
+            List<MetaDbSample> sampleManifestList,
+            MetaDbProject projectEntity, String requestJson) {
         super(requestId,
                 recipe,
                 projectManagerName,
@@ -84,7 +84,7 @@ public class CmoRequestEntity extends IgoRequest {
                 strand,
                 libraryType);
         this.sampleManifestList = sampleManifestList;
-        this.projectEntity = new CmoProjectEntity(requestId.split("_")[0]);
+        this.projectEntity = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
 
@@ -96,19 +96,19 @@ public class CmoRequestEntity extends IgoRequest {
         this.id = id;
     }
 
-    public List<SampleManifestEntity> getSampleManifestList() {
+    public List<MetaDbSample> getSampleManifestList() {
         return sampleManifestList;
     }
 
-    public void setSampleManifestList(List<SampleManifestEntity> sampleManifestList) {
+    public void setSampleManifestList(List<MetaDbSample> sampleManifestList) {
         this.sampleManifestList = sampleManifestList;
     }
 
-    public CmoProjectEntity getProjectEntity() {
+    public MetaDbProject getProjectEntity() {
         return projectEntity;
     }
 
-    public void setProjectEntity(CmoProjectEntity projectEntity) {
+    public void setProjectEntity(MetaDbProject projectEntity) {
         this.projectEntity = projectEntity;
     }
 
@@ -130,12 +130,12 @@ public class CmoRequestEntity extends IgoRequest {
 
     /**
      *
-     * @param sampleManifestEntity
+     * @param metaDbSample
      */
-    public void addSampleManifest(SampleManifestEntity sampleManifestEntity) {
+    public void addSampleManifest(MetaDbSample metaDbSample) {
         if (sampleManifestList == null) {
             sampleManifestList = new ArrayList<>();
         }
-        sampleManifestList.add(sampleManifestEntity);
+        sampleManifestList.add(metaDbSample);
     }
 }

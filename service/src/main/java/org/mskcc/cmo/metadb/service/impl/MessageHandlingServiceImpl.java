@@ -10,7 +10,7 @@ import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
-import org.mskcc.cmo.metadb.model.CmoRequestEntity;
+import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     private static volatile boolean shutdownInitiated;
 
     private static final ExecutorService exec = Executors.newCachedThreadPool();
-    private static final BlockingQueue<CmoRequestEntity> newRequestQueue =
-        new LinkedBlockingQueue<CmoRequestEntity>();
+    private static final BlockingQueue<MetaDbRequest> newRequestQueue =
+        new LinkedBlockingQueue<MetaDbRequest>();
     private static CountDownLatch newRequestHandlerShutdownLatch;
 
     private class NewCmoRequestHandler implements Runnable {
@@ -51,7 +51,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             phaser.arrive();
             while (true) {
                 try {
-                    CmoRequestEntity request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
+                    MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
                         // validate
                         // id gen
@@ -89,7 +89,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     }
 
     @Override
-    public void newRequestHandler(CmoRequestEntity request) throws Exception {
+    public void newRequestHandler(MetaDbRequest request) throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
@@ -129,7 +129,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     Gson gson = new Gson();
                     messageHandlingService.newRequestHandler(gson.fromJson(message.toString(),
-                            CmoRequestEntity.class));
+                            MetaDbRequest.class));
                 } catch (Exception e) {
                     System.err.printf("Cannot process IGO_NEW_REQUEST:\n%s\n", message);
                     System.err.printf("Exception during processing:\n%s\n", e.getMessage());

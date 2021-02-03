@@ -15,7 +15,7 @@ import org.neo4j.ogm.annotation.StartNode;
  */
 
 @RelationshipEntity(type = "IS_ALIAS")
-public class PatientToPatientEntity implements Serializable {
+public class PatientAliasToMetaDbPatient implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @Property(name = "value")
@@ -23,9 +23,9 @@ public class PatientToPatientEntity implements Serializable {
     @StartNode
     private PatientAlias patientAlias;
     @EndNode
-    private PatientMetadata patientMetadata;
+    private MetaDbPatient metaDbPatient;
 
-    public PatientToPatientEntity() {}
+    public PatientAliasToMetaDbPatient() {}
 
     public Collection<String> getPatientIds() {
         return patientIds;
@@ -43,12 +43,12 @@ public class PatientToPatientEntity implements Serializable {
         this.patientAlias = patientAlias;
     }
 
-    public PatientMetadata getPatientMetadata() {
-        return patientMetadata;
+    public MetaDbPatient getPatientMetadata() {
+        return metaDbPatient;
     }
 
-    public void setPatientMetadata(PatientMetadata patientMetadata) {
-        this.patientMetadata = patientMetadata;
+    public void setPatientMetadata(MetaDbPatient metaDbPatient) {
+        this.metaDbPatient = metaDbPatient;
     }
 
 }

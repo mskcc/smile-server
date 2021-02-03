@@ -13,15 +13,15 @@ import org.neo4j.ogm.annotation.StartNode;
  */
 
 @RelationshipEntity(type = "IS_ALIAS")
-public class SampleToSampleEntity implements Serializable {
+public class SampleAliasToMetaDbSample implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @StartNode
     private SampleAlias sampleAlias;
     @EndNode
-    private SampleManifestEntity sampleManifestEntity;
+    private MetaDbSample metaDbSample;
 
-    public SampleToSampleEntity() {}
+    public SampleAliasToMetaDbSample() {}
 
     public SampleAlias getSampleAlias() {
         return sampleAlias;
@@ -31,12 +31,12 @@ public class SampleToSampleEntity implements Serializable {
         this.sampleAlias = sampleAlias;
     }
 
-    public SampleManifestEntity getSampleManifestEntity() {
-        return sampleManifestEntity;
+    public MetaDbSample getSampleManifestEntity() {
+        return metaDbSample;
     }
 
-    public void setSampleManifestEntity(SampleManifestEntity sampleManifestEntity) {
-        this.sampleManifestEntity = sampleManifestEntity;
+    public void setSampleManifestEntity(MetaDbSample metaDbSample) {
+        this.metaDbSample = metaDbSample;
     }
 
 }
