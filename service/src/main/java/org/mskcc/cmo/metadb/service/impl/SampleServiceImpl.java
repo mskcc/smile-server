@@ -1,13 +1,15 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.google.gson.Gson;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
-import org.mskcc.cmo.metadb.model.PatientMetadata;
-import org.mskcc.cmo.metadb.model.Sample;
-import org.mskcc.cmo.metadb.model.SampleManifestEntity;
-import org.mskcc.cmo.metadb.model.SampleManifestJsonEntity;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbPatient;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
+import org.mskcc.cmo.metadb.model.neo4j.SampleAlias;
+import org.mskcc.cmo.metadb.model.neo4j.SampleManifestEntity;
+import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
 import org.mskcc.cmo.metadb.persistence.PatientMetadataRepository;
-import org.mskcc.cmo.metadb.persistence.SampleManifestRepository;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,67 +18,74 @@ import org.springframework.stereotype.Component;
 public class SampleServiceImpl implements SampleService {
 
     @Autowired
-    private SampleManifestRepository sampleManifestRepository;
+    private MetaDbSampleRepository metaDbSampleRepository;
 
     @Autowired
     private PatientMetadataRepository patientMetadataRepository;
 
     @Override
-    public SampleManifestEntity saveSampleManifest(SampleManifestEntity
-            sampleManifestEntity) throws Exception {
-        SampleManifestEntity updatedSampleManifestEntity = setUpSampleManifest(sampleManifestEntity);
-        SampleManifestEntity foundSample =
-                sampleManifestRepository.findSampleByIgoId(updatedSampleManifestEntity.getSampleIgoId());
+    public MetaDbSample saveSampleManifest(MetaDbSample
+            metaDbSample) throws Exception {
+        MetaDbSample updatedMetaDbSample = setUpMetaDbSample(metaDbSample);
+        MetaDbSample foundSample =
+                metaDbSampleRepository.findSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
         if (foundSample == null) {
-            PatientMetadata patient = patientMetadataRepository.findPatientByInvestigatorId(
-                    updatedSampleManifestEntity.getPatient().getInvestigatorPatientId());
+            MetaDbPatient patient = patientMetadataRepository.findPatientByInvestigatorId(
+                    updatedMetaDbSample.getPatient().getInvestigatorPatientId());
             if (patient != null) {
-                updatedSampleManifestEntity.setPatientUuid(patient.getUuid());
+                updatedMetaDbSample.setPatientUuid(patient.getUuid());
             }
-            sampleManifestRepository.save(updatedSampleManifestEntity);
+            metaDbSampleRepository.save(updatedMetaDbSample);
         } else {
-            updatedSampleManifestEntity.setUuid(foundSample.getUuid());
-            sampleManifestRepository.updateSampleManifestJson(
-                    updatedSampleManifestEntity.getSampleManifestJsonEntity(), foundSample.getUuid());
+            foundSample.addSampleManifest(updatedMetaDbSample.getSampleManifestList().get(0));
+            metaDbSampleRepository.save(foundSample);
         }
-
-        return updatedSampleManifestEntity;
+        return updatedMetaDbSample;
     }
 
     @Override
-    public SampleManifestEntity setUpSampleManifest(SampleManifestEntity
-            sampleManifestEntity) throws Exception {
-        PatientMetadata patient = new PatientMetadata();
-        patient.setInvestigatorPatientId(sampleManifestEntity.getCmoPatientId());
-        sampleManifestEntity.setPatient(patient);
+    public MetaDbSample setUpMetaDbSample(MetaDbSample
+            metaDbSample) throws Exception {
+        metaDbSample = setUpSampleManifestEntity(metaDbSample);
+        SampleManifestEntity sampleManifestEntity = metaDbSample.getSampleManifestList().get(0);
+        metaDbSample.setSampleClass(sampleManifestEntity.getTumorOrNormal());
 
-        Sample igoId = new Sample();
+        MetaDbPatient patient = new MetaDbPatient();
+        patient.setInvestigatorPatientId(sampleManifestEntity.getCmoPatientId());
+        metaDbSample.setPatient(patient);
+
+        SampleAlias igoId = new SampleAlias();
         igoId.setIdSource("igoId");
         igoId.setSampleId(sampleManifestEntity.getIgoId());
-        sampleManifestEntity.addSample(igoId);
+        metaDbSample.addSample(igoId);
 
-        Sample investigatorId = new Sample();
+        SampleAlias investigatorId = new SampleAlias();
         investigatorId.setIdSource("investigatorId");
         investigatorId.setSampleId(sampleManifestEntity.getInvestigatorSampleId());
-        sampleManifestEntity.addSample(investigatorId);
+        metaDbSample.addSample(investigatorId);
 
-        SampleManifestJsonEntity sampleJson = new SampleManifestJsonEntity();
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        sampleJson.setCreationDate(String.valueOf(timestamp.getTime()));
-        sampleJson.setSampleManifestJson(sampleManifestEntity.toString());
-        sampleManifestEntity.setSampleManifestJsonEntity(sampleJson);
-
-        return sampleManifestEntity;
+        return metaDbSample;
     }
 
     @Override
-    public List<SampleManifestEntity> findMatchedNormalSample(
-            SampleManifestEntity sampleManifestEntity) throws Exception {
-        return sampleManifestRepository.findSamplesWithSamePatient(sampleManifestEntity);
+    public MetaDbSample setUpSampleManifestEntity(MetaDbSample metaDbSample) throws Exception {
+        for (SampleManifestEntity s: metaDbSample.getSampleManifestList()) {
+            Gson gson = new Gson();
+            s.setSampleManifestJson(gson.toJson(s));
+            Timestamp time = Timestamp.from(Instant.now());
+            s.setCreationTime(String.valueOf(time.getTime()));
+        }
+        return metaDbSample;
     }
 
     @Override
-    public List<String> findPooledNormalSample(SampleManifestEntity sampleManifestEntity) throws Exception {
-        return sampleManifestRepository.findPooledNormals(sampleManifestEntity);
+    public List<MetaDbSample> findMatchedNormalSample(
+            MetaDbSample metaDbSample) throws Exception {
+        return metaDbSampleRepository.findMatchedNormals(metaDbSample);
+    }
+
+    @Override
+    public List<String> findPooledNormalSample(MetaDbSample metaDbSample) throws Exception {
+        return metaDbSampleRepository.findPooledNormals(metaDbSample);
     }
 }

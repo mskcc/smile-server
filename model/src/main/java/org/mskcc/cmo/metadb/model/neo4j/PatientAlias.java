@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.neo4j;
 
 import java.io.Serializable;
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -12,19 +12,19 @@ import org.neo4j.ogm.annotation.Relationship;
  * @author ochoaa
  */
 
-@NodeEntity(label = "patient")
-public class Patient implements Serializable {
+@NodeEntity
+public class PatientAlias implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @Property(name = "value")
     private String patientId;
     private String idSource;
-    @Relationship(type = "PX_TO_PX", direction = Relationship.OUTGOING)
-    private PatientMetadata patientMetadata;
+    @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
+    private MetaDbPatient metaDbPatient;
 
-    public Patient() {}
+    public PatientAlias() {}
 
-    public Patient(String patientId, String idSource) {
+    public PatientAlias(String patientId, String idSource) {
         this.patientId = patientId;
         this.idSource = idSource;
     }
@@ -45,12 +45,12 @@ public class Patient implements Serializable {
         this.idSource = idSource;
     }
 
-    public PatientMetadata getPatientMetadata() {
-        return patientMetadata;
+    public MetaDbPatient getPatientMetadata() {
+        return metaDbPatient;
     }
 
-    public void setPatientMetadata(PatientMetadata patientMetadata) {
-        this.patientMetadata = patientMetadata;
+    public void setPatientMetadata(MetaDbPatient metaDbPatient) {
+        this.metaDbPatient = metaDbPatient;
     }
 
 }
