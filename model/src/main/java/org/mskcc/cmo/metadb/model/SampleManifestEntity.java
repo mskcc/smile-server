@@ -146,7 +146,7 @@ public class SampleManifestEntity extends SampleManifest {
 
     /**
      * Add sample to array.
-     * @param sample
+     * @param sampleAlias
      */
     public void addSample(SampleAlias sampleAlias) {
         if (sampleAliases == null) {

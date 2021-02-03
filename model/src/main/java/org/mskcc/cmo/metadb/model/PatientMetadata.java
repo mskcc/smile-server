@@ -64,7 +64,7 @@ public class PatientMetadata implements Serializable {
 
     /**
      * Add patient to array list.
-     * @param patient
+     * @param patientAlias
      */
     public void addPatientAlias(PatientAlias patientAlias) {
         if (patientAliases == null) {
