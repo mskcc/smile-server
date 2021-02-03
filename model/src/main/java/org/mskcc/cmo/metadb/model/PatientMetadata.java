@@ -17,7 +17,7 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
  * @author ochoaa
  */
 
-@NodeEntity(label = "cmo_metadb_patient_metadata")
+@NodeEntity
 public class PatientMetadata implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)

@@ -7,7 +7,7 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
-@NodeEntity(label = "cmo_metadb_project")
+@NodeEntity
 public class CmoProjectEntity implements Serializable {
     @Id
     private String projectId;

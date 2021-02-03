@@ -12,7 +12,7 @@ import org.neo4j.ogm.annotation.Relationship;
  * @author ochoaa
  */
 
-@NodeEntity(label = "patient_alias")
+@NodeEntity
 public class PatientAlias implements Serializable {
     @Id @GeneratedValue
     private Long id;

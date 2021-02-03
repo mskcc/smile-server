@@ -11,7 +11,7 @@ import org.neo4j.ogm.annotation.Relationship;
  * @author ochoaa
  */
 
-@NodeEntity(label = "sample_alias")
+@NodeEntity
 public class SampleAlias implements Serializable {
     @Id @GeneratedValue
     private Long id;

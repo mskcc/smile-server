@@ -12,7 +12,7 @@ import org.neo4j.ogm.annotation.Relationship;
  *
  * @author ochoaa
  */
-@NodeEntity(label = "cmo_metadb_request")
+@NodeEntity
 public class CmoRequestEntity extends IgoRequest {
     @Id @GeneratedValue
     private Long id;

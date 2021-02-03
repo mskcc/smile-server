@@ -14,17 +14,17 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CmoRequestRepository extends Neo4jRepository<CmoRequestEntity, Long> {
-    @Query("MATCH (r: cmo_metadb_request {requestId: $reqId}) RETURN r;")
+    @Query("MATCH (r: CmoRequestEntity {requestId: $reqId}) RETURN r;")
     CmoRequestEntity findByRequestId(@Param("reqId") String reqId);
     
-    @Query("Match (r: cmo_metadb_request{requestId: $reqId})-[:REQUEST_TO_SP]->"
-            + "(c: cmo_metadb_sample_metadata) "
+    @Query("Match (r: CmoRequestEntity{requestId: $reqId})-[:REQUEST_TO_SP]->"
+            + "(c: SampleManifestEntity) "
             + "RETURN c ;")
     List<SampleManifestEntity> findAllSampleManifests(@Param("reqId") String reqId);
     
-    @Query("MATCH(r:cmo_metadb_request {requestId: $reqId}) "
+    @Query("MATCH(r: CmoRequestEntity{requestId: $reqId}) "
             + "MATCH(r)-[:REQUEST_TO_SP]->(sm) "
-            + "MATCH (sm)<-[:SP_TO_SP]-(s: sample{idSource: 'igoId', value: $igoId}) "
+            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias{idSource: 'igoId', value: $igoId}) "
             + "RETURN sm")
     SampleManifestEntity findSampleManifest(@Param("reqId") String reqId, @Param("igoId") String igoId);
 }

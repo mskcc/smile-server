@@ -17,42 +17,42 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SampleManifestRepository extends Neo4jRepository<SampleManifestEntity, UUID> {
-    @Query("MATCH (s: sample {value: $igoId.sampleId, idSource: 'igoId'}) "
-        + "MATCH (s)-[:SP_TO_SP]->(sm) "
+    @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, idSource: 'igoId'}) "
+        + "MATCH (s)-[:IS_ALIAS]->(sm) "
         + "RETURN sm")
     SampleManifestEntity findSampleByIgoId(@Param("igoId") SampleAlias igoId);
 
-    @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
-            + "MATCH (sm)-[SP_TO_SP]->(s)"
+    @Query("MATCH (sm: SampleManifestEntity{uuid: $uuid})"
+            + "MATCH (sm)-[:IS_ALIAS]->(s)"
             + "WHERE s.idSource = 'igoId' RETURN s;")
     SampleAlias findSampleIgoId(@Param("uuid") UUID uuid);
 
-    @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
-            + "MATCH (sm)-[SP_TO_SP]->(s)"
+    @Query("MATCH (sm: SampleManifestEntity{uuid: $uuid})"
+            + "MATCH (sm)-[:IS_ALIAS]->(s)"
             + "WHERE s.idSource = 'investigatorId' RETURN s;")
     SampleAlias findInvestigatorId(@Param("uuid") UUID uuid);
 
-    @Query("MATCH (sm: cmo_metadb_sample_metadata{uuid: $uuid}) "
-            + "MATCH (json)<-[r:SAMPLE_MANIFEST]-(sm) "
+    @Query("MATCH (sm: SampleManifestEntity{uuid: $uuid}) "
+            + "MATCH (json)<-[HAS_METADATA]-(sm) "
             + "DELETE r "
-            + "CREATE (new_json: sample_manifest_json "
+            + "CREATE (new_json: SampleManifestJsonEntity "
             + "{sampleManifestJson: $sampleManifestJson.sampleManifestJson}) "
-            + "MERGE(sm)-[:SAMPLE_METADATA]->(new_json) "
-            + "MERGE(new_json)-[:SAMPLE_METADATA]->(json)")
+            + "MERGE(sm)-[:HAS_METADATA]->(new_json) "
+            + "MERGE(new_json)-[:HAS_METADATA]->(json)")
     SampleManifestEntity updateSampleManifestJson(
             @Param("sampleManifestJson")SampleManifestJsonEntity sampleManifestJson,
             @Param("uuid") UUID uuid);
 
-    @Query("MATCH (s: cmo_metadb_sample_metadata{uuid: $sampleManifestEntity.uuid})"
-            + "MATCH (s)<-[:PX_TO_SP]-(p:cmo_metadb_patient_metadata)"
-            + "MATCH (n)<-[:PX_TO_SP]-(p) "
+    @Query("MATCH (s: SampleManifestEntity{uuid: $sampleManifestEntity.uuid})"
+            + "MATCH (s)<-[:HAS_SAMPLE]-(p: PatientMetadata)"
+            + "MATCH (n)<-[:HAS_SAMPLE]-(p) "
             + "WHERE n.tumorOrNormal = 'Normal'"
             + "RETURN n")
     List<SampleManifestEntity> findSamplesWithSamePatient(
             @Param("sampleManifestEntity") SampleManifestEntity sampleManifestEntity);
 
-    @Query("MATCH (s: cmo_metadb_sample_metadata{uuid: $sampleManifestEntity.uuid}) "
-            + "MATCH (s)<-[:REQUEST_TO_SP]-(r:cmo_metadb_request) "
+    @Query("MATCH (s: SampleManifestEntity{uuid: $sampleManifestEntity.uuid}) "
+            + "MATCH (s)<-[:REQUEST_TO_SP]-(r: CmoRequestEntity) "
             + "RETURN r.pooledNormals")
     List<String> findPooledNormals(@Param("sampleManifestEntity") SampleManifestEntity sampleManifestEntity);
 }

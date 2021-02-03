@@ -5,7 +5,7 @@ import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 
-@NodeEntity(label = "cmo_metadb_sample_manifest_json")
+@NodeEntity
 public class SampleManifestJsonEntity implements Serializable {
     @Id @GeneratedValue
     private Long id;

@@ -14,7 +14,7 @@ import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.id.UuidStrategy;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
-@NodeEntity(label = "cmo_metadb_sample_metadata")
+@NodeEntity
 public class SampleManifestEntity extends SampleManifest {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
