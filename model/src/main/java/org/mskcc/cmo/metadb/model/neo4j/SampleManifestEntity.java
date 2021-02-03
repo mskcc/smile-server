@@ -12,13 +12,11 @@ import org.neo4j.ogm.annotation.NodeEntity;
 public class SampleManifestEntity extends SampleManifest {
     @Id @GeneratedValue
     private Long id;
-    private String sampleManifestJson;
     private String creationTime;
 
     public SampleManifestEntity() {}
 
-    public SampleManifestEntity(String sampleManifestJson, String creationTime) {
-        this.sampleManifestJson = sampleManifestJson;
+    public SampleManifestEntity(String creationTime) {
         this.creationTime = creationTime;
     }
 
@@ -83,7 +81,6 @@ public class SampleManifestEntity extends SampleManifest {
      * @param baitSet
      * @param qcReports
      * @param libraries
-     * @param sampleManifestJson
      * @param creationTime
      */
     public SampleManifestEntity(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
@@ -94,7 +91,7 @@ public class SampleManifestEntity extends SampleManifest {
             String mrn, String cmoSampleId, String sampleType, String tumorType, String parentTumorType,
             String tissueSource, String recipe, String baitset, String fastqPath,
             String principalInvestigator, String ancestorSample, Boolean doNotUse,
-            String sampleStatus, String sampleManifestJson, String creationTime) {
+            String sampleStatus, String creationTime) {
         super(igoId, cmoInfoIgoId, cmoSampleName, sampleName,
                 cmoSampleClass, cmoPatientId, investigatorSampleId, oncotreeCode,
                 tumorOrNormal, tissueLocation, specimenType, sampleOrigin,
@@ -104,7 +101,6 @@ public class SampleManifestEntity extends SampleManifest {
                 tissueSource, recipe, baitset, fastqPath,
                 principalInvestigator, ancestorSample, doNotUse,
                 sampleStatus);
-        this.sampleManifestJson = sampleManifestJson;
         this.creationTime = creationTime;
     }
 
@@ -114,14 +110,6 @@ public class SampleManifestEntity extends SampleManifest {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getSampleManifestJson() {
-        return sampleManifestJson;
-    }
-
-    public void setSampleManifestJson(String sampleManifestJson) {
-        this.sampleManifestJson = sampleManifestJson;
     }
 
     public String getCreationTime() {

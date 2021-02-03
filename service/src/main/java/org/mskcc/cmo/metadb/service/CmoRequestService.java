@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.service;
 
+import java.util.Map;
 import org.mskcc.cmo.metadb.model.neo4j.MetaDbRequest;
 
 /**
@@ -10,6 +11,6 @@ public interface CmoRequestService {
 
     void saveRequest(MetaDbRequest request) throws Exception;
 
-    MetaDbRequest getMetaDbRequest(String requestId);
+    Map<String, Object> getMetaDbRequest(String requestId) throws Exception;
 
 }

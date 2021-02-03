@@ -1,10 +1,13 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.mskcc.cmo.metadb.model.neo4j.MetaDbProject;
 import org.mskcc.cmo.metadb.model.neo4j.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
+import org.mskcc.cmo.metadb.model.neo4j.SampleManifestEntity;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
@@ -31,13 +34,12 @@ public class CmoRequestServiceImpl implements CmoRequestService {
         project.setprojectId(request.getProjectId());
         request.setMetaDbProject(project);
 
-        MetaDbRequest savedRequest = getMetaDbRequest(request.getRequestId());
+        MetaDbRequest savedRequest = metaDbRequestRepository.findByRequestId(request.getRequestId());
         if (savedRequest == null) {
             if (request.getMetaDbSampleList() != null) {
                 List<MetaDbSample> updatedSamples = new ArrayList<>();
                 for (MetaDbSample s: request.getMetaDbSampleList()) {
                     updatedSamples.add(sampleService.saveSampleManifest(s));
-
                 }
                 request.setMetaDbSampleList(updatedSamples);
             }
@@ -55,7 +57,15 @@ public class CmoRequestServiceImpl implements CmoRequestService {
     }
 
     @Override
-    public MetaDbRequest getMetaDbRequest(String requestId) {
-        return metaDbRequestRepository.findByRequestId(requestId);
+    public Map<String, Object> getMetaDbRequest(String requestId) throws Exception {
+        MetaDbRequest metaDbRequest = metaDbRequestRepository.findByRequestId(requestId);
+        List<SampleManifestEntity> samples = new ArrayList<>();
+        for (MetaDbSample metaDbSample: metaDbRequestRepository.findAllSampleManifests(requestId)) {
+            samples.addAll(sampleService.getMetaDbSample(metaDbSample.getUuid()).getSampleManifestList());
+        }
+        Gson gson = new Gson();
+        Map<String, Object> metaDbRequestMap = gson.fromJson(gson.toJson(metaDbRequest), Map.class);
+        metaDbRequestMap.put("sampleManifestList", samples);
+        return metaDbRequestMap;
     }
 }
