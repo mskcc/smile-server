@@ -3,7 +3,7 @@ package org.mskcc.cmo.metadb.service.impl;
 import java.sql.Timestamp;
 import java.util.List;
 import org.mskcc.cmo.metadb.model.PatientMetadata;
-import org.mskcc.cmo.metadb.model.Sample;
+import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.model.SampleManifestJsonEntity;
 import org.mskcc.cmo.metadb.persistence.PatientMetadataRepository;
@@ -50,12 +50,12 @@ public class SampleServiceImpl implements SampleService {
         patient.setInvestigatorPatientId(sampleManifestEntity.getCmoPatientId());
         sampleManifestEntity.setPatient(patient);
 
-        Sample igoId = new Sample();
+        SampleAlias igoId = new SampleAlias();
         igoId.setIdSource("igoId");
         igoId.setSampleId(sampleManifestEntity.getIgoId());
         sampleManifestEntity.addSample(igoId);
 
-        Sample investigatorId = new Sample();
+        SampleAlias investigatorId = new SampleAlias();
         investigatorId.setIdSource("investigatorId");
         investigatorId.setSampleId(sampleManifestEntity.getInvestigatorSampleId());
         sampleManifestEntity.addSample(investigatorId);

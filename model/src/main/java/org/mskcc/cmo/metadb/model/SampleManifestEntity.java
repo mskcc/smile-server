@@ -19,11 +19,11 @@ public class SampleManifestEntity extends SampleManifest {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID uuid;
-    @Relationship(type = "SP_TO_SP", direction = Relationship.INCOMING)
-    private List<Sample> sampleList;
-    @Relationship(type = "PX_TO_SP", direction = Relationship.INCOMING)
+    @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
+    private List<SampleAlias> sampleAliases;
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.INCOMING)
     private PatientMetadata patient;
-    @Relationship(type = "SAMPLE_MANIFEST", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     private SampleManifestJsonEntity sampleManifestJsonEntity;
 
     public SampleManifestEntity() {
@@ -101,7 +101,7 @@ public class SampleManifestEntity extends SampleManifest {
             String sampleOrigin, String preservation, String collectionYear, String sex,
             String species, String tubeId, String cfDNA2dBarcode, String baitSet,
             List<QcReport> qcReports, List<Library> libraries,
-            List<Sample> sampleList, PatientMetadata patient) {
+            List<SampleAlias> sampleList, PatientMetadata patient) {
         super(igoId,
                 cmoInfoIgoId,
                 cmoSampleName,
@@ -124,7 +124,7 @@ public class SampleManifestEntity extends SampleManifest {
                 qcReports,
                 libraries);
         this.uuid = uuid;
-        this.sampleList = sampleList;
+        this.sampleAliases = sampleList;
         this.patient = patient;
     }
 
@@ -136,12 +136,23 @@ public class SampleManifestEntity extends SampleManifest {
         this.uuid = uuid;
     }
 
-    public void setSampleList(List<Sample> sampleList) {
-        this.sampleList = sampleList;
+    public void setSampleAliases(List<SampleAlias> sampleAliases) {
+        this.sampleAliases = sampleAliases;
     }
 
-    public void getSampleList(List<Sample> s) {
-        this.sampleList = s;
+    public void getSampleAliases(List<SampleAlias> sampleAlias) {
+        this.sampleAliases = sampleAlias;
+    }
+
+    /**
+     * Add sample to array.
+     * @param sampleAlias
+     */
+    public void addSample(SampleAlias sampleAlias) {
+        if (sampleAliases == null) {
+            sampleAliases = new ArrayList<>();
+        }
+        sampleAliases.add(sampleAlias);
     }
 
     public PatientMetadata getPatient() {
@@ -168,11 +179,11 @@ public class SampleManifestEntity extends SampleManifest {
      *
      * @return SampleIgoId
      */
-    public Sample getSampleIgoId() {
-        if (sampleList == null) {
-            this.sampleList = new ArrayList<>();
+    public SampleAlias getSampleIgoId() {
+        if (sampleAliases == null) {
+            this.sampleAliases = new ArrayList<>();
         }
-        for (Sample s: sampleList) {
+        for (SampleAlias s: sampleAliases) {
             if (s.getIdSource() == "igoId") {
                 return s;
             }
@@ -180,14 +191,4 @@ public class SampleManifestEntity extends SampleManifest {
         return null;
     }
 
-    /**
-     * Add sample to array.
-     * @param sample
-     */
-    public void addSample(Sample sample) {
-        if (sampleList == null) {
-            sampleList = new ArrayList<>();
-        }
-        sampleList.add(sample);
-    }
 }

@@ -12,23 +12,23 @@ import org.neo4j.ogm.annotation.StartNode;
  * @author ochoaa
  */
 
-@RelationshipEntity(type = "SP_TO_SP")
+@RelationshipEntity(type = "IS_ALIAS")
 public class SampleToSampleEntity implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @StartNode
-    private Sample sample;
+    private SampleAlias sampleAlias;
     @EndNode
     private SampleManifestEntity sampleManifestEntity;
 
     public SampleToSampleEntity() {}
 
-    public Sample getSample() {
-        return sample;
+    public SampleAlias getSampleAlias() {
+        return sampleAlias;
     }
 
-    public void setSample(Sample sample) {
-        this.sample = sample;
+    public void setSampleAlias(SampleAlias sampleAlias) {
+        this.sampleAlias = sampleAlias;
     }
 
     public SampleManifestEntity getSampleManifestEntity() {

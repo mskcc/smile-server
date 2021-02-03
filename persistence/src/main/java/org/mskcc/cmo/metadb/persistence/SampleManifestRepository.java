@@ -2,7 +2,7 @@ package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
 import java.util.UUID;
-import org.mskcc.cmo.metadb.model.Sample;
+import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.model.SampleManifestJsonEntity;
 import org.springframework.data.neo4j.annotation.Query;
@@ -20,17 +20,17 @@ public interface SampleManifestRepository extends Neo4jRepository<SampleManifest
     @Query("MATCH (s: sample {value: $igoId.sampleId, idSource: 'igoId'}) "
         + "MATCH (s)-[:SP_TO_SP]->(sm) "
         + "RETURN sm")
-    SampleManifestEntity findSampleByIgoId(@Param("igoId") Sample igoId);
+    SampleManifestEntity findSampleByIgoId(@Param("igoId") SampleAlias igoId);
 
     @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
             + "MATCH (sm)-[SP_TO_SP]->(s)"
             + "WHERE s.idSource = 'igoId' RETURN s;")
-    Sample findSampleIgoId(@Param("uuid") UUID uuid);
+    SampleAlias findSampleIgoId(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: cmo_metadb_sample_metadata {uuid: $uuid})"
             + "MATCH (sm)-[SP_TO_SP]->(s)"
             + "WHERE s.idSource = 'investigatorId' RETURN s;")
-    Sample findInvestigatorId(@Param("uuid") UUID uuid);
+    SampleAlias findInvestigatorId(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: cmo_metadb_sample_metadata{uuid: $uuid}) "
             + "MATCH (json)<-[r:SAMPLE_MANIFEST]-(sm) "
