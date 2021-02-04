@@ -20,6 +20,7 @@ public class MetaDbRequest extends IgoRequest {
     private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
     private MetaDbProject metaDbProject;
+    private String idSource;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
     protected String projectId;
     private String requestJson;
@@ -112,7 +113,15 @@ public class MetaDbRequest extends IgoRequest {
     public void setMetaDbProject(MetaDbProject metaDbProject) {
         this.metaDbProject = metaDbProject;
     }
+    
+    public String getIdSource() {
+        return idSource;
+    }
 
+    public void setIdSource(String idSource) {
+        this.idSource = idSource;
+    }
+    
     public String getProjectId() {
         return projectId;
     }
