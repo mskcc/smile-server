@@ -1,4 +1,4 @@
- package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model;
 
 import java.util.ArrayList;
 import java.util.List;
