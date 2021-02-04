@@ -17,14 +17,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UUID> {
-    @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, idSource: 'igoId'}) "
+    @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, toLower(idSource) = 'igoid'}) "
         + "MATCH (s)-[:IS_ALIAS]->(sm) "
         + "RETURN sm")
     MetaDbSample findSampleByIgoId(@Param("igoId") SampleAlias igoId);
 
     @Query("MATCH (sm: MetaDbSample {uuid: $uuid})"
             + "MATCH (sm)-[:IS_ALIAS]->(s)"
-            + "WHERE s.idSource = 'igoId' RETURN s;")
+            + "WHERE toLower(s.idSource) = 'igoid' RETURN s;")
     SampleAlias findSampleIgoId(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: MetaDbSample {uuid: $uuid})"
@@ -35,7 +35,7 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     @Query("MATCH (s: MetaDbSample {uuid: $sampleManifestEntity.uuid})"
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: MetaDbPatient)"
             + "MATCH (n)<-[:HAS_SAMPLE]-(p) "
-            + "WHERE n.tumorOrNormal = 'Normal'"
+            + "WHERE toLower(n.sampleClass) = 'normal'"
             + "RETURN n")
     List<MetaDbSample> findMatchedNormals(
             @Param("sampleManifestEntity") MetaDbSample metaDbSample);
