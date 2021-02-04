@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface SampleManifestRepository extends Neo4jRepository<MetaDbSample, UUID> {
+public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UUID> {
     @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, idSource: 'igoId'}) "
         + "MATCH (s)-[:IS_ALIAS]->(sm) "
         + "RETURN sm")
@@ -32,23 +32,12 @@ public interface SampleManifestRepository extends Neo4jRepository<MetaDbSample, 
             + "WHERE s.idSource = 'investigatorId' RETURN s;")
     SampleAlias findInvestigatorId(@Param("uuid") UUID uuid);
 
-    @Query("MATCH (sm: MetaDbSample{uuid: $uuid}) "
-            + "MATCH (json)<-[HAS_METADATA]-(sm) "
-            + "DELETE r "
-            + "CREATE (new_json: SampleManifestEntity "
-            + "{sampleManifestJson: $sampleManifestJson.sampleManifestJson}) "
-            + "MERGE(sm)-[:HAS_METADATA]->(new_json) "
-            + "MERGE(new_json)-[:HAS_METADATA]->(json)")
-    MetaDbSample updateSampleManifestJson(
-            @Param("sampleManifestJson")SampleManifestEntity sampleManifestJson,
-            @Param("uuid") UUID uuid);
-
     @Query("MATCH (s: MetaDbSample{uuid: $sampleManifestEntity.uuid})"
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: MetaDbPatient)"
             + "MATCH (n)<-[:HAS_SAMPLE]-(p) "
             + "WHERE n.tumorOrNormal = 'Normal'"
             + "RETURN n")
-    List<MetaDbSample> findSamplesWithSamePatient(
+    List<MetaDbSample> findMatchedNormals(
             @Param("sampleManifestEntity") MetaDbSample metaDbSample);
 
     @Query("MATCH (s: MetaDbSample{uuid: $sampleManifestEntity.uuid}) "

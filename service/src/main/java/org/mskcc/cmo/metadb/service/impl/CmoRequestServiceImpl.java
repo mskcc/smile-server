@@ -1,5 +1,7 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
@@ -31,18 +33,21 @@ public class CmoRequestServiceImpl implements CmoRequestService {
 
         MetaDbRequest savedRequest = getCmoRequest(request.getRequestId());
         if (savedRequest == null) {
-            if (request.getSampleManifestList() != null) {
-                for (MetaDbSample s: request.getSampleManifestList()) {
-                    sampleService.saveSampleManifest(s);
+            if (request.getMetaDbSampleList() != null) {
+                List<MetaDbSample> updatedSamples = new ArrayList<>();
+                for (MetaDbSample s: request.getMetaDbSampleList()) {
+                    updatedSamples.add(sampleService.saveSampleManifest(s));
+                    
                 }
+                request.setMetaDbSampleList(updatedSamples);
             }
             cmoRequestRepository.save(request);
         } else {
-            for (MetaDbSample s: request.getSampleManifestList()) {
+            for (MetaDbSample s: request.getMetaDbSampleList()) {
                 if (s.getSampleIgoId() != null
                         && cmoRequestRepository.findSampleManifest(request.getRequestId(),
                         s.getSampleIgoId().getSampleId()) == null) {
-                    savedRequest.addSampleManifest(s);
+                    savedRequest.addMetaDbSampleList(s);
                     cmoRequestRepository.save(savedRequest);
                 }
             }

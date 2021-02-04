@@ -20,7 +20,7 @@ public class MetaDbPatientToMetaDbSample implements Serializable {
     @EndNode
     private MetaDbSample sampleMetadata;
 
-    public MetaDbPatientToMetaDbSample() {}
+    public MetaDbPatientToMetaDbSample() {}
 
     public MetaDbPatient getPatient() {
         return patient;

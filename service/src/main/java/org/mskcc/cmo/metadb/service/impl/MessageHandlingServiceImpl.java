@@ -1,6 +1,9 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -11,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,13 +133,30 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             public void onMessage(Object message) {
                 try {
                     Gson gson = new Gson();
-                    messageHandlingService.newRequestHandler(gson.fromJson(message.toString(),
-                            MetaDbRequest.class));
+                    MetaDbRequest metaDbRequest = gson.fromJson(message.toString(),
+                            MetaDbRequest.class);
+                    metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(message));
+                    messageHandlingService.newRequestHandler(metaDbRequest);
                 } catch (Exception e) {
                     System.err.printf("Cannot process IGO_NEW_REQUEST:\n%s\n", message);
                     System.err.printf("Exception during processing:\n%s\n", e.getMessage());
+                    e.printStackTrace();
                 }
             }
         });
+    }
+    
+    private List<MetaDbSample> extractMetaDbSamplesFromIgoResponse(Object message) {
+        Gson gson = new Gson();
+        Map<String, Object> map = gson.fromJson(message.toString(), Map.class);
+        SampleManifestEntity[] sampleList = gson.fromJson(gson.toJson(
+                map.get("sampleManifestList")), SampleManifestEntity[].class);
+        List<MetaDbSample> metaDbSampleList = new ArrayList<>();
+        for (SampleManifestEntity sample: sampleList) {
+            MetaDbSample metaDbSample = new MetaDbSample();
+            metaDbSample.addSampleManifest(sample);
+            metaDbSampleList.add(metaDbSample);
+        }
+        return metaDbSampleList;
     }
 }

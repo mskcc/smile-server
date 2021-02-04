@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.model;
+ package org.mskcc.cmo.metadb.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class MetaDbRequest extends IgoRequest {
     @Id @GeneratedValue
     private Long id;
     @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
-    private List<MetaDbSample> sampleManifestList;
+    private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
     private MetaDbProject projectEntity;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
@@ -27,15 +27,19 @@ public class MetaDbRequest extends IgoRequest {
     public MetaDbRequest() {}
 
     /**
-     * CmoRequestEntity constructor.
+     * CmoRequestEntity constructor
      * @param requestId
+     * @param metaDbSampleList
      * @param sampleManifestList
+     * @param projectEntity
      * @param requestJson
      */
-    public MetaDbRequest(String requestId, List<MetaDbSample> sampleManifestList,
+    public MetaDbRequest(String requestId, List<MetaDbSample> metaDbSampleList,
+            List<SampleManifestEntity> sampleManifestList,
             MetaDbProject projectEntity, String requestJson) {
         super(requestId);
-        this.sampleManifestList = sampleManifestList;
+        //this.sampleManifestList = sampleManifestList;
+        this.metaDbSampleList = metaDbSampleList;
         this.projectEntity = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
@@ -57,7 +61,7 @@ public class MetaDbRequest extends IgoRequest {
      * @param qcAccessEmails
      * @param strand
      * @param libraryType
-     * @param sampleManifestList
+     * @param metaDbSampleList
      * @param projectEntity
      * @param requestJson
      */
@@ -66,7 +70,7 @@ public class MetaDbRequest extends IgoRequest {
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
-            List<MetaDbSample> sampleManifestList,
+            List<MetaDbSample> metaDbSampleList,
             MetaDbProject projectEntity, String requestJson) {
         super(requestId,
                 recipe,
@@ -83,7 +87,7 @@ public class MetaDbRequest extends IgoRequest {
                 qcAccessEmails,
                 strand,
                 libraryType);
-        this.sampleManifestList = sampleManifestList;
+        this.metaDbSampleList = metaDbSampleList;
         this.projectEntity = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
@@ -95,13 +99,13 @@ public class MetaDbRequest extends IgoRequest {
     public void setId(Long id) {
         this.id = id;
     }
-
-    public List<MetaDbSample> getSampleManifestList() {
-        return sampleManifestList;
+    
+    public List<MetaDbSample> getMetaDbSampleList() {
+        return metaDbSampleList;
     }
 
-    public void setSampleManifestList(List<MetaDbSample> sampleManifestList) {
-        this.sampleManifestList = sampleManifestList;
+    public void setMetaDbSampleList(List<MetaDbSample> metaDbSampleList) {
+        this.metaDbSampleList = metaDbSampleList;
     }
 
     public MetaDbProject getProjectEntity() {
@@ -132,10 +136,10 @@ public class MetaDbRequest extends IgoRequest {
      *
      * @param metaDbSample
      */
-    public void addSampleManifest(MetaDbSample metaDbSample) {
-        if (sampleManifestList == null) {
-            sampleManifestList = new ArrayList<>();
+    public void addMetaDbSampleList(MetaDbSample metaDbSample) {
+        if (metaDbSampleList == null) {
+            metaDbSampleList = new ArrayList<>();
         }
-        sampleManifestList.add(metaDbSample);
+        metaDbSampleList.add(metaDbSample);
     }
 }
