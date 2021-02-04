@@ -35,7 +35,7 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     @Query("MATCH (s: MetaDbSample {uuid: $sampleManifestEntity.uuid})"
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: MetaDbPatient)"
             + "MATCH (n)<-[:HAS_SAMPLE]-(p) "
-            + "WHERE n.tumorOrNormal = 'Normal'"
+            + "WHERE n.sampleClass = 'Normal'"
             + "RETURN n")
     List<MetaDbSample> findMatchedNormals(
             @Param("sampleManifestEntity") MetaDbSample metaDbSample);

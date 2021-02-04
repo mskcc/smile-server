@@ -40,7 +40,6 @@ public class SampleServiceImpl implements SampleService {
             foundSample.addSampleManifest(updatedMetaDbSample.getSampleManifestList().get(0));
             metaDbSampleRepository.save(foundSample);
         }
-
         return updatedMetaDbSample;
     }
 
@@ -49,6 +48,8 @@ public class SampleServiceImpl implements SampleService {
             metaDbSample) throws Exception {
         metaDbSample = setUpSampleManifestEntity(metaDbSample);
         SampleManifestEntity sampleManifestEntity = metaDbSample.getSampleManifestList().get(0);
+        metaDbSample.setSampleClass(sampleManifestEntity.getTumorOrNormal());
+        
         MetaDbPatient patient = new MetaDbPatient();
         patient.setInvestigatorPatientId(sampleManifestEntity.getCmoPatientId());
         metaDbSample.setPatient(patient);
@@ -62,7 +63,7 @@ public class SampleServiceImpl implements SampleService {
         investigatorId.setIdSource("investigatorId");
         investigatorId.setSampleId(sampleManifestEntity.getInvestigatorSampleId());
         metaDbSample.addSample(investigatorId);
-
+        
         return metaDbSample;
     }
     
