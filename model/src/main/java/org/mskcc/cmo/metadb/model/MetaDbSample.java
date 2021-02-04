@@ -23,10 +23,9 @@ public class MetaDbSample implements Serializable {
     private MetaDbPatient patient;
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     private List<SampleManifestEntity> sampleManifestList;
+    private String sampleClass;
 
-    public MetaDbSample() {
-        super();
-    }
+    public MetaDbSample() {}
 
     public UUID getUuid() {
         return uuid;
@@ -100,6 +99,14 @@ public class MetaDbSample implements Serializable {
             }
         }
         return null;
+    }
+
+    public String getSampleClass() {
+        return sampleClass;
+    }
+
+    public void setSampleClass(String sampleClass) {
+        this.sampleClass = sampleClass;
     }
 
 }
