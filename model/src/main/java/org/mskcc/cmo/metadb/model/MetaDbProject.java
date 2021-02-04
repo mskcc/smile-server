@@ -7,20 +7,20 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
-@NodeEntity(label = "cmo_metadb_project")
-public class CmoProjectEntity implements Serializable {
+@NodeEntity
+public class MetaDbProject implements Serializable {
     @Id
     private String projectId;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.OUTGOING)
-    private List<CmoRequestEntity> requestList;
+    private List<MetaDbRequest> requestList;
 
-    public CmoProjectEntity() {}
+    public MetaDbProject() {}
 
-    public CmoProjectEntity(String projectId) {
+    public MetaDbProject(String projectId) {
         this.projectId = projectId;
     }
 
-    public CmoProjectEntity(String projectId, List<CmoRequestEntity> requestList) {
+    public MetaDbProject(String projectId, List<MetaDbRequest> requestList) {
         this.projectId = projectId;
         this.requestList = requestList;
     }
@@ -33,22 +33,22 @@ public class CmoProjectEntity implements Serializable {
         this.projectId = projectId;
     }
 
-    public List<CmoRequestEntity> getRequestList() {
+    public List<MetaDbRequest> getRequestList() {
         return requestList;
     }
 
-    public void setRequestList(List<CmoRequestEntity> requestList) {
+    public void setRequestList(List<MetaDbRequest> requestList) {
         this.requestList = requestList;
     }
 
     /**
      *
-     * @param cmoRequestEntity
+     * @param metaDbRequest
      */
-    public void addRequest(CmoRequestEntity cmoRequestEntity) {
+    public void addRequest(MetaDbRequest metaDbRequest) {
         if (requestList == null) {
             requestList = new ArrayList<>();
         }
-        requestList.add(cmoRequestEntity);
+        requestList.add(metaDbRequest);
     }
 }

@@ -1,6 +1,6 @@
 package org.mskcc.cmo.metadb.persistence;
 
-import org.mskcc.cmo.metadb.model.PatientMetadata;
+import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
  *
  * @author ochoaa
  */
-public interface PatientMetadataRepository extends Neo4jRepository<PatientMetadata, Long> {
-    @Query("MATCH (pm: cmo_metadb_patient_metadata) "
+public interface PatientMetadataRepository extends Neo4jRepository<MetaDbPatient, Long> {
+    @Query("MATCH (pm: MetaDbPatient) "
         + "WHERE $investigatorPatientId = pm.investigatorPatientId RETURN pm")
-    PatientMetadata findPatientByInvestigatorId(
+    MetaDbPatient findPatientByInvestigatorId(
             @Param("investigatorPatientId") String investigatorPatientId);
 
 }

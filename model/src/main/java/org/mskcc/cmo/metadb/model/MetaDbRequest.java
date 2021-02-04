@@ -12,31 +12,32 @@ import org.neo4j.ogm.annotation.Relationship;
  *
  * @author ochoaa
  */
-@NodeEntity(label = "cmo_metadb_request")
-public class CmoRequestEntity extends IgoRequest {
+@NodeEntity
+public class MetaDbRequest extends IgoRequest {
     @Id @GeneratedValue
     private Long id;
     @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
-    private List<SampleManifestEntity> sampleManifestList;
+    private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
-    private CmoProjectEntity projectEntity;
+    private MetaDbProject metaDbProject;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
     protected String projectId;
     private String requestJson;
 
-    public CmoRequestEntity() {}
+    public MetaDbRequest() {}
 
     /**
-     * CmoRequestEntity constructor.
+     * CmoRequestEntity constructor
      * @param requestId
-     * @param sampleManifestList
+     * @param metaDbSampleList
+     * @param metaDbProject
      * @param requestJson
      */
-    public CmoRequestEntity(String requestId, List<SampleManifestEntity> sampleManifestList,
-            CmoProjectEntity projectEntity, String requestJson) {
+    public MetaDbRequest(String requestId, List<MetaDbSample> metaDbSampleList,
+            MetaDbProject metaDbProject, String requestJson) {
         super(requestId);
-        this.sampleManifestList = sampleManifestList;
-        this.projectEntity = new CmoProjectEntity(requestId.split("_")[0]);
+        this.metaDbSampleList = metaDbSampleList;
+        this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
 
@@ -57,17 +58,17 @@ public class CmoRequestEntity extends IgoRequest {
      * @param qcAccessEmails
      * @param strand
      * @param libraryType
-     * @param sampleManifestList
-     * @param projectEntity
+     * @param metaDbSampleList
+     * @param metaDbProject
      * @param requestJson
      */
-    public CmoRequestEntity(String requestId, String recipe, String projectManagerName,
+    public MetaDbRequest(String requestId, String recipe, String projectManagerName,
             String piEmail, String labHeadName, String labHeadEmail,
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
-            List<SampleManifestEntity> sampleManifestList,
-            CmoProjectEntity projectEntity, String requestJson) {
+            List<MetaDbSample> metaDbSampleList,
+            MetaDbProject metaDbProject, String requestJson) {
         super(requestId,
                 recipe,
                 projectManagerName,
@@ -83,8 +84,8 @@ public class CmoRequestEntity extends IgoRequest {
                 qcAccessEmails,
                 strand,
                 libraryType);
-        this.sampleManifestList = sampleManifestList;
-        this.projectEntity = new CmoProjectEntity(requestId.split("_")[0]);
+        this.metaDbSampleList = metaDbSampleList;
+        this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
 
@@ -96,20 +97,20 @@ public class CmoRequestEntity extends IgoRequest {
         this.id = id;
     }
 
-    public List<SampleManifestEntity> getSampleManifestList() {
-        return sampleManifestList;
+    public List<MetaDbSample> getMetaDbSampleList() {
+        return metaDbSampleList;
     }
 
-    public void setSampleManifestList(List<SampleManifestEntity> sampleManifestList) {
-        this.sampleManifestList = sampleManifestList;
+    public void setMetaDbSampleList(List<MetaDbSample> metaDbSampleList) {
+        this.metaDbSampleList = metaDbSampleList;
     }
 
-    public CmoProjectEntity getProjectEntity() {
-        return projectEntity;
+    public MetaDbProject getMetaDbProject() {
+        return metaDbProject;
     }
 
-    public void setProjectEntity(CmoProjectEntity projectEntity) {
-        this.projectEntity = projectEntity;
+    public void setMetaDbProject(MetaDbProject metaDbProject) {
+        this.metaDbProject = metaDbProject;
     }
 
     public String getProjectId() {
@@ -130,12 +131,12 @@ public class CmoRequestEntity extends IgoRequest {
 
     /**
      *
-     * @param sampleManifestEntity
+     * @param metaDbSample
      */
-    public void addSampleManifest(SampleManifestEntity sampleManifestEntity) {
-        if (sampleManifestList == null) {
-            sampleManifestList = new ArrayList<>();
+    public void addMetaDbSampleList(MetaDbSample metaDbSample) {
+        if (metaDbSampleList == null) {
+            metaDbSampleList = new ArrayList<>();
         }
-        sampleManifestList.add(sampleManifestEntity);
+        metaDbSampleList.add(metaDbSample);
     }
 }
