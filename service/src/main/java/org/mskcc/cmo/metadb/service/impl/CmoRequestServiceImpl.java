@@ -5,7 +5,7 @@ import java.util.List;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
-import org.mskcc.cmo.metadb.persistence.CmoRequestRepository;
+import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class CmoRequestServiceImpl implements CmoRequestService {
 
     @Autowired
-    private CmoRequestRepository cmoRequestRepository;
+    private MetaDbRequestRepository metaDbRequestRepository;
 
     @Autowired
     private SampleService sampleService;
@@ -29,9 +29,9 @@ public class CmoRequestServiceImpl implements CmoRequestService {
     public void saveRequest(MetaDbRequest request) throws Exception {
         MetaDbProject project = new MetaDbProject();
         project.setprojectId(request.getProjectId());
-        request.setProjectEntity(project);
+        request.setMetaDbProject(project);
 
-        MetaDbRequest savedRequest = getCmoRequest(request.getRequestId());
+        MetaDbRequest savedRequest = getMetaDbRequest(request.getRequestId());
         if (savedRequest == null) {
             if (request.getMetaDbSampleList() != null) {
                 List<MetaDbSample> updatedSamples = new ArrayList<>();
@@ -41,21 +41,21 @@ public class CmoRequestServiceImpl implements CmoRequestService {
                 }
                 request.setMetaDbSampleList(updatedSamples);
             }
-            cmoRequestRepository.save(request);
+            metaDbRequestRepository.save(request);
         } else {
             for (MetaDbSample s: request.getMetaDbSampleList()) {
                 if (s.getSampleIgoId() != null
-                        && cmoRequestRepository.findSampleManifest(request.getRequestId(),
+                        && metaDbRequestRepository.findSampleManifest(request.getRequestId(),
                         s.getSampleIgoId().getSampleId()) == null) {
                     savedRequest.addMetaDbSampleList(s);
-                    cmoRequestRepository.save(savedRequest);
+                    metaDbRequestRepository.save(savedRequest);
                 }
             }
         }
     }
 
     @Override
-    public MetaDbRequest getCmoRequest(String requestId) {
-        return cmoRequestRepository.findByRequestId(requestId);
+    public MetaDbRequest getMetaDbRequest(String requestId) {
+        return metaDbRequestRepository.findByRequestId(requestId);
     }
 }

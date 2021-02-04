@@ -26,19 +26,19 @@ public class MetaDbProjectToMetaDbRequest implements Serializable {
         this.id = id;
     }
     
-    private MetaDbProject getCmoProjectEntity() {
+    private MetaDbProject getMetaDbProject() {
         return metaDbProject;
     }
     
-    private void setCmoProjectEntity(MetaDbProject metaDbProject) {
+    private void setMetaDbProject(MetaDbProject metaDbProject) {
         this.metaDbProject = metaDbProject;
     }
     
-    private MetaDbRequest getCmoRequestEntity() {
+    private MetaDbRequest getMetaDbRequest() {
         return metaDbRequest;
     }
     
-    private void setCmoRequestEntity(MetaDbRequest metaDbRequest) {
+    private void setMetaDbRequest(MetaDbRequest metaDbRequest) {
         this.metaDbRequest = metaDbRequest;
     }
 }

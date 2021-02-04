@@ -16,26 +16,26 @@ public class MetaDbPatientToMetaDbSample implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @StartNode
-    private MetaDbPatient patient;
+    private MetaDbPatient metaDbPatient;
     @EndNode
-    private MetaDbSample sampleMetadata;
+    private MetaDbSample metaDbSample;
 
     public MetaDbPatientToMetaDbSample() {}
 
-    public MetaDbPatient getPatient() {
-        return patient;
+    public MetaDbPatient getMetaDbPatient() {
+        return metaDbPatient;
     }
 
-    public void setPatient(MetaDbPatient patient) {
-        this.patient = patient;
+    public void setMetaDbPatient(MetaDbPatient metaDbPatient) {
+        this.metaDbPatient = metaDbPatient;
     }
 
-    public MetaDbSample getSampleMetadata() {
-        return sampleMetadata;
+    public MetaDbSample getMetaDbSample() {
+        return metaDbSample;
     }
 
-    public void setSampleMetadata(MetaDbSample sampleMetadata) {
-        this.sampleMetadata = sampleMetadata;
+    public void setMetaDbSample(MetaDbSample metaDbSample) {
+        this.metaDbSample = metaDbSample;
     }
 
 }

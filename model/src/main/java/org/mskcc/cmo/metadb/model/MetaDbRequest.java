@@ -19,7 +19,7 @@ public class MetaDbRequest extends IgoRequest {
     @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
     private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
-    private MetaDbProject projectEntity;
+    private MetaDbProject metaDbProject;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
     protected String projectId;
     private String requestJson;
@@ -30,17 +30,14 @@ public class MetaDbRequest extends IgoRequest {
      * CmoRequestEntity constructor
      * @param requestId
      * @param metaDbSampleList
-     * @param sampleManifestList
-     * @param projectEntity
+     * @param metaDbProject
      * @param requestJson
      */
     public MetaDbRequest(String requestId, List<MetaDbSample> metaDbSampleList,
-            List<SampleManifestEntity> sampleManifestList,
-            MetaDbProject projectEntity, String requestJson) {
+            MetaDbProject metaDbProject, String requestJson) {
         super(requestId);
-        //this.sampleManifestList = sampleManifestList;
         this.metaDbSampleList = metaDbSampleList;
-        this.projectEntity = new MetaDbProject(requestId.split("_")[0]);
+        this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
 
@@ -62,7 +59,7 @@ public class MetaDbRequest extends IgoRequest {
      * @param strand
      * @param libraryType
      * @param metaDbSampleList
-     * @param projectEntity
+     * @param metaDbProject
      * @param requestJson
      */
     public MetaDbRequest(String requestId, String recipe, String projectManagerName,
@@ -71,7 +68,7 @@ public class MetaDbRequest extends IgoRequest {
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
             List<MetaDbSample> metaDbSampleList,
-            MetaDbProject projectEntity, String requestJson) {
+            MetaDbProject metaDbProject, String requestJson) {
         super(requestId,
                 recipe,
                 projectManagerName,
@@ -88,7 +85,7 @@ public class MetaDbRequest extends IgoRequest {
                 strand,
                 libraryType);
         this.metaDbSampleList = metaDbSampleList;
-        this.projectEntity = new MetaDbProject(requestId.split("_")[0]);
+        this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
     }
 
@@ -99,7 +96,7 @@ public class MetaDbRequest extends IgoRequest {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public List<MetaDbSample> getMetaDbSampleList() {
         return metaDbSampleList;
     }
@@ -108,12 +105,12 @@ public class MetaDbRequest extends IgoRequest {
         this.metaDbSampleList = metaDbSampleList;
     }
 
-    public MetaDbProject getProjectEntity() {
-        return projectEntity;
+    public MetaDbProject getMetaDbProject() {
+        return metaDbProject;
     }
 
-    public void setProjectEntity(MetaDbProject projectEntity) {
-        this.projectEntity = projectEntity;
+    public void setMetaDbProject(MetaDbProject metaDbProject) {
+        this.metaDbProject = metaDbProject;
     }
 
     public String getProjectId() {

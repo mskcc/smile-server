@@ -22,17 +22,17 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
         + "RETURN sm")
     MetaDbSample findSampleByIgoId(@Param("igoId") SampleAlias igoId);
 
-    @Query("MATCH (sm: MetaDbSample{uuid: $uuid})"
+    @Query("MATCH (sm: MetaDbSample {uuid: $uuid})"
             + "MATCH (sm)-[:IS_ALIAS]->(s)"
             + "WHERE s.idSource = 'igoId' RETURN s;")
     SampleAlias findSampleIgoId(@Param("uuid") UUID uuid);
 
-    @Query("MATCH (sm: MetaDbSample{uuid: $uuid})"
+    @Query("MATCH (sm: MetaDbSample {uuid: $uuid})"
             + "MATCH (sm)-[:IS_ALIAS]->(s)"
             + "WHERE s.idSource = 'investigatorId' RETURN s;")
     SampleAlias findInvestigatorId(@Param("uuid") UUID uuid);
 
-    @Query("MATCH (s: MetaDbSample{uuid: $sampleManifestEntity.uuid})"
+    @Query("MATCH (s: MetaDbSample {uuid: $sampleManifestEntity.uuid})"
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: MetaDbPatient)"
             + "MATCH (n)<-[:HAS_SAMPLE]-(p) "
             + "WHERE n.tumorOrNormal = 'Normal'"
@@ -40,7 +40,7 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     List<MetaDbSample> findMatchedNormals(
             @Param("sampleManifestEntity") MetaDbSample metaDbSample);
 
-    @Query("MATCH (s: MetaDbSample{uuid: $sampleManifestEntity.uuid}) "
+    @Query("MATCH (s: MetaDbSample {uuid: $sampleManifestEntity.uuid}) "
             + "MATCH (s)<-[:REQUEST_TO_SP]-(r: MetaDbRequest) "
             + "RETURN r.pooledNormals")
     List<String> findPooledNormals(@Param("sampleManifestEntity") MetaDbSample metaDbSample);

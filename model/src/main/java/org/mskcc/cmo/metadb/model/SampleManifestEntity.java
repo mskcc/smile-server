@@ -14,14 +14,14 @@ public class SampleManifestEntity extends SampleManifest {
     private Long id;
     private String sampleManifestJson;
     private String creationTime;
-    
+
     public SampleManifestEntity() {}
-    
+
     public SampleManifestEntity(String sampleManifestJson, String creationTime) {
         this.sampleManifestJson = sampleManifestJson;
         this.creationTime = creationTime;
     }
-    
+
     /**
      * SampleManifestEntity constructor.
      * @param sampleManifest
@@ -91,7 +91,7 @@ public class SampleManifestEntity extends SampleManifest {
             String oncotreeCode, String tumorOrNormal, String tissueLocation, String specimenType,
             String sampleOrigin, String preservation, String collectionYear, String sex,
             String species, String tubeId, String cfDNA2dBarcode, String baitSet,
-            List<QcReport> qcReports, List<Library> libraries, 
+            List<QcReport> qcReports, List<Library> libraries,
             String sampleManifestJson, String creationTime) {
         super(igoId,
                 cmoInfoIgoId,
@@ -117,27 +117,27 @@ public class SampleManifestEntity extends SampleManifest {
         this.sampleManifestJson = sampleManifestJson;
         this.creationTime = creationTime;
     }
-    
+
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public String getSampleManifestJson() {
         return sampleManifestJson;
     }
-    
+
     public void setSampleManifestJson(String sampleManifestJson) {
         this.sampleManifestJson = sampleManifestJson;
     }
-    
+
     public String getCreationTime() {
         return creationTime;
     }
-    
+
     public void setCreationTime(String creationDate) {
         this.creationTime = creationTime;
     }

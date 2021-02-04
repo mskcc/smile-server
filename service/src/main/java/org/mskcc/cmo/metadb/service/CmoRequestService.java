@@ -10,6 +10,6 @@ public interface CmoRequestService {
 
     void saveRequest(MetaDbRequest request) throws Exception;
 
-    MetaDbRequest getCmoRequest(String requestId);
+    MetaDbRequest getMetaDbRequest(String requestId);
 
 }

@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.google.gson.Gson;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -68,7 +69,8 @@ public class SampleServiceImpl implements SampleService {
     @Override
     public MetaDbSample setUpSampleManifestEntity(MetaDbSample metaDbSample) throws Exception {
         for (SampleManifestEntity s: metaDbSample.getSampleManifestList()) {
-            s.setSampleManifestJson(s.toString());
+            Gson gson = new Gson();
+            s.setSampleManifestJson(gson.toJson(s));
             Timestamp time = Timestamp.from(Instant.now());
             s.setCreationTime(String.valueOf(time.getTime()));
         }
