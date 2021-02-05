@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
+import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 /**
  *
@@ -19,7 +22,9 @@ public class SampleManifest extends SampleMetadata {
     protected String collectionYear;
     protected String tubeId;
     protected String cfDNA2dBarcode;
+    @Convert(QcReportsStringConverter.class)
     protected List<QcReport> qcReports;
+    @Convert(LibrariesStringConverter.class)
     protected List<Library> libraries;
     
     public SampleManifest() {}

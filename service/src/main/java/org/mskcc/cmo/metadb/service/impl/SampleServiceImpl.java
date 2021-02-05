@@ -74,8 +74,6 @@ public class SampleServiceImpl implements SampleService {
             s.setSampleManifestJson(gson.toJson(s));
             Timestamp time = Timestamp.from(Instant.now());
             s.setCreationTime(String.valueOf(time.getTime()));
-            s.setQcReportsJson(gson.toJson(s.getQcReports()));
-            s.setLibrariesJson(gson.toJson(s.getLibraries()));
         }
         return metaDbSample;
     }

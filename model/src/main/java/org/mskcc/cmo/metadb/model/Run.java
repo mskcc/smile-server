@@ -13,7 +13,7 @@ import org.neo4j.ogm.annotation.Transient;
  *
  * @author ochoaa
  */
-@Transient
+
 public class Run implements Serializable {
     @Id @GeneratedValue
     private Long id;

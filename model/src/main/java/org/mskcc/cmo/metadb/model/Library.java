@@ -4,17 +4,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.cmo.metadb.model.converter.RunStringConverter;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.Transient;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 /**
  *
  * @author ochoaa
  */
-@Transient
+
 public class Library implements Serializable {
-    
     @Id @GeneratedValue
     private Long id;
     private String barcodeId;
@@ -26,6 +27,7 @@ public class Library implements Serializable {
     private String captureConcentrationNm;
     private String captureInputNg;
     private String captureName;
+    @Convert(RunStringConverter.class)
     private List<Run> runs;
 
     public Library(){}
