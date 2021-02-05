@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.neo4j;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.neo4j;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.mskcc.cmo.shared.IgoRequest;
+import org.mskcc.cmo.metadb.model.IgoRequest;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;

@@ -1,9 +1,9 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.neo4j;
 
 import java.util.List;
-import org.mskcc.cmo.shared.Library;
-import org.mskcc.cmo.shared.QcReport;
-import org.mskcc.cmo.shared.SampleManifest;
+import org.mskcc.cmo.metadb.model.Library;
+import org.mskcc.cmo.metadb.model.QcReport;
+import org.mskcc.cmo.metadb.model.SampleManifest;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -86,34 +86,24 @@ public class SampleManifestEntity extends SampleManifest {
      * @param sampleManifestJson
      * @param creationTime
      */
-    public SampleManifestEntity(String igoId, String cmoInfoIgoId, String cmoSampleName,
-            String sampleName, String cmoSampleClass, String cmoPatientId, String investigatorSampleId,
-            String oncotreeCode, String tumorOrNormal, String tissueLocation, String specimenType,
-            String sampleOrigin, String preservation, String collectionYear, String sex,
-            String species, String tubeId, String cfDNA2dBarcode, String baitSet,
-            List<QcReport> qcReports, List<Library> libraries,
-            String sampleManifestJson, String creationTime) {
-        super(igoId,
-                cmoInfoIgoId,
-                cmoSampleName,
-                sampleName,
-                cmoSampleClass,
-                cmoPatientId,
-                investigatorSampleId,
-                oncotreeCode,
-                tumorOrNormal,
-                tissueLocation,
-                specimenType,
-                sampleOrigin,
-                preservation,
-                collectionYear,
-                sex,
-                species,
-                tubeId,
-                cfDNA2dBarcode,
-                baitSet,
-                qcReports,
-                libraries);
+    public SampleManifestEntity(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
+            String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncotreeCode,
+            String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
+            String preservation, String collectionYear, String sex, String species, String tubeId,
+            String cfDNA2dBarcode, String baitSet, List<QcReport> qcReports, List<Library> libraries, 
+            String mrn, String cmoSampleId, String sampleType, String tumorType, String parentTumorType, 
+            String tissueSource, String recipe, String baitset, String fastqPath, 
+            String principalInvestigator, String ancestorSample, Boolean doNotUse,
+            String sampleStatus, String sampleManifestJson, String creationTime) {
+        super(igoId, cmoInfoIgoId, cmoSampleName, sampleName,
+                cmoSampleClass, cmoPatientId, investigatorSampleId, oncotreeCode,
+                tumorOrNormal, tissueLocation, specimenType, sampleOrigin,
+                preservation, collectionYear, sex, species, tubeId,
+                cfDNA2dBarcode, baitSet, qcReports, libraries, 
+                mrn, cmoSampleId, sampleType, tumorType, parentTumorType, 
+                tissueSource, recipe, baitset, fastqPath, 
+                principalInvestigator, ancestorSample, doNotUse,
+                sampleStatus);
         this.sampleManifestJson = sampleManifestJson;
         this.creationTime = creationTime;
     }

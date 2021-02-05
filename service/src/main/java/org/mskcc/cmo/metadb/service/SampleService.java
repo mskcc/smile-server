@@ -1,8 +1,7 @@
 package org.mskcc.cmo.metadb.service;
 
 import java.util.List;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
-import org.mskcc.cmo.metadb.model.SampleManifestEntity;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
 
 public interface SampleService {
 

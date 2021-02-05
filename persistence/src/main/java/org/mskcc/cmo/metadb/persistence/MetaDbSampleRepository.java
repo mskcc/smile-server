@@ -2,9 +2,8 @@ package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
 import java.util.UUID;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
-import org.mskcc.cmo.metadb.model.SampleAlias;
-import org.mskcc.cmo.metadb.model.SampleManifestEntity;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
+import org.mskcc.cmo.metadb.model.neo4j.SampleAlias;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UUID> {
-    @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, toLower(idSource) = 'igoid'}) "
+    @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, idSource: 'igoId'}) "
         + "MATCH (s)-[:IS_ALIAS]->(sm) "
         + "RETURN sm")
     MetaDbSample findSampleByIgoId(@Param("igoId") SampleAlias igoId);
