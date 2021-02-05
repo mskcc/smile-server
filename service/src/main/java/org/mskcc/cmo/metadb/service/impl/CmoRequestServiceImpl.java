@@ -2,9 +2,9 @@ package org.mskcc.cmo.metadb.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.mskcc.cmo.metadb.model.MetaDbProject;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbProject;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;

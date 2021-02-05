@@ -1,6 +1,6 @@
 package org.mskcc.cmo.metadb.service;
 
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbRequest;
 
 /**
  *

@@ -1,8 +1,8 @@
 package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
