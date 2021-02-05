@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.neo4j;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -14,18 +14,18 @@ import org.neo4j.ogm.annotation.StartNode;
  * @author ochoaa
  */
 
-@RelationshipEntity(type = "PX_TO_PX")
-public class PatientToPatientEntity implements Serializable {
+@RelationshipEntity(type = "IS_ALIAS")
+public class PatientAliasToMetaDbPatient implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @Property(name = "value")
     private Collection<String> patientIds;
     @StartNode
-    private Patient patient;
+    private PatientAlias patientAlias;
     @EndNode
-    private PatientMetadata patientMetadata;
+    private MetaDbPatient metaDbPatient;
 
-    public PatientToPatientEntity() {}
+    public PatientAliasToMetaDbPatient() {}
 
     public Collection<String> getPatientIds() {
         return patientIds;
@@ -35,20 +35,20 @@ public class PatientToPatientEntity implements Serializable {
         this.patientIds = patientIds;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public PatientAlias getPatientAlias() {
+        return patientAlias;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPatientAlias(PatientAlias patientAlias) {
+        this.patientAlias = patientAlias;
     }
 
-    public PatientMetadata getPatientMetadata() {
-        return patientMetadata;
+    public MetaDbPatient getPatientMetadata() {
+        return metaDbPatient;
     }
 
-    public void setPatientMetadata(PatientMetadata patientMetadata) {
-        this.patientMetadata = patientMetadata;
+    public void setPatientMetadata(MetaDbPatient metaDbPatient) {
+        this.metaDbPatient = metaDbPatient;
     }
 
 }

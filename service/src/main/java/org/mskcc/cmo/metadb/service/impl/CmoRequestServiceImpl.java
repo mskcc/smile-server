@@ -1,9 +1,11 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import org.mskcc.cmo.metadb.model.CmoProjectEntity;
-import org.mskcc.cmo.metadb.model.CmoRequestEntity;
-import org.mskcc.cmo.metadb.model.SampleManifestEntity;
-import org.mskcc.cmo.metadb.persistence.CmoRequestRepository;
+import java.util.ArrayList;
+import java.util.List;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbProject;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
+import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,40 +19,43 @@ import org.springframework.stereotype.Component;
 public class CmoRequestServiceImpl implements CmoRequestService {
 
     @Autowired
-    private CmoRequestRepository cmoRequestRepository;
+    private MetaDbRequestRepository metaDbRequestRepository;
 
     @Autowired
     private SampleService sampleService;
 
 
     @Override
-    public void saveRequest(CmoRequestEntity request) throws Exception {
-        CmoProjectEntity project = new CmoProjectEntity();
+    public void saveRequest(MetaDbRequest request) throws Exception {
+        MetaDbProject project = new MetaDbProject();
         project.setprojectId(request.getProjectId());
-        request.setProjectEntity(project);
+        request.setMetaDbProject(project);
 
-        CmoRequestEntity savedRequest = getCmoRequest(request.getRequestId());
+        MetaDbRequest savedRequest = getMetaDbRequest(request.getRequestId());
         if (savedRequest == null) {
-            if (request.getSampleManifestList() != null) {
-                for (SampleManifestEntity s: request.getSampleManifestList()) {
-                    sampleService.saveSampleManifest(s);
+            if (request.getMetaDbSampleList() != null) {
+                List<MetaDbSample> updatedSamples = new ArrayList<>();
+                for (MetaDbSample s: request.getMetaDbSampleList()) {
+                    updatedSamples.add(sampleService.saveSampleManifest(s));
+
                 }
+                request.setMetaDbSampleList(updatedSamples);
             }
-            cmoRequestRepository.save(request);
+            metaDbRequestRepository.save(request);
         } else {
-            for (SampleManifestEntity s: request.getSampleManifestList()) {
+            for (MetaDbSample s: request.getMetaDbSampleList()) {
                 if (s.getSampleIgoId() != null
-                        && cmoRequestRepository.findSampleManifest(request.getRequestId(),
+                        && metaDbRequestRepository.findSampleManifest(request.getRequestId(),
                         s.getSampleIgoId().getSampleId()) == null) {
-                    savedRequest.addSampleManifest(s);
-                    cmoRequestRepository.save(savedRequest);
+                    savedRequest.addMetaDbSampleList(s);
+                    metaDbRequestRepository.save(savedRequest);
                 }
             }
         }
     }
 
     @Override
-    public CmoRequestEntity getCmoRequest(String requestId) {
-        return cmoRequestRepository.findByRequestId(requestId);
+    public MetaDbRequest getMetaDbRequest(String requestId) {
+        return metaDbRequestRepository.findByRequestId(requestId);
     }
 }

@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.neo4j;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,18 +17,18 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
  * @author ochoaa
  */
 
-@NodeEntity(label = "cmo_metadb_patient_metadata")
-public class PatientMetadata implements Serializable {
+@NodeEntity
+public class MetaDbPatient implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID uuid;
     private String investigatorPatientId;
-    @Relationship(type = "PX_TO_SP", direction = Relationship.OUTGOING)
-    private List<SampleManifestEntity> sampleManifestList;
-    @Relationship(type = "PX_TO_PX", direction = Relationship.INCOMING)
-    private List<Patient>  patientList;
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
+    private List<MetaDbSample> sampleManifestList;
+    @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
+    private List<PatientAlias>  patientAliases;
 
-    public PatientMetadata() {}
+    public MetaDbPatient() {}
 
     public UUID getUuid() {
         return uuid;
@@ -46,38 +46,38 @@ public class PatientMetadata implements Serializable {
         this.investigatorPatientId = investigatorPatientId;
     }
 
-    public List<SampleManifestEntity> getSampleManifestList() {
+    public List<MetaDbSample> getSampleManifestList() {
         return sampleManifestList;
     }
 
-    public void setSampleManifestList(List<SampleManifestEntity> sampleManifestList) {
+    public void setSampleManifestList(List<MetaDbSample> sampleManifestList) {
         this.sampleManifestList = sampleManifestList;
     }
 
-    public List<Patient> getPatientList() {
-        return patientList;
+    public List<PatientAlias> getPatientAliases() {
+        return patientAliases;
     }
 
-    public void setPatientList(List<Patient> linkedPatientList) {
-        this.patientList = linkedPatientList;
+    public void setPatientAliases(List<PatientAlias> patientAliases) {
+        this.patientAliases = patientAliases;
     }
 
     /**
      * Add patient to array list.
-     * @param patient
+     * @param patientAlias
      */
-    public void addPatient(Patient patient) {
-        if (patientList == null) {
-            patientList = new ArrayList<>();
+    public void addPatientAlias(PatientAlias patientAlias) {
+        if (patientAliases == null) {
+            patientAliases = new ArrayList<>();
         }
-        patientList.add(patient);
+        patientAliases.add(patientAlias);
     }
 
     /**
      * Add sample to array list.
      * @param sampleManifest
      */
-    public void addSampleManifest(SampleManifestEntity sampleManifest) {
+    public void addSampleManifest(MetaDbSample sampleManifest) {
         if (sampleManifestList == null) {
             sampleManifestList = new ArrayList<>();
         }
