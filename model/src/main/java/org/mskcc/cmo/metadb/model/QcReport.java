@@ -2,6 +2,8 @@ package org.mskcc.cmo.metadb.model;
 
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.neo4j.ogm.annotation.GeneratedValue;
+import org.neo4j.ogm.annotation.Id;
 
 /**
  *
@@ -11,7 +13,9 @@ public class QcReport implements Serializable {
     public enum QcReportType {
         DNA, RNA, LIBRARY;
     }
-
+    
+    @Id @GeneratedValue
+    private Long id;
     private QcReportType qcReportType;
     private String igoRecommendation;
     private String comments;

@@ -14,6 +14,8 @@ public class SampleManifestEntity extends SampleManifest {
     private Long id;
     private String sampleManifestJson;
     private String creationTime;
+    private String qcReportsJson;
+    private String librariesJson;
 
     public SampleManifestEntity() {}
 
@@ -130,5 +132,21 @@ public class SampleManifestEntity extends SampleManifest {
 
     public void setCreationTime(String creationDate) {
         this.creationTime = creationTime;
+    }
+
+    public String getQcReportsJson() {
+        return qcReportsJson;
+    }
+
+    public void setQcReportsJson(String qcReportsJson) {
+        this.qcReportsJson = qcReportsJson;
+    }
+
+    public String getLibrariesJson() {
+        return librariesJson;
+    }
+
+    public void setLibrariesJson(String librariesJson) {
+        this.librariesJson = librariesJson;
     }
 }

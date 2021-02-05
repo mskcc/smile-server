@@ -7,11 +7,13 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
+import org.neo4j.ogm.annotation.Transient;
 
 /**
  *
  * @author ochoaa
  */
+@Transient
 public class Run implements Serializable {
     @Id @GeneratedValue
     private Long id;
