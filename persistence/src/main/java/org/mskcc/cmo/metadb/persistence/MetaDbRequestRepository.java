@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
+import org.mskcc.cmo.metadb.model.neo4j.MetaDbProject;
 import org.mskcc.cmo.metadb.model.neo4j.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
 import org.springframework.data.neo4j.annotation.Query;
@@ -27,4 +28,9 @@ public interface MetaDbRequestRepository extends Neo4jRepository<MetaDbRequest, 
             + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {toLower(idSource): 'igoid', value: $igoId}) "
             + "RETURN sm")
     MetaDbSample findSampleManifest(@Param("reqId") String reqId, @Param("igoId") String igoId);
+
+    @Query("MATCH (r: MetaDbRequest {requestId: $reqId}) "
+            + "MATCH (r)<-[:PR_TO_REQUEST]-(p) "
+            + "RETURN p")
+    MetaDbProject findMetaDbProject(@Param("reqId") String reqId);
 }

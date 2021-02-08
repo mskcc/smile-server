@@ -1,15 +1,15 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import com.google.gson.Gson;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import org.mskcc.cmo.metadb.model.neo4j.MetaDbPatient;
 import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
 import org.mskcc.cmo.metadb.model.neo4j.SampleAlias;
 import org.mskcc.cmo.metadb.model.neo4j.SampleManifestEntity;
+import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
 import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
-import org.mskcc.cmo.metadb.persistence.PatientMetadataRepository;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class SampleServiceImpl implements SampleService {
     private MetaDbSampleRepository metaDbSampleRepository;
 
     @Autowired
-    private PatientMetadataRepository patientMetadataRepository;
+    private MetaDbPatientRepository metaDbPatientRepository;
 
     @Override
     public MetaDbSample saveSampleManifest(MetaDbSample
@@ -30,7 +30,7 @@ public class SampleServiceImpl implements SampleService {
         MetaDbSample foundSample =
                 metaDbSampleRepository.findSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
         if (foundSample == null) {
-            MetaDbPatient patient = patientMetadataRepository.findPatientByInvestigatorId(
+            MetaDbPatient patient = metaDbPatientRepository.findPatientByInvestigatorId(
                     updatedMetaDbSample.getPatient().getInvestigatorPatientId());
             if (patient != null) {
                 updatedMetaDbSample.setPatientUuid(patient.getUuid());
@@ -63,15 +63,12 @@ public class SampleServiceImpl implements SampleService {
         investigatorId.setIdSource("investigatorId");
         investigatorId.setSampleId(sampleManifestEntity.getInvestigatorSampleId());
         metaDbSample.addSample(investigatorId);
-
         return metaDbSample;
     }
 
     @Override
     public MetaDbSample setUpSampleManifestEntity(MetaDbSample metaDbSample) throws Exception {
         for (SampleManifestEntity s: metaDbSample.getSampleManifestList()) {
-            Gson gson = new Gson();
-            s.setSampleManifestJson(gson.toJson(s));
             Timestamp time = Timestamp.from(Instant.now());
             s.setCreationTime(String.valueOf(time.getTime()));
         }
@@ -87,5 +84,12 @@ public class SampleServiceImpl implements SampleService {
     @Override
     public List<String> findPooledNormalSample(MetaDbSample metaDbSample) throws Exception {
         return metaDbSampleRepository.findPooledNormals(metaDbSample);
+    }
+
+    @Override
+    public MetaDbSample getMetaDbSample(UUID uuid) throws Exception {
+        MetaDbSample metaDbSample = metaDbSampleRepository.findSampleByUUID(uuid);
+        metaDbSample.setSampleManifestList(metaDbSampleRepository.findSampleManifestList(uuid));
+        return metaDbSample;
     }
 }

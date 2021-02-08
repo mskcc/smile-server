@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
  *
  * @author ochoaa
  */
-public interface PatientMetadataRepository extends Neo4jRepository<MetaDbPatient, Long> {
+public interface MetaDbPatientRepository extends Neo4jRepository<MetaDbPatient, Long> {
     @Query("MATCH (pm: MetaDbPatient) "
         + "WHERE $investigatorPatientId = pm.investigatorPatientId RETURN pm")
     MetaDbPatient findPatientByInvestigatorId(
