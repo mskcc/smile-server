@@ -56,7 +56,7 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
             @Param("sampleManifestEntity") MetaDbSample metaDbSample);
 
     @Query("MATCH (s: MetaDbSample {uuid: $sampleManifestEntity.uuid}) "
-            + "MATCH (s)<-[:REQUEST_TO_SP]-(r: MetaDbRequest) "
+            + "MATCH (s)<-[:HAS_SAMPLE]-(r: MetaDbRequest) "
             + "RETURN r.pooledNormals")
     List<String> findPooledNormals(@Param("sampleManifestEntity") MetaDbSample metaDbSample);
 }

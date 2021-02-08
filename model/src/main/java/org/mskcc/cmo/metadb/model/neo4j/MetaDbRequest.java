@@ -16,7 +16,7 @@ import org.neo4j.ogm.annotation.Relationship;
 public class MetaDbRequest extends IgoRequest {
     @Id @GeneratedValue
     private Long id;
-    @Relationship(type = "REQUEST_TO_SP", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
     private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
     private MetaDbProject metaDbProject;
