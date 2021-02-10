@@ -23,33 +23,33 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     MetaDbSample findSampleByUUID(@Param("uuid") UUID uuid);
 
     @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, idSource: 'igoId'}) "
-        + "MATCH (s)<-[:IS_ALIAS]-(sm) "
+        + "MATCH (s)<-[:IS_ALIAS]-(sm: MetaDbSample) "
         + "RETURN sm")
     MetaDbSample findSampleByIgoId(@Param("igoId") SampleAlias igoId);
 
     @Query("MATCH (sm: MetaDbSample {uuid: $uuid})"
-            + "MATCH (sm)<-[:IS_ALIAS]-(s)"
+            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
             + "WHERE toLower(s.idSource) = 'igoid' RETURN s;")
     SampleAlias findSampleIgoId(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: MetaDbSample {uuid: $uuid})"
-            + "MATCH (sm)<-[:IS_ALIAS]-(s)"
+            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
             + "WHERE s.idSource = 'investigatorId' RETURN s;")
     SampleAlias findInvestigatorId(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: MetaDbSample {uuid: $uuid})"
-            + "MATCH (sm)<-[:HAS_SAMPLE]-(p)"
+            + "MATCH (sm)<-[:HAS_SAMPLE]-(p: MetaDbPatient)"
             + "RETURN p;")
     MetaDbPatient findPatientbyUUID(@Param("uuid") UUID uuid);
 
     @Query("MATCH (sm: MetaDbSample {uuid: $uuid})"
-            + "MATCH (sm)-[:HAS_METADATA]->(s)"
+            + "MATCH (sm)-[:HAS_METADATA]->(s: SampleManifestEntity)"
             + "RETURN s;")
     List<SampleManifestEntity> findSampleManifestList(@Param("uuid") UUID uuid);
 
     @Query("MATCH (s: MetaDbSample {uuid: $sampleManifestEntity.uuid})"
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: MetaDbPatient)"
-            + "MATCH (n)<-[:HAS_SAMPLE]-(p) "
+            + "MATCH (n: MetaDbSample)<-[:HAS_SAMPLE]-(p) "
             + "WHERE toLower(n.sampleClass) = 'normal'"
             + "RETURN n")
     List<MetaDbSample> findMatchedNormals(

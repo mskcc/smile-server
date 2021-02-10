@@ -11,7 +11,7 @@ import org.neo4j.ogm.annotation.Relationship;
 public class MetaDbProject implements Serializable {
     @Id
     private String projectId;
-    @Relationship(type = "PR_TO_REQUEST", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_REQUEST", direction = Relationship.OUTGOING)
     private List<MetaDbRequest> requestList;
 
     public MetaDbProject() {}

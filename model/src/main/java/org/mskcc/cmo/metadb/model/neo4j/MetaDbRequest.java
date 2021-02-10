@@ -18,7 +18,7 @@ public class MetaDbRequest extends IgoRequest {
     private Long id;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
     private List<MetaDbSample> metaDbSampleList;
-    @Relationship(type = "PR_TO_REQUEST", direction = Relationship.INCOMING)
+    @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
     private MetaDbProject metaDbProject;
     private String idSource;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
