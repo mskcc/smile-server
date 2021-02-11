@@ -25,9 +25,7 @@ public class MetaDbSample implements Serializable {
     private List<SampleManifestEntity> sampleManifestList;
     private String sampleClass;
 
-    public MetaDbSample() {
-        super();
-    }
+    public MetaDbSample() {}
 
     public UUID getUuid() {
         return uuid;
