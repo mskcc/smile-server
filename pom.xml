@@ -40,7 +40,6 @@
     <maven.compiler.version>1.8</maven.compiler.version>
     <spring.version>5.2.6.RELEASE</spring.version>
     <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
-    <neo4j-ogm.version>3.2.19</neo4j-ogm.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.version>81258a16d63cea640e4d80efb5df5100a6ff4dea</cmo_metadb_messaging_java.version>
     <cmo_metadb_shared_entities.version>0a0c91b82c5e1ef0fbde17b74319940825e0493e</cmo_metadb_shared_entities.version>

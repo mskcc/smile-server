@@ -29,7 +29,7 @@
     </dependency>
     <dependency>
       <groupId>org.neo4j</groupId>
-      <artifactId>neo4j-ogm-embedded-driver</artifactId>
+      <artifactId>neo4j-ogm-bolt-driver</artifactId>
       <version>${neo4j-ogm.version}</version>
     </dependency>
     <!-- neo4j plugin for built-in uuid generation -->
