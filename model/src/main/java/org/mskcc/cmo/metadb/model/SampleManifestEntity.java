@@ -46,7 +46,7 @@ public class SampleManifestEntity implements Serializable {
     protected String tissueSource;
     protected String tissueLocation;
     protected String recipe;
-    protected String baitset;
+    protected String baitSet;
     protected String fastqPath;
     protected String principalInvestigator;
     protected String ancestorSample;
@@ -81,7 +81,6 @@ public class SampleManifestEntity implements Serializable {
      * @param species
      * @param tubeId
      * @param cfDNA2dBarcode
-     * @param baitSet
      * @param qcReports
      * @param libraries
      * @param mrn
@@ -91,7 +90,7 @@ public class SampleManifestEntity implements Serializable {
      * @param parentTumorType
      * @param tissueSource
      * @param recipe
-     * @param baitset
+     * @param baitSet
      * @param fastqPath
      * @param principalInvestigator
      * @param ancestorSample
@@ -103,9 +102,9 @@ public class SampleManifestEntity implements Serializable {
             String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncotreeCode,
             String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
             String preservation, String collectionYear, String sex, String species, String tubeId,
-            String cfDNA2dBarcode, String baitSet, List<QcReport> qcReports, List<Library> libraries,
+            String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
             String mrn, String cmoSampleId, String sampleType, String tumorType, String parentTumorType,
-            String tissueSource, String recipe, String baitset, String fastqPath,
+            String tissueSource, String recipe, String baitSet, String fastqPath,
             String principalInvestigator, String ancestorSample, Boolean doNotUse,
             String sampleStatus, String creationTime) {
         this.mrn = mrn;
@@ -125,7 +124,7 @@ public class SampleManifestEntity implements Serializable {
         this.tissueSource = tissueSource;
         this.tissueLocation = tissueLocation;
         this.recipe = recipe;
-        this.baitset = baitset;
+        this.baitSet = baitSet;
         this.principalInvestigator = principalInvestigator;
         this.fastqPath = fastqPath;
         this.ancestorSample = ancestorSample;
@@ -402,12 +401,12 @@ public class SampleManifestEntity implements Serializable {
         this.recipe = recipe;
     }
 
-    public String getBaitset() {
-        return baitset;
+    public String getBaitSet() {
+        return baitSet;
     }
 
-    public void setBaitset(String baitset) {
-        this.baitset = baitset;
+    public void setBaitSet(String baitSet) {
+        this.baitSet = baitSet;
     }
 
     public String getFastqPath() {
