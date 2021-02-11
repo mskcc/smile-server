@@ -1,7 +1,7 @@
 package org.mskcc.cmo.metadb.service;
 
 import java.util.Map;
-import org.mskcc.cmo.metadb.model.neo4j.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.MetaDbRequest;
 
 /**
  *

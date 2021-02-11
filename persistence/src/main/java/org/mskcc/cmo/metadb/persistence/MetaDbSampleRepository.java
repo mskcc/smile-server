@@ -2,10 +2,10 @@ package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
 import java.util.UUID;
-import org.mskcc.cmo.metadb.model.neo4j.MetaDbPatient;
-import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
-import org.mskcc.cmo.metadb.model.neo4j.SampleAlias;
-import org.mskcc.cmo.metadb.model.neo4j.SampleManifestEntity;
+import org.mskcc.cmo.metadb.model.MetaDbPatient;
+import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.SampleAlias;
+import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
