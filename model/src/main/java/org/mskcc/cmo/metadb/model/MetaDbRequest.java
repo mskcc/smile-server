@@ -2,10 +2,30 @@ package org.mskcc.cmo.metadb.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.neo4j.ogm.annotation.GeneratedValue;
+import org.neo4j.ogm.annotation.Id;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 
-public class IgoRequest implements Serializable {
+/**
+ *
+ * @author ochoaa
+ */
+@NodeEntity
+public class MetaDbRequest implements Serializable {
+    @Id @GeneratedValue
+    private Long id;
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
+    private List<MetaDbSample> metaDbSampleList;
+    @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
+    private MetaDbProject metaDbProject;
+    private String idSource;
+    // need this field to deserialize message from IGO_NEW_REQUEST properly
+    protected String projectId;
+    private String requestJson;
     protected String requestId;
     protected String recipe;
     protected String projectManagerName;
@@ -19,24 +39,15 @@ public class IgoRequest implements Serializable {
     protected String otherContactEmails;
     protected String dataAccessEmails;
     protected String qcAccessEmails;
-    protected String strand; // only for RNASeq
-    protected String libraryType; // only for RNASeq
+    protected String strand;
+    protected String libraryType;
     protected List<RequestSample> requestSamples;
     protected List<String> pooledNormals;
 
-    public IgoRequest() {}
-
-    public IgoRequest(String requestId) {
-        this.requestId = requestId;
-    }
-
-    public IgoRequest(String requestId, List<RequestSample> requestSamples) {
-        this.requestId = requestId;
-        this.requestSamples = requestSamples;
-    }
+    public MetaDbRequest() {}
 
     /**
-     * IgoRequest contructor
+     * MetaDbRequest constructor
      * @param requestId
      * @param recipe
      * @param projectManagerName
@@ -52,12 +63,15 @@ public class IgoRequest implements Serializable {
      * @param qcAccessEmails
      * @param strand
      * @param libraryType
+     * @param metaDbSampleList
+     * @param requestJson
      */
-    public IgoRequest(String requestId, String recipe, String projectManagerName,
+    public MetaDbRequest(String requestId, String recipe, String projectManagerName,
             String piEmail, String labHeadName, String labHeadEmail,
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
-            String qcAccessEmails, String strand, String libraryType) {
+            String qcAccessEmails, String strand, String libraryType,
+            List<MetaDbSample> metaDbSampleList, String requestJson) {
         this.requestId = requestId;
         this.recipe = recipe;
         this.projectManagerName = projectManagerName;
@@ -73,6 +87,68 @@ public class IgoRequest implements Serializable {
         this.qcAccessEmails = qcAccessEmails;
         this.strand = strand;
         this.libraryType = libraryType;
+        this.metaDbSampleList = metaDbSampleList;
+        this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
+        this.requestJson = requestJson;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<MetaDbSample> getMetaDbSampleList() {
+        return metaDbSampleList;
+    }
+
+    public void setMetaDbSampleList(List<MetaDbSample> metaDbSampleList) {
+        this.metaDbSampleList = metaDbSampleList;
+    }
+
+    public MetaDbProject getMetaDbProject() {
+        return metaDbProject;
+    }
+
+    public void setMetaDbProject(MetaDbProject metaDbProject) {
+        this.metaDbProject = metaDbProject;
+    }
+
+    public String getIdSource() {
+        return idSource;
+    }
+
+    public void setIdSource(String idSource) {
+        this.idSource = idSource;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getRequestJson() {
+        return requestJson;
+    }
+
+    public void setRequestJson(String requestJson) {
+        this.requestJson = requestJson;
+    }
+
+    /**
+     *
+     * @param metaDbSample
+     */
+    public void addMetaDbSampleList(MetaDbSample metaDbSample) {
+        if (metaDbSampleList == null) {
+            metaDbSampleList = new ArrayList<>();
+        }
+        metaDbSampleList.add(metaDbSample);
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

@@ -2,7 +2,7 @@ package org.mskcc.cmo.metadb.service;
 
 import java.util.List;
 import java.util.UUID;
-import org.mskcc.cmo.metadb.model.neo4j.MetaDbSample;
+import org.mskcc.cmo.metadb.model.MetaDbSample;
 
 public interface SampleService {
 
