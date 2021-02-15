@@ -1,0 +1,268 @@
+{
+  "requestId": "33344_Z",
+  "recipe": "IMPACT468",
+  "projectManagerName": "",
+  "piEmail": "",
+  "labHeadName": "Betty White",
+  "labHeadEmail": "whiteb@mskcc.org",
+  "investigatorName": "Betty White",
+  "investigatorEmail": "whiteb@mskcc.org",
+  "dataAnalystName": "",
+  "dataAnalystEmail": "",
+  "otherContactEmails": "whiteb@mskcc.org,dacruzpa@mskcc.org",
+  "dataAccessEmails": "",
+  "qcAccessEmails": "",
+  "samples": [
+    {
+      "investigatorSampleId": "AGAG-LXX8",
+      "igoSampleId": "33344_Z_1",
+      "igocomplete": true
+    },
+    {
+      "investigatorSampleId": "LXX8-AGAG",
+      "igoSampleId": "33344_Z_2",
+      "igocomplete": true
+    },
+    {
+      "investigatorSampleId": "AGAG",
+      "igoSampleId": "33344_Z_3",
+      "igocomplete": true
+    },
+    {
+      "investigatorSampleId": "LXX8",
+      "igoSampleId": "33344_Z_4",
+      "igocomplete": true
+    }
+  ],
+  "pooledNormals": [
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTGTTAA/FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTGTTAA_S53_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTGTTAA/FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTGTTAA_S53_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTTTCAA/FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTTTCAA_S38_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTTTCAA/FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTTTCAA_S38_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HemeBrainPACT_v1_CCAAGGGT/FROZENPOOLEDNORMAL_IGO_HemeBrainPACT_v1_CCAAGGGT_S12_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HemeBrainPACT_v1_CCAAGGGT/FROZENPOOLEDNORMAL_IGO_HemeBrainPACT_v1_CCAAGGGT_S12_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_IMPACT468_CCAAGGGT/FROZENPOOLEDNORMAL_IGO_IMPACT468_CCAAGGGT_S61_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_IMPACT468_CCAAGGGT/FROZENPOOLEDNORMAL_IGO_IMPACT468_CCAAGGGT_S61_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG/MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG_S101_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG/MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG_S101_R2_001.fastq.gz"
+  ],
+  "projectId": "33344",
+  "sampleManifestList": [
+    {
+      "igoId": "33344_Z_1",
+      "cmoSampleName": "AGAG-LXX8-33344Z",
+      "sampleName": "AGAG-LXX8",
+      "cmoSampleClass": "Primary",
+      "cmoPatientId": "C-PXXXD9",
+      "investigatorSampleId": "AGAG-LXX8",
+      "tumorOrNormal": "Tumor",
+      "tissueLocation": "",
+      "specimenType": "CellLine",
+      "sampleOrigin": "Sorted Cells",
+      "preservation": "Fresh",
+      "collectionYear": "",
+      "sex": "F",
+      "species": "Human",
+      "tubeId": "",
+      "baitSet": "GENESET101_BAITS",
+      "qcReports": [
+        {
+          "qcReportType": "DNA",
+          "comments": "",
+          "investigatorDecision": "Already moved forward by IGO"
+        }
+      ],
+      "libraries": [
+        {
+          "barcodeId": "DUAL_IDT_LIB_555",
+          "barcodeIndex": "ACGTGTTG-ACGTGCGC",
+          "libraryIgoId": "33344_Z_1_1_1_1",
+          "libraryVolume": 35.0,
+          "libraryConcentrationNgul": 26.4,
+          "captureConcentrationNm": "4.545454545454546",
+          "captureInputNg": "120.0",
+          "captureName": "Pool-33344_Z-09621_C-Tube3_1",
+          "runs": [
+            {
+              "runMode": "HiSeq High Output",
+              "runId": "CRX_0224",
+              "flowCellId": "HEXQLLNF",
+              "readLength": "101/8/8/101",
+              "runDate": "2019-03-06",
+              "flowCellLanes": [
+                2,
+                3
+              ],
+              "fastqs": [
+                "/FASTQ/Project_33344_Z/Sample_AGAG-LXX8_IGO_33344_Z_1/AGAG-LXX8_IGO_33344_Z_1_S57_R2_001.fastq.gz",
+                "/FASTQ/Project_33344_Z/Sample_AGAG-LXX8_IGO_33344_Z_1/AGAG-LXX8_IGO_33344_Z_1_S57_R1_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "igoId": "33344_Z_2",
+      "cmoSampleName": "LXX8-AGAG-33344Z",
+      "sampleName": "LXX8-AGAG",
+      "cmoSampleClass": "Primary",
+      "cmoPatientId": "C-PXXXD9",
+      "investigatorSampleId": "LXX8-AGAG",
+      "tumorOrNormal": "Tumor",
+      "tissueLocation": "",
+      "specimenType": "CellLine",
+      "sampleOrigin": "Sorted Cells",
+      "preservation": "Fresh",
+      "collectionYear": "",
+      "sex": "F",
+      "species": "Human",
+      "tubeId": "",
+      "baitSet": "GENESET101_BAITS",
+      "qcReports": [
+        {
+          "qcReportType": "DNA",
+          "comments": "",
+          "investigatorDecision": "Already moved forward by IGO"
+        }
+      ],
+      "libraries": [
+        {
+          "barcodeId": "DUAL_IDT_LIB_536",
+          "barcodeIndex": "GGAAATCT-GGTAAAAT",
+          "libraryIgoId": "33344_Z_2_1_1_1",
+          "libraryVolume": 35.0,
+          "libraryConcentrationNgul": 26.0,
+          "captureConcentrationNm": "4.615384615384615",
+          "captureInputNg": "120.0",
+          "captureName": "Pool-33344_Z-09621_C-Tube3_1",
+          "runs": [
+            {
+              "runMode": "HiSeq High Output",
+              "runId": "CRX_0224",
+              "flowCellId": "HEXQLLNF",
+              "readLength": "101/8/8/101",
+              "runDate": "2019-03-06",
+              "flowCellLanes": [
+                2,
+                3
+              ],
+              "fastqs": [
+                "/FASTQ/Project_33344_Z/Sample_LXX8-AGAG_IGO_33344_Z_2/LXX8-AGAG_IGO_33344_Z_2_S58_R1_001.fastq.gz",
+                "/FASTQ/Project_33344_Z/Sample_LXX8-AGAG_IGO_33344_Z_2/LXX8-AGAG_IGO_33344_Z_2_S58_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "igoId": "33344_Z_3",
+      "cmoSampleName": "AGAG-33344Z",
+      "sampleName": "AGAG",
+      "cmoSampleClass": "Primary",
+      "cmoPatientId": "C-HXXX3X",
+      "investigatorSampleId": "AGAG",
+      "tumorOrNormal": "Tumor",
+      "tissueLocation": "",
+      "specimenType": "CellLine",
+      "sampleOrigin": "Sorted Cells",
+      "preservation": "Fresh",
+      "collectionYear": "",
+      "sex": "F",
+      "species": "Human",
+      "tubeId": "",
+      "baitSet": "GENESET101_BAITS",
+      "qcReports": [
+        {
+          "qcReportType": "DNA",
+          "comments": "",
+          "investigatorDecision": "Already moved forward by IGO"
+        }
+      ],
+      "libraries": [
+        {
+          "barcodeId": "DUAL_IDT_LIB_537",
+          "barcodeIndex": "ACGTAGTC-GCGCAGAT",
+          "libraryIgoId": "33344_Z_3_1_1_1",
+          "libraryVolume": 35.0,
+          "libraryConcentrationNgul": 24.1,
+          "captureConcentrationNm": "4.979253112033195",
+          "captureInputNg": "120.0",
+          "captureName": "Pool-33344_Z-09621_C-Tube3_1",
+          "runs": [
+            {
+              "runMode": "HiSeq High Output",
+              "runId": "CRX_0224",
+              "flowCellId": "HEXQLLNF",
+              "readLength": "101/8/8/101",
+              "runDate": "2019-03-06",
+              "flowCellLanes": [
+                2,
+                3
+              ],
+              "fastqs": [
+                "/FASTQ/Project_33344_Z/Sample_AGAG_IGO_33344_Z_3/AGAG_IGO_33344_Z_3_S59_R1_001.fastq.gz",
+                "/FASTQ/Project_33344_Z/Sample_AGAG_IGO_33344_Z_3/AGAG_IGO_33344_Z_3_S59_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "igoId": "33344_Z_4",
+      "cmoSampleName": "LXX8-33344Z",
+      "sampleName": "LXX8",
+      "cmoSampleClass": "Primary",
+      "cmoPatientId": "C-MXX99F",
+      "investigatorSampleId": "LXX8",
+      "tumorOrNormal": "Tumor",
+      "tissueLocation": "",
+      "specimenType": "CellLine",
+      "sampleOrigin": "Sorted Cells",
+      "preservation": "Fresh",
+      "collectionYear": "",
+      "sex": "F",
+      "species": "Human",
+      "tubeId": "",
+      "baitSet": "GENESET101_BAITS",
+      "qcReports": [
+        {
+          "qcReportType": "DNA",
+          "comments": "",
+          "investigatorDecision": "Already moved forward by IGO"
+        }
+      ],
+      "libraries": [
+        {
+          "barcodeId": "DUAL_IDT_LIB_638",
+          "barcodeIndex": "TTTAAAAG-GGGCCCCT",
+          "libraryIgoId": "33344_Z_4_1_1_1",
+          "libraryVolume": 35.0,
+          "libraryConcentrationNgul": 26.5,
+          "captureConcentrationNm": "4.528301886792453",
+          "captureInputNg": "120.0",
+          "captureName": "Pool-33344_Z-09621_C-Tube3_1",
+          "runs": [
+            {
+              "runMode": "HiSeq High Output",
+              "runId": "CRX_0224",
+              "flowCellId": "HEXQLLNF",
+              "readLength": "101/8/8/101",
+              "runDate": "2019-03-06",
+              "flowCellLanes": [
+                2,
+                3
+              ],
+              "fastqs": [
+                "/FASTQ/Project_33344_Z/Sample_LXX8_IGO_33344_Z_4/LXX8_IGO_33344_Z_4_S60_R1_001.fastq.gz",
+                "/FASTQ/Project_33344_Z/Sample_LXX8_IGO_33344_Z_4/LXX8_IGO_33344_Z_4_S60_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
