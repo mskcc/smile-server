@@ -4,12 +4,13 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
-import org.mskcc.cmo.metadb.service.CmoRequestService;
+import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,13 +20,15 @@ import org.springframework.stereotype.Component;
  * @author ochoaa
  */
 @Component
-public class CmoRequestServiceImpl implements CmoRequestService {
+public class MetaDbRequestServiceImpl implements MetaDbRequestService {
 
     @Autowired
     private MetaDbRequestRepository metaDbRequestRepository;
 
     @Autowired
     private SampleService sampleService;
+
+    private Logger LOG = Logger.getLogger(MetaDbRequestServiceImpl.class);
 
 
     @Override
@@ -59,6 +62,10 @@ public class CmoRequestServiceImpl implements CmoRequestService {
     @Override
     public Map<String, Object> getMetaDbRequest(String requestId) throws Exception {
         MetaDbRequest metaDbRequest = metaDbRequestRepository.findByRequestId(requestId);
+        if (metaDbRequest == null) {
+            LOG.error("Couldn't find a request with requestId " + requestId);
+            return null;
+        }
         List<SampleManifestEntity> samples = new ArrayList<>();
         for (MetaDbSample metaDbSample: metaDbRequestRepository.findAllSampleManifests(requestId)) {
             samples.addAll(sampleService.getMetaDbSample(metaDbSample.getUuid()).getSampleManifestList());

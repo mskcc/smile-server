@@ -7,7 +7,7 @@ import org.mskcc.cmo.metadb.model.MetaDbRequest;
  *
  * @author ochoaa
  */
-public interface CmoRequestService {
+public interface MetaDbRequestService {
 
     void saveRequest(MetaDbRequest request) throws Exception;
 
