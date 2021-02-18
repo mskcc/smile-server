@@ -14,7 +14,7 @@ import org.neo4j.ogm.annotation.Relationship;
  *
  * @author ochoaa
  */
-@NodeEntity
+@NodeEntity(label = "Request")
 public class MetaDbRequest implements Serializable {
     @Id @GeneratedValue
     private Long id;
