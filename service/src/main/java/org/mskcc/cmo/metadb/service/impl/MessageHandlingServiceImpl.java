@@ -16,8 +16,8 @@ import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleManifestEntity;
-import org.mskcc.cmo.metadb.service.CmoRequestService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
+import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -35,7 +35,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     private int NUM_NEW_REQUEST_HANDLERS;
 
     @Autowired
-    private CmoRequestService requestService;
+    private MetaDbRequestService requestService;
 
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
