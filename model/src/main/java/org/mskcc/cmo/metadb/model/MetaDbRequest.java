@@ -75,7 +75,8 @@ public class MetaDbRequest implements Serializable {
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
-            List<MetaDbSample> metaDbSampleList, String requestJson, boolean bicAnalysis, boolean isCmoRequest) {
+            List<MetaDbSample> metaDbSampleList, String requestJson, 
+            boolean bicAnalysis, boolean isCmoRequest) {
         this.requestId = requestId;
         this.recipe = recipe;
         this.projectManagerName = projectManagerName;
