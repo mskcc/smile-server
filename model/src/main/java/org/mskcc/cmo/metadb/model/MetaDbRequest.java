@@ -43,6 +43,8 @@ public class MetaDbRequest implements Serializable {
     protected String libraryType;
     protected List<RequestSample> requestSamples;
     protected List<String> pooledNormals;
+    protected boolean cmoRequest;
+    protected boolean bicAnalysis;
 
     public MetaDbRequest() {}
 
@@ -65,13 +67,16 @@ public class MetaDbRequest implements Serializable {
      * @param libraryType
      * @param metaDbSampleList
      * @param requestJson
+     * @param bicAnalysis
+     * @param cmoRequest
      */
     public MetaDbRequest(String requestId, String recipe, String projectManagerName,
             String piEmail, String labHeadName, String labHeadEmail,
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
-            List<MetaDbSample> metaDbSampleList, String requestJson) {
+            List<MetaDbSample> metaDbSampleList, String requestJson, 
+            boolean bicAnalysis, boolean cmoRequest) {
         this.requestId = requestId;
         this.recipe = recipe;
         this.projectManagerName = projectManagerName;
@@ -90,6 +95,8 @@ public class MetaDbRequest implements Serializable {
         this.metaDbSampleList = metaDbSampleList;
         this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
+        this.bicAnalysis = bicAnalysis;
+        this.cmoRequest = cmoRequest;
     }
 
     public Long getId() {
@@ -287,6 +294,22 @@ public class MetaDbRequest implements Serializable {
 
     public void setPooledNormals(List<String> pooledNormals) {
         this.pooledNormals = pooledNormals;
+    }
+
+    public boolean getCmoRequest() {
+        return cmoRequest;
+    }
+
+    public void setCmoRequest(boolean cmoRequest) {
+        this.cmoRequest = cmoRequest;
+    }
+
+    public boolean getBicAnalysis() {
+        return bicAnalysis;
+    }
+
+    public void setBicAnalysis(boolean bicAnalysis) {
+        this.bicAnalysis = bicAnalysis;
     }
 
     @Override

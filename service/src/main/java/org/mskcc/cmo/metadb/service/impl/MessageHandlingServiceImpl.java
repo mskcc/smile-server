@@ -63,10 +63,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
                         Gson gson = new Gson();
-                        System.out.println("This is where we would persist the request to neo4j...");
                         requestService.saveRequest(request);
                         messagingGateway.publish(CMO_NEW_REQUEST_TOPIC,
-                                requestService.getMetaDbRequest(request.getRequestId()));
+                                gson.toJson(requestService.getMetaDbRequest(request.getRequestId())));
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
                         break;
