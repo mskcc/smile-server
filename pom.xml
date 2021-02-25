@@ -42,8 +42,8 @@
     <spring.version>5.2.6.RELEASE</spring.version>
     <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
     <!-- metadb messaging and shared entities dependency versions -->
-    <cmo_metadb_messaging_java.version>81258a16d63cea640e4d80efb5df5100a6ff4dea</cmo_metadb_messaging_java.version>
-    <cmo_metadb_shared_entities.version>0a0c91b82c5e1ef0fbde17b74319940825e0493e</cmo_metadb_shared_entities.version>
+    <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
+    <cmo_metadb_messaging_java.version>39241a484410204dd27112e074578d887323b801</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
@@ -53,14 +53,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.mskcc</groupId>
+      <groupId>${cmo_metadb_messaging_java.group}</groupId>
       <artifactId>cmo-messaging-java</artifactId>
       <version>${cmo_metadb_messaging_java.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.mskcc</groupId>
-      <artifactId>cmo-metadb-shared-entities</artifactId>
-      <version>${cmo_metadb_shared_entities.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -21,7 +21,7 @@ public class SampleManifestEntity implements Serializable {
     protected String cmoSampleName;
     protected String sampleName;
     protected String cmoSampleClass;
-    protected String oncotreeCode;
+    protected String oncoTreeCode;
     protected String collectionYear;
     protected String tubeId;
     protected String cfDNA2dBarcode;
@@ -50,7 +50,6 @@ public class SampleManifestEntity implements Serializable {
     protected String fastqPath;
     protected String principalInvestigator;
     protected String ancestorSample;
-    protected boolean doNotUse;
     protected String sampleStatus;
     protected Date creationDate;
     private String requestId;
@@ -70,7 +69,7 @@ public class SampleManifestEntity implements Serializable {
      * @param cmoSampleClass
      * @param cmoPatientId
      * @param investigatorSampleId
-     * @param oncotreeCode
+     * @param oncoTreeCode
      * @param tumorOrNormal
      * @param tissueLocation
      * @param specimenType
@@ -94,20 +93,22 @@ public class SampleManifestEntity implements Serializable {
      * @param fastqPath
      * @param principalInvestigator
      * @param ancestorSample
-     * @param doNotUse
      * @param sampleStatus
      * @param creationTime
      */
     public SampleManifestEntity(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
-            String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncotreeCode,
+            String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
             String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
             String preservation, String collectionYear, String sex, String species, String tubeId,
             String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
             String mrn, String cmoSampleId, String sampleType, String tumorType, String parentTumorType,
             String tissueSource, String recipe, String baitSet, String fastqPath,
-            String principalInvestigator, String ancestorSample, Boolean doNotUse,
-            String sampleStatus, String creationTime) {
+            String principalInvestigator, String ancestorSample, String sampleStatus, String creationTime) {
         this.mrn = mrn;
+        this.cmoInfoIgoId = cmoInfoIgoId;
+        this.cmoSampleName = cmoSampleName;
+        this.sampleName = sampleName;
+        this.cmoSampleClass = cmoSampleClass;
         this.cmoPatientId = cmoPatientId;
         this.cmoSampleId = cmoSampleId;
         this.igoId = igoId;
@@ -128,9 +129,14 @@ public class SampleManifestEntity implements Serializable {
         this.principalInvestigator = principalInvestigator;
         this.fastqPath = fastqPath;
         this.ancestorSample = ancestorSample;
-        this.doNotUse = doNotUse;
         this.sampleStatus = sampleStatus;
         this.creationTime = creationTime;
+        this.oncoTreeCode = oncoTreeCode;
+        this.collectionYear = collectionYear;
+        this.tubeId = tubeId;
+        this.cfDNA2dBarcode = cfDNA2dBarcode;
+        this.qcReports = qcReports;
+        this.libraries = libraries;
     }
 
     public Long getId() {
@@ -181,12 +187,12 @@ public class SampleManifestEntity implements Serializable {
         this.cmoSampleClass = cmoSampleClass;
     }
 
-    public String getOncotreeCode() {
-        return oncotreeCode;
+    public String getOncoTreeCode() {
+        return oncoTreeCode;
     }
 
-    public void setOncotreeCode(String oncotreeCode) {
-        this.oncotreeCode = oncotreeCode;
+    public void setOncoTreeCode(String oncoTreeCode) {
+        this.oncoTreeCode = oncoTreeCode;
     }
 
     public String getCollectionYear() {
@@ -431,14 +437,6 @@ public class SampleManifestEntity implements Serializable {
 
     public void setAncestorSample(String ancestorSample) {
         this.ancestorSample = ancestorSample;
-    }
-
-    public boolean isDoNotUse() {
-        return doNotUse;
-    }
-
-    public void setDoNotUse(boolean doNotUse) {
-        this.doNotUse = doNotUse;
     }
 
     public String getSampleStatus() {

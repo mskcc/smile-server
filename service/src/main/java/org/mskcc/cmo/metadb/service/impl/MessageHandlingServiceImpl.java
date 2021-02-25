@@ -1,5 +1,7 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,11 +149,13 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         });
     }
 
-    private List<MetaDbSample> extractMetaDbSamplesFromIgoResponse(Object message) {
+    private List<MetaDbSample> extractMetaDbSamplesFromIgoResponse(Object message)
+            throws JsonProcessingException {
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(message.toString(), Map.class);
-        SampleManifestEntity[] sampleList = gson.fromJson(gson.toJson(
-                map.get("sampleManifestList")), SampleManifestEntity[].class);
+        ObjectMapper mapper = new ObjectMapper();
+        SampleManifestEntity[] sampleList = mapper.convertValue(map.get("sampleManifestList"),
+                SampleManifestEntity[].class);
         List<MetaDbSample> metaDbSampleList = new ArrayList<>();
         for (SampleManifestEntity sample: sampleList) {
             MetaDbSample metaDbSample = new MetaDbSample();
