@@ -1,5 +1,5 @@
-# required to prevent embedded spring boot web server from starting up
-spring.main.web-application-type=none
+# spring web server port
+server.port=
 
 # nats server
 nats.clusterid=
