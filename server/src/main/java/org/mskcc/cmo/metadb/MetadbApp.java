@@ -20,7 +20,7 @@ public class MetadbApp implements CommandLineRunner {
 
     @Autowired
     private MessageHandlingService messageHandlingService;
-    
+
     private Thread shutdownHook;
     final CountDownLatch metadbAppClose = new CountDownLatch(1);
 
@@ -31,7 +31,6 @@ public class MetadbApp implements CommandLineRunner {
             installShutdownHook();
             messagingGateway.connect();
             messageHandlingService.initialize(messagingGateway);
-            System.out.println("Attempting to persist mock request data to neo4j..");
             metadbAppClose.await();
         } catch (Exception e) {
             e.printStackTrace();

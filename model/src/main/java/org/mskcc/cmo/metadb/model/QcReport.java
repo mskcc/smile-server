@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -17,6 +18,7 @@ public class QcReport implements Serializable {
     @Id @GeneratedValue
     private Long id;
     private QcReportType qcReportType;
+    @JsonProperty("IGORecommendation")
     private String igoRecommendation;
     private String comments;
     private String investigatorDecision;
