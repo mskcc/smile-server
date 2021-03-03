@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import org.neo4j.ogm.annotation.typeconversion.Convert;
  *
  * @author ochoaa
  */
-
+@JsonIgnoreProperties({"numFastQs"})
 public class Library implements Serializable {
     @Id @GeneratedValue
     private Long id;

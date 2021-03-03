@@ -41,14 +41,15 @@
     <maven.compiler.version>1.8</maven.compiler.version>
     <spring.version>5.2.6.RELEASE</spring.version>
     <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
+    <slf4j.version>1.7.30</slf4j.version>
+    <jackson.version>2.11.2</jackson.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
-    <cmo_metadb_messaging_java.version>39241a484410204dd27112e074578d887323b801</cmo_metadb_messaging_java.version>
+    <cmo_metadb_messaging_java.version>c9d741e60a3068ee3b85dda4b02d1ed45325cfe0</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
     <cmo_metadb_common.version>v1.1-alpha</cmo_metadb_common.version>
-    <slf4j.version>1.7.30</slf4j.version>
   </properties>
 
   <dependencies>
@@ -76,6 +77,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <!-- jackson -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
   </dependencies>
 

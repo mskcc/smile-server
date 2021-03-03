@@ -1,5 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,45 +15,47 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 @NodeEntity(label = "SampleMetadata")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SampleManifestEntity implements Serializable {
     @Id @GeneratedValue
+    @JsonIgnore
     private Long id;
     private String creationTime;
-    protected String cmoInfoIgoId;
-    protected String cmoSampleName;
-    protected String sampleName;
-    protected String cmoSampleClass;
-    protected String oncoTreeCode;
-    protected String collectionYear;
-    protected String tubeId;
-    protected String cfDNA2dBarcode;
+    private String cmoInfoIgoId;
+    private String cmoSampleName;
+    private String sampleName;
+    private String cmoSampleClass;
+    private String oncoTreeCode;
+    private String collectionYear;
+    private String tubeId;
+    private String cfDNA2dBarcode;
     @Convert(QcReportsStringConverter.class)
-    protected List<QcReport> qcReports;
+    private List<QcReport> qcReports;
     @Convert(LibrariesStringConverter.class)
-    protected List<Library> libraries;
-    protected String mrn;
-    protected String cmoPatientId;
-    protected String cmoSampleId;
-    protected String igoId;
-    protected String investigatorSampleId;
-    protected String species;
-    protected String sex;
-    protected String tumorOrNormal;
-    protected String sampleType;
-    protected String preservation;
-    protected String tumorType;
-    protected String parentTumorType;
-    protected String specimenType;
-    protected String sampleOrigin;
-    protected String tissueSource;
-    protected String tissueLocation;
-    protected String recipe;
-    protected String baitSet;
-    protected String fastqPath;
-    protected String principalInvestigator;
-    protected String ancestorSample;
-    protected String sampleStatus;
-    protected Date creationDate;
+    private List<Library> libraries;
+    private String mrn;
+    private String cmoPatientId;
+    private String cmoSampleId;
+    private String igoId;
+    private String investigatorSampleId;
+    private String species;
+    private String sex;
+    private String tumorOrNormal;
+    private String sampleType;
+    private String preservation;
+    private String tumorType;
+    private String parentTumorType;
+    private String specimenType;
+    private String sampleOrigin;
+    private String tissueSource;
+    private String tissueLocation;
+    private String recipe;
+    private String baitSet;
+    private String fastqPath;
+    private String principalInvestigator;
+    private String ancestorSample;
+    private String sampleStatus;
+    private Date creationDate;
     private String requestId;
 
     public SampleManifestEntity() {}
@@ -239,7 +243,7 @@ public class SampleManifestEntity implements Serializable {
      * @param qcReport
      */
     public void addQcReport(QcReport qcReport) {
-        if (qcReports == null) {
+        if (getQcReports() == null) {
             this.qcReports = new ArrayList<>();
         }
         qcReports.add(qcReport);
@@ -265,7 +269,7 @@ public class SampleManifestEntity implements Serializable {
      * @param library
      */
     public void addLibrary(Library library) {
-        if (libraries == null) {
+        if (getLibraries() == null) {
             this.libraries = new ArrayList<>();
         }
         libraries.add(library);

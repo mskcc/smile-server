@@ -2,7 +2,7 @@ package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +39,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Autowired
     private MetaDbRequestService requestService;
 
+    private final ObjectMapper mapper = new ObjectMapper();
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
-
     private static final ExecutorService exec = Executors.newCachedThreadPool();
     private static final BlockingQueue<MetaDbRequest> newRequestQueue =
         new LinkedBlockingQueue<MetaDbRequest>();
@@ -64,10 +64,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        Gson gson = new Gson();
                         requestService.saveRequest(request);
                         messagingGateway.publish(CMO_NEW_REQUEST_TOPIC,
-                                gson.toJson(requestService.getMetaDbRequest(request.getRequestId())));
+                                mapper.writeValueAsString(
+                                        requestService.getMetaDbRequest(request.getRequestId())));
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
                         break;
@@ -134,8 +134,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         gateway.subscribe(IGO_NEW_REQUEST_TOPIC, Object.class, new MessageConsumer() {
             public void onMessage(Object message) {
                 try {
-                    Gson gson = new Gson();
-                    MetaDbRequest metaDbRequest = gson.fromJson(message.toString(),
+                    MetaDbRequest metaDbRequest = mapper.readValue(message.toString(),
                             MetaDbRequest.class);
                     metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(message));
                     metaDbRequest.setIdSource("igo");
@@ -150,11 +149,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     }
 
     private List<MetaDbSample> extractMetaDbSamplesFromIgoResponse(Object message)
-            throws JsonProcessingException {
-        Gson gson = new Gson();
-        Map<String, Object> map = gson.fromJson(message.toString(), Map.class);
+            throws JsonProcessingException, IOException {
+        Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
         ObjectMapper mapper = new ObjectMapper();
-        SampleManifestEntity[] sampleList = mapper.convertValue(map.get("sampleManifestList"),
+        SampleManifestEntity[] sampleList = mapper.convertValue(map.get("samples"),
                 SampleManifestEntity[].class);
         List<MetaDbSample> metaDbSampleList = new ArrayList<>();
         for (SampleManifestEntity sample: sampleList) {
