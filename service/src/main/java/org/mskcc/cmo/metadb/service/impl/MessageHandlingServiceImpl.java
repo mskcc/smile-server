@@ -1,11 +1,13 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -150,9 +152,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
     private List<MetaDbSample> extractMetaDbSamplesFromIgoResponse(Object message)
             throws JsonProcessingException, IOException {
-        Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        ObjectMapper mapper = new ObjectMapper();
-        SampleManifestEntity[] sampleList = mapper.convertValue(map.get("samples"),
+        TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
+        HashMap<String,Object> map = mapper.readValue(new ByteArrayInputStream(
+                message.toString().getBytes("UTF-8")), typeRef);
+        SampleManifestEntity[] sampleList = mapper.convertValue(map.get("sampleManifestList"),
                 SampleManifestEntity[].class);
         List<MetaDbSample> metaDbSampleList = new ArrayList<>();
         for (SampleManifestEntity sample: sampleList) {

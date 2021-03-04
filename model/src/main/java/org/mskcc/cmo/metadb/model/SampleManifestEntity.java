@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 @NodeEntity(label = "SampleMetadata")
+@JsonIgnoreProperties({"igocomplete"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SampleManifestEntity implements Serializable {
     @Id @GeneratedValue

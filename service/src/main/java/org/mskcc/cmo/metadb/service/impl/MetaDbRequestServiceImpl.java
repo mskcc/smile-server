@@ -1,7 +1,11 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -28,7 +32,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     @Autowired
     private SampleService sampleService;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     private Logger LOG = Logger.getLogger(MetaDbRequestServiceImpl.class);
 
 
@@ -71,9 +75,11 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         for (MetaDbSample metaDbSample: metaDbRequestRepository.findAllSampleManifests(requestId)) {
             samples.addAll(sampleService.getMetaDbSample(metaDbSample.getUuid()).getSampleManifestList());
         }
-        Map<String, Object> metaDbRequestMap = mapper.readValue(
-                mapper.writeValueAsString(metaDbRequest), Map.class);
-        metaDbRequestMap.put("samples", samples);
+        TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
+        HashMap<String,Object> metaDbRequestMap = mapper.readValue(new ByteArrayInputStream(
+                mapper.writeValueAsString(metaDbRequest).getBytes("UTF-8")), typeRef);
+        metaDbRequestMap.put("sampleManifestList", samples);
+        System.out.println(mapper.writeValueAsString(metaDbRequestMap));
         return metaDbRequestMap;
     }
 }

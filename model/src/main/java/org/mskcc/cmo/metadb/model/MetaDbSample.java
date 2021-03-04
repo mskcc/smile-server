@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class MetaDbSample implements Serializable {
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.INCOMING)
     private MetaDbPatient patient;
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
+    @JsonProperty("sampleManifestList")
     private List<SampleManifestEntity> sampleManifestList;
     private String sampleClass;
 
