@@ -78,7 +78,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
         HashMap<String,Object> metaDbRequestMap = mapper.readValue(new ByteArrayInputStream(
                 mapper.writeValueAsString(metaDbRequest).getBytes("UTF-8")), typeRef);
-        metaDbRequestMap.put("sampleManifestList", samples);
+        metaDbRequestMap.put("samples", samples);
         System.out.println(mapper.writeValueAsString(metaDbRequestMap));
         return metaDbRequestMap;
     }

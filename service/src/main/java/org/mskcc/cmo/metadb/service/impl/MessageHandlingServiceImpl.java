@@ -155,7 +155,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
         HashMap<String,Object> map = mapper.readValue(new ByteArrayInputStream(
                 message.toString().getBytes("UTF-8")), typeRef);
-        SampleManifestEntity[] sampleList = mapper.convertValue(map.get("sampleManifestList"),
+        SampleManifestEntity[] sampleList = mapper.convertValue(map.get("samples"),
                 SampleManifestEntity[].class);
         List<MetaDbSample> metaDbSampleList = new ArrayList<>();
         for (SampleManifestEntity sample: sampleList) {
