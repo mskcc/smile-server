@@ -18,7 +18,7 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 public class MetaDbSample implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
-    private UUID uuid;
+    private UUID metaDbSampleId;
     @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
     private List<SampleAlias> sampleAliases;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.INCOMING)
@@ -29,12 +29,12 @@ public class MetaDbSample implements Serializable {
 
     public MetaDbSample() {}
 
-    public UUID getUuid() {
-        return uuid;
+    public UUID getMetaDbSampleId() {
+        return metaDbSampleId;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setMetaDbSampleId(UUID metaDbSampleId) {
+        this.metaDbSampleId = metaDbSampleId;
     }
 
     public void setSampleAliases(List<SampleAlias> sampleAliases) {
@@ -84,7 +84,7 @@ public class MetaDbSample implements Serializable {
     }
 
     public void setPatientUuid(UUID uuid) {
-        this.patient.setUuid(uuid);
+        this.patient.setMetaDbPatientId(uuid);
     }
 
     /**

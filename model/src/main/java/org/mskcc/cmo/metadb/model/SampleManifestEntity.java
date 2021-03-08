@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
@@ -20,6 +21,7 @@ public class SampleManifestEntity implements Serializable {
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
+    private UUID sampleUuid;
     private String creationTime;
     private String cmoInfoIgoId;
     private String cmoSampleName;
@@ -35,6 +37,7 @@ public class SampleManifestEntity implements Serializable {
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
+    private UUID patientUuid;
     private String cmoSampleId;
     private String igoId;
     private String investigatorSampleId;
@@ -149,6 +152,14 @@ public class SampleManifestEntity implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getSampleUuid() {
+        return sampleUuid;
+    }
+
+    public void setSampleUuid(UUID sampleUuid) {
+        this.sampleUuid = sampleUuid;
     }
 
     public String getCreationTime() {
@@ -289,6 +300,14 @@ public class SampleManifestEntity implements Serializable {
 
     public void setCmoPatientId(String cmoPatientId) {
         this.cmoPatientId = cmoPatientId;
+    }
+
+    public UUID getPatientUuid() {
+        return patientUuid;
+    }
+
+    public void setPatientUuid(UUID patientUuid) {
+        this.patientUuid = patientUuid;
     }
 
     public String getCmoSampleId() {
