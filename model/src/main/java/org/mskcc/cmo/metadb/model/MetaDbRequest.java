@@ -1,5 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,36 +17,39 @@ import org.neo4j.ogm.annotation.Relationship;
  * @author ochoaa
  */
 @NodeEntity(label = "Request")
+@JsonIgnoreProperties({"samples"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MetaDbRequest implements Serializable {
     @Id @GeneratedValue
+    @JsonIgnore
     private Long id;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
     private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
     private MetaDbProject metaDbProject;
+    @JsonIgnore
     private String idSource;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
-    protected String projectId;
+    private String projectId;
     private String requestJson;
-    protected String requestId;
-    protected String recipe;
-    protected String projectManagerName;
-    protected String piEmail;
-    protected String labHeadName;
-    protected String labHeadEmail;
-    protected String investigatorName;
-    protected String investigatorEmail;
-    protected String dataAnalystName;
-    protected String dataAnalystEmail;
-    protected String otherContactEmails;
-    protected String dataAccessEmails;
-    protected String qcAccessEmails;
-    protected String strand;
-    protected String libraryType;
-    protected List<RequestSample> requestSamples;
-    protected List<String> pooledNormals;
-    protected boolean cmoRequest;
-    protected boolean bicAnalysis;
+    private String requestId;
+    private String recipe;
+    private String projectManagerName;
+    private String piEmail;
+    private String labHeadName;
+    private String labHeadEmail;
+    private String investigatorName;
+    private String investigatorEmail;
+    private String dataAnalystName;
+    private String dataAnalystEmail;
+    private String otherContactEmails;
+    private String dataAccessEmails;
+    private String qcAccessEmails;
+    private String strand;
+    private String libraryType;
+    private List<String> pooledNormals;
+    private boolean cmoRequest;
+    private boolean bicAnalysis;
 
     public MetaDbRequest() {}
 
@@ -75,7 +80,7 @@ public class MetaDbRequest implements Serializable {
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
-            List<MetaDbSample> metaDbSampleList, String requestJson, 
+            List<MetaDbSample> metaDbSampleList, String requestJson,
             boolean bicAnalysis, boolean cmoRequest) {
         this.requestId = requestId;
         this.recipe = recipe;
@@ -277,15 +282,6 @@ public class MetaDbRequest implements Serializable {
 
     public void setLibraryType(String libraryType) {
         this.libraryType = libraryType;
-    }
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public List<RequestSample> getSamples() {
-        return requestSamples;
-    }
-
-    public void setSamples(List<RequestSample> requestSamples) {
-        this.requestSamples = requestSamples;
     }
 
     public List<String> getPooledNormals() {

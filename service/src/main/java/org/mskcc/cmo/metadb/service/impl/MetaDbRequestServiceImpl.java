@@ -1,6 +1,6 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     @Autowired
     private SampleService sampleService;
 
+    private final ObjectMapper mapper = new ObjectMapper();
     private Logger LOG = Logger.getLogger(MetaDbRequestServiceImpl.class);
 
 
@@ -70,9 +71,9 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         for (MetaDbSample metaDbSample: metaDbRequestRepository.findAllSampleManifests(requestId)) {
             samples.addAll(sampleService.getMetaDbSample(metaDbSample.getUuid()).getSampleManifestList());
         }
-        Gson gson = new Gson();
-        Map<String, Object> metaDbRequestMap = gson.fromJson(gson.toJson(metaDbRequest), Map.class);
-        metaDbRequestMap.put("sampleManifestList", samples);
+        Map<String, Object> metaDbRequestMap = mapper.readValue(
+                mapper.writeValueAsString(metaDbRequest), Map.class);
+        metaDbRequestMap.put("samples", samples);
         return metaDbRequestMap;
     }
 }
