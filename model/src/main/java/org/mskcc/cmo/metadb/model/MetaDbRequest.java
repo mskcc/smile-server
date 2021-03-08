@@ -6,11 +6,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
+import org.neo4j.ogm.id.UuidStrategy;
+import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
 /**
  *
@@ -20,9 +24,9 @@ import org.neo4j.ogm.annotation.Relationship;
 @JsonIgnoreProperties({"samples"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MetaDbRequest implements Serializable {
-    @Id @GeneratedValue
-    @JsonIgnore
-    private Long id;
+    @Id @GeneratedValue(strategy = UuidStrategy.class)
+    @Convert(UuidStringConverter.class)
+    private UUID metaDbRequestId;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
     private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
@@ -104,12 +108,12 @@ public class MetaDbRequest implements Serializable {
         this.cmoRequest = cmoRequest;
     }
 
-    public Long getId() {
-        return id;
+    public UUID getMetaDbRequestId() {
+        return metaDbRequestId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setMetaDbRequestId(UUID metaDbRequestId) {
+        this.metaDbRequestId = metaDbRequestId;
     }
 
     public List<MetaDbSample> getMetaDbSampleList() {

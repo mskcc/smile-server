@@ -69,7 +69,8 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         }
         List<SampleManifestEntity> samples = new ArrayList<>();
         for (MetaDbSample metaDbSample: metaDbRequestRepository.findAllSampleManifests(requestId)) {
-            samples.addAll(sampleService.getMetaDbSample(metaDbSample.getUuid()).getSampleManifestList());
+            samples.addAll(sampleService.getMetaDbSample(metaDbSample.getMetaDbSampleId())
+                    .getSampleManifestList());
         }
         Map<String, Object> metaDbRequestMap = mapper.readValue(
                 mapper.writeValueAsString(metaDbRequest), Map.class);

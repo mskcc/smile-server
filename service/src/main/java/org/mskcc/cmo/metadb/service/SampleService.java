@@ -17,5 +17,5 @@ public interface SampleService {
 
     List<String> findPooledNormalSample(MetaDbSample metaDbSample) throws Exception;
 
-    MetaDbSample getMetaDbSample(UUID uuid) throws Exception;
+    MetaDbSample getMetaDbSample(UUID metaDbSampleId) throws Exception;
 }

@@ -33,7 +33,7 @@ public class SampleServiceImpl implements SampleService {
             MetaDbPatient patient = metaDbPatientRepository.findPatientByInvestigatorId(
                     updatedMetaDbSample.getPatient().getInvestigatorPatientId());
             if (patient != null) {
-                updatedMetaDbSample.setPatientUuid(patient.getUuid());
+                updatedMetaDbSample.setPatientUuid(patient.getMetaDbPatientId());
             }
             metaDbSampleRepository.save(updatedMetaDbSample);
         } else {
@@ -87,9 +87,13 @@ public class SampleServiceImpl implements SampleService {
     }
 
     @Override
-    public MetaDbSample getMetaDbSample(UUID uuid) throws Exception {
-        MetaDbSample metaDbSample = metaDbSampleRepository.findSampleByUUID(uuid);
-        metaDbSample.setSampleManifestList(metaDbSampleRepository.findSampleManifestList(uuid));
+    public MetaDbSample getMetaDbSample(UUID metaDbSampleId) throws Exception {
+        MetaDbSample metaDbSample = metaDbSampleRepository.findSampleByUUID(metaDbSampleId);
+        metaDbSample.setSampleManifestList(metaDbSampleRepository.findSampleManifestList(metaDbSampleId));
+        for (SampleManifestEntity s: metaDbSample.getSampleManifestList()) {
+            s.setPatientUuid(metaDbSampleRepository.findPatientUuid(metaDbSampleId));
+            s.setSampleUuid(metaDbSampleId);
+        }
         return metaDbSample;
     }
 }
