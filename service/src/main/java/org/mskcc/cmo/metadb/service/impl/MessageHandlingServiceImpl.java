@@ -137,7 +137,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     MetaDbRequest metaDbRequest = mapper.readValue(message.toString(),
                             MetaDbRequest.class);
                     metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(message));
-                    metaDbRequest.setIdSource("igo");
+                    metaDbRequest.setNamespace("igo");
                     messageHandlingService.newRequestHandler(metaDbRequest);
                 } catch (Exception e) {
                     System.err.printf("Cannot process IGO_NEW_REQUEST:\n%s\n", message);

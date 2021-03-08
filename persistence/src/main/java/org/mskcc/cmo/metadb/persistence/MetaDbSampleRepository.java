@@ -22,19 +22,19 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
             + "RETURN sm")
     MetaDbSample findSampleByUUID(@Param("metaDbSampleId") UUID metaDbSampleId);
 
-    @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, idSource: 'igoId'}) "
+    @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, namespace: 'igoId'}) "
         + "MATCH (s)<-[:IS_ALIAS]-(sm: Sample) "
         + "RETURN sm")
     MetaDbSample findSampleByIgoId(@Param("igoId") SampleAlias igoId);
 
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
-            + "WHERE toLower(s.idSource) = 'igoid' RETURN s;")
+            + "WHERE toLower(s.namespace) = 'igoid' RETURN s;")
     SampleAlias findSampleIgoId(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
-            + "WHERE s.idSource = 'investigatorId' RETURN s;")
+            + "WHERE s.namespace = 'investigatorId' RETURN s;")
     SampleAlias findInvestigatorId(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"

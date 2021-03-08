@@ -1,7 +1,7 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
@@ -55,12 +55,12 @@ public class SampleServiceImpl implements SampleService {
         metaDbSample.setPatient(patient);
 
         SampleAlias igoId = new SampleAlias();
-        igoId.setIdSource("igoId");
+        igoId.setNamespace("igoId");
         igoId.setSampleId(sampleManifestEntity.getIgoId());
         metaDbSample.addSample(igoId);
 
         SampleAlias investigatorId = new SampleAlias();
-        investigatorId.setIdSource("investigatorId");
+        investigatorId.setNamespace("investigatorId");
         investigatorId.setSampleId(sampleManifestEntity.getInvestigatorSampleId());
         metaDbSample.addSample(investigatorId);
         return metaDbSample;
@@ -68,9 +68,9 @@ public class SampleServiceImpl implements SampleService {
 
     @Override
     public MetaDbSample setUpSampleManifestEntity(MetaDbSample metaDbSample) throws Exception {
-        for (SampleManifestEntity s: metaDbSample.getSampleManifestList()) {
-            Timestamp time = Timestamp.from(Instant.now());
-            s.setCreationTime(String.valueOf(time.getTime()));
+        SampleManifestEntity s = metaDbSample.getSampleManifestList().get(0);
+        if (s != null) {
+            s.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         }
         return metaDbSample;
     }
