@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -12,12 +11,10 @@ import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
-@NodeEntity(label = "SampleMetadata")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SampleManifestEntity implements Serializable {
+public class SampleMetadata implements Serializable {
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
@@ -60,14 +57,10 @@ public class SampleManifestEntity implements Serializable {
     private String sampleStatus;
     private String requestId;
 
-    public SampleManifestEntity() {}
-
-    public SampleManifestEntity(String importDate) {
-        this.importDate = importDate;
-    }
+    public SampleMetadata() {}
 
     /**
-     * SampleManifestEntity constructor
+     * SampleMetadata constructor
      * @param igoId
      * @param cmoInfoIgoId
      * @param cmoSampleName
@@ -102,7 +95,7 @@ public class SampleManifestEntity implements Serializable {
      * @param sampleStatus
      * @param importDate
      */
-    public SampleManifestEntity(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
+    public SampleMetadata(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
             String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
             String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
             String preservation, String collectionYear, String sex, String species, String tubeId,

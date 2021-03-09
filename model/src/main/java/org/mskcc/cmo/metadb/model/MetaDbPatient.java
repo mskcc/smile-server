@@ -24,11 +24,15 @@ public class MetaDbPatient implements Serializable {
     private UUID metaDbPatientId;
     private String investigatorPatientId;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
-    private List<MetaDbSample> sampleManifestList;
+    private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
     private List<PatientAlias>  patientAliases;
 
     public MetaDbPatient() {}
+
+    public MetaDbPatient(String investigatorPatientId) {
+        this.investigatorPatientId = investigatorPatientId;
+    }
 
     public UUID getMetaDbPatientId() {
         return metaDbPatientId;
@@ -46,12 +50,23 @@ public class MetaDbPatient implements Serializable {
         this.investigatorPatientId = investigatorPatientId;
     }
 
-    public List<MetaDbSample> getSampleManifestList() {
-        return sampleManifestList;
+    public List<MetaDbSample> getMetaDbSampleList() {
+        return metaDbSampleList;
     }
 
-    public void setSampleManifestList(List<MetaDbSample> sampleManifestList) {
-        this.sampleManifestList = sampleManifestList;
+    public void setMetaDbSampleList(List<MetaDbSample> metaDbSampleList) {
+        this.metaDbSampleList = metaDbSampleList;
+    }
+
+    /**
+     * Add sample to array list.
+     * @param metaDbSample
+     */
+    public void addMetaDbSample(MetaDbSample metaDbSample) {
+        if (metaDbSampleList == null) {
+            metaDbSampleList = new ArrayList<>();
+        }
+        metaDbSampleList.add(metaDbSample);
     }
 
     public List<PatientAlias> getPatientAliases() {
@@ -73,14 +88,4 @@ public class MetaDbPatient implements Serializable {
         patientAliases.add(patientAlias);
     }
 
-    /**
-     * Add sample to array list.
-     * @param sampleManifest
-     */
-    public void addSampleManifest(MetaDbSample sampleManifest) {
-        if (sampleManifestList == null) {
-            sampleManifestList = new ArrayList<>();
-        }
-        sampleManifestList.add(sampleManifest);
-    }
 }
