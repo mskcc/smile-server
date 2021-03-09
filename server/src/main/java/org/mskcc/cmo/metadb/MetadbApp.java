@@ -12,7 +12,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 @EntityScan(basePackages = "org.mskcc.cmo.metadb.model")
 @EnableNeo4jRepositories(basePackages = "org.mskcc.cmo.metadb.persistence")
-@SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging", "org.mskcc.cmo.metadb.service"})
+@SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging", "org.mskcc.cmo.metadb.*"})
 public class MetadbApp implements CommandLineRunner {
 
     @Autowired
