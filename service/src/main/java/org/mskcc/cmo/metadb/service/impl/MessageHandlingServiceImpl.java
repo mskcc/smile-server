@@ -136,8 +136,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         gateway.subscribe(IGO_NEW_REQUEST_TOPIC, Object.class, new MessageConsumer() {
             public void onMessage(Object message) {
                 try {
+                    String requestJson = message.toString();
                     MetaDbRequest metaDbRequest = mapper.readValue(message.toString(),
                             MetaDbRequest.class);
+                    metaDbRequest.setRequestJson(requestJson);
                     metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(message));
                     metaDbRequest.setNamespace("igo");
                     messageHandlingService.newRequestHandler(metaDbRequest);
