@@ -3,7 +3,7 @@ package org.mskcc.cmo.metadb.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.text.ParseException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,19 +122,19 @@ public class MetaDbSample implements Serializable {
      */
     public SampleMetadata getLatestSampleMetadata() throws ParseException {
         if (sampleMetadataList != null && !sampleMetadataList.isEmpty()) {
-            LocalDateTime latest = null;
+            LocalDate latest = null;
             SampleMetadata smLatest = null;
             for (int i = 0; i < sampleMetadataList.size(); i++) {
                 SampleMetadata sm = sampleMetadataList.get(i);
                 // if null or empty import date then set it to current date
                 if (StringUtil.isNullOrEmpty(sm.getImportDate())) {
-                    sm.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                    sm.setImportDate(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
                     sampleMetadataList.set(i, sm);
                 }
                 // compare current date with 'latest' date encountered
                 // let's not assume that the most recent sample metadata will
                 // always be the first element in the sampleMetadataList
-                LocalDateTime current = LocalDateTime.parse(sm.getImportDate(),
+                LocalDate current = LocalDate.parse(sm.getImportDate(),
                         DateTimeFormatter.ISO_LOCAL_DATE);
                 if (latest == null) {
                     latest = current;
