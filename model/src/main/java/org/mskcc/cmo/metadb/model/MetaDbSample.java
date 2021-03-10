@@ -2,9 +2,13 @@ package org.mskcc.cmo.metadb.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.neo4j.driver.internal.shaded.io.netty.util.internal.StringUtil;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -24,7 +28,7 @@ public class MetaDbSample implements Serializable {
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.INCOMING)
     private MetaDbPatient patient;
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
-    private List<SampleManifestEntity> sampleManifestList;
+    private List<SampleMetadata> sampleMetadataList;
     private String sampleClass;
 
     public MetaDbSample() {}
@@ -64,23 +68,23 @@ public class MetaDbSample implements Serializable {
         this.patient = patient;
     }
 
-    public void setSampleManifestList(List<SampleManifestEntity> sampleManifestList) {
-        this.sampleManifestList = sampleManifestList;
+    public void setSampleMetadataList(List<SampleMetadata> sampleMetadataList) {
+        this.sampleMetadataList = sampleMetadataList;
     }
 
-    public List<SampleManifestEntity> getSampleManifestList() {
-        return sampleManifestList;
+    public List<SampleMetadata> getSampleMetadataList() {
+        return sampleMetadataList;
     }
 
     /**
      *
-     * @param sampleManifestEntity
+     * @param sampleMetadata
      */
-    public void addSampleManifest(SampleManifestEntity sampleManifestEntity) {
-        if (sampleManifestList == null) {
-            sampleManifestList = new ArrayList<>();
+    public void addSampleMetadata(SampleMetadata sampleMetadata) {
+        if (sampleMetadataList == null) {
+            sampleMetadataList = new ArrayList<>();
         }
-        sampleManifestList.add(sampleManifestEntity);
+        sampleMetadataList.add(sampleMetadata);
     }
 
     public void setPatientUuid(UUID uuid) {
@@ -109,6 +113,41 @@ public class MetaDbSample implements Serializable {
 
     public void setSampleClass(String sampleClass) {
         this.sampleClass = sampleClass;
+    }
+
+    /**
+     * Returns the latest SampleMetadata based on the import date.
+     * @return SampleMetadata
+     * @throws ParseException
+     */
+    public SampleMetadata getLatestSampleMetadata() throws ParseException {
+        if (sampleMetadataList != null && !sampleMetadataList.isEmpty()) {
+            LocalDateTime latest = null;
+            SampleMetadata smLatest = null;
+            for (int i = 0; i < sampleMetadataList.size(); i++) {
+                SampleMetadata sm = sampleMetadataList.get(i);
+                // if null or empty import date then set it to current date
+                if (StringUtil.isNullOrEmpty(sm.getImportDate())) {
+                    sm.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                    sampleMetadataList.set(i, sm);
+                }
+                // compare current date with 'latest' date encountered
+                // let's not assume that the most recent sample metadata will
+                // always be the first element in the sampleMetadataList
+                LocalDateTime current = LocalDateTime.parse(sm.getImportDate(),
+                        DateTimeFormatter.ISO_LOCAL_DATE);
+                if (latest == null) {
+                    latest = current;
+                    smLatest = sm;
+                } else if (current.isAfter(latest)) {
+                    // if current is later than the 'latest' then update 'latest' date and sample metadata
+                    latest = current;
+                    smLatest = sm;
+                }
+            }
+            return smLatest;
+        }
+        return null;
     }
 
 }

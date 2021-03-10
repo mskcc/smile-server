@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
-import org.mskcc.cmo.metadb.model.SampleManifestEntity;
+import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
@@ -38,12 +38,12 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         project.setprojectId(request.getProjectId());
         request.setMetaDbProject(project);
 
-        MetaDbRequest savedRequest = metaDbRequestRepository.findByRequestId(request.getRequestId());
+        MetaDbRequest savedRequest = metaDbRequestRepository.findMetaDbRequestById(request.getRequestId());
         if (savedRequest == null) {
             if (request.getMetaDbSampleList() != null) {
                 List<MetaDbSample> updatedSamples = new ArrayList<>();
                 for (MetaDbSample s: request.getMetaDbSampleList()) {
-                    updatedSamples.add(sampleService.saveSampleManifest(s));
+                    updatedSamples.add(sampleService.saveSampleMetadata(s));
                 }
                 request.setMetaDbSampleList(updatedSamples);
             }
@@ -51,7 +51,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         } else {
             for (MetaDbSample s: request.getMetaDbSampleList()) {
                 if (s.getSampleIgoId() != null
-                        && metaDbRequestRepository.findSampleManifest(request.getRequestId(),
+                        && metaDbRequestRepository.findMetaDbSampleByRequestAndIgoId(request.getRequestId(),
                         s.getSampleIgoId().getSampleId()) == null) {
                     savedRequest.addMetaDbSampleList(s);
                     metaDbRequestRepository.save(savedRequest);
@@ -62,15 +62,15 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
 
     @Override
     public Map<String, Object> getMetaDbRequest(String requestId) throws Exception {
-        MetaDbRequest metaDbRequest = metaDbRequestRepository.findByRequestId(requestId);
+        MetaDbRequest metaDbRequest = metaDbRequestRepository.findMetaDbRequestById(requestId);
         if (metaDbRequest == null) {
             LOG.error("Couldn't find a request with requestId " + requestId);
             return null;
         }
-        List<SampleManifestEntity> samples = new ArrayList<>();
-        for (MetaDbSample metaDbSample: metaDbRequestRepository.findAllSampleManifests(requestId)) {
+        List<SampleMetadata> samples = new ArrayList<>();
+        for (MetaDbSample metaDbSample: metaDbRequestRepository.findAllMetaDbSamplesByRequest(requestId)) {
             samples.addAll(sampleService.getMetaDbSample(metaDbSample.getMetaDbSampleId())
-                    .getSampleManifestList());
+                    .getSampleMetadataList());
         }
         Map<String, Object> metaDbRequestMap = mapper.readValue(
                 mapper.writeValueAsString(metaDbRequest), Map.class);

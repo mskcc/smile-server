@@ -6,11 +6,9 @@ import org.mskcc.cmo.metadb.model.MetaDbSample;
 
 public interface SampleService {
 
-    MetaDbSample saveSampleManifest(MetaDbSample metaDbSample) throws Exception;
+    MetaDbSample saveSampleMetadata(MetaDbSample metaDbSample) throws Exception;
 
     MetaDbSample setUpMetaDbSample(MetaDbSample metaDbSample) throws Exception;
-
-    MetaDbSample setUpSampleManifestEntity(MetaDbSample metaDbSample) throws Exception;
 
     List<MetaDbSample> findMatchedNormalSample(MetaDbSample metaDbSample)
             throws Exception;
