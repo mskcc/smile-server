@@ -32,7 +32,7 @@ public class MetaDbRequest implements Serializable {
     @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
     private MetaDbProject metaDbProject;
     @JsonIgnore
-    private String idSource;
+    private String namespace;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
     private String projectId;
     private String requestJson;
@@ -132,12 +132,12 @@ public class MetaDbRequest implements Serializable {
         this.metaDbProject = metaDbProject;
     }
 
-    public String getIdSource() {
-        return idSource;
+    public String getNamespace() {
+        return namespace;
     }
 
-    public void setIdSource(String idSource) {
-        this.idSource = idSource;
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public String getProjectId() {

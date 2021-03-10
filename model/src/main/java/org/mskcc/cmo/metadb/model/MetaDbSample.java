@@ -96,7 +96,7 @@ public class MetaDbSample implements Serializable {
             this.sampleAliases = new ArrayList<>();
         }
         for (SampleAlias s: sampleAliases) {
-            if (s.getIdSource() == "igoId") {
+            if (s.getNamespace() == "igoId") {
                 return s;
             }
         }

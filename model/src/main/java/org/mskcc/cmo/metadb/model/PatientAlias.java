@@ -18,15 +18,15 @@ public class PatientAlias implements Serializable {
     private Long id;
     @Property(name = "value")
     private String patientId;
-    private String idSource;
+    private String namespace;
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
     private MetaDbPatient metaDbPatient;
 
     public PatientAlias() {}
 
-    public PatientAlias(String patientId, String idSource) {
+    public PatientAlias(String patientId, String namespace) {
         this.patientId = patientId;
-        this.idSource = idSource;
+        this.namespace = namespace;
     }
 
     public String getPatientId() {
@@ -37,12 +37,12 @@ public class PatientAlias implements Serializable {
         this.patientId = patientId;
     }
 
-    public String getIdSource() {
-        return idSource;
+    public String getNamespace() {
+        return namespace;
     }
 
-    public void setIdSource(String idSource) {
-        this.idSource = idSource;
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public MetaDbPatient getPatientMetadata() {

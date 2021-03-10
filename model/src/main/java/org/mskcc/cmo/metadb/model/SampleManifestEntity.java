@@ -22,7 +22,7 @@ public class SampleManifestEntity implements Serializable {
     @JsonIgnore
     private Long id;
     private UUID sampleUuid;
-    private String creationTime;
+    private String importDate;
     private String cmoInfoIgoId;
     private String cmoSampleName;
     private String sampleName;
@@ -58,13 +58,12 @@ public class SampleManifestEntity implements Serializable {
     private String principalInvestigator;
     private String ancestorSample;
     private String sampleStatus;
-    private Date creationDate;
     private String requestId;
 
     public SampleManifestEntity() {}
 
-    public SampleManifestEntity(String creationTime) {
-        this.creationTime = creationTime;
+    public SampleManifestEntity(String importDate) {
+        this.importDate = importDate;
     }
 
     /**
@@ -101,7 +100,7 @@ public class SampleManifestEntity implements Serializable {
      * @param principalInvestigator
      * @param ancestorSample
      * @param sampleStatus
-     * @param creationTime
+     * @param importDate
      */
     public SampleManifestEntity(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
             String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
@@ -110,7 +109,7 @@ public class SampleManifestEntity implements Serializable {
             String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
             String mrn, String cmoSampleId, String sampleType, String tumorType, String parentTumorType,
             String tissueSource, String recipe, String baitSet, String fastqPath,
-            String principalInvestigator, String ancestorSample, String sampleStatus, String creationTime) {
+            String principalInvestigator, String ancestorSample, String sampleStatus, String importDate) {
         this.mrn = mrn;
         this.cmoInfoIgoId = cmoInfoIgoId;
         this.cmoSampleName = cmoSampleName;
@@ -137,7 +136,7 @@ public class SampleManifestEntity implements Serializable {
         this.fastqPath = fastqPath;
         this.ancestorSample = ancestorSample;
         this.sampleStatus = sampleStatus;
-        this.creationTime = creationTime;
+        this.importDate = importDate;
         this.oncoTreeCode = oncoTreeCode;
         this.collectionYear = collectionYear;
         this.tubeId = tubeId;
@@ -156,18 +155,19 @@ public class SampleManifestEntity implements Serializable {
 
     public UUID getSampleUuid() {
         return sampleUuid;
+        
     }
 
     public void setSampleUuid(UUID sampleUuid) {
         this.sampleUuid = sampleUuid;
     }
 
-    public String getCreationTime() {
-        return creationTime;
+    public String getImportDate() {
+        return importDate;
     }
 
-    public void setCreationTime(String creationDate) {
-        this.creationTime = creationTime;
+    public void setImportDate(String importDate) {
+        this.importDate = importDate;
     }
 
     public String getCmoInfoIgoId() {
@@ -468,14 +468,6 @@ public class SampleManifestEntity implements Serializable {
 
     public void setSampleStatus(String sampleStatus) {
         this.sampleStatus = sampleStatus;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public String getRequestId() {

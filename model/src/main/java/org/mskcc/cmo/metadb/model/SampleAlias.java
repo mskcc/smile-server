@@ -17,7 +17,7 @@ public class SampleAlias implements Serializable {
     private Long id;
     @Property(name = "value")
     private String sampleId;
-    private String idSource;
+    private String namespace;
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
     private MetaDbSample sampleMetadata;
 
@@ -26,11 +26,11 @@ public class SampleAlias implements Serializable {
     /**
      * Sample constructor.
      * @param sampleId
-     * @param idSource
+     * @param namespace
      */
-    public SampleAlias(String sampleId, String idSource) {
+    public SampleAlias(String sampleId, String namespace) {
         this.sampleId = sampleId;
-        this.idSource = idSource;
+        this.namespace = namespace;
     }
 
     public String getSampleId() {
@@ -41,12 +41,12 @@ public class SampleAlias implements Serializable {
         this.sampleId = sampleId;
     }
 
-    public String getIdSource() {
-        return idSource;
+    public String getNamespace() {
+        return namespace;
     }
 
-    public void setIdSource(String idSource) {
-        this.idSource = idSource;
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public MetaDbSample getSampleMetadata() {
