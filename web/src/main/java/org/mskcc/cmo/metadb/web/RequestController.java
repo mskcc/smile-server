@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/")
 @Api(tags = "request-controller", description = "Request Controller")
 public class RequestController {
+
     @Autowired
     private MetaDbRequestService metaDbRequestService;
 
@@ -38,8 +38,7 @@ public class RequestController {
     @RequestMapping(value = "/request/{requestId}",
         method = RequestMethod.GET,
         produces = "application/json")
-    @ResponseBody
-    public Map<String, Object> fetchMetaDbRequestGET(@ApiParam(value =
+    public PublishedMetaDbRequest fetchMetaDbRequestGET(@ApiParam(value =
         "Retrieves MetaDbRequest from a RequestId.",
         required = true)
         @PathVariable String requestId) throws Exception {
@@ -56,10 +55,10 @@ public class RequestController {
     @RequestMapping(value = "/request",
         method = RequestMethod.POST,
         produces = "application/json")
-    public List<Map<String, Object>> fetchMetaDbRequestPOST(@ApiParam(value =
+    public List<PublishedMetaDbRequest> fetchMetaDbRequestPOST(@ApiParam(value =
         "List of request ids", required = true, allowMultiple = true)
         @RequestBody List<String> requestIds) throws Exception {
-        List<Map<String, Object>> requestList = new ArrayList<>();
+        List<PublishedMetaDbRequest> requestList = new ArrayList<>();
         for (String requestId: requestIds) {
             requestList.add(metaDbRequestService.getMetaDbRequest(requestId));
         }

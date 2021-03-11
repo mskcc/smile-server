@@ -3,12 +3,12 @@ package org.mskcc.cmo.metadb.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.apache.log4j.Logger;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
@@ -61,7 +61,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     }
 
     @Override
-    public Map<String, Object> getMetaDbRequest(String requestId) throws Exception {
+    public PublishedMetaDbRequest getMetaDbRequest(String requestId) throws Exception {
         MetaDbRequest metaDbRequest = metaDbRequestRepository.findMetaDbRequestById(requestId);
         if (metaDbRequest == null) {
             LOG.error("Couldn't find a request with requestId " + requestId);
@@ -72,9 +72,6 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
             samples.addAll(sampleService.getMetaDbSample(metaDbSample.getMetaDbSampleId())
                     .getSampleMetadataList());
         }
-        Map<String, Object> metaDbRequestMap = mapper.readValue(
-                mapper.writeValueAsString(metaDbRequest), Map.class);
-        metaDbRequestMap.put("samples", samples);
-        return metaDbRequestMap;
+        return new PublishedMetaDbRequest(metaDbRequest, samples);
     }
 }
