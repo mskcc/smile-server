@@ -19,6 +19,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EntityScan(basePackages = "org.mskcc.cmo.metadb.model")
 @EnableNeo4jRepositories(basePackages = "org.mskcc.cmo.metadb.persistence")
@@ -26,6 +27,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Controller
 @EnableCaching
 @EnableSwagger2
+@EnableTransactionManagement
 public class MetadbApp implements CommandLineRunner {
 
     @Autowired

@@ -13,15 +13,16 @@ import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author ochoaa
  */
-@Component
+@Service
 public class MetaDbRequestServiceImpl implements MetaDbRequestService {
-
+    
     @Autowired
     private MetaDbRequestRepository metaDbRequestRepository;
 
@@ -31,7 +32,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     private final ObjectMapper mapper = new ObjectMapper();
     private Logger LOG = Logger.getLogger(MetaDbRequestServiceImpl.class);
 
-
+    @Transactional
     @Override
     public void saveRequest(MetaDbRequest request) throws Exception {
         MetaDbProject project = new MetaDbProject();
