@@ -1,7 +1,7 @@
 package org.mskcc.cmo.metadb.service;
 
-import java.util.Map;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
 
 /**
  *
@@ -11,6 +11,6 @@ public interface MetaDbRequestService {
 
     void saveRequest(MetaDbRequest request) throws Exception;
 
-    Map<String, Object> getMetaDbRequest(String requestId) throws Exception;
+    PublishedMetaDbRequest getMetaDbRequest(String requestId) throws Exception;
 
 }
