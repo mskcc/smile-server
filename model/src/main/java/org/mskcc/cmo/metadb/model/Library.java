@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.RunStringConverter;
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -203,5 +205,50 @@ public class Library implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+    
+    /**
+     * 
+     * @param libraryList
+     * @return true is Object Library is found in the list of Libraries
+     */
+    public boolean existsIn(List<Library> libraryList) {
+        for (Library lib: libraryList) {
+            if (Objects.equals(this.getBarcodeId(), lib.getBarcodeId()) &&
+                    Objects.equals(this.getBarcodeIndex(), lib.getBarcodeIndex()) &&
+                    Objects.equals(this.getCaptureConcentrationNm(), lib.getCaptureConcentrationNm()) &&
+                    Objects.equals(this.getCaptureInputNg(), lib.getCaptureInputNg()) &&
+                    Objects.equals(this.getCaptureName(), lib.getCaptureName()) &&
+                    Objects.equals(this.getDnaInputNg(), lib.getDnaInputNg()) &&
+                    Objects.equals(this.getLibraryConcentrationNgul(), lib.getLibraryConcentrationNgul()) &&
+                    Objects.equals(this.getLibraryIgoId(), lib.getLibraryIgoId()) &&
+                    Objects.equals(this.getLibraryVolume(), lib.getLibraryVolume()) &&
+                    Objects.equals(this.getNumFastQs(), lib.getNumFastQs()) &&
+                    compareRuns(this.getRuns(), lib.getRuns())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * 
+     * @param newRuns
+     * @param existingRuns
+     * @return true if equal, false if not
+     */
+    public boolean compareRuns(List<Run> newRuns, List<Run> existingRuns) {
+        if (newRuns == null && existingRuns == null) {
+            return true;
+        }
+        if (newRuns == null || existingRuns == null) {
+            return false;
+        }
+        for (Run run: newRuns) {
+            if (!run.existsIn(existingRuns)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

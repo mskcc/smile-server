@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -151,6 +153,21 @@ public class Run implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+    
+    public boolean existsIn(List<Run> runs) {
+        for (Run run: runs) {
+            if (Objects.equals(this.getFastqs(), run.getFastqs()) &&
+                    Objects.equals(this.getFlowCellId(), run.getFlowCellId()) &&
+                    Objects.equals(this.getFlowCellLanes(), run.getFlowCellLanes()) &&
+                    Objects.equals(this.getReadLength(), run.getReadLength()) &&
+                    Objects.equals(this.getRunDate(), run.getRunDate()) &&
+                    Objects.equals(this.getRunId(), run.getRunId()) &&
+                    Objects.equals(this.getRunMode(), run.getRunMode())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

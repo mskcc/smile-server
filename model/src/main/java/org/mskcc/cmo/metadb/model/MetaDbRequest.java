@@ -166,6 +166,16 @@ public class MetaDbRequest implements Serializable {
         }
         metaDbSampleList.add(metaDbSample);
     }
+    
+    public MetaDbSample findMetaDbSample(UUID metaDbSampleId) {
+        if (this.getMetaDbSampleList() == null) return null;
+        for (MetaDbSample s: this.metaDbSampleList) {
+            if (s.getMetaDbSampleId().equals(metaDbSampleId)) {
+                return s;
+            }
+        }
+        return null;
+    }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public String getRequestId() {

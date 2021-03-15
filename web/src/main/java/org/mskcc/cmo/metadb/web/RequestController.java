@@ -43,7 +43,7 @@ public class RequestController {
         "Retrieves MetaDbRequest from a RequestId.",
         required = true)
         @PathVariable String requestId) throws Exception {
-        return metaDbRequestService.getMetaDbRequest(requestId);
+        return metaDbRequestService.getMetaDbRequestMap(requestId);
     }
 
     /**
@@ -61,7 +61,7 @@ public class RequestController {
         @RequestBody List<String> requestIds) throws Exception {
         List<Map<String, Object>> requestList = new ArrayList<>();
         for (String requestId: requestIds) {
-            requestList.add(metaDbRequestService.getMetaDbRequest(requestId));
+            requestList.add(metaDbRequestService.getMetaDbRequestMap(requestId));
         }
         return requestList;
     }

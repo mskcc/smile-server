@@ -44,8 +44,8 @@
     <slf4j.version>1.7.30</slf4j.version>
     <jackson.version>2.11.2</jackson.version>
     <!-- metadb messaging and shared entities dependency versions -->
-    <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
-    <cmo_metadb_messaging_java.version>c9d741e60a3068ee3b85dda4b02d1ed45325cfe0</cmo_metadb_messaging_java.version>
+    <cmo_metadb_messaging_java.group>com.github.divyamadala30</cmo_metadb_messaging_java.group>
+    <cmo_metadb_messaging_java.version>c9bfa2571ad1b4494a4263414ebc348fd41dbcdd</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>

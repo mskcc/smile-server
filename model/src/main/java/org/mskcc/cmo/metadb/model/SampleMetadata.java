@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
@@ -474,5 +475,76 @@ public class SampleMetadata implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+    
+    public boolean checkIfEqual(SampleMetadata sampleMetadata) {
+        if (this == null || sampleMetadata == null) {
+            return false;
+        }
+        if (Objects.equals(this.getIgoId(), sampleMetadata.getIgoId()) &&
+                Objects.equals(this.getCmoInfoIgoId(), sampleMetadata.getCmoInfoIgoId()) &&
+                Objects.equals(this.getCmoSampleName(), sampleMetadata.getCmoSampleName()) &&
+                Objects.equals(this.getSampleName(), sampleMetadata.getSampleName()) &&
+                Objects.equals(this.getCmoSampleClass(), sampleMetadata.getCmoSampleClass()) &&
+                Objects.equals(this.getCmoPatientId(), sampleMetadata.getCmoPatientId()) &&
+                Objects.equals(this.getInvestigatorSampleId(), sampleMetadata.getInvestigatorSampleId()) &&
+                Objects.equals(this.getOncoTreeCode(), sampleMetadata.getOncoTreeCode()) &&
+                Objects.equals(this.getTumorOrNormal(), sampleMetadata.getTumorOrNormal()) &&
+                Objects.equals(this.getTissueLocation(), sampleMetadata.getTissueLocation()) &&
+                Objects.equals(this.getSpecimenType(), sampleMetadata.getSpecimenType()) && 
+                Objects.equals(this.getSampleOrigin(), sampleMetadata.getSampleOrigin()) &&
+                Objects.equals(this.getPreservation(), sampleMetadata.getPreservation())&&
+                Objects.equals(this.getCollectionYear(), sampleMetadata.getCollectionYear()) && 
+                Objects.equals(this.getSex(), sampleMetadata.getSex()) &&
+                Objects.equals(this.getSpecies(), sampleMetadata.getSpecies()) && 
+                Objects.equals(this.getTubeId(), sampleMetadata.getTubeId()) &&
+                Objects.equals(this.getCfDNA2dBarcode(), sampleMetadata.getCfDNA2dBarcode()) && 
+                compareLibraries(this.getLibraries(), sampleMetadata.getLibraries()) &&
+                compareQcReports(this.getQcReports(), sampleMetadata.getQcReports()) && 
+                Objects.equals(this.getMrn(), sampleMetadata.getMrn()) &&
+                Objects.equals(this.getCmoSampleId(), sampleMetadata.getCmoSampleId()) && 
+                Objects.equals(this.getSampleType(), sampleMetadata.getSampleType()) &&
+                Objects.equals(this.getTumorType(), sampleMetadata.getTumorType()) &&
+                Objects.equals(this.getParentTumorType(), sampleMetadata.getParentTumorType()) &&
+                Objects.equals(this.getTissueSource(), sampleMetadata.getTissueSource()) &&
+                Objects.equals(this.getRecipe(), sampleMetadata.getRecipe()) &&
+                Objects.equals(this.getBaitSet(), sampleMetadata.getBaitSet()) &&
+                Objects.equals(this.getFastqPath(), sampleMetadata.getFastqPath()) &&
+                Objects.equals(this.getPrincipalInvestigator(), sampleMetadata.getPrincipalInvestigator()) && 
+                Objects.equals(this.getAncestorSample(), sampleMetadata.getAncestorSample()) &&
+                Objects.equals(this.getSampleStatus(), sampleMetadata.getSampleStatus())) {
+            return true;
+        } 
+        return false;
+    }
+    
+    public boolean compareLibraries(List<Library> newLibrary, List<Library> existingLibrary) {
+        if (newLibrary == null && existingLibrary == null) {
+            return true;
+        }
+        if (newLibrary == null || existingLibrary == null) {
+            return false;
+        }
+        for (Library library : newLibrary) {
+            if (!library.existsIn(existingLibrary)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public boolean compareQcReports(List<QcReport> newQcReport, List<QcReport> existingQcReport) {
+        if (newQcReport == null && existingQcReport == null) {
+            return true;
+        }
+        if (newQcReport == null || existingQcReport == null) {
+            return false;
+        }
+        for (QcReport qcReport : newQcReport) {
+            if (!qcReport.existsIn(existingQcReport)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

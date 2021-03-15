@@ -9,8 +9,12 @@ import org.mskcc.cmo.metadb.model.MetaDbRequest;
  */
 public interface MetaDbRequestService {
 
-    void saveRequest(MetaDbRequest request) throws Exception;
+    boolean saveRequest(MetaDbRequest request) throws Exception;
+    
+    boolean updateRequest(MetaDbRequest request, MetaDbRequest savedRequest) throws Exception;
 
-    Map<String, Object> getMetaDbRequest(String requestId) throws Exception;
+    Map<String, Object> getMetaDbRequestMap(String requestId) throws Exception;
+    
+    MetaDbRequest getMetaDbRequest(String requestId) throws Exception;
 
 }

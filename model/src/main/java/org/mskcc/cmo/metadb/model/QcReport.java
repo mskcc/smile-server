@@ -2,6 +2,9 @@ package org.mskcc.cmo.metadb.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -75,6 +78,19 @@ public class QcReport implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+    
+    public boolean existsIn(List<QcReport> qcReportList) {
+        for (QcReport qcReport: qcReportList) {
+            if (Objects.equals(this.getComments(), qcReport.getComments()) &&
+                    Objects.equals(this.getIgoRecommendation(), qcReport.getIgoRecommendation()) &&
+                    Objects.equals(this.getInvestigatorDecision(), qcReport.getInvestigatorDecision()) &&
+                    Objects.equals(this.getQcReportType(), qcReport.getQcReportType())) {
+                return true;
+            }
+                
+        }
+         return false;
     }
 
 }

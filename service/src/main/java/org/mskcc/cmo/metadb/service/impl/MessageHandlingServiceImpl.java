@@ -66,10 +66,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        requestService.saveRequest(request);
-                        messagingGateway.publish(CMO_NEW_REQUEST_TOPIC,
-                                mapper.writeValueAsString(
-                                        requestService.getMetaDbRequest(request.getRequestId())));
+                        if (requestService.saveRequest(request)) {
+                            System.out.println("publishing message ...");
+                            messagingGateway.publish(CMO_NEW_REQUEST_TOPIC,
+                                    mapper.writeValueAsString(
+                                            requestService.getMetaDbRequestMap(request.getRequestId())));
+                        }
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
                         break;
