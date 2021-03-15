@@ -22,7 +22,7 @@ public class MetaDbPatient implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID metaDbPatientId;
-    private String investigatorPatientId;
+    private String cmoPatientId;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
     private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
@@ -30,8 +30,8 @@ public class MetaDbPatient implements Serializable {
 
     public MetaDbPatient() {}
 
-    public MetaDbPatient(String investigatorPatientId) {
-        this.investigatorPatientId = investigatorPatientId;
+    public MetaDbPatient(String cmoPatientId) {
+        this.cmoPatientId = cmoPatientId;
     }
 
     public UUID getMetaDbPatientId() {
@@ -42,12 +42,12 @@ public class MetaDbPatient implements Serializable {
         this.metaDbPatientId = metaDbPatientId;
     }
 
-    public String getInvestigatorPatientId() {
-        return investigatorPatientId;
+    public String getCmoPatientId() {
+        return cmoPatientId;
     }
 
-    public void setInvestigatorPatientId(String investigatorPatientId) {
-        this.investigatorPatientId = investigatorPatientId;
+    public void setCmoPatientId(String cmoPatientId) {
+        this.cmoPatientId = cmoPatientId;
     }
 
     public List<MetaDbSample> getMetaDbSampleList() {

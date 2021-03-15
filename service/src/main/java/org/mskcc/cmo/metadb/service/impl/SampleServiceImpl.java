@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
@@ -28,8 +29,8 @@ public class SampleServiceImpl implements SampleService {
         MetaDbSample foundSample =
                 metaDbSampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
         if (foundSample == null) {
-            MetaDbPatient patient = metaDbPatientRepository.findPatientByInvestigatorId(
-                    updatedMetaDbSample.getPatient().getInvestigatorPatientId());
+            MetaDbPatient patient = metaDbPatientRepository.findPatientByPatientCmoId(
+                    updatedMetaDbSample.getPatient().getCmoPatientId());
             if (patient != null) {
                 updatedMetaDbSample.setPatientUuid(patient.getMetaDbPatientId());
             }
@@ -45,9 +46,13 @@ public class SampleServiceImpl implements SampleService {
     public MetaDbSample setUpMetaDbSample(MetaDbSample metaDbSample) throws Exception {
         SampleMetadata sampleMetadata = metaDbSample.getLatestSampleMetadata();
         metaDbSample.setSampleClass(sampleMetadata.getTumorOrNormal());
-        metaDbSample.setPatient(new MetaDbPatient(sampleMetadata.getCmoPatientId()));
         metaDbSample.addSample(new SampleAlias(sampleMetadata.getIgoId(), "igoId"));
         metaDbSample.addSample(new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
+
+        MetaDbPatient patient = new MetaDbPatient(sampleMetadata.getCmoPatientId());
+        patient.addPatientAlias(new PatientAlias(patient.getCmoPatientId(), "igoId"));
+        metaDbSample.setPatient(patient);
+
         return metaDbSample;
     }
 
