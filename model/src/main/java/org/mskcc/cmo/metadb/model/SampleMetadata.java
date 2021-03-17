@@ -10,9 +10,11 @@ import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
+import org.neo4j.driver.internal.shaded.io.netty.util.internal.StringUtil;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
+import org.springframework.util.CollectionUtils;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SampleMetadata implements Serializable {
@@ -50,7 +52,6 @@ public class SampleMetadata implements Serializable {
     private String sampleOrigin;
     private String tissueSource;
     private String tissueLocation;
-    private String recipe;
     private String baitSet;
     private String fastqPath;
     private String principalInvestigator;
@@ -88,7 +89,6 @@ public class SampleMetadata implements Serializable {
      * @param tumorType
      * @param parentTumorType
      * @param tissueSource
-     * @param recipe
      * @param baitSet
      * @param fastqPath
      * @param principalInvestigator
@@ -102,7 +102,7 @@ public class SampleMetadata implements Serializable {
             String preservation, String collectionYear, String sex, String species, String tubeId,
             String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
             String mrn, String cmoSampleId, String sampleType, String tumorType, String parentTumorType,
-            String tissueSource, String recipe, String baitSet, String fastqPath,
+            String tissueSource, String baitSet, String fastqPath,
             String principalInvestigator, String ancestorSample, String sampleStatus, String importDate) {
         this.mrn = mrn;
         this.cmoInfoIgoId = cmoInfoIgoId;
@@ -124,7 +124,6 @@ public class SampleMetadata implements Serializable {
         this.sampleOrigin = sampleOrigin;
         this.tissueSource = tissueSource;
         this.tissueLocation = tissueLocation;
-        this.recipe = recipe;
         this.baitSet = baitSet;
         this.principalInvestigator = principalInvestigator;
         this.fastqPath = fastqPath;
@@ -416,14 +415,6 @@ public class SampleMetadata implements Serializable {
         this.tissueLocation = tissueLocation;
     }
 
-    public String getRecipe() {
-        return recipe;
-    }
-
-    public void setRecipe(String recipe) {
-        this.recipe = recipe;
-    }
-
     public String getBaitSet() {
         return baitSet;
     }
@@ -476,72 +467,243 @@ public class SampleMetadata implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-    
-    public boolean checkIfEqual(SampleMetadata sampleMetadata) {
-        if (this == null || sampleMetadata == null) {
-            return false;
-        }
-        if (Objects.equals(this.getIgoId(), sampleMetadata.getIgoId()) &&
-                Objects.equals(this.getCmoInfoIgoId(), sampleMetadata.getCmoInfoIgoId()) &&
-                Objects.equals(this.getCmoSampleName(), sampleMetadata.getCmoSampleName()) &&
-                Objects.equals(this.getSampleName(), sampleMetadata.getSampleName()) &&
-                Objects.equals(this.getCmoSampleClass(), sampleMetadata.getCmoSampleClass()) &&
-                Objects.equals(this.getCmoPatientId(), sampleMetadata.getCmoPatientId()) &&
-                Objects.equals(this.getInvestigatorSampleId(), sampleMetadata.getInvestigatorSampleId()) &&
-                Objects.equals(this.getOncoTreeCode(), sampleMetadata.getOncoTreeCode()) &&
-                Objects.equals(this.getTumorOrNormal(), sampleMetadata.getTumorOrNormal()) &&
-                Objects.equals(this.getTissueLocation(), sampleMetadata.getTissueLocation()) &&
-                Objects.equals(this.getSpecimenType(), sampleMetadata.getSpecimenType()) && 
-                Objects.equals(this.getSampleOrigin(), sampleMetadata.getSampleOrigin()) &&
-                Objects.equals(this.getPreservation(), sampleMetadata.getPreservation())&&
-                Objects.equals(this.getCollectionYear(), sampleMetadata.getCollectionYear()) && 
-                Objects.equals(this.getSex(), sampleMetadata.getSex()) &&
-                Objects.equals(this.getSpecies(), sampleMetadata.getSpecies()) && 
-                Objects.equals(this.getTubeId(), sampleMetadata.getTubeId()) &&
-                Objects.equals(this.getCfDNA2dBarcode(), sampleMetadata.getCfDNA2dBarcode()) && 
-                compareLibraries(this.getLibraries(), sampleMetadata.getLibraries()) &&
-                compareQcReports(this.getQcReports(), sampleMetadata.getQcReports()) && 
-                Objects.equals(this.getMrn(), sampleMetadata.getMrn()) &&
-                Objects.equals(this.getCmoSampleId(), sampleMetadata.getCmoSampleId()) && 
-                Objects.equals(this.getSampleType(), sampleMetadata.getSampleType()) &&
-                Objects.equals(this.getTumorType(), sampleMetadata.getTumorType()) &&
-                Objects.equals(this.getParentTumorType(), sampleMetadata.getParentTumorType()) &&
-                Objects.equals(this.getTissueSource(), sampleMetadata.getTissueSource()) &&
-                Objects.equals(this.getRecipe(), sampleMetadata.getRecipe()) &&
-                Objects.equals(this.getBaitSet(), sampleMetadata.getBaitSet()) &&
-                Objects.equals(this.getFastqPath(), sampleMetadata.getFastqPath()) &&
-                Objects.equals(this.getPrincipalInvestigator(), sampleMetadata.getPrincipalInvestigator()) && 
-                Objects.equals(this.getAncestorSample(), sampleMetadata.getAncestorSample()) &&
-                Objects.equals(this.getSampleStatus(), sampleMetadata.getSampleStatus())) {
-            return true;
-        } 
-        return false;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ancestorSample, baitSet, cfDNA2dBarcode, cmoInfoIgoId, cmoPatientId, cmoSampleClass,
+                cmoSampleId, cmoSampleName, collectionYear, fastqPath, igoId, investigatorSampleId, libraries, mrn,
+                oncoTreeCode, parentTumorType, preservation, principalInvestigator, qcReports, requestId, sampleName,
+                sampleOrigin, sampleStatus, sampleType, sex, species, specimenType, tissueLocation, tissueSource,
+                tubeId, tumorOrNormal, tumorType);
     }
     
-    public boolean compareLibraries(List<Library> newLibrary, List<Library> existingLibrary) {
-        if (newLibrary == null && existingLibrary == null) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (newLibrary == null || existingLibrary == null) {
+        if (obj == null) {
             return false;
         }
-        for (Library library : newLibrary) {
-            if (!library.existsIn(existingLibrary)) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        SampleMetadata other = (SampleMetadata) obj;
+        if ((this.ancestorSample == null && !StringUtil.isNullOrEmpty(other.ancestorSample))|| 
+                (other.ancestorSample == null && !StringUtil.isNullOrEmpty(this.ancestorSample))) {
+            return false;
+        } else if (!Objects.equals(this.ancestorSample, other.ancestorSample)) {
+            return false;
+        }
+        if ((this.baitSet == null && !StringUtil.isNullOrEmpty(other.baitSet))|| 
+                (other.baitSet == null && !StringUtil.isNullOrEmpty(this.baitSet))) {
+            return false;
+        } else if (!Objects.equals(this.baitSet, other.baitSet)){
+            return false;
+        }
+        if ((this.cfDNA2dBarcode == null && !StringUtil.isNullOrEmpty(other.cfDNA2dBarcode))|| 
+                (other.cfDNA2dBarcode == null && !StringUtil.isNullOrEmpty(this.cfDNA2dBarcode))) {
+            return false;
+        } else if (!Objects.equals(this.cfDNA2dBarcode, other.cfDNA2dBarcode)){
+            return false;
+        }
+        if ((this.cmoInfoIgoId == null && !StringUtil.isNullOrEmpty(other.cmoInfoIgoId))|| 
+                (other.cmoInfoIgoId == null && !StringUtil.isNullOrEmpty(this.cmoInfoIgoId))) {
+            return false;
+        } else if (!Objects.equals(this.cmoInfoIgoId, other.cmoInfoIgoId)){
+            return false;
+        }
+        if ((this.cmoPatientId == null && !StringUtil.isNullOrEmpty(other.cmoPatientId))|| 
+                (other.cmoPatientId == null && !StringUtil.isNullOrEmpty(this.cmoPatientId))) {
+            return false;
+        } else if (!Objects.equals(this.cmoPatientId, other.cmoPatientId)){
+            return false;
+        }
+        if ((this.cmoSampleClass == null && !StringUtil.isNullOrEmpty(other.cmoSampleClass))|| 
+                (other.cmoSampleClass == null && !StringUtil.isNullOrEmpty(this.cmoSampleClass))) {
+            return false;
+        } else if (!Objects.equals(this.cmoSampleClass, other.cmoSampleClass)){
+            return false;
+        }
+        if ((this.cmoSampleId == null && !StringUtil.isNullOrEmpty(other.cmoSampleId))|| 
+                (other.cmoSampleId == null && !StringUtil.isNullOrEmpty(this.cmoSampleId))) {
+            return false;
+        } else if (!Objects.equals(this.cmoSampleId, other.cmoSampleId)){
+            return false;
+        }
+        if ((this.cmoSampleName == null && !StringUtil.isNullOrEmpty(other.cmoSampleName))|| 
+                (other.cmoSampleName == null && !StringUtil.isNullOrEmpty(this.cmoSampleName))) {
+            return false;
+        } else if (!Objects.equals(this.cmoSampleName, other.cmoSampleName)){
+            return false;
+        }
+        if ((this.collectionYear == null && !StringUtil.isNullOrEmpty(other.collectionYear))|| 
+                (other.collectionYear == null && !StringUtil.isNullOrEmpty(this.collectionYear))) {
+            return false;
+        } else if (!StringUtil.isNullOrEmpty(other.collectionYear) && StringUtil.isNullOrEmpty(this.collectionYear)) {
+                if(!Objects.equals(this.collectionYear, other.collectionYear)){
+                    return false;
+                }
+        }
+        if ((this.fastqPath == null && !StringUtil.isNullOrEmpty(other.fastqPath))|| 
+                (other.fastqPath == null && !StringUtil.isNullOrEmpty(this.fastqPath))) {
+            return false;
+        } else if (!Objects.equals(this.fastqPath, other.fastqPath)){
+            return false;
+        }
+        if ((this.igoId == null && !StringUtil.isNullOrEmpty(other.igoId))|| 
+                (other.igoId == null && !StringUtil.isNullOrEmpty(this.igoId))) {
+            return false;
+        } else if (!Objects.equals(this.igoId, other.igoId)){
+            return false;
+        }
+        if ((this.investigatorSampleId == null && !StringUtil.isNullOrEmpty(other.investigatorSampleId))|| 
+                (other.investigatorSampleId == null && !StringUtil.isNullOrEmpty(this.investigatorSampleId))) {
+            return false;
+        } else if (!Objects.equals(this.investigatorSampleId, other.investigatorSampleId)){
+            return false;
+        }
+        if (libraries == null ? other.libraries != null : !compareLibraryList(this.libraries, other.libraries)) {
+            return false;
+        }
+        if ((this.mrn == null && !StringUtil.isNullOrEmpty(other.mrn))|| 
+                (other.mrn == null && !StringUtil.isNullOrEmpty(this.mrn))) {
+            return false;
+        } else if (!Objects.equals(this.mrn, other.mrn)){
+            return false;
+        }
+        if ((this.oncoTreeCode == null && !StringUtil.isNullOrEmpty(other.oncoTreeCode))|| 
+                (other.oncoTreeCode == null && !StringUtil.isNullOrEmpty(this.oncoTreeCode))) {
+            return false;
+        } else if (!Objects.equals(this.oncoTreeCode, other.oncoTreeCode)){
+            return false;
+        }
+        if ((this.parentTumorType == null && !StringUtil.isNullOrEmpty(other.parentTumorType))|| 
+                (other.parentTumorType == null && !StringUtil.isNullOrEmpty(this.parentTumorType))) {
+            return false;
+        } else if (!Objects.equals(this.parentTumorType, other.parentTumorType)){
+            return false;
+        }
+        if ((this.preservation == null && !StringUtil.isNullOrEmpty(other.preservation))|| 
+                (other.preservation == null && !StringUtil.isNullOrEmpty(this.preservation))) {
+            return false;
+        } else if (!Objects.equals(this.preservation, other.preservation)){
+            return false;
+        }
+        if ((this.principalInvestigator == null && !StringUtil.isNullOrEmpty(other.principalInvestigator))|| 
+                (other.principalInvestigator == null && !StringUtil.isNullOrEmpty(this.principalInvestigator))) {
+            return false;
+        } else if (!Objects.equals(this.principalInvestigator, other.principalInvestigator)){
+            return false;
+        }
+        if (this.qcReports == null ? other.qcReports != null : !compareQcReportList(this.qcReports, other.qcReports)) {
+            return false;
+        }
+        if ((this.requestId == null && !StringUtil.isNullOrEmpty(other.requestId))|| 
+                (other.requestId == null && !StringUtil.isNullOrEmpty(this.requestId))) {
+            return false;
+        } else if (!Objects.equals(this.requestId, other.requestId)){
+            return false;
+        }
+        if ((this.sampleName == null && !StringUtil.isNullOrEmpty(other.sampleName))|| 
+                (other.sampleName == null && !StringUtil.isNullOrEmpty(this.sampleName))) {
+            return false;
+        } else if (!Objects.equals(this.sampleName, other.sampleName)){
+            return false;
+        }
+        if ((this.sampleOrigin == null && !StringUtil.isNullOrEmpty(other.sampleOrigin))|| 
+                (other.sampleOrigin == null && !StringUtil.isNullOrEmpty(this.sampleOrigin))) {
+            return false;
+        } else if (!Objects.equals(this.sampleOrigin, other.sampleOrigin)){
+            return false;
+        }
+        if ((this.sampleStatus == null && !StringUtil.isNullOrEmpty(other.sampleStatus))|| 
+                (other.sampleStatus == null && !StringUtil.isNullOrEmpty(this.sampleStatus))) {
+            return false;
+        } else if (!Objects.equals(this.sampleStatus, other.sampleStatus)){
+            return false;
+        }
+        if ((this.sampleType == null && !StringUtil.isNullOrEmpty(other.sampleType))|| 
+                (other.sampleType == null && !StringUtil.isNullOrEmpty(this.sampleType))) {
+            return false;
+        } else if (!Objects.equals(this.sampleType, other.sampleType)){
+            return false;
+        }
+        if ((this.sex == null && !StringUtil.isNullOrEmpty(other.sex))|| 
+                (other.sex == null && !StringUtil.isNullOrEmpty(this.sex))) {
+            return false;
+        } else if (!Objects.equals(this.sex, other.sex)){
+            return false;
+        }
+        if ((this.species == null && !StringUtil.isNullOrEmpty(other.species))|| 
+                (other.species == null && !StringUtil.isNullOrEmpty(this.species))) {
+            return false;
+        } else if (!Objects.equals(this.species,other.species)){
+            return false;
+        }
+        if ((this.specimenType == null && !StringUtil.isNullOrEmpty(other.specimenType))|| 
+                (other.specimenType == null && !StringUtil.isNullOrEmpty(this.specimenType))) {
+            return false;
+        } else if (!Objects.equals(this.specimenType, other.specimenType)){
+            return false;
+        }
+        if ((this.tissueLocation == null && !StringUtil.isNullOrEmpty(other.tissueLocation))|| 
+                (other.tissueLocation == null && !StringUtil.isNullOrEmpty(this.tissueLocation))) {
+            return false;
+        } else if (!Objects.equals(this.tissueLocation, other.tissueLocation)){
+            return false;
+        }
+        if ((this.tissueSource == null && !StringUtil.isNullOrEmpty(other.tissueSource))|| 
+                (other.tissueSource == null && !StringUtil.isNullOrEmpty(this.tissueSource))) {
+            return false;
+        } else if (!Objects.equals(this.tissueSource, other.tissueSource)){
+            return false;
+        }
+        if ((this.tubeId == null && !StringUtil.isNullOrEmpty(other.tubeId))|| 
+                (other.tubeId == null && !StringUtil.isNullOrEmpty(this.tubeId))) {
+            return false;
+        } else if (!Objects.equals(this.tubeId, other.tubeId)){
+            return false;
+        }
+        if ((this.tumorOrNormal == null && !StringUtil.isNullOrEmpty(other.tumorOrNormal))|| 
+                (other.tumorOrNormal == null && !StringUtil.isNullOrEmpty(this.tumorOrNormal))) {
+            return false;
+        } else if (!Objects.equals(this.tumorOrNormal, other.tumorOrNormal)){
+            return false;
+        }
+        if ((this.tumorType == null && !StringUtil.isNullOrEmpty(other.tumorType))|| 
+                (other.tumorType == null && !StringUtil.isNullOrEmpty(this.tumorType))) {
+            return false;
+        } else if (!Objects.equals(this.tumorType, other.tumorType)){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean compareQcReportList(List<QcReport> foundList, List<QcReport> newList) {
+        if (CollectionUtils.isEmpty(foundList) && CollectionUtils.isEmpty(newList)) {
+            return true;
+        }
+        if (CollectionUtils.isEmpty(foundList) || CollectionUtils.isEmpty(newList)) {
+            return false;
+        } 
+        for (QcReport qcReport: newList) {
+            if(!qcReport.equalLists(foundList)) {
                 return false;
             }
         }
         return true;
     }
     
-    public boolean compareQcReports(List<QcReport> newQcReport, List<QcReport> existingQcReport) {
-        if (newQcReport == null && existingQcReport == null) {
+    public boolean compareLibraryList(List<Library> foundList, List<Library> newList) {
+        if (CollectionUtils.isEmpty(foundList) && CollectionUtils.isEmpty(newList)) {
             return true;
         }
-        if (newQcReport == null || existingQcReport == null) {
+        if (CollectionUtils.isEmpty(foundList) || CollectionUtils.isEmpty(newList)) {
             return false;
-        }
-        for (QcReport qcReport : newQcReport) {
-            if (!qcReport.existsIn(existingQcReport)) {
+        } 
+        for (Library library: newList) {
+            if(!library.equalLists(foundList)) {
                 return false;
             }
         }

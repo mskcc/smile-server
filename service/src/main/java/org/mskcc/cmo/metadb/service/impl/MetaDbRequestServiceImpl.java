@@ -73,13 +73,12 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
                 s = sampleService.setUpMetaDbSample(s);
                 savedRequest.addMetaDbSampleList(s);
                 returnValue = true;
-            }
+            }            
+            System.out.println(foundSample.getLatestSampleMetadata().equals(s.getLatestSampleMetadata()));
             
-            System.out.println(foundSample.getLatestSampleMetadata().checkIfEqual(s.getLatestSampleMetadata()));
-            if (!foundSample.getLatestSampleMetadata().checkIfEqual(s.getLatestSampleMetadata())) {  
+            if (!foundSample.getLatestSampleMetadata().equals(s.getLatestSampleMetadata())) {  
+                System.out.println("saving new metadata");
                 SampleMetadata newSampleMetadata = s.getLatestSampleMetadata();
-                System.out.println(foundSample.getMetaDbSampleId());
-                System.out.println(savedRequest.getMetaDbSampleList());
                 MetaDbSample savedMetaDbSample = savedRequest.findMetaDbSample(foundSample.getMetaDbSampleId());
                 savedMetaDbSample.addSampleMetadata(newSampleMetadata);
                 returnValue = true;

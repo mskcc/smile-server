@@ -206,49 +206,84 @@ public class Library implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-    
-    /**
-     * 
-     * @param libraryList
-     * @return true is Object Library is found in the list of Libraries
-     */
-    public boolean existsIn(List<Library> libraryList) {
-        for (Library lib: libraryList) {
-            if (Objects.equals(this.getBarcodeId(), lib.getBarcodeId()) &&
-                    Objects.equals(this.getBarcodeIndex(), lib.getBarcodeIndex()) &&
-                    Objects.equals(this.getCaptureConcentrationNm(), lib.getCaptureConcentrationNm()) &&
-                    Objects.equals(this.getCaptureInputNg(), lib.getCaptureInputNg()) &&
-                    Objects.equals(this.getCaptureName(), lib.getCaptureName()) &&
-                    Objects.equals(this.getDnaInputNg(), lib.getDnaInputNg()) &&
-                    Objects.equals(this.getLibraryConcentrationNgul(), lib.getLibraryConcentrationNgul()) &&
-                    Objects.equals(this.getLibraryIgoId(), lib.getLibraryIgoId()) &&
-                    Objects.equals(this.getLibraryVolume(), lib.getLibraryVolume()) &&
-                    Objects.equals(this.getNumFastQs(), lib.getNumFastQs()) &&
-                    compareRuns(this.getRuns(), lib.getRuns())) {
-                return true;
-            }
-        }
-        return false;
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((barcodeId == null) ? 0 : barcodeId.hashCode());
+        result = prime * result + ((barcodeIndex == null) ? 0 : barcodeIndex.hashCode());
+        result = prime * result + ((captureConcentrationNm == null) ? 0 : captureConcentrationNm.hashCode());
+        result = prime * result + ((captureInputNg == null) ? 0 : captureInputNg.hashCode());
+        result = prime * result + ((captureName == null) ? 0 : captureName.hashCode());
+        result = prime * result + ((dnaInputNg == null) ? 0 : dnaInputNg.hashCode());
+        result = prime * result + ((libraryConcentrationNgul == null) ? 0 : libraryConcentrationNgul.hashCode());
+        result = prime * result + ((libraryIgoId == null) ? 0 : libraryIgoId.hashCode());
+        result = prime * result + ((libraryVolume == null) ? 0 : libraryVolume.hashCode());
+        result = prime * result + ((runs == null) ? 0 : runs.hashCode());
+        return result;
     }
-    
-    /**
-     * 
-     * @param newRuns
-     * @param existingRuns
-     * @return true if equal, false if not
-     */
-    public boolean compareRuns(List<Run> newRuns, List<Run> existingRuns) {
-        if (newRuns == null && existingRuns == null) {
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        }
-        if (newRuns == null || existingRuns == null) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Library other = (Library) obj;
+        if (this.barcodeId == null ? other.barcodeId != null : !this.barcodeId.equals(other.barcodeId)) {
             return false;
         }
-        for (Run run: newRuns) {
-            if (!run.existsIn(existingRuns)) {
+        if (this.barcodeIndex == null ? other.barcodeIndex != null : !this.barcodeIndex.equals(other.barcodeIndex)) {
+            return false;
+        }
+        if (this.captureConcentrationNm == null ? other.captureConcentrationNm != null : !this.captureConcentrationNm.equals(other.captureConcentrationNm)) {
+            return false;
+        }
+        if (this.captureInputNg == null ? other.captureInputNg != null : !this.captureInputNg.equals(other.captureInputNg)) {
+            return false;
+        }
+        if (this.captureName == null ? other.captureName != null : !this.captureName.equals(other.captureName)) {
+            return false;
+        }
+        if (this.dnaInputNg == null ? other.dnaInputNg != null : !this.dnaInputNg.equals(other.dnaInputNg)) {
+            return false;
+        }
+        if (this.libraryConcentrationNgul == null ? other.libraryConcentrationNgul != null : 
+            !this.libraryConcentrationNgul.equals(other.libraryConcentrationNgul)) {
+            return false;
+        }
+        if (this.libraryIgoId == null ? other.libraryIgoId != null : !this.libraryIgoId.equals(other.libraryIgoId)) {
+            return false;
+        }
+        if (this.libraryVolume == null ? other.libraryVolume != null : !this.libraryVolume.equals(other.libraryVolume)) {
+            return false;
+        }
+        if (this.runs == null ? other.runs != null : !compareRunList(this.runs, other.runs)) {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean equalLists(List<Library> libraryList) {
+        for (Library library: libraryList) {
+            if(!this.equals(library)) {
                 return false;
             }
         }
         return true;
     }
+    
+    public boolean compareRunList(List<Run> foundList, List<Run> newList) {
+        for (Run run: newList) {
+           if (!run.equalLists(foundList)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    
 }

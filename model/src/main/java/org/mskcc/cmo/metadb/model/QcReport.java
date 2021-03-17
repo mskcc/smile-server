@@ -80,17 +80,48 @@ public class QcReport implements Serializable {
         return ToStringBuilder.reflectionToString(this);
     }
     
-    public boolean existsIn(List<QcReport> qcReportList) {
-        for (QcReport qcReport: qcReportList) {
-            if (Objects.equals(this.getComments(), qcReport.getComments()) &&
-                    Objects.equals(this.getIgoRecommendation(), qcReport.getIgoRecommendation()) &&
-                    Objects.equals(this.getInvestigatorDecision(), qcReport.getInvestigatorDecision()) &&
-                    Objects.equals(this.getQcReportType(), qcReport.getQcReportType())) {
-                return true;
-            }
-                
-        }
-         return false;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((comments == null) ? 0 : comments.hashCode());
+        result = prime * result + ((igoRecommendation == null) ? 0 : igoRecommendation.hashCode());
+        result = prime * result + ((investigatorDecision == null) ? 0 : investigatorDecision.hashCode());
+        result = prime * result + ((qcReportType == null) ? 0 : qcReportType.hashCode());
+        return result;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        QcReport other = (QcReport) obj;
+        if (this.comments == null ? other.comments != null : !this.comments.equals(other.comments)) {
+            return false;
+        }
+        if (this.igoRecommendation == null ? other.igoRecommendation != null :
+                !this.igoRecommendation.equals(other.igoRecommendation)) {
+            return false;
+        }
+        if (this.investigatorDecision == null ? other.investigatorDecision != null : !this.investigatorDecision.equals(other.investigatorDecision)) {
+            return false;
+        }
+        if (this.qcReportType == null ? other.qcReportType != null : !this.qcReportType.equals(other.qcReportType)) {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean equalLists(List<QcReport> qcReportList) {
+        for (QcReport qcReport: qcReportList) {
+            if(!this.equals(qcReport)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

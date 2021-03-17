@@ -155,19 +155,59 @@ public class Run implements Serializable {
         return ToStringBuilder.reflectionToString(this);
     }
     
-    public boolean existsIn(List<Run> runs) {
-        for (Run run: runs) {
-            if (Objects.equals(this.getFastqs(), run.getFastqs()) &&
-                    Objects.equals(this.getFlowCellId(), run.getFlowCellId()) &&
-                    Objects.equals(this.getFlowCellLanes(), run.getFlowCellLanes()) &&
-                    Objects.equals(this.getReadLength(), run.getReadLength()) &&
-                    Objects.equals(this.getRunDate(), run.getRunDate()) &&
-                    Objects.equals(this.getRunId(), run.getRunId()) &&
-                    Objects.equals(this.getRunMode(), run.getRunMode())) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((fastqs == null) ? 0 : fastqs.hashCode());
+        result = prime * result + ((flowCellId == null) ? 0 : flowCellId.hashCode());
+        result = prime * result + ((flowCellLanes == null) ? 0 : flowCellLanes.hashCode());
+        result = prime * result + ((readLength == null) ? 0 : readLength.hashCode());
+        result = prime * result + ((runDate == null) ? 0 : runDate.hashCode());
+        result = prime * result + ((runId == null) ? 0 : runId.hashCode());
+        result = prime * result + ((runMode == null) ? 0 : runMode.hashCode());
+        return result;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Run other = (Run) obj;
+        if (this.fastqs == null ? other.fastqs != null : !this.fastqs.equals(other.fastqs)) {
+                return false;
+        }
+        if (this.flowCellId == null ? other.flowCellId != null : !this.flowCellId.equals(other.flowCellId)) {
+            return false;
+        }
+        if (this.flowCellLanes == null ? other.flowCellLanes != null : !this.flowCellLanes.equals(other.flowCellLanes)) {
+            return false;
+        }
+        if (this.readLength == null ? other.readLength != null : !this.readLength.equals(other.readLength)) {
+            return false;
+        }
+        if (this.runDate == null ? other.runDate != null : !this.runDate.equals(other.runDate)) {
+            return false;
+        }
+        if (this.runId == null ? other.runId != null : !this.runId.equals(other.runId)) {
+            return false;
+        }
+        if (this.runMode == null ? other.runMode != null : !this.runMode.equals(other.runMode)) {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean equalLists(List<Run> runList) {
+        for (Run run: runList) {
+            if(!this.equals(run)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
