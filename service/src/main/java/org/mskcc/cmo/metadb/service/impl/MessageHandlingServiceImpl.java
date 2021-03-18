@@ -32,8 +32,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Value("${igo.new_request_topic}")
     private String IGO_NEW_REQUEST_TOPIC;
 
-    @Value("${cmo.new_request_topic}")
-    private String CMO_NEW_REQUEST_TOPIC;
+    @Value("${consistency_check.new_request_topic}")
+    private String CONSISTENCY_CHECK_NEW_REQUEST;
 
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
@@ -67,7 +67,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
                         requestService.saveRequest(request);
-                        messagingGateway.publish(CMO_NEW_REQUEST_TOPIC,
+                        messagingGateway.publish(CONSISTENCY_CHECK_NEW_REQUEST,
                                 mapper.writeValueAsString(
                                         requestService.getMetaDbRequest(request.getRequestId())));
                     }
