@@ -12,28 +12,6 @@
   "otherContactEmails": "dexterp@mskcc.org",
   "dataAccessEmails": "",
   "qcAccessEmails": "",
-  "samples": [
-    {
-      "investigatorSampleId": "XXX002_P3_12345_L1",
-      "igoSampleId": "MOCKREQUEST1_B_1",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "01-0012345a",
-      "igoSampleId": "MOCKREQUEST1_B_2",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "XXX002_P1_12348a_R_43",
-      "igoSampleId": "MOCKREQUEST1_B_3",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "01-XXXXXXXa",
-      "igoSampleId": "MOCKREQUEST1_B_4",
-      "igocomplete": true
-    }
-  ],
   "pooledNormals": [
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA/FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA_S23_R1_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA/FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA_S23_R2_001.fastq.gz",
@@ -47,7 +25,7 @@
     "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT/MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT_S61_R2_001.fastq.gz"
   ],
   "projectId": "MOCKREQUEST1",
-  "sampleManifestList": [
+  "samples": [
     {
       "igoId": "MOCKREQUEST1_B_1",
       "cmoSampleName": "C-MP789JR-X001-d",

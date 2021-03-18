@@ -12,13 +12,6 @@
   "otherContactEmails": "preclinical_group_shared@mskcc.org",
   "dataAccessEmails": "",
   "qcAccessEmails": "",
-  "samples": [
-    {
-      "investigatorSampleId": "LMNO_4396_N",
-      "igoSampleId": "22022_CC_3",
-      "igocomplete": true
-    }
-  ],
   "pooledNormals": [
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R2_001.fastq.gz",
@@ -26,7 +19,7 @@
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
   ],
   "projectId": "22022",
-  "sampleManifestList": [
+  "samples": [
     {
       "igoId": "22022_CC_3",
       "cmoSampleName": "C-TX6DNG-N001-d",

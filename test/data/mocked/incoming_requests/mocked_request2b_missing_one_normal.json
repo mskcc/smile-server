@@ -12,118 +12,6 @@
   "otherContactEmails": "preclinical_group_shared@mskcc.org",
   "dataAccessEmails": "",
   "qcAccessEmails": "",
-  "samples": [
-    {
-      "investigatorSampleId": "LMNO_3443_N",
-      "igoSampleId": "22022_BZ_19",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_0034_T_DNA",
-      "igoSampleId": "22022_BZ_15",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_9999_T",
-      "igoSampleId": "22022_BZ_17",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_8080_N",
-      "igoSampleId": "22022_BZ_4",
-      "igocomplete": false
-    },
-    {
-      "investigatorSampleId": "LMNO_0034_N2",
-      "igoSampleId": "22022_BZ_3",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_7787_N2",
-      "igoSampleId": "22022_BZ_2",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_2020_DNA",
-      "igoSampleId": "22022_BZ_1",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_3030_N",
-      "igoSampleId": "22022_BZ_9",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_3443_T_DNA",
-      "igoSampleId": "22022_BZ_8",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_6565_T2_DNA",
-      "igoSampleId": "22022_BZ_16",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_0011_T",
-      "igoSampleId": "22022_BZ_13",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_6565_N2",
-      "igoSampleId": "22022_BZ_21",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_8895_T",
-      "igoSampleId": "22022_BZ_22",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_2299_N",
-      "igoSampleId": "22022_BZ_10",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_8080_T_DNA",
-      "igoSampleId": "22022_BZ_5",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_3030_T_DNA",
-      "igoSampleId": "22022_BZ_11",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "WT_PXX_bc",
-      "igoSampleId": "22022_BZ_12",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_0011_N",
-      "igoSampleId": "22022_BZ_18",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_8895_N",
-      "igoSampleId": "22022_BZ_6",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_2020_N",
-      "igoSampleId": "22022_BZ_20",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_7787_T",
-      "igoSampleId": "22022_BZ_14",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LMNO_2299_T_DNA",
-      "igoSampleId": "22022_BZ_7",
-      "igocomplete": true
-    }
-  ],
   "pooledNormals": [
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT/FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT_S118_R1_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT/FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT_S118_R2_001.fastq.gz",
@@ -131,7 +19,7 @@
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC/FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC_S22_R2_001.fastq.gz"
   ],
   "projectId": "22022",
-  "sampleManifestList": [
+  "samples": [
     {
       "igoId": "22022_BZ_19",
       "cmoSampleName": "C-DPCXX1-N001-d",

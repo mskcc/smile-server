@@ -12,28 +12,6 @@
   "otherContactEmails": "whiteb@mskcc.org,dacruzpa@mskcc.org",
   "dataAccessEmails": "",
   "qcAccessEmails": "",
-  "samples": [
-    {
-      "investigatorSampleId": "AGAG-LXX8",
-      "igoSampleId": "33344_Z_1",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LXX8-AGAG",
-      "igoSampleId": "33344_Z_2",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "AGAG",
-      "igoSampleId": "33344_Z_3",
-      "igocomplete": true
-    },
-    {
-      "investigatorSampleId": "LXX8",
-      "igoSampleId": "33344_Z_4",
-      "igocomplete": true
-    }
-  ],
   "pooledNormals": [
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTGTTAA/FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTGTTAA_S53_R1_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTGTTAA/FFPEPOOLEDNORMAL_IGO_IMPACT468_GGTGTTAA_S53_R2_001.fastq.gz",
@@ -47,7 +25,7 @@
     "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG/MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG_S101_R2_001.fastq.gz"
   ],
   "projectId": "33344",
-  "sampleManifestList": [
+  "samples": [
     {
       "igoId": "33344_Z_1",
       "cmoSampleName": "AGAG-LXX8-33344Z",
