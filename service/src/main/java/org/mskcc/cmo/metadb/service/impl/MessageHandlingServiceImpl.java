@@ -66,10 +66,11 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        requestService.saveRequest(request);
-                        messagingGateway.publish(CONSISTENCY_CHECK_NEW_REQUEST,
-                                mapper.writeValueAsString(
-                                        requestService.getMetaDbRequest(request.getRequestId())));
+                        if (requestService.saveRequest(request)) {
+                            messagingGateway.publish(CONSISTENCY_CHECK_NEW_REQUEST,
+                                    mapper.writeValueAsString(
+                                            requestService.getMetaDbRequest(request.getRequestId())));
+                        }
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
                         break;

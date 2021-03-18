@@ -9,7 +9,7 @@ import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
  */
 public interface MetaDbRequestService {
 
-    void saveRequest(MetaDbRequest request) throws Exception;
+    boolean saveRequest(MetaDbRequest request) throws Exception;
 
     PublishedMetaDbRequest getMetaDbRequest(String requestId) throws Exception;
 

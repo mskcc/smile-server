@@ -1,8 +1,12 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.mskcc.cmo.common.FileUtil;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
@@ -12,6 +16,7 @@ import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,17 +25,25 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MetaDbRequestServiceImpl implements MetaDbRequestService {
+    
+    @Value("${metadb.request_handling_failures_filepath}")
+    private String metadbRequestFailuresFilepath;
 
     @Autowired
     private MetaDbRequestRepository metaDbRequestRepository;
 
     @Autowired
     private SampleService sampleService;
+    
+    @Autowired
+    FileUtil fileUtil;
 
     private Logger LOG = Logger.getLogger(MetaDbRequestServiceImpl.class);
+    
+    private static final String REQ_FAILURES_FILE_HEADER = "DATE\tREASON\tMESSAGE\n";
 
     @Override
-    public void saveRequest(MetaDbRequest request) throws Exception {
+    public boolean saveRequest(MetaDbRequest request) throws Exception {
         MetaDbProject project = new MetaDbProject();
         project.setprojectId(request.getProjectId());
         request.setMetaDbProject(project);
@@ -45,16 +58,32 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
                 request.setMetaDbSampleList(updatedSamples);
             }
             metaDbRequestRepository.save(request);
+            return true;
         } else {
-            for (MetaDbSample s: request.getMetaDbSampleList()) {
-                if (s.getSampleIgoId() != null
-                        && metaDbRequestRepository.findMetaDbSampleByRequestAndIgoId(request.getRequestId(),
-                        s.getSampleIgoId().getSampleId()) == null) {
-                    savedRequest.addMetaDbSampleList(s);
-                    metaDbRequestRepository.save(savedRequest);
-                }
-            }
+            File requestFailureFile = fileUtil.getOrCreateFileWithHeader(
+                    metadbRequestFailuresFilepath, REQ_FAILURES_FILE_HEADER);
+            fileUtil.writeToFile(requestFailureFile,
+                    generateRequestFailureRecord("Request already exists", request.getRequestJson()));
+            return false;
         }
+    }
+    
+    /**
+     * Generates record to write to publishing failure file.
+     * @param reason
+     * @param message
+     * @return String
+     */
+    private String generateRequestFailureRecord(String reason, String message) {
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        StringBuilder builder = new StringBuilder();
+        builder.append(currentDate)
+                .append("\t")
+                .append(reason)
+                .append("\t")
+                .append(message)
+                .append("\n");
+        return builder.toString();
     }
 
     @Override
