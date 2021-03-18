@@ -22,7 +22,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EntityScan(basePackages = "org.mskcc.cmo.metadb.model")
 @EnableNeo4jRepositories(basePackages = "org.mskcc.cmo.metadb.persistence")
-@SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging", "org.mskcc.cmo.metadb.*"})
+@SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging",
+        "org.mskcc.cmo.common.*", "org.mskcc.cmo.metadb.*"})
 @Controller
 @EnableCaching
 @EnableSwagger2

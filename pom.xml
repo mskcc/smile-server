@@ -50,6 +50,8 @@
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
     <cmo_metadb_common.version>v1.1-alpha</cmo_metadb_common.version>
+    <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
+    <cmo_metadb_common.version>16c1f1fdc990e34714eccbaefabf99c61088de3c</cmo_metadb_common.version>
   </properties>
 
   <dependencies>
@@ -83,6 +85,12 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
+    </dependency>
+    <!-- cmo metadb common -->
+    <dependency>
+      <groupId>${cmo_metadb_common.groupId}</groupId>
+      <artifactId>cmo-metadb-common</artifactId>
+      <version>${cmo_metadb_common.version}</version>
     </dependency>
   </dependencies>
 
