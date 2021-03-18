@@ -14,7 +14,7 @@ spring.data.neo4j.uri=
 # messaging configuration
 igo.new_request_topic=
 num.new_request_handler_threads=
-cmo.new_request_topic=
+consistency_check.new_request_topic=
 
 # messaging failures filepath
 metadb.publishing_failures_filepath=
