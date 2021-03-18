@@ -1,6 +1,5 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -28,9 +27,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     @Autowired
     private SampleService sampleService;
 
-    private final ObjectMapper mapper = new ObjectMapper();
     private Logger LOG = Logger.getLogger(MetaDbRequestServiceImpl.class);
-
 
     @Override
     public void saveRequest(MetaDbRequest request) throws Exception {
