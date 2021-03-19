@@ -11,6 +11,7 @@ import org.neo4j.ogm.annotation.Relationship;
 public class MetaDbProject implements Serializable {
     @Id
     private String projectId;
+    private String namespace;
     @Relationship(type = "HAS_REQUEST", direction = Relationship.OUTGOING)
     private List<MetaDbRequest> requestList;
 
@@ -20,17 +21,32 @@ public class MetaDbProject implements Serializable {
         this.projectId = projectId;
     }
 
-    public MetaDbProject(String projectId, List<MetaDbRequest> requestList) {
+    /**
+     * MetaDbProject constructor.
+     * @param projectId
+     * @param namespace
+     * @param requestList
+     */
+    public MetaDbProject(String projectId, String namespace, List<MetaDbRequest> requestList) {
         this.projectId = projectId;
+        this.namespace = namespace;
         this.requestList = requestList;
     }
 
-    public String getprojectId() {
+    public String getProjectId() {
         return projectId;
     }
 
-    public void setprojectId(String projectId) {
+    public void setProjectId(String projectId) {
         this.projectId = projectId;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public List<MetaDbRequest> getRequestList() {

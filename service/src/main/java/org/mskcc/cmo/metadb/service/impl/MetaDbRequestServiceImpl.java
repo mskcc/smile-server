@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MetaDbRequestServiceImpl implements MetaDbRequestService {
-    
+
     @Value("${metadb.request_handling_failures_filepath}")
     private String metadbRequestFailuresFilepath;
 
@@ -34,18 +34,19 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
 
     @Autowired
     private SampleService sampleService;
-    
+
     @Autowired
     FileUtil fileUtil;
 
     private Logger LOG = Logger.getLogger(MetaDbRequestServiceImpl.class);
-    
+
     private static final String REQ_FAILURES_FILE_HEADER = "DATE\tREASON\tMESSAGE\n";
 
     @Override
     public boolean saveRequest(MetaDbRequest request) throws Exception {
         MetaDbProject project = new MetaDbProject();
-        project.setprojectId(request.getProjectId());
+        project.setProjectId(request.getProjectId());
+        project.setNamespace(request.getNamespace());
         request.setMetaDbProject(project);
 
         MetaDbRequest savedRequest = metaDbRequestRepository.findMetaDbRequestById(request.getRequestId());
@@ -67,7 +68,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
             return false;
         }
     }
-    
+
     /**
      * Generates record to write to publishing failure file.
      * @param reason

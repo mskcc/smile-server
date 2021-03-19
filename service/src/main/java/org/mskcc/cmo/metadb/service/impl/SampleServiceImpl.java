@@ -73,8 +73,8 @@ public class SampleServiceImpl implements SampleService {
         metaDbSample.setSampleMetadataList(
                 metaDbSampleRepository.findSampleMetadataListBySampleId(metaDbSampleId));
         for (SampleMetadata s: metaDbSample.getSampleMetadataList()) {
-            s.setPatientMetaDbId(metaDbSampleRepository.findPatientIdBySample(metaDbSampleId));
-            s.setSampleMetaDbId(metaDbSampleId);
+            s.setMetaDbPatientId(metaDbSampleRepository.findPatientIdBySample(metaDbSampleId));
+            s.setMetaDbSampleId(metaDbSampleId);
         }
         return metaDbSample;
     }
