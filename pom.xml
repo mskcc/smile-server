@@ -45,13 +45,12 @@
     <jackson.version>2.11.2</jackson.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
-    <cmo_metadb_messaging_java.version>6533df65d4510647e6ff1c430dd4d1de3f336479</cmo_metadb_messaging_java.version>
+    <cmo_metadb_messaging_java.version>5c1ac5dc9678e5a6761819170dcb694b56e40742</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
-    <cmo_metadb_common.artifactId>cmo-metadb-common</cmo_metadb_common.artifactId>
-    <cmo_metadb_common.version>v1.1-alpha</cmo_metadb_common.version>
-    <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.version>16c1f1fdc990e34714eccbaefabf99c61088de3c</cmo_metadb_common.version>
+    <!-- metadb expected schema version -->
+    <metadb.schema_version>v1.0</metadb.schema_version>
   </properties>
 
   <dependencies>
@@ -96,6 +95,24 @@
 
   <build>
     <plugins>
+      <!-- generate maven.properties to enable property injection from pom -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>write-project-properties</goal>
+            </goals>
+            <configuration>
+              <outputFile>src/main/resources/maven.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- maven compiler plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -106,6 +123,7 @@
           <compilerArgument>-Xlint:deprecation</compilerArgument>
         </configuration>
       </plugin>
+      <!-- maven checkstyle plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -113,7 +131,7 @@
         <dependencies>
           <dependency>
             <groupId>${cmo_metadb_common.groupId}</groupId>
-            <artifactId>${cmo_metadb_common.artifactId}</artifactId>
+            <artifactId>cmo-metadb-common</artifactId>
             <version>${cmo_metadb_common.version}</version>
           </dependency>
         </dependencies>

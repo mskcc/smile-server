@@ -18,7 +18,7 @@ public class SampleMetadata implements Serializable {
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
-    private UUID sampleUuid;
+    private UUID sampleMetaDbId;
     private String importDate;
     private String cmoInfoIgoId;
     private String cmoSampleName;
@@ -34,7 +34,7 @@ public class SampleMetadata implements Serializable {
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    private UUID patientUuid;
+    private UUID patientMetaDbId;
     private String cmoSampleId;
     private String igoId;
     private String investigatorSampleId;
@@ -146,13 +146,13 @@ public class SampleMetadata implements Serializable {
         this.id = id;
     }
 
-    public UUID getSampleUuid() {
-        return sampleUuid;
-        
+    public UUID getSampleMetaDbId() {
+        return sampleMetaDbId;
+
     }
 
-    public void setSampleUuid(UUID sampleUuid) {
-        this.sampleUuid = sampleUuid;
+    public void setSampleMetaDbId(UUID sampleMetaDbId) {
+        this.sampleMetaDbId = sampleMetaDbId;
     }
 
     public String getImportDate() {
@@ -295,12 +295,12 @@ public class SampleMetadata implements Serializable {
         this.cmoPatientId = cmoPatientId;
     }
 
-    public UUID getPatientUuid() {
-        return patientUuid;
+    public UUID getPatientMetaDbId() {
+        return patientMetaDbId;
     }
 
-    public void setPatientUuid(UUID patientUuid) {
-        this.patientUuid = patientUuid;
+    public void setPatientMetaDbId(UUID patientMetaDbId) {
+        this.patientMetaDbId = patientMetaDbId;
     }
 
     public String getCmoSampleId() {

@@ -1,5 +1,6 @@
 *application.properties
 *log4j.properties
+*maven.properties
 target/
 *.DS_Store
 *checkstyle_report*.txt
