@@ -19,7 +19,7 @@
     "qcAccessEmails": "", 
     "recipe": "GENESET101", 
     "requestId": "22022_BZ", 
-    "requestMetaDbId": "6cca6166-875a-11eb-ae9e-acde48001122", 
+    "metaDbRequestId": "6cca6166-875a-11eb-ae9e-acde48001122", 
     "samples": [
         {
             "baitSet": "GENESET101_BAITS", 
@@ -63,7 +63,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca3573-875a-11eb-911e-acde48001122", 
+            "metaDbPatientId": "6cca3573-875a-11eb-911e-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -72,7 +72,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74d1c-8756-11eb-a95a-acde48001122", 
+            "metaDbSampleId": "afe74d1c-8756-11eb-a95a-acde48001122", 
             "sampleName": "LMNO_3443_N", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "M", 
@@ -124,7 +124,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca38e3-875a-11eb-9e48-acde48001122", 
+            "metaDbPatientId": "6cca38e3-875a-11eb-9e48-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -133,7 +133,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74c2e-8756-11eb-b556-acde48001122", 
+            "metaDbSampleId": "afe74c2e-8756-11eb-b556-acde48001122", 
             "sampleName": "LMNO_0034_T_DNA", 
             "sampleOrigin": "Tissue", 
             "sex": "M", 
@@ -185,7 +185,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca3bdc-875a-11eb-a412-acde48001122", 
+            "metaDbPatientId": "6cca3bdc-875a-11eb-a412-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -194,7 +194,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74ca6-8756-11eb-ae00-acde48001122", 
+            "metaDbSampleId": "afe74ca6-8756-11eb-ae00-acde48001122", 
             "sampleName": "LMNO_9999_T", 
             "sampleOrigin": "", 
             "sex": "M", 
@@ -212,7 +212,7 @@
             "igoId": "22022_BZ_4", 
             "investigatorSampleId": "LMNO_8080_N", 
             "libraries": [], 
-            "patientMetaDbId": "6cca3d19-875a-11eb-92e8-acde48001122", 
+            "metaDbPatientId": "6cca3d19-875a-11eb-92e8-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -221,7 +221,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74e51-8756-11eb-9a0e-acde48001122", 
+            "metaDbSampleId": "afe74e51-8756-11eb-9a0e-acde48001122", 
             "sampleName": "LMNO_8080_N", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "F", 
@@ -273,7 +273,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca38e3-875a-11eb-9e48-acde48001122", 
+            "metaDbPatientId": "6cca38e3-875a-11eb-9e48-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -282,7 +282,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74e17-8756-11eb-bb1d-acde48001122", 
+            "metaDbSampleId": "afe74e17-8756-11eb-bb1d-acde48001122", 
             "sampleName": "LMNO_0034_N2", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "M", 
@@ -334,7 +334,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca414a-875a-11eb-b133-acde48001122", 
+            "metaDbPatientId": "6cca414a-875a-11eb-b133-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -343,7 +343,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74d5c-8756-11eb-8a70-acde48001122", 
+            "metaDbSampleId": "afe74d5c-8756-11eb-8a70-acde48001122", 
             "sampleName": "LMNO_7787_N2", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "M", 
@@ -395,7 +395,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca438f-875a-11eb-8dda-acde48001122", 
+            "metaDbPatientId": "6cca438f-875a-11eb-8dda-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -404,7 +404,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74a42-8756-11eb-a483-acde48001122", 
+            "metaDbSampleId": "afe74a42-8756-11eb-a483-acde48001122", 
             "sampleName": "LMNO_2020_DNA", 
             "sampleOrigin": "Tissue", 
             "sex": "M", 
@@ -456,7 +456,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca45c7-875a-11eb-9cce-acde48001122", 
+            "metaDbPatientId": "6cca45c7-875a-11eb-9cce-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -465,7 +465,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74f80-8756-11eb-a0f5-acde48001122", 
+            "metaDbSampleId": "afe74f80-8756-11eb-a0f5-acde48001122", 
             "sampleName": "LMNO_3030_N", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "F", 
@@ -517,7 +517,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca3573-875a-11eb-911e-acde48001122", 
+            "metaDbPatientId": "6cca3573-875a-11eb-911e-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -526,7 +526,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74f42-8756-11eb-8e66-acde48001122", 
+            "metaDbSampleId": "afe74f42-8756-11eb-8e66-acde48001122", 
             "sampleName": "LMNO_3443_T_DNA", 
             "sampleOrigin": "Tissue", 
             "sex": "M", 
@@ -578,7 +578,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca4a4f-875a-11eb-833e-acde48001122", 
+            "metaDbPatientId": "6cca4a4f-875a-11eb-833e-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -587,7 +587,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74c61-8756-11eb-8290-acde48001122", 
+            "metaDbSampleId": "afe74c61-8756-11eb-8290-acde48001122", 
             "sampleName": "LMNO_6565_T2_DNA", 
             "sampleOrigin": "Tissue", 
             "sex": "F", 
@@ -639,7 +639,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca4c9e-875a-11eb-b6d1-acde48001122", 
+            "metaDbPatientId": "6cca4c9e-875a-11eb-b6d1-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -648,7 +648,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74bb5-8756-11eb-8365-acde48001122", 
+            "metaDbSampleId": "afe74bb5-8756-11eb-8365-acde48001122", 
             "sampleName": "LMNO_0011_T", 
             "sampleOrigin": "Tissue", 
             "sex": "F", 
@@ -700,7 +700,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca4a4f-875a-11eb-833e-acde48001122", 
+            "metaDbPatientId": "6cca4a4f-875a-11eb-833e-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -709,7 +709,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74ddc-8756-11eb-9c0d-acde48001122", 
+            "metaDbSampleId": "afe74ddc-8756-11eb-9c0d-acde48001122", 
             "sampleName": "LMNO_6565_N2", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "F", 
@@ -761,7 +761,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca50e1-875a-11eb-bf5b-acde48001122", 
+            "metaDbPatientId": "6cca50e1-875a-11eb-bf5b-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -770,7 +770,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74ae3-8756-11eb-a9f8-acde48001122", 
+            "metaDbSampleId": "afe74ae3-8756-11eb-a9f8-acde48001122", 
             "sampleName": "LMNO_2299_N", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "F", 
@@ -822,7 +822,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca3d19-875a-11eb-92e8-acde48001122", 
+            "metaDbPatientId": "6cca3d19-875a-11eb-92e8-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -831,7 +831,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74e91-8756-11eb-8e29-acde48001122", 
+            "metaDbSampleId": "afe74e91-8756-11eb-8e29-acde48001122", 
             "sampleName": "LMNO_8080_T_DNA", 
             "sampleOrigin": "Tissue", 
             "sex": "F", 
@@ -883,7 +883,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca45c7-875a-11eb-9cce-acde48001122", 
+            "metaDbPatientId": "6cca45c7-875a-11eb-9cce-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -892,7 +892,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74b2b-8756-11eb-82f5-acde48001122", 
+            "metaDbSampleId": "afe74b2b-8756-11eb-82f5-acde48001122", 
             "sampleName": "LMNO_3030_T_DNA", 
             "sampleOrigin": "Tissue", 
             "sex": "F", 
@@ -944,7 +944,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca3bdc-875a-11eb-a412-acde48001122", 
+            "metaDbPatientId": "6cca3bdc-875a-11eb-a412-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -953,7 +953,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74b70-8756-11eb-8386-acde48001122", 
+            "metaDbSampleId": "afe74b70-8756-11eb-8386-acde48001122", 
             "sampleName": "WT_PXX_bc", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "M", 
@@ -1005,7 +1005,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca4c9e-875a-11eb-b6d1-acde48001122", 
+            "metaDbPatientId": "6cca4c9e-875a-11eb-b6d1-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -1014,7 +1014,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74ce1-8756-11eb-8145-acde48001122", 
+            "metaDbSampleId": "afe74ce1-8756-11eb-8145-acde48001122", 
             "sampleName": "LMNO_0011_N", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "F", 
@@ -1066,7 +1066,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca5b30-875a-11eb-9186-acde48001122", 
+            "metaDbPatientId": "6cca5b30-875a-11eb-9186-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -1075,7 +1075,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74ecc-8756-11eb-a6cc-acde48001122", 
+            "metaDbSampleId": "afe74ecc-8756-11eb-a6cc-acde48001122", 
             "sampleName": "LMNO_8895_N", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "F", 
@@ -1127,7 +1127,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca438f-875a-11eb-8dda-acde48001122", 
+            "metaDbPatientId": "6cca438f-875a-11eb-8dda-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -1136,7 +1136,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74da1-8756-11eb-8903-acde48001122", 
+            "metaDbSampleId": "afe74da1-8756-11eb-8903-acde48001122", 
             "sampleName": "LMNO_2020_N", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "M", 
@@ -1188,7 +1188,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca414a-875a-11eb-b133-acde48001122", 
+            "metaDbPatientId": "6cca414a-875a-11eb-b133-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -1197,7 +1197,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74bf3-8756-11eb-9ed7-acde48001122", 
+            "metaDbSampleId": "afe74bf3-8756-11eb-9ed7-acde48001122", 
             "sampleName": "LMNO_7787_T", 
             "sampleOrigin": "Tissue", 
             "sex": "M", 
@@ -1249,7 +1249,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cca50e1-875a-11eb-bf5b-acde48001122", 
+            "metaDbPatientId": "6cca50e1-875a-11eb-bf5b-acde48001122", 
             "preservation": "OCT", 
             "qcReports": [
                 {
@@ -1258,7 +1258,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74f11-8756-11eb-a0db-acde48001122", 
+            "metaDbSampleId": "afe74f11-8756-11eb-a0db-acde48001122", 
             "sampleName": "LMNO_2299_T_DNA", 
             "sampleOrigin": "Tissue", 
             "sex": "F", 

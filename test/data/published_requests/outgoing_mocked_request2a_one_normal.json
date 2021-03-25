@@ -9,17 +9,17 @@
     "otherContactEmails": "preclinical_group_shared@mskcc.org", 
     "piEmail": "", 
     "pooledNormals": [
-        "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz", 
-        "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R2_001.fastq.gz", 
-        "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R1_001.fastq.gz", 
-        "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
+      "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz",
+      "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R2_001.fastq.gz",
+      "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R1_001.fastq.gz",
+      "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
     ], 
     "projectId": "22022", 
     "projectManagerName": "", 
     "qcAccessEmails": "", 
     "recipe": "GENESET101", 
     "requestId": "22022_CC", 
-    "requestMetaDbId": "6cc9c81e-875a-11eb-87f8-acde48001122", 
+    "metaDbRequestId": "6cc9c81e-875a-11eb-87f8-acde48001122", 
     "samples": [
         {
             "baitSet": "GENESET101_BAITS", 
@@ -60,7 +60,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6cc7394f-875a-11eb-91ec-acde48001122", 
+            "metaDbPatientId": "6cc7394f-875a-11eb-91ec-acde48001122", 
             "preservation": "EDTA-Streck", 
             "qcReports": [
                 {
@@ -69,7 +69,7 @@
                     "qcReportType": "LIBRARY"
                 }
             ], 
-            "sampleMetaDbId": "afe74fba-8756-11eb-9b45-acde48001122", 
+            "metaDbSampleId": "afe74fba-8756-11eb-9b45-acde48001122", 
             "sampleName": "LMNO_4396_N", 
             "sampleOrigin": "Buffy Coat", 
             "sex": "F", 
