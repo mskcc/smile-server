@@ -25,7 +25,7 @@
     "qcAccessEmails": "", 
     "recipe": "IMPACT468", 
     "requestId": "33344_Z", 
-    "requestMetaDbId": "6ccad40a-875a-11eb-ba0a-acde48001122", 
+    "metaDbRequestId": "6ccad40a-875a-11eb-ba0a-acde48001122", 
     "samples": [
         {
             "baitSet": "GENESET101_BAITS", 
@@ -64,7 +64,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6ccac98a-875a-11eb-90ec-acde48001122", 
+            "metaDbPatientId": "6ccac98a-875a-11eb-90ec-acde48001122", 
             "preservation": "Fresh", 
             "qcReports": [
                 {
@@ -73,7 +73,7 @@
                     "qcReportType": "DNA"
                 }
             ], 
-            "sampleMetaDbId": "afe74ff8-8756-11eb-8db3-acde48001122", 
+            "metaDbSampleId": "afe74ff8-8756-11eb-8db3-acde48001122", 
             "sampleName": "AGAG-LXX8", 
             "sampleOrigin": "Sorted Cells", 
             "sex": "F", 
@@ -120,7 +120,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6ccac98a-875a-11eb-90ec-acde48001122", 
+            "metaDbPatientId": "6ccac98a-875a-11eb-90ec-acde48001122", 
             "preservation": "Fresh", 
             "qcReports": [
                 {
@@ -129,7 +129,7 @@
                     "qcReportType": "DNA"
                 }
             ], 
-            "sampleMetaDbId": "afe75035-8756-11eb-9832-acde48001122", 
+            "metaDbSampleId": "afe75035-8756-11eb-9832-acde48001122", 
             "sampleName": "LXX8-AGAG", 
             "sampleOrigin": "Sorted Cells", 
             "sex": "F", 
@@ -176,7 +176,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6ccad073-875a-11eb-af7c-acde48001122", 
+            "metaDbPatientId": "6ccad073-875a-11eb-af7c-acde48001122", 
             "preservation": "Fresh", 
             "qcReports": [
                 {
@@ -185,7 +185,7 @@
                     "qcReportType": "DNA"
                 }
             ], 
-            "sampleMetaDbId": "afe75070-8756-11eb-9a86-acde48001122", 
+            "metaDbSampleId": "afe75070-8756-11eb-9a86-acde48001122", 
             "sampleName": "AGAG", 
             "sampleOrigin": "Sorted Cells", 
             "sex": "F", 
@@ -232,7 +232,7 @@
                     ]
                 }
             ], 
-            "patientMetaDbId": "6ccad394-875a-11eb-b1f6-acde48001122", 
+            "metaDbPatientId": "6ccad394-875a-11eb-b1f6-acde48001122", 
             "preservation": "Fresh", 
             "qcReports": [
                 {
@@ -241,7 +241,7 @@
                     "qcReportType": "DNA"
                 }
             ], 
-            "sampleMetaDbId": "afe750ab-8756-11eb-8adf-acde48001122", 
+            "metaDbSampleId": "afe750ab-8756-11eb-8adf-acde48001122", 
             "sampleName": "LXX8", 
             "sampleOrigin": "Sorted Cells", 
             "sex": "F", 
