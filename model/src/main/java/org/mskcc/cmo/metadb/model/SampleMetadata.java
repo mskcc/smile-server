@@ -19,6 +19,7 @@ public class SampleMetadata implements Serializable {
     @JsonIgnore
     private Long id;
     private UUID metaDbSampleId;
+    @JsonIgnore
     private String importDate;
     private String cmoInfoIgoId;
     private String cmoSampleName;
