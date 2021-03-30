@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb;
 
 import java.util.concurrent.CountDownLatch;
+import org.apache.log4j.Logger;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableCaching
 @EnableSwagger2
 public class MetadbApp implements CommandLineRunner {
+    private final Logger LOG = Logger.getLogger(MetadbApp.class);
 
     @Autowired
     private Gateway messagingGateway;
@@ -61,14 +63,14 @@ public class MetadbApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("Starting up MetaDB application...");
+        LOG.info("Starting up MetaDB application...");
         try {
             installShutdownHook();
             messagingGateway.connect();
             messageHandlingService.initialize(messagingGateway);
             metadbAppClose.await();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Encountered error during initialization", e);
         } finally {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
         }
@@ -83,7 +85,7 @@ public class MetadbApp implements CommandLineRunner {
                         messagingGateway.shutdown();
                         messageHandlingService.shutdown();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOG.error("Encountered error during shutdown process", e);
                     }
                     metadbAppClose.countDown();
                 }

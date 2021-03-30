@@ -6,7 +6,10 @@ log4j.category.org.mskcc=INFO
 
 ## IMPORTANT - THRESHOLD SHOULD NOT BE DEBUG FOR PRODUCTION, CREDENTIALS CAN BE DISPLAYED!
 
-log4j.appender.a = org.apache.log4j.FileAppender
+log4j.appender.a = org.apache.log4j.rolling.RollingFileAppender
+log4j.appender.a.rollingPolicy = org.apache.log4j.rolling.TimeBasedRollingPolicy
+
+log4j.appender.a.rollingPolicy.FileNamePattern = /path/to/logfile.log.%d.gz
 
 log4j.appender.a.File = /path/to/logfile.log
 
