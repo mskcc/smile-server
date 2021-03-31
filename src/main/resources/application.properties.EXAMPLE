@@ -6,6 +6,13 @@ nats.clusterid=
 nats.clientid=
 nats.url=
 
+# nats ssl
+nats.tls_channel=
+nats.keystore_path=
+nats.truststore_path=
+nats.key_password=
+nats.store_password=
+
 # spring data neo4j
 spring.data.neo4j.username=
 spring.data.neo4j.password=
