@@ -18,6 +18,7 @@ import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -43,6 +44,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     private static final String REQ_FAILURES_FILE_HEADER = "DATE\tREASON\tMESSAGE\n";
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public boolean saveRequest(MetaDbRequest request) throws Exception {
         MetaDbProject project = new MetaDbProject();
         project.setProjectId(request.getProjectId());
