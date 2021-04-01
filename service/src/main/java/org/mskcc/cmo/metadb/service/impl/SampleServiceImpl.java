@@ -30,7 +30,7 @@ public class SampleServiceImpl implements SampleService {
                 metaDbSampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
         if (foundSample == null) {
             MetaDbPatient patient = metaDbPatientRepository.findPatientByPatientCmoId(
-                    updatedMetaDbSample.getPatient().getCmoPatientId());
+                    updatedMetaDbSample.getPatient().getCmoPatientId().getPatientId());
             if (patient != null) {
                 updatedMetaDbSample.setPatient(patient);
             }
@@ -50,7 +50,7 @@ public class SampleServiceImpl implements SampleService {
         metaDbSample.addSample(new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
         MetaDbPatient patient = new MetaDbPatient();
-        patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "igoId"));
+        patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
         metaDbSample.setPatient(patient);
 
         return metaDbSample;
