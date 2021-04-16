@@ -2,8 +2,8 @@
 server.port=
 
 # nats server
-nats.clusterid=
-nats.clientid=
+nats.consumer_name=
+nats.consumer_password=
 nats.url=
 
 # nats ssl
