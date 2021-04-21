@@ -29,7 +29,7 @@ public class SampleServiceImpl implements SampleService {
         MetaDbSample foundSample =
                 metaDbSampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
         if (foundSample == null) {
-            MetaDbPatient patient = metaDbPatientRepository.findPatientByPatientCmoId(
+            MetaDbPatient patient = metaDbPatientRepository.findPatientByPatientAlias(
                     updatedMetaDbSample.getPatient().getCmoPatientId().getPatientId());
             if (patient != null) {
                 updatedMetaDbSample.setPatient(patient);
