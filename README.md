@@ -15,8 +15,6 @@ All properties are required with the exception of some NATS connection-specific 
 - `nats.key_password` : keystore password
 - `nats.store_password` : truststore password
 
-Configure your `log4j.properties` based on [log4j.properties.EXAMPLE](src/main/resources/log4j.properties.EXAMPLE). The default configuration writes to std.out which is standard for container environments.
-
 ### Locally
 
 **Requirements:**

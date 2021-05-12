@@ -1,7 +1,8 @@
 package org.mskcc.cmo.metadb;
 
 import java.util.concurrent.CountDownLatch;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableCaching
 @EnableSwagger2
 public class MetadbApp implements CommandLineRunner {
-    private final Logger LOG = Logger.getLogger(MetadbApp.class);
+    private static final Log LOG = LogFactory.getLog(MetadbApp.class);
 
     @Autowired
     private Gateway messagingGateway;
