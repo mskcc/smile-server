@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.metadb.model.QcReport;
 import org.neo4j.ogm.typeconversion.AttributeConverter;
 
 public class QcReportsStringConverter implements AttributeConverter<List<QcReport>, String> {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final Logger LOG = Logger.getLogger(QcReportsStringConverter.class);
+    private static final Log LOG = LogFactory.getLog(QcReportsStringConverter.class);
 
     @Override
     public String toGraphProperty(List<QcReport> value) {

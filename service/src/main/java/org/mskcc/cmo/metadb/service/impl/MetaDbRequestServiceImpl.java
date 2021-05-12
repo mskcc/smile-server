@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.common.FileUtil;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
@@ -39,7 +40,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     @Autowired
     FileUtil fileUtil;
 
-    private Logger LOG = Logger.getLogger(MetaDbRequestServiceImpl.class);
+    private static final Log LOG = LogFactory.getLog(MetaDbRequestServiceImpl.class);
 
     private static final String REQ_FAILURES_FILE_HEADER = "DATE\tREASON\tMESSAGE\n";
 
