@@ -33,11 +33,11 @@ public class RequestController {
     private String metaDbSchemaVersion;
 
     @Autowired
-    private MetaDbRequestService metaDbRequestService;
+    private MetaDbRequestService requestService;
 
     @Autowired
-    public RequestController(MetaDbRequestService metaDbRequestService) {
-        this.metaDbRequestService = metaDbRequestService;
+    public RequestController(MetaDbRequestService requestService) {
+        this.requestService = requestService;
     }
 
     /**
@@ -54,7 +54,7 @@ public class RequestController {
         "Retrieves MetaDbRequest from a RequestId.",
         required = true)
         @PathVariable String requestId) throws Exception {
-        PublishedMetaDbRequest request = metaDbRequestService.getMetaDbRequest(requestId);
+        PublishedMetaDbRequest request = requestService.getMetaDbRequest(requestId);
         if (request == null) {
             return requestNotFoundHandler("Request does not exist by id: " + requestId);
         }
@@ -79,7 +79,7 @@ public class RequestController {
         @RequestBody List<String> requestIds) throws Exception {
         List<PublishedMetaDbRequest> requestList = new ArrayList<>();
         for (String requestId: requestIds) {
-            PublishedMetaDbRequest request = metaDbRequestService.getMetaDbRequest(requestId);
+            PublishedMetaDbRequest request = requestService.getMetaDbRequest(requestId);
             if (request != null) {
                 requestList.add(request);
             }
@@ -103,7 +103,7 @@ public class RequestController {
         "Retrieves MetaDbRequest from a RequestId.",
         required = true)
         @PathVariable String requestId) throws Exception {
-        PublishedMetaDbRequest request = metaDbRequestService.getMetaDbRequest(requestId);
+        PublishedMetaDbRequest request = requestService.getMetaDbRequest(requestId);
         if (request == null) {
             return requestNotFoundHandler("Request not found by id: " + requestId);
         }

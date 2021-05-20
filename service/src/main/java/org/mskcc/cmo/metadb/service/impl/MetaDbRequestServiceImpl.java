@@ -18,6 +18,7 @@ import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
+import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,10 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     private String metadbRequestFailuresFilepath;
 
     @Autowired
-    private MetaDbRequestRepository metaDbRequestRepository;
+    private MetaDbRequestRepository requestRepository;
+
+    @Autowired
+    private MetaDbSampleRepository sampleRepository;
 
     @Autowired
     private SampleService sampleService;
@@ -58,7 +62,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         project.setNamespace(request.getNamespace());
         request.setMetaDbProject(project);
 
-        MetaDbRequest savedRequest = metaDbRequestRepository.findMetaDbRequestById(request.getRequestId());
+        MetaDbRequest savedRequest = requestRepository.findMetaDbRequestById(request.getRequestId());
         if (savedRequest == null) {
             if (request.getMetaDbSampleList() != null) {
                 List<MetaDbSample> updatedSamples = new ArrayList<>();
@@ -67,7 +71,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
                 }
                 request.setMetaDbSampleList(updatedSamples);
             }
-            metaDbRequestRepository.save(request);
+            requestRepository.save(request);
             return true;
         } else {
             // if request has not been logged before then save request to request logger file
@@ -118,13 +122,13 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
 
     @Override
     public PublishedMetaDbRequest getMetaDbRequest(String requestId) throws Exception {
-        MetaDbRequest metaDbRequest = metaDbRequestRepository.findMetaDbRequestById(requestId);
+        MetaDbRequest metaDbRequest = requestRepository.findMetaDbRequestById(requestId);
         if (metaDbRequest == null) {
             LOG.error("Couldn't find a request with requestId " + requestId);
             return null;
         }
         List<SampleMetadata> samples = new ArrayList<>();
-        for (MetaDbSample metaDbSample: metaDbRequestRepository.findAllMetaDbSamplesByRequest(requestId)) {
+        for (MetaDbSample metaDbSample: sampleRepository.findAllMetaDbSamplesByRequest(requestId)) {
             samples.addAll(sampleService.getMetaDbSample(metaDbSample.getMetaDbSampleId())
                     .getSampleMetadataList());
         }

@@ -17,27 +17,27 @@ import org.springframework.stereotype.Component;
 public class SampleServiceImpl implements SampleService {
 
     @Autowired
-    private MetaDbSampleRepository metaDbSampleRepository;
+    private MetaDbSampleRepository sampleRepository;
 
     @Autowired
-    private MetaDbPatientRepository metaDbPatientRepository;
+    private MetaDbPatientRepository patientRepository;
 
     @Override
     public MetaDbSample saveSampleMetadata(MetaDbSample
             metaDbSample) throws Exception {
         MetaDbSample updatedMetaDbSample = setUpMetaDbSample(metaDbSample);
         MetaDbSample foundSample =
-                metaDbSampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
+                sampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
         if (foundSample == null) {
-            MetaDbPatient patient = metaDbPatientRepository.findPatientByPatientAlias(
+            MetaDbPatient patient = patientRepository.findPatientByPatientAlias(
                     updatedMetaDbSample.getPatient().getCmoPatientId().getPatientId());
             if (patient != null) {
                 updatedMetaDbSample.setPatient(patient);
             }
-            metaDbSampleRepository.save(updatedMetaDbSample);
+            sampleRepository.save(updatedMetaDbSample);
         } else {
             foundSample.addSampleMetadata(updatedMetaDbSample.getSampleMetadataList().get(0));
-            metaDbSampleRepository.save(foundSample);
+            sampleRepository.save(foundSample);
         }
         return updatedMetaDbSample;
     }
@@ -59,21 +59,20 @@ public class SampleServiceImpl implements SampleService {
     @Override
     public List<MetaDbSample> findMatchedNormalSample(
             MetaDbSample metaDbSample) throws Exception {
-        return metaDbSampleRepository.findMatchedNormalsBySample(metaDbSample);
+        return sampleRepository.findMatchedNormalsBySample(metaDbSample);
     }
 
     @Override
     public List<String> findPooledNormalSample(MetaDbSample metaDbSample) throws Exception {
-        return metaDbSampleRepository.findPooledNormalsBySample(metaDbSample);
+        return sampleRepository.findPooledNormalsBySample(metaDbSample);
     }
 
     @Override
     public MetaDbSample getMetaDbSample(UUID metaDbSampleId) throws Exception {
-        MetaDbSample metaDbSample = metaDbSampleRepository.findMetaDbSampleById(metaDbSampleId);
-        metaDbSample.setSampleMetadataList(
-                metaDbSampleRepository.findSampleMetadataListBySampleId(metaDbSampleId));
+        MetaDbSample metaDbSample = sampleRepository.findMetaDbSampleById(metaDbSampleId);
+        metaDbSample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metaDbSampleId));
         for (SampleMetadata s: metaDbSample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(metaDbSampleRepository.findPatientIdBySample(metaDbSampleId));
+            s.setMetaDbPatientId(patientRepository.findPatientIdBySample(metaDbSampleId));
             s.setMetaDbSampleId(metaDbSampleId);
         }
         return metaDbSample;
