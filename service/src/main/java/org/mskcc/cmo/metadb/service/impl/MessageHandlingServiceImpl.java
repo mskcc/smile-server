@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
@@ -38,6 +40,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
 
+    @Value("${igo.cmo_request_filter:false}")
+    private Boolean igoCmoRequestFilter;
+
     @Autowired
     private MetaDbRequestService requestService;
 
@@ -49,6 +54,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         new LinkedBlockingQueue<MetaDbRequest>();
     private static CountDownLatch newRequestHandlerShutdownLatch;
     private static Gateway messagingGateway;
+
+    private static final Log LOG = LogFactory.getLog(MessageHandlingServiceImpl.class);
 
     private class NewIgoRequestHandler implements Runnable {
 
@@ -66,6 +73,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
+                        // skip request if filtering by only cmo requests
+                        if (igoCmoRequestFilter && !request.getCmoRequest()) {
+                            continue;
+                        }
                         if (requestService.saveRequest(request)) {
                             messagingGateway.publish(CONSISTENCY_CHECK_NEW_REQUEST,
                                     mapper.writeValueAsString(
@@ -78,7 +89,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 } catch (InterruptedException e) {
                     interrupted = true;
                 } catch (Exception e) {
-                    System.err.printf("Error during request handling: %s\n", e.getMessage());
+                    LOG.error("Error during request handling: %s\n", e);
                     e.printStackTrace();
                 }
             }
@@ -94,7 +105,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             initializeNewRequestHandlers();
             initialized = true;
         } else {
-            System.err.printf("Messaging Handler Service has already been initialized, ignoring request.\n");
+            LOG.error("Messaging Handler Service has already been initialized, ignoring request.\n");
         }
     }
 
@@ -106,7 +117,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         if (!shutdownInitiated) {
             newRequestQueue.put(request);
         } else {
-            System.err.printf("Shutdown initiated, not accepting request: %s\n", request);
+            LOG.error("Shutdown initiated, not accepting request: " + request);
             throw new IllegalStateException("Shutdown initiated, not handling any more requests");
         }
     }
@@ -145,9 +156,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     metaDbRequest.setNamespace("igo");
                     messageHandlingService.newRequestHandler(metaDbRequest);
                 } catch (Exception e) {
-                    System.err.printf("Cannot process IGO_NEW_REQUEST:\n%s\n", message);
-                    System.err.printf("Exception during processing:\n%s\n", e.getMessage());
-                    e.printStackTrace();
+                    LOG.error("Cannot process IGO_NEW_REQUEST:\n" + message + "\n");
+                    LOG.error("Exception during processing:\n%s\n", e);
                 }
             }
         });

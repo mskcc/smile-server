@@ -2,7 +2,6 @@ package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
 import java.util.UUID;
-import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
@@ -38,11 +37,6 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     SampleAlias findSampleInvestigatorId(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
-            + "MATCH (sm)<-[:HAS_SAMPLE]-(p: Patient)"
-            + "RETURN p;")
-    MetaDbPatient findPatientBySampleId(@Param("metaDbSampleId") UUID metaDbSampleId);
-
-    @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)-[:HAS_METADATA]->(s: SampleMetadata)"
             + "RETURN s;")
     List<SampleMetadata> findSampleMetadataListBySampleId(@Param("metaDbSampleId") UUID metaDbSampleId);
@@ -60,8 +54,15 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
             + "RETURN r.pooledNormals")
     List<String> findPooledNormalsBySample(@Param("metaDbSample") MetaDbSample metaDbSample);
 
-    @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSampleId}) "
-            + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "
-            + "RETURN p.metaDbPatientId")
-    UUID findPatientIdBySample(@Param("metaDbSampleId") UUID metaDbSampleId);
+    @Query("Match (r: Request {requestId: $reqId})-[:HAS_SAMPLE]->"
+            + "(s: Sample) "
+            + "RETURN s;")
+    List<MetaDbSample> findAllMetaDbSamplesByRequest(@Param("reqId") String reqId);
+
+    @Query("MATCH (r: Request {requestId: $reqId}) "
+            + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
+            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {toLower(namespace): 'igoid', value: $igoId}) "
+            + "RETURN sm")
+    MetaDbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
+            @Param("igoId") String igoId);
 }
