@@ -44,7 +44,7 @@
     <jackson.version>2.11.2</jackson.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
-    <cmo_metadb_messaging_java.version>38bb705c25ff8380d78df7a45698d3f84086de17</cmo_metadb_messaging_java.version>
+    <cmo_metadb_messaging_java.version>81a77db772315f2f0e47f3eeff8fabd0d06848e4</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.groupId>com.github.mskcc</cmo_metadb_common.groupId>
     <cmo_metadb_common.version>v1.4-alpha</cmo_metadb_common.version>
