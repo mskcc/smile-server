@@ -1,8 +1,5 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import java.io.File;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mskcc.cmo.common.FileUtil;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
@@ -21,8 +17,8 @@ import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
 import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
+import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 public class MetaDbRequestServiceImpl implements MetaDbRequestService {
-
-    @Value("${metadb.request_handling_failures_filepath}")
-    private String metadbRequestFailuresFilepath;
 
     @Autowired
     private MetaDbRequestRepository requestRepository;
@@ -46,13 +39,12 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     private SampleService sampleService;
 
     @Autowired
-    private FileUtil fileUtil;
+    private RequestStatusLogger requestStatusLogger;
 
     // 24 hours in milliseconds
     private final Integer TIME_ADJ_24HOURS_MS = 24 * 60 * 60 * 1000;
     private Map<String, Date> loggedExistingRequests = new HashMap<>();
     private static final Log LOG = LogFactory.getLog(MetaDbRequestServiceImpl.class);
-    private static final String REQ_FAILURES_FILE_HEADER = "DATE\tREASON\tMESSAGE\n";
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
@@ -93,31 +85,11 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
             }
 
             if (logRequest) {
-                File requestFailureFile = fileUtil.getOrCreateFileWithHeader(
-                        metadbRequestFailuresFilepath, REQ_FAILURES_FILE_HEADER);
-                fileUtil.writeToFile(requestFailureFile,
-                        generateRequestFailureRecord("Request already exists", request.getRequestJson()));
+                requestStatusLogger.logRequestStatus(request.getRequestJson(),
+                        RequestStatusLogger.StatusType.DUPLICATE_REQUEST);
             }
             return false;
         }
-    }
-
-    /**
-     * Generates record to write to publishing failure file.
-     * @param reason
-     * @param message
-     * @return String
-     */
-    private String generateRequestFailureRecord(String reason, String message) {
-        String currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        StringBuilder builder = new StringBuilder();
-        builder.append(currentDate)
-                .append("\t")
-                .append(reason)
-                .append("\t")
-                .append(message)
-                .append("\n");
-        return builder.toString();
     }
 
     @Override
