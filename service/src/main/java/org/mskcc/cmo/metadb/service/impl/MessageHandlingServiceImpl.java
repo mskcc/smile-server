@@ -2,7 +2,9 @@ package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.nats.client.Message;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -91,9 +93,13 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             continue;
                         }
                         if (requestService.saveRequest(request)) {
-                            messagingGateway.publish(CONSISTENCY_CHECK_NEW_REQUEST,
+                            messagingGateway.publish(request.getRequestId(),
+                                    CONSISTENCY_CHECK_NEW_REQUEST,
                                     mapper.writeValueAsString(
                                             requestService.getMetaDbRequest(request.getRequestId())));
+                        } else {
+                            LOG.warn("Request already in database - it will not be saved: "
+                                    + request.getRequestId());
                         }
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
@@ -102,8 +108,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 } catch (InterruptedException e) {
                     interrupted = true;
                 } catch (Exception e) {
-                    LOG.error("Error during request handling: %s\n", e);
-                    e.printStackTrace();
+                    LOG.error("Error during request handling", e);
                 }
             }
             newRequestHandlerShutdownLatch.countDown();
@@ -159,13 +164,16 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     private void setupIgoNewRequestHandler(Gateway gateway, MessageHandlingService messageHandlingService)
         throws Exception {
         gateway.subscribe(IGO_NEW_REQUEST_TOPIC, Object.class, new MessageConsumer() {
-            public void onMessage(Object message) {
+            public void onMessage(Message msg, Object message) {
+                LOG.info("Received message on topic: " + IGO_NEW_REQUEST_TOPIC);
                 try {
-                    String requestJson = message.toString();
-                    MetaDbRequest metaDbRequest = mapper.readValue(message.toString(),
+                    String requestJson = mapper.readValue(
+                            new String(msg.getData(), StandardCharsets.UTF_8),
+                            String.class);
+                    MetaDbRequest metaDbRequest = mapper.readValue(requestJson,
                             MetaDbRequest.class);
                     metaDbRequest.setRequestJson(requestJson);
-                    metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(message));
+                    metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(requestJson));
                     metaDbRequest.setNamespace("igo");
                     messageHandlingService.newRequestHandler(metaDbRequest);
                 } catch (Exception e) {
