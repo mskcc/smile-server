@@ -63,7 +63,6 @@ public class SampleController {
                 .body(samples);
     }
 
-
     private HttpHeaders responseHeaders() {
         HttpHeaders headers  = new HttpHeaders();
         headers.set("metadb-schema-version", metaDbSchemaVersion);
