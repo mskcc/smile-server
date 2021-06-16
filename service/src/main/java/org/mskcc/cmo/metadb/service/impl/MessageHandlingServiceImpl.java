@@ -204,7 +204,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             }
             // update import date here since we are parsing from json
             sample.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-
+            sample.setRequestId((String) map.get("requestId"));
             MetaDbSample metaDbSample = new MetaDbSample();
             metaDbSample.addSampleMetadata(sample);
             metaDbSampleList.add(metaDbSample);

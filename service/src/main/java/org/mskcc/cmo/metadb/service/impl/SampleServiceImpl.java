@@ -77,4 +77,9 @@ public class SampleServiceImpl implements SampleService {
         }
         return metaDbSample;
     }
+
+    @Override
+    public List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception {
+        return sampleRepository.findSampleMetadataListByCmoPatientId(cmoPatientId);
+    }
 }

@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
+import org.mskcc.cmo.metadb.model.converter.MapStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -19,7 +21,6 @@ public class SampleMetadata implements Serializable {
     @JsonIgnore
     private Long id;
     private UUID metaDbSampleId;
-    @JsonIgnore
     private String importDate;
     private String cmoInfoIgoId;
     private String cmoSampleName;
@@ -36,7 +37,6 @@ public class SampleMetadata implements Serializable {
     private String mrn;
     private String cmoPatientId;
     private UUID metaDbPatientId;
-    private String cmoSampleId;
     private String igoId;
     private String investigatorSampleId;
     private String species;
@@ -57,6 +57,8 @@ public class SampleMetadata implements Serializable {
     private String ancestorSample;
     private String sampleStatus;
     private String requestId;
+    @Convert(MapStringConverter.class)
+    private Map<String, String> cmoSampleIdFields;
 
     public SampleMetadata() {}
 
@@ -83,7 +85,6 @@ public class SampleMetadata implements Serializable {
      * @param qcReports
      * @param libraries
      * @param mrn
-     * @param cmoSampleId
      * @param sampleType
      * @param tumorType
      * @param parentTumorType
@@ -101,7 +102,7 @@ public class SampleMetadata implements Serializable {
             String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
             String preservation, String collectionYear, String sex, String species, String tubeId,
             String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
-            String mrn, String cmoSampleId, String sampleType, String tumorType, String parentTumorType,
+            String mrn, String sampleType, String tumorType, String parentTumorType,
             String tissueSource, String recipe, String baitSet, String fastqPath,
             String principalInvestigator, String ancestorSample, String sampleStatus, String importDate) {
         this.mrn = mrn;
@@ -110,7 +111,6 @@ public class SampleMetadata implements Serializable {
         this.sampleName = sampleName;
         this.cmoSampleClass = cmoSampleClass;
         this.cmoPatientId = cmoPatientId;
-        this.cmoSampleId = cmoSampleId;
         this.igoId = igoId;
         this.investigatorSampleId = investigatorSampleId;
         this.species = species;
@@ -304,14 +304,6 @@ public class SampleMetadata implements Serializable {
         this.metaDbPatientId = metaDbPatientId;
     }
 
-    public String getCmoSampleId() {
-        return cmoSampleId;
-    }
-
-    public void setCmoSampleId(String cmoSampleId) {
-        this.cmoSampleId = cmoSampleId;
-    }
-
     public String getIgoId() {
         return igoId;
     }
@@ -470,6 +462,14 @@ public class SampleMetadata implements Serializable {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public Map<String, String> getCmoSampleIdFields() {
+        return cmoSampleIdFields;
+    }
+
+    public void setCmoSampleIdFields(Map<String, String> cmoSampleIdFields) {
+        this.cmoSampleIdFields = cmoSampleIdFields;
     }
 
     @Override
