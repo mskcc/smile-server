@@ -3,6 +3,7 @@ package org.mskcc.cmo.metadb.service;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.SampleMetadata;
 
 public interface SampleService {
 
@@ -16,4 +17,6 @@ public interface SampleService {
     List<String> findPooledNormalSample(MetaDbSample metaDbSample) throws Exception;
 
     MetaDbSample getMetaDbSample(UUID metaDbSampleId) throws Exception;
+
+    List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception;
 }
