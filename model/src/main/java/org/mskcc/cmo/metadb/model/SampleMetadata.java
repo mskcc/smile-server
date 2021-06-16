@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
+import org.mskcc.cmo.metadb.model.converter.MapStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -55,6 +57,8 @@ public class SampleMetadata implements Serializable {
     private String ancestorSample;
     private String sampleStatus;
     private String requestId;
+    @Convert(MapStringConverter.class)
+    private Map<String, String> cmoSampleIdFields;
 
     public SampleMetadata() {}
 
@@ -458,6 +462,14 @@ public class SampleMetadata implements Serializable {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public Map<String, String> getCmoSampleIdFields() {
+        return cmoSampleIdFields;
+    }
+
+    public void setCmoSampleIdFields(Map<String, String> cmoSampleIdFields) {
+        this.cmoSampleIdFields = cmoSampleIdFields;
     }
 
     @Override
