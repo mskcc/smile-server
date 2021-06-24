@@ -17,7 +17,7 @@ jobs:
           name: Pull cmo metadb common code
           command: |
               export METADB_COMMON_VERSION=$(grep 'cmo_metadb_common\.version' pom.xml | head -1 | sed 's/<cmo_metadb_common\.version>//g' | sed 's|</cmo_metadb_common\.version>||' | tr -d '[:blank:]' | cut -f1) && \
-              export METADB_COMMON_ORG=$(grep 'cmo_metadb_common\.groupId' pom.xml | head -1 | sed 's/<cmo_metadb_common\.groupId>//g' | sed 's|</cmo_metadb_common\.groupId>||' | tr -d '[:blank:]' | cut -d. -f3) && \
+              export METADB_COMMON_ORG=$(grep 'cmo_metadb_common\.group' pom.xml | head -1 | sed 's/<cmo_metadb_common\.group>//g' | sed 's|</cmo_metadb_common\.group>||' | tr -d '[:blank:]' | cut -d. -f3) && \
               cd .. && \
               git clone https://github.com/$METADB_COMMON_ORG/cmo-metadb-common.git && \
               cd cmo-metadb-common && \

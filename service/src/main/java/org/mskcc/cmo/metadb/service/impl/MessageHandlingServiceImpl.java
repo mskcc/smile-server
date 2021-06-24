@@ -26,8 +26,6 @@ import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
-import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
-import org.neo4j.driver.internal.shaded.io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -44,14 +42,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
 
-    @Value("${igo.cmo_request_filter:false}")
-    private Boolean igoCmoRequestFilter;
-
     @Autowired
     private MetaDbRequestService requestService;
-
-    @Autowired
-    private RequestStatusLogger requestStatusLogger;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private static boolean initialized = false;
@@ -80,18 +72,6 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        // skip request if filtering by only cmo requests and cmoRequest status is false
-                        if (igoCmoRequestFilter && !request.getCmoRequest()) {
-                            requestStatusLogger.logRequestStatus(request.getRequestJson(),
-                                    RequestStatusLogger.StatusType.CMO_REQUEST_FILTER_SKIPPED_REQUEST);
-                            continue;
-                        }
-                        // skip request if there are no samples to persist
-                        if (request.getMetaDbSampleList().isEmpty()) {
-                            requestStatusLogger.logRequestStatus(request.getRequestJson(),
-                                    RequestStatusLogger.StatusType.REQUEST_WITH_MISSING_SAMPLES);
-                            continue;
-                        }
                         if (requestService.saveRequest(request)) {
                             messagingGateway.publish(request.getRequestId(),
                                     CONSISTENCY_CHECK_NEW_REQUEST,
@@ -178,12 +158,6 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     messageHandlingService.newRequestHandler(metaDbRequest);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of request on topic: " + IGO_NEW_REQUEST_TOPIC, e);
-                    try {
-                        requestStatusLogger.logRequestStatus(message.toString(),
-                                RequestStatusLogger.StatusType.REQUEST_PARSING_ERROR);
-                    } catch (IOException ex) {
-                        LOG.error("Error during attempt to write request status to logger file", ex);
-                    }
                 }
             }
         });
@@ -197,25 +171,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
         List<MetaDbSample> metaDbSampleList = new ArrayList<>();
         for (SampleMetadata sample: sampleList) {
-            // skip samples with invalid metadata
-            if (StringUtil.isNullOrEmpty(sample.getBaitSet())
-                    || StringUtil.isNullOrEmpty(sample.getCmoPatientId())) {
-                continue;
-            }
             // update import date here since we are parsing from json
             sample.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
             sample.setRequestId((String) map.get("requestId"));
             MetaDbSample metaDbSample = new MetaDbSample();
             metaDbSample.addSampleMetadata(sample);
             metaDbSampleList.add(metaDbSample);
-        }
-
-        // compare sizes of input sample list and list of valid metadb samples found
-        if (sampleList.length != metaDbSampleList.size()) {
-            LOG.warn("Input sample list size from request JSON (" + sampleList.length
-                    + ") does not match size of valid metadb samples found: " + metaDbSampleList.size());
-            requestStatusLogger.logRequestStatus(message.toString(),
-                    RequestStatusLogger.StatusType.CMO_REQUEST_MISSING_REQ_FIELDS);
         }
         return metaDbSampleList;
     }

@@ -6,7 +6,7 @@ CMO MetaDB is a distributed microservices system. It receives messages from LIMS
 
 ### Custom properties
 
-Make an `application.properties` based on [application.properties.EXAMPLE](src/main/resources/application.properties.EXAMPLE). 
+Make an `application.properties` based on [application.properties.EXAMPLE](src/main/resources/application.properties.EXAMPLE).
 
 All properties are required with the exception of some NATS connection-specific properties. The following are only required if `nats.tls_channel` is set to `true`:
 
@@ -21,15 +21,15 @@ All properties are required with the exception of some NATS connection-specific 
 - maven 3.6.1
 - java 8
 
-Add `application.properties` and `log4j.properties` to the local application resources: `src/main/resources`
+Add `application.properties` to the local application resources: `src/main/resources`
 
-Build with 
+Build with
 
 ```
 mvn clean install
 ```
 
-Run with 
+Run with
 
 ```
 java -jar server/target/cmo_metadb_server.jar
@@ -46,7 +46,7 @@ Build image with Docker
 docker build -t <repo>/<tag>:<version> .
 ```
 
-Push image to DockerHub 
+Push image to DockerHub
 
 ```
 docker push <repo>/<tag>:<version>

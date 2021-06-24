@@ -28,6 +28,3 @@ metadb.publishing_failures_filepath=
 
 # request handling failure filepath
 metadb.request_handling_failures_filepath=
-
-# cmo request filter (default is false)
-igo.cmo_request_filter=
