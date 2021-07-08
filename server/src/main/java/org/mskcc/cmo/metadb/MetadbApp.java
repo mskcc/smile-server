@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
+import org.mskcc.cmo.metadb.service.RequestReplyHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -37,6 +38,9 @@ public class MetadbApp implements CommandLineRunner {
 
     @Autowired
     private MessageHandlingService messageHandlingService;
+    
+    @Autowired
+    RequestReplyHandlingService requestReplyHandlingService;
 
     private Thread shutdownHook;
     final CountDownLatch metadbAppClose = new CountDownLatch(1);
@@ -68,12 +72,11 @@ public class MetadbApp implements CommandLineRunner {
         try {
             installShutdownHook();
             messagingGateway.connect();
+            requestReplyHandlingService.initialize(messagingGateway);
             messageHandlingService.initialize(messagingGateway);
             metadbAppClose.await();
         } catch (Exception e) {
             LOG.error("Encountered error during initialization", e);
-        } finally {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook);
         }
     }
 
@@ -83,8 +86,9 @@ public class MetadbApp implements CommandLineRunner {
                 public void run() {
                     System.err.printf("\nCaught CTRL-C, shutting down gracefully...\n");
                     try {
-                        messagingGateway.shutdown();
+                        requestReplyHandlingService.shutdown();
                         messageHandlingService.shutdown();
+                        messagingGateway.shutdown();
                     } catch (Exception e) {
                         LOG.error("Encountered error during shutdown process", e);
                     }
