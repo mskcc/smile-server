@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingService {
-    
+
     @Value("${request_reply.patient_samples_topic}")
     private String REQUEST_REPLY_TOPIC;
 
@@ -41,28 +41,28 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         new LinkedBlockingQueue<ReplyInfo>();
     private static CountDownLatch newRequestHandlerShutdownLatch;
     private static Gateway messagingGateway;
-    
+
     private static final Log LOG = LogFactory.getLog(RequestReplyHandlingServiceImpl.class);
 
-    
+
     private class ReplyInfo {
         String requestMessage;
         String replyTo;
-        
+
         ReplyInfo(String requestMessage, String replyTo) {
             this.requestMessage = requestMessage;
             this.replyTo = replyTo;
         }
-        
+
         String getRequestMessage() {
             return requestMessage;
         }
-        
+
         String getReplyTo() {
             return replyTo;
         }
     }
-    
+
     private class NewRequestReplyHandler implements Runnable {
 
         final Phaser phaser;
@@ -78,13 +78,15 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             while (true) {
                 try {
                     ReplyInfo replyInfo = newRequestReplyQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if ((replyInfo != null)) {
+                    if (replyInfo != null) {
                         List<SampleMetadata> sampleList =
                                 sampleService.getSampleMetadataListByCmoPatientId(
                                         replyInfo.getRequestMessage());
-                        messagingGateway.replyPublish(replyInfo.getReplyTo(),
-                                mapper.writeValueAsString(sampleList));
-                    } 
+                        if (!sampleList.isEmpty()) {
+                            messagingGateway.replyPublish(replyInfo.getReplyTo(),
+                                    mapper.writeValueAsString(sampleList));
+                        }
+                    }
                     if (interrupted && newRequestReplyQueue.isEmpty()) {
                         break;
                     }
@@ -98,7 +100,6 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
     }
 
-
     @Override
     public void initialize(Gateway gateway) throws Exception {
         if (!initialized) {
@@ -108,7 +109,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring patientId.\n");
-        }        
+        }
     }
 
     @Override
@@ -123,7 +124,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             LOG.error("Shutdown initiated, not accepting PatientIds: " + patientId);
             throw new IllegalStateException("Shutdown initiated, not handling any more patientIds");
         }
-        
+
     }
 
     @Override
@@ -133,9 +134,9 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
         exec.shutdownNow();
         newRequestHandlerShutdownLatch.await();
-        shutdownInitiated = true;        
+        shutdownInitiated = true;
     }
-    
+
     private void setupPatientSamplesHandler(Gateway gateway,
             RequestReplyHandlingServiceImpl requestReplyHandlingServiceImpl)
             throws Exception {
@@ -150,9 +151,9 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
                     e.printStackTrace();
                 }
             }
-        });    
+        });
     }
-    
+
     private void initializePatientSamplesHandlers() throws Exception {
         newRequestHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
         final Phaser newSamplePhaser = new Phaser();
@@ -163,5 +164,5 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
         newSamplePhaser.arriveAndAwaitAdvance();
     }
-    
+
 }

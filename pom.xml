@@ -43,8 +43,8 @@
     <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
     <jackson.version>2.11.2</jackson.version>
     <!-- metadb messaging and shared entities dependency versions -->
-    <cmo_metadb_messaging_java.group>com.github.divyamadala30</cmo_metadb_messaging_java.group>
-    <cmo_metadb_messaging_java.version>6323101c841341922efb2c35418f7386db606aed</cmo_metadb_messaging_java.version>
+    <cmo_metadb_messaging_java.group>com.github.ao508</cmo_metadb_messaging_java.group>
+    <cmo_metadb_messaging_java.version>a88556de5f9e2b7a76bdaed51645d86f902d7222</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.group>com.github.mskcc</cmo_metadb_common.group>
     <cmo_metadb_common.version>v1.6</cmo_metadb_common.version>
