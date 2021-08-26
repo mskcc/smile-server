@@ -31,7 +31,7 @@ public class PublishedMetaDbRequest {
     private String qcAccessEmails;
     private String strand;
     private String libraryType;
-    private boolean cmoRequest;
+    private boolean isCmoRequest;
     private boolean bicAnalysis;
     private String requestJson;
     private List<String> pooledNormals;
@@ -62,7 +62,7 @@ public class PublishedMetaDbRequest {
         this.qcAccessEmails = metaDbRequest.getQcAccessEmails();
         this.strand = metaDbRequest.getStrand();
         this.libraryType = metaDbRequest.getLibraryType();
-        this.cmoRequest = metaDbRequest.getCmoRequest();
+        this.isCmoRequest = metaDbRequest.getIsCmoRequest();
         this.bicAnalysis = metaDbRequest.getBicAnalysis();
         this.requestJson = metaDbRequest.getRequestJson();
         this.pooledNormals = metaDbRequest.getPooledNormals();
@@ -88,7 +88,7 @@ public class PublishedMetaDbRequest {
      * @param qcAccessEmails
      * @param strand
      * @param libraryType
-     * @param cmoRequest
+     * @param isCmoRequest
      * @param bicAnalysis
      * @param requestJson
      * @param pooledNormals
@@ -98,7 +98,7 @@ public class PublishedMetaDbRequest {
             String recipe, String projectManagerName, String piEmail, String labHeadName,
             String labHeadEmail, String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
-            String qcAccessEmails, String strand, String libraryType, Boolean cmoRequest,
+            String qcAccessEmails, String strand, String libraryType, Boolean isCmoRequest,
             Boolean bicAnalysis, String requestJson, List<String> pooledNormals,
             List<SampleMetadata> samples) {
         this.metaDbRequestId = metaDbRequestId;
@@ -118,7 +118,7 @@ public class PublishedMetaDbRequest {
         this.qcAccessEmails = qcAccessEmails;
         this.strand = strand;
         this.libraryType = libraryType;
-        this.cmoRequest = cmoRequest;
+        this.isCmoRequest = isCmoRequest;
         this.bicAnalysis = bicAnalysis;
         this.requestJson = requestJson;
         this.pooledNormals = pooledNormals;
@@ -261,12 +261,12 @@ public class PublishedMetaDbRequest {
         this.libraryType = libraryType;
     }
 
-    public boolean isCmoRequest() {
-        return cmoRequest;
+    public boolean getIsCmoRequest() {
+        return isCmoRequest;
     }
 
-    public void setCmoRequest(boolean cmoRequest) {
-        this.cmoRequest = cmoRequest;
+    public void setIsCmoRequest(boolean isCmoRequest) {
+        this.isCmoRequest = isCmoRequest;
     }
 
     public boolean isBicAnalysis() {
