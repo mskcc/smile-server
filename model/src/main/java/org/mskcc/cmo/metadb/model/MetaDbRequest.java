@@ -52,7 +52,7 @@ public class MetaDbRequest implements Serializable {
     private String strand;
     private String libraryType;
     private List<String> pooledNormals;
-    private boolean cmoRequest;
+    private boolean isCmoRequest;
     private boolean bicAnalysis;
 
     public MetaDbRequest() {}
@@ -77,7 +77,7 @@ public class MetaDbRequest implements Serializable {
      * @param metaDbSampleList
      * @param requestJson
      * @param bicAnalysis
-     * @param cmoRequest
+     * @param isCmoRequest
      */
     public MetaDbRequest(String requestId, String recipe, String projectManagerName,
             String piEmail, String labHeadName, String labHeadEmail,
@@ -85,7 +85,7 @@ public class MetaDbRequest implements Serializable {
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
             List<MetaDbSample> metaDbSampleList, String requestJson,
-            boolean bicAnalysis, boolean cmoRequest) {
+            boolean bicAnalysis, boolean isCmoRequest) {
         this.requestId = requestId;
         this.recipe = recipe;
         this.projectManagerName = projectManagerName;
@@ -105,7 +105,7 @@ public class MetaDbRequest implements Serializable {
         this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
         this.bicAnalysis = bicAnalysis;
-        this.cmoRequest = cmoRequest;
+        this.isCmoRequest = isCmoRequest;
     }
 
     public UUID getMetaDbRequestId() {
@@ -296,12 +296,12 @@ public class MetaDbRequest implements Serializable {
         this.pooledNormals = pooledNormals;
     }
 
-    public boolean getCmoRequest() {
-        return cmoRequest;
+    public boolean getIsCmoRequest() {
+        return isCmoRequest;
     }
 
-    public void setCmoRequest(boolean cmoRequest) {
-        this.cmoRequest = cmoRequest;
+    public void setIsCmoRequest(boolean isCmoRequest) {
+        this.isCmoRequest = isCmoRequest;
     }
 
     public boolean getBicAnalysis() {
