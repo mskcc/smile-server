@@ -37,7 +37,7 @@ public class MetaDbRequest implements Serializable {
     private MetaDbProject metaDbProject;
     @JsonIgnore
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
-    private RequestMetadata requestMetadata;
+    private List<RequestMetadata> requestMetadataList;
     @JsonIgnore
     private String namespace;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
@@ -139,12 +139,23 @@ public class MetaDbRequest implements Serializable {
         this.metaDbProject = metaDbProject;
     }
     
-    public RequestMetadata getRequestMetadata() {
-        return requestMetadata;
+    public List<RequestMetadata> getRequestMetadataList() {
+        return requestMetadataList;
     }
 
-    public void setRequestMetadata(RequestMetadata requestMetadata) {
-        this.requestMetadata = requestMetadata;
+    public void setRequestMetadataList(List<RequestMetadata> requestMetadataList) {
+        this.requestMetadataList = requestMetadataList;
+    }
+    
+    /**
+     * 
+     * @param requestMetadata
+     */
+    public void addRequestMetadata(RequestMetadata requestMetadata) {
+        if (requestMetadataList == null) {
+            requestMetadataList = new ArrayList<>();
+        }
+        requestMetadataList.add(requestMetadata);
     }
 
     public String getNamespace() {
@@ -326,33 +337,6 @@ public class MetaDbRequest implements Serializable {
     public void setBicAnalysis(boolean bicAnalysis) {
         this.bicAnalysis = bicAnalysis;
     }
-
-    private String updateRequestJson(String requestMetadataJSON, String currentRequestJSON)
-            throws JsonMappingException, JsonProcessingException {
-        final ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> currentRequestJson = mapper.readValue(currentRequestJSON.toString(), Map.class);
-        Map<String, String> updatedRequestJson = mapper.readValue(requestMetadataJSON.toString(), Map.class);
-        
-        currentRequestJson.replace("requestId", updatedRequestJson.get("requestId"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("recipe"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("projectManagerName"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("piEmail"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("labHeadName"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("labHeadEmail"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("investigatorName"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("investigatorEmail"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("dataAnalystName"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("otherContactEmails"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("dataAccessEmails"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("qcAccessEmails"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("strand"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("libraryType"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("requestId").split("_")[0]);
-        currentRequestJson.replace("requestId", updatedRequestJson.get("bicAnalysis"));
-        currentRequestJson.replace("requestId", updatedRequestJson.get("cmoRequest"));
-        
-        return mapper.writeValueAsString(currentRequestJson);
-    }
     
     /**
      * 
@@ -360,8 +344,7 @@ public class MetaDbRequest implements Serializable {
      * @throws JsonMappingException
      * @throws JsonProcessingException
      */
-    public void updateRequestMetadata(Map<String, String> requestMetadataMap)
-            throws JsonMappingException, JsonProcessingException {
+    public void updateRequestMetadata(Map<String, String> requestMetadataMap) {
         this.requestId = requestMetadataMap.get("requestId");
         this.recipe = requestMetadataMap.get("recipe");
         this.projectManagerName = requestMetadataMap.get("projectManagerName");
@@ -377,7 +360,6 @@ public class MetaDbRequest implements Serializable {
         this.strand = requestMetadataMap.get("strand");
         this.libraryType = requestMetadataMap.get("libraryType");
         this.metaDbProject = new MetaDbProject(requestMetadataMap.get("requestId").split("_")[0]);
-        this.requestJson = updateRequestJson(requestMetadataMap.get("requestJson"), this.requestJson);
         this.bicAnalysis = Boolean.valueOf(requestMetadataMap.get("bicAnalysis"));
         this.cmoRequest = Boolean.valueOf(requestMetadataMap.get("cmoRequest"));
     }

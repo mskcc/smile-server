@@ -6,21 +6,26 @@ import org.neo4j.ogm.annotation.Id;
 
 public class RequestMetadata {
     @Id @GeneratedValue
-    private int metaDbRequestId;
-    private String requestMetadataJSON;
+    private Long id;
+    private String requestMetadataJson;
     private String importDate;
     
-    public RequestMetadata(String requestMetadataJSON, String importDate) {
-        this.requestMetadataJSON = requestMetadataJSON;
+    /**
+     * 
+     * @param requestMetadataJson
+     * @param importDate
+     */
+    public RequestMetadata(String requestMetadataJson, String importDate) {
+        this.requestMetadataJson = requestMetadataJson;
         this.importDate = importDate;
     }
     
-    public String getRequestMetadataJSON() {
-        return requestMetadataJSON;
+    public String getRequestMetadataJson() {
+        return requestMetadataJson;
     }
     
-    public void setRequestMetadataJSON(String requestMetadataJSON) {
-        this.requestMetadataJSON = requestMetadataJSON;
+    public void setRequestMetadataJson(String requestMetadataJson) {
+        this.requestMetadataJson = requestMetadataJson;
     }
     
     public String getImportDate() {
