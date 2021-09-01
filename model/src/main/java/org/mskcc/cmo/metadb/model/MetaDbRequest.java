@@ -3,9 +3,13 @@ package org.mskcc.cmo.metadb.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -31,6 +35,9 @@ public class MetaDbRequest implements Serializable {
     private List<MetaDbSample> metaDbSampleList;
     @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
     private MetaDbProject metaDbProject;
+    @JsonIgnore
+    @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
+    private List<RequestMetadata> requestMetadataList;
     @JsonIgnore
     private String namespace;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
@@ -130,6 +137,27 @@ public class MetaDbRequest implements Serializable {
 
     public void setMetaDbProject(MetaDbProject metaDbProject) {
         this.metaDbProject = metaDbProject;
+    }
+    
+    public List<RequestMetadata> getRequestMetadataList() {
+        return requestMetadataList;
+    }
+
+    public void setRequestMetadataList(List<RequestMetadata> requestMetadataList) {
+        this.requestMetadataList = requestMetadataList;
+    }
+    
+    /**
+     * Adds new RequestMetadata to requestMetadataList
+     * If the requestMetadataList is empty, a new one is instantiated.
+     * Otherwise its simply added to the list
+     * @param requestMetadata
+     */
+    public void addRequestMetadata(RequestMetadata requestMetadata) {
+        if (requestMetadataList == null) {
+            requestMetadataList = new ArrayList<>();
+        }
+        requestMetadataList.add(requestMetadata);
     }
 
     public String getNamespace() {
@@ -310,6 +338,31 @@ public class MetaDbRequest implements Serializable {
 
     public void setBicAnalysis(boolean bicAnalysis) {
         this.bicAnalysis = bicAnalysis;
+    }
+    
+    /**
+     * MetaDbRequest properties are updated with key/value pairs from requestMetadataMap
+     * @param requestMetadataMap
+     * @throws JsonMappingException
+     * @throws JsonProcessingException
+     */
+    public void updateRequestMetadata(Map<String, String> requestMetadataMap) {
+        this.requestId = requestMetadataMap.get("requestId");
+        this.recipe = requestMetadataMap.get("recipe");
+        this.projectManagerName = requestMetadataMap.get("projectManagerName");
+        this.piEmail = requestMetadataMap.get("piEmail");
+        this.labHeadName = requestMetadataMap.get("labHeadName");
+        this.labHeadEmail = requestMetadataMap.get("labHeadEmail");
+        this.investigatorName = requestMetadataMap.get("investigatorName");
+        this.investigatorEmail = requestMetadataMap.get("investigatorEmail");
+        this.dataAnalystName = requestMetadataMap.get("dataAnalystName");
+        this.otherContactEmails = requestMetadataMap.get("otherContactEmails");
+        this.dataAccessEmails = requestMetadataMap.get("dataAccessEmails");
+        this.qcAccessEmails = requestMetadataMap.get("qcAccessEmails");
+        this.strand = requestMetadataMap.get("strand");
+        this.libraryType = requestMetadataMap.get("libraryType");
+        this.bicAnalysis = Boolean.valueOf(requestMetadataMap.get("bicAnalysis"));
+        this.cmoRequest = Boolean.valueOf(requestMetadataMap.get("cmoRequest"));
     }
 
     @Override
