@@ -1,0 +1,335 @@
+{
+  "requestId": "145145_IM",
+  "recipe": "MockCapture",
+  "projectManagerName": "",
+  "piEmail": "",
+  "labHeadName": "Mario Party",
+  "labHeadEmail": "partym@center.org",
+  "investigatorName": "Yoshi Yoshi",
+  "investigatorEmail": "yoshi@center.org",
+  "dataAnalystName": "",
+  "dataAnalystEmail": "",
+  "otherContactEmails": ",yoshi@center.org,birdo@center.org",
+  "dataAccessEmails": "yoshi@center.org",
+  "qcAccessEmails": "yoshi@center.org,birdo@center.org",
+  "strand": null,
+  "libraryType": null,
+  "isCmoRequest": true,
+  "bicAnalysis": false,
+  "samples": [
+    {
+      "cmoSampleName": "C-1MP6YY-L012-d",
+      "sampleName": "SAMPLE-5555-5",
+      "cmoSampleClass": "Unknown Tumor",
+      "oncoTreeCode": "IDC",
+      "collectionYear": "",
+      "tubeId": "",
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "RUN_0145",
+              "flowCellId": "EUDNTLXSA",
+              "readLength": null,
+              "runDate": "2021-09-05",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_SAMPLE-5555-5_IGO_145145_IM_1/SAMPLE-5555-5_IGO_145145_IM_1_S13_L002_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_SAMPLE-5555-5_IGO_145145_IM_1/SAMPLE-5555-5_IGO_145145_IM_1_S13_L002_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "cmoPatientId": "C-1MP6YY",
+      "igoId": "145145_IM_1",
+      "investigatorSampleId": "SAMPLE-5555-5",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "EDTA-Streck",
+      "specimenType": "cfDNA",
+      "sampleOrigin": "Plasma",
+      "tissueLocation": "",
+      "baitSet": "null",
+      "requestId": "145145_IM",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED"
+      }
+    },
+    {
+      "cmoSampleName": "C-1MP6YY-L013-d",
+      "sampleName": "SAMPLE-5555-4",
+      "cmoSampleClass": "Unknown Tumor",
+      "oncoTreeCode": "IDC",
+      "collectionYear": "",
+      "tubeId": "",
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "RUN_0145",
+              "flowCellId": "EUDNTLXSA",
+              "readLength": null,
+              "runDate": "2021-09-05",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_SAMPLE-5555-4_IGO_145145_IM_2/SAMPLE-5555-4_IGO_145145_IM_2_S14_L002_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_SAMPLE-5555-4_IGO_145145_IM_2/SAMPLE-5555-4_IGO_145145_IM_2_S14_L002_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "cmoPatientId": "C-1MP6YY",
+      "igoId": "145145_IM_2",
+      "investigatorSampleId": "SAMPLE-5555-4",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "EDTA-Streck",
+      "specimenType": "cfDNA",
+      "sampleOrigin": "Plasma",
+      "tissueLocation": "",
+      "baitSet": "null",
+      "requestId": "145145_IM",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED"
+      }
+    },
+    {
+      "cmoSampleName": "C-1MP6YY-L014-d",
+      "sampleName": "SAMPLE-5555-3",
+      "cmoSampleClass": "Unknown Tumor",
+      "oncoTreeCode": "IDC",
+      "collectionYear": "",
+      "tubeId": "",
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "RUN_0145",
+              "flowCellId": "EUDNTLXSA",
+              "readLength": null,
+              "runDate": "2021-09-05",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_SAMPLE-5555-3_IGO_145145_IM_3/SAMPLE-5555-3_IGO_145145_IM_3_S15_L002_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_SAMPLE-5555-3_IGO_145145_IM_3/SAMPLE-5555-3_IGO_145145_IM_3_S15_L002_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "cmoPatientId": "C-1MP6YY",
+      "igoId": "145145_IM_3",
+      "investigatorSampleId": "SAMPLE-5555-3",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "EDTA-Streck",
+      "specimenType": "cfDNA",
+      "sampleOrigin": "Plasma",
+      "tissueLocation": "",
+      "baitSet": "null",
+      "requestId": "145145_IM",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED"
+      }
+    },
+    {
+      "cmoSampleName": "C-1MP6YY-L015-d",
+      "sampleName": "PRSMA-2222-1",
+      "cmoSampleClass": "Unknown Tumor",
+      "oncoTreeCode": "IDC",
+      "collectionYear": "",
+      "tubeId": "",
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "RUN_0145",
+              "flowCellId": "EUDNTLXSA",
+              "readLength": null,
+              "runDate": "2021-09-05",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_PRSMA-2222-1_IGO_145145_IM_4/PRSMA-2222-1_IGO_145145_IM_4_S16_L002_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_PRSMA-2222-1_IGO_145145_IM_4/PRSMA-2222-1_IGO_145145_IM_4_S16_L002_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "cmoPatientId": "C-1MP6YY",
+      "igoId": "145145_IM_4",
+      "investigatorSampleId": "PRSMA-2222-1",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "EDTA-Streck",
+      "specimenType": "cfDNA",
+      "sampleOrigin": "Plasma",
+      "tissueLocation": "",
+      "baitSet": "null",
+      "requestId": "145145_IM",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED"
+      }
+    },
+    {
+      "cmoSampleName": "C-1MP6YY-L016-d",
+      "sampleName": "PRSMA-2222-2",
+      "cmoSampleClass": "Unknown Tumor",
+      "oncoTreeCode": "IDC",
+      "collectionYear": "",
+      "tubeId": "",
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "RUN_0145",
+              "flowCellId": "EUDNTLXSA",
+              "readLength": null,
+              "runDate": "2021-09-05",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_PRSMA-2222-2_IGO_145145_IM_5/PRSMA-2222-2_IGO_145145_IM_5_S17_L002_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_PRSMA-2222-2_IGO_145145_IM_5/PRSMA-2222-2_IGO_145145_IM_5_S17_L002_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "cmoPatientId": "C-1MP6YY",
+      "igoId": "145145_IM_5",
+      "investigatorSampleId": "PRSMA-2222-2",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "EDTA-Streck",
+      "specimenType": "cfDNA",
+      "sampleOrigin": "Plasma",
+      "tissueLocation": "",
+      "baitSet": "null",
+      "requestId": "145145_IM",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED"
+      }
+    },
+    {
+      "cmoSampleName": "C-1MP6YY-L017-d",
+      "sampleName": "PRSMA-2222-3",
+      "cmoSampleClass": "Unknown Tumor",
+      "oncoTreeCode": "IDC",
+      "collectionYear": "",
+      "tubeId": "",
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "RUN_0145",
+              "flowCellId": "EUDNTLXSA",
+              "readLength": null,
+              "runDate": "2021-09-05",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_PRSMA-2222-3_IGO_145145_IM_6/PRSMA-2222-3_IGO_145145_IM_6_S18_L002_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUN_0145_BEUDNTLXSA/Project_145145_IM/Sample_PRSMA-2222-3_IGO_145145_IM_6/PRSMA-2222-3_IGO_145145_IM_6_S18_L002_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "cmoPatientId": "C-1MP6YY",
+      "igoId": "145145_IM_6",
+      "investigatorSampleId": "PRSMA-2222-3",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "EDTA-Streck",
+      "specimenType": "cfDNA",
+      "sampleOrigin": "Plasma",
+      "tissueLocation": "",
+      "baitSet": "null",
+      "requestId": "145145_IM",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED"
+      }
+    }
+  ],
+  "pooledNormals": null,
+  "projectId": "05500"
+}
