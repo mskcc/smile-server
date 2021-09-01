@@ -1,5 +1,10 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
@@ -45,6 +51,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     private final Integer TIME_ADJ_24HOURS_MS = 24 * 60 * 60 * 1000;
     private Map<String, Date> loggedExistingRequests = new HashMap<>();
     private static final Log LOG = LogFactory.getLog(MetaDbRequestServiceImpl.class);
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
@@ -53,6 +60,8 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         project.setProjectId(request.getProjectId());
         project.setNamespace(request.getNamespace());
         request.setMetaDbProject(project);
+
+        request.addRequestMetadata(extractRequestMetadata(request.getRequestJson()));
 
         MetaDbRequest savedRequest = requestRepository.findMetaDbRequestById(request.getRequestId());
         if (savedRequest == null) {
@@ -119,5 +128,43 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         adjustedReferenceTimestamp.setTime(referenceTimestamp);
         adjustedReferenceTimestamp.add(Calendar.MILLISECOND, TIME_ADJ_24HOURS_MS);
         return newTimestamp.before(adjustedReferenceTimestamp.getTime());
+    }
+    
+    private RequestMetadata extractRequestMetadata(String requestMetadataJson)
+            throws JsonMappingException, JsonProcessingException {
+        Map<String, String> requestMetadataMap = mapper.readValue(requestMetadataJson.toString(), Map.class);
+        requestMetadataMap.remove("samples");
+        RequestMetadata requestMetadata = new RequestMetadata(
+                mapper.convertValue(requestMetadataMap, String.class),
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        return requestMetadata;
+    }
+    
+    private String updateRequestJson(String requestMetadataJson, String currentRequestJson)
+            throws JsonMappingException, JsonProcessingException {
+        final ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> currentRequestMap = mapper.readValue(currentRequestJson.toString(), Map.class);
+        Map<String, String> updatedRequestMap = mapper.readValue(requestMetadataJson.toString(), Map.class);
+         
+        for (Map.Entry<String,String> entry : updatedRequestMap.entrySet()) {
+            currentRequestMap.replace(entry.getKey(), entry.getValue());
+        }
+        
+        return mapper.writeValueAsString(currentRequestJson);
+    }
+    
+    private void updateRequestMetadata(String requestMetadataJson)
+            throws JsonMappingException, JsonProcessingException {    
+        //UPDATE THE CURRENT METADATA
+        RequestMetadata requestMetadata = new RequestMetadata(requestMetadataJson,
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        
+        //CREATE A NEW NODE WITH JSON
+        Map<String, String> map = mapper.readValue(requestMetadataJson, Map.class);
+        MetaDbRequest savedRequest = requestRepository.findMetaDbRequestById(map.get("requestId").toString());
+        savedRequest.updateRequestMetadata(map);
+        savedRequest.setRequestJson(updateRequestJson(requestMetadataJson, savedRequest.getRequestJson()));
+        
+        //PERSIST NEW NODE TO NEO4J, UPDATE THE LINK BETWEEN REQUESTMETADATA
     }
 }
