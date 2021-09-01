@@ -3,6 +3,7 @@ package org.mskcc.cmo.metadb.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
@@ -20,7 +22,6 @@ import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
-import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
 import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
@@ -34,12 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 public class MetaDbRequestServiceImpl implements MetaDbRequestService {
+    @Autowired
+    private MetadbJsonComparator metadbJsonComparator;
 
     @Autowired
     private MetaDbRequestRepository requestRepository;
-
-    @Autowired
-    private MetaDbSampleRepository sampleRepository;
 
     @Autowired
     private SampleService sampleService;
@@ -59,9 +59,9 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         MetaDbProject project = new MetaDbProject();
         project.setProjectId(request.getProjectId());
         project.setNamespace(request.getNamespace());
+        RequestMetadata requestMetadata = extractRequestMetadata(request.getRequestJson());
         request.setMetaDbProject(project);
-
-        request.addRequestMetadata(extractRequestMetadata(request.getRequestJson()));
+        request.addRequestMetadata(requestMetadata);
 
         MetaDbRequest savedRequest = requestRepository.findMetaDbRequestById(request.getRequestId());
         if (savedRequest == null) {
@@ -73,31 +73,64 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
                 request.setMetaDbSampleList(updatedSamples);
             }
             requestRepository.save(request);
-            return true;
+            return Boolean.TRUE;
         } else {
-            // if request has not been logged before then save request to request logger file
-            // otherwise check if new timestamp occurs within 24 hours since the last time
-            // the same request was seen. If it does not then save request to logger file
-            Date newTimestamp = new Date();
-            Boolean logRequest = Boolean.FALSE;
-            if (!loggedExistingRequests.containsKey(savedRequest.getRequestId())) {
-                loggedExistingRequests.put(savedRequest.getRequestId(), newTimestamp);
-                logRequest = Boolean.TRUE;
+            // determine whether there are changes in the current request that are not
+            // in the existing request
+            if (metadbJsonComparator.isConsistent(savedRequest.getRequestJson(), request.getRequestJson())) {
+                // consistent jsons indicate there are no new updates to persist to the graph db
+                logDuplicateRequest(request);
+                return Boolean.FALSE;
             } else {
-                // check if new timestamp occurs within 24 hours of the reference timestamp
-                // if check does not pass then log the request to the logger file
-                Date referenceTimestamp = loggedExistingRequests.get(savedRequest.getRequestId());
-                if (!timestampWithin24Hours(referenceTimestamp, newTimestamp)) {
-                    logRequest = Boolean.TRUE;
-                    loggedExistingRequests.put(savedRequest.getRequestId(), newTimestamp);
-                }
-            }
+                // update the saved request with changes in the current request
+                savedRequest.updateRequestMetadata(request);
+                savedRequest.addRequestMetadata(requestMetadata);
 
-            if (logRequest) {
-                requestStatusLogger.logRequestStatus(request.getRequestJson(),
-                        RequestStatusLogger.StatusType.DUPLICATE_REQUEST);
+                // check consistency for each sample in request samples list
+                // TODO: how to keep track of what samples are updated for the message handler to
+                // publish to CMO_SAMPLE_METADATA_UPDATE
+                List<MetaDbSample> updatedSamples = new ArrayList<>();
+                for (MetaDbSample s: request.getMetaDbSampleList()) {
+                    MetaDbSample savedSample = sampleService.getMetaDbSampleByRequestAndIgoId(savedRequest.getRequestId(), s.getSampleIgoId().getSampleId());
+                    // compare sample metadata from current request and the saved request
+                    String latestMetadata = mapper.writeValueAsString(savedSample.getLatestSampleMetadata());
+                    String currentMetadata = mapper.writeValueAsString(s.getLatestSampleMetadata());
+                    if (!metadbJsonComparator.isConsistent(latestMetadata, currentMetadata)) {
+                        // differences detected indicates we need to save these updates
+                        savedSample.updateSampleMetadata(s);
+                        sampleService.saveSampleMetadata(savedSample); // persist updates
+                    }
+                    updatedSamples.add(savedSample);
+                }
+                savedRequest.setMetaDbSampleList(updatedSamples);
+                requestRepository.save(savedRequest);
+                return Boolean.TRUE;
             }
-            return false;
+        }
+    }
+
+    private void logDuplicateRequest(MetaDbRequest request) throws IOException {
+        // if request has not been logged before then save request to request logger file
+        // otherwise check if new timestamp occurs within 24 hours since the last time
+        // the same request was seen. If it does not then save request to logger file
+        Date newTimestamp = new Date();
+        Boolean logRequest = Boolean.FALSE;
+        if (!loggedExistingRequests.containsKey(request.getRequestId())) {
+            loggedExistingRequests.put(request.getRequestId(), newTimestamp);
+            logRequest = Boolean.TRUE;
+        } else {
+            // check if new timestamp occurs within 24 hours of the reference timestamp
+            // if check does not pass then log the request to the logger file
+            Date referenceTimestamp = loggedExistingRequests.get(request.getRequestId());
+            if (!timestampWithin24Hours(referenceTimestamp, newTimestamp)) {
+                logRequest = Boolean.TRUE;
+                loggedExistingRequests.put(request.getRequestId(), newTimestamp);
+            }
+        }
+
+        if (logRequest) {
+            requestStatusLogger.logRequestStatus(request.getRequestJson(),
+                    RequestStatusLogger.StatusType.DUPLICATE_REQUEST);
         }
     }
 
@@ -109,7 +142,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
             return null;
         }
         List<SampleMetadata> samples = new ArrayList<>();
-        for (MetaDbSample metaDbSample: sampleRepository.findAllMetaDbSamplesByRequest(requestId)) {
+        for (MetaDbSample metaDbSample: sampleService.getAllMetadbSamplesByRequestId(requestId)) {
             samples.addAll(sampleService.getMetaDbSample(metaDbSample.getMetaDbSampleId())
                     .getSampleMetadataList());
         }
@@ -129,7 +162,7 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
         adjustedReferenceTimestamp.add(Calendar.MILLISECOND, TIME_ADJ_24HOURS_MS);
         return newTimestamp.before(adjustedReferenceTimestamp.getTime());
     }
-    
+
     private RequestMetadata extractRequestMetadata(String requestMetadataJson)
             throws JsonMappingException, JsonProcessingException {
         Map<String, String> requestMetadataMap = mapper.readValue(requestMetadataJson.toString(), Map.class);
@@ -139,32 +172,5 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return requestMetadata;
     }
-    
-    private String updateRequestJson(String requestMetadataJson, String currentRequestJson)
-            throws JsonMappingException, JsonProcessingException {
-        final ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> currentRequestMap = mapper.readValue(currentRequestJson.toString(), Map.class);
-        Map<String, String> updatedRequestMap = mapper.readValue(requestMetadataJson.toString(), Map.class);
-         
-        for (Map.Entry<String,String> entry : updatedRequestMap.entrySet()) {
-            currentRequestMap.replace(entry.getKey(), entry.getValue());
-        }
-        
-        return mapper.writeValueAsString(currentRequestJson);
-    }
-    
-    private void updateRequestMetadata(String requestMetadataJson)
-            throws JsonMappingException, JsonProcessingException {    
-        //UPDATE THE CURRENT METADATA
-        RequestMetadata requestMetadata = new RequestMetadata(requestMetadataJson,
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        
-        //CREATE A NEW NODE WITH JSON
-        Map<String, String> map = mapper.readValue(requestMetadataJson, Map.class);
-        MetaDbRequest savedRequest = requestRepository.findMetaDbRequestById(map.get("requestId").toString());
-        savedRequest.updateRequestMetadata(map);
-        savedRequest.setRequestJson(updateRequestJson(requestMetadataJson, savedRequest.getRequestJson()));
-        
-        //PERSIST NEW NODE TO NEO4J, UPDATE THE LINK BETWEEN REQUESTMETADATA
-    }
+
 }
