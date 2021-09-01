@@ -88,10 +88,14 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
 
                 // check consistency for each sample in request samples list
                 // TODO: how to keep track of what samples are updated for the message handler to
-                // publish to CMO_SAMPLE_METADATA_UPDATE
+                // publish to CMO_SAMPLE_METADATA_UPDATE && publish request metadata history
+                // to CMO_REQUEST_METADATA_UPDATE
+                //   --> some ideas: in message handler check if request
+                //       exists already before persiting any udpates
                 List<MetaDbSample> updatedSamples = new ArrayList<>();
                 for (MetaDbSample s: request.getMetaDbSampleList()) {
-                    MetaDbSample savedSample = sampleService.getMetaDbSampleByRequestAndIgoId(savedRequest.getRequestId(), s.getSampleIgoId().getSampleId());
+                    MetaDbSample savedSample = sampleService.getMetaDbSampleByRequestAndIgoId(
+                            savedRequest.getRequestId(), s.getSampleIgoId().getSampleId());
                     // compare sample metadata from current request and the saved request
                     String latestMetadata = mapper.writeValueAsString(savedSample.getLatestSampleMetadata());
                     String currentMetadata = mapper.writeValueAsString(s.getLatestSampleMetadata());
