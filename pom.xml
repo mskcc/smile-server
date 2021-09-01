@@ -42,14 +42,18 @@
     <spring.version>5.2.6.RELEASE</spring.version>
     <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
     <jackson.version>2.11.2</jackson.version>
+    <neo4j-ogm.version>3.2.14</neo4j-ogm.version>
+    <junitjupiter.version>5.3.2</junitjupiter.version>
+    <neo4j-java-driver.version>4.3.1</neo4j-java-driver.version>
+    <testcontainers.version>1.16.0</testcontainers.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
-    <cmo_metadb_messaging_java.version>c12bb160613ecf7bab6b3af8ee05044b17b69e3d</cmo_metadb_messaging_java.version>
+    <cmo_metadb_messaging_java.version>becd76f3b0628d726ef813378b89d4a37e687fdc</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.group>com.github.mskcc</cmo_metadb_common.group>
-    <cmo_metadb_common.version>v1.6</cmo_metadb_common.version>
+    <cmo_metadb_common.version>01ccbf0e0d8c0b8694abdfda3fcb3c1982e0f4c3</cmo_metadb_common.version>
     <!-- metadb expected schema version -->
-    <metadb.schema_version>v1.0</metadb.schema_version>
+    <metadb.schema_version>v1.1</metadb.schema_version>
   </properties>
 
   <dependencies>
@@ -58,16 +62,48 @@
       <artifactId>cmo-messaging-java</artifactId>
       <version>${cmo_metadb_messaging_java.version}</version>
     </dependency>
-    <!-- testing -->
+    <!-- spring -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <version>${spring.boot.version}</version>
     </dependency>
+    <!-- testing -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring.boot.version}</version>
       <scope>test</scope>
+    </dependency>
+    <!-- neo4j testing -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junitjupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junitjupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>neo4j</artifactId>
+      <version>${testcontainers.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${testcontainers.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j.driver</groupId>
+      <artifactId>neo4j-java-driver</artifactId>
+      <version>${neo4j-java-driver.version}</version>
     </dependency>
     <!-- jackson -->
     <dependency>
@@ -85,6 +121,19 @@
 
   <build>
     <plugins>
+      <!-- surefire plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M3</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junitjupiter.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
       <!-- generate maven.properties to enable property injection from pom -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

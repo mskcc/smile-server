@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
 import java.io.Serializable;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -20,7 +21,7 @@ public class PatientAlias implements Serializable {
     private String patientId;
     private String namespace;
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
-    private MetaDbPatient metaDbPatient;
+    private MetadbPatient metaDbPatient;
 
     public PatientAlias() {}
 
@@ -45,12 +46,16 @@ public class PatientAlias implements Serializable {
         this.namespace = namespace;
     }
 
-    public MetaDbPatient getPatientMetadata() {
+    public MetadbPatient getPatientMetadata() {
         return metaDbPatient;
     }
 
-    public void setPatientMetadata(MetaDbPatient metaDbPatient) {
+    public void setPatientMetadata(MetadbPatient metaDbPatient) {
         this.metaDbPatient = metaDbPatient;
     }
-
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }
