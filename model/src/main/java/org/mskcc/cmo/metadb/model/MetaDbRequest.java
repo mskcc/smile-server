@@ -148,7 +148,9 @@ public class MetaDbRequest implements Serializable {
     }
     
     /**
-     * 
+     * Adds new RequestMetadata to requestMetadataList
+     * If the requestMetadataList is empty, a new one is instantiated.
+     * Otherwise its simply added to the list
      * @param requestMetadata
      */
     public void addRequestMetadata(RequestMetadata requestMetadata) {
@@ -339,7 +341,7 @@ public class MetaDbRequest implements Serializable {
     }
     
     /**
-     * 
+     * MetaDbRequest properties are updated with key/value pairs from requestMetadataMap
      * @param requestMetadataMap
      * @throws JsonMappingException
      * @throws JsonProcessingException
@@ -359,7 +361,6 @@ public class MetaDbRequest implements Serializable {
         this.qcAccessEmails = requestMetadataMap.get("qcAccessEmails");
         this.strand = requestMetadataMap.get("strand");
         this.libraryType = requestMetadataMap.get("libraryType");
-        this.metaDbProject = new MetaDbProject(requestMetadataMap.get("requestId").split("_")[0]);
         this.bicAnalysis = Boolean.valueOf(requestMetadataMap.get("bicAnalysis"));
         this.cmoRequest = Boolean.valueOf(requestMetadataMap.get("cmoRequest"));
     }
