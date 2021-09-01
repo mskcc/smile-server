@@ -32,6 +32,9 @@ public class MetaDbRequest implements Serializable {
     @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
     private MetaDbProject metaDbProject;
     @JsonIgnore
+    @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
+    private List<RequestMetadata> requestMetadataList;
+    @JsonIgnore
     private String namespace;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
     private String projectId;
@@ -130,6 +133,27 @@ public class MetaDbRequest implements Serializable {
 
     public void setMetaDbProject(MetaDbProject metaDbProject) {
         this.metaDbProject = metaDbProject;
+    }
+
+    public List<RequestMetadata> getRequestMetadataList() {
+        return requestMetadataList;
+    }
+
+    public void setRequestMetadataList(List<RequestMetadata> requestMetadataList) {
+        this.requestMetadataList = requestMetadataList;
+    }
+
+    /**
+     * Adds new RequestMetadata to requestMetadataList
+     * If the requestMetadataList is empty, a new one is instantiated.
+     * Otherwise its simply added to the list
+     * @param requestMetadata
+     */
+    public void addRequestMetadata(RequestMetadata requestMetadata) {
+        if (requestMetadataList == null) {
+            requestMetadataList = new ArrayList<>();
+        }
+        requestMetadataList.add(requestMetadata);
     }
 
     public String getNamespace() {
@@ -310,6 +334,30 @@ public class MetaDbRequest implements Serializable {
 
     public void setBicAnalysis(boolean bicAnalysis) {
         this.bicAnalysis = bicAnalysis;
+    }
+
+    /**
+     * Updates the RequestMetadata with provided request.
+     * @param updatedRequest
+     */
+    public void updateRequestMetadata(MetaDbRequest updatedRequest) {
+        this.requestId = updatedRequest.getRequestId();
+        this.recipe = updatedRequest.getRecipe();
+        this.projectManagerName = updatedRequest.getProjectManagerName();
+        this.piEmail = updatedRequest.getPiEmail();
+        this.labHeadName = updatedRequest.getLabHeadName();
+        this.labHeadEmail = updatedRequest.getLabHeadEmail();
+        this.investigatorName = updatedRequest.getInvestigatorName();
+        this.investigatorEmail = updatedRequest.getInvestigatorEmail();
+        this.dataAnalystName = updatedRequest.getDataAnalystName();
+        this.otherContactEmails = updatedRequest.getOtherContactEmails();
+        this.dataAccessEmails = updatedRequest.getDataAccessEmails();
+        this.qcAccessEmails = updatedRequest.getQcAccessEmails();
+        this.strand = updatedRequest.getStrand();
+        this.libraryType = updatedRequest.getLibraryType();
+        this.bicAnalysis = updatedRequest.getBicAnalysis();
+        this.cmoRequest = updatedRequest.getCmoRequest();
+        this.requestJson = updatedRequest.getRequestJson();
     }
 
     @Override
