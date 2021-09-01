@@ -3,6 +3,7 @@ package org.mskcc.cmo.metadb.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
@@ -67,4 +68,10 @@ public class MetaDbProject implements Serializable {
         }
         requestList.add(metaDbRequest);
     }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
 }

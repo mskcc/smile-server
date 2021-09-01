@@ -1,57 +1,76 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
-import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
 import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
+import org.mskcc.cmo.metadb.service.PatientService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SampleServiceImpl implements SampleService {
+    @Autowired
+    private MetadbJsonComparator metadbJsonComparator;
 
     @Autowired
     private MetaDbSampleRepository sampleRepository;
 
     @Autowired
-    private MetaDbPatientRepository patientRepository;
+    private PatientService patientService;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public MetaDbSample saveSampleMetadata(MetaDbSample
             metaDbSample) throws Exception {
         MetaDbSample updatedMetaDbSample = setUpMetaDbSample(metaDbSample);
-        MetaDbSample foundSample =
+
+        MetaDbSample existingMetaDbSample =
                 sampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
-        if (foundSample == null) {
-            MetaDbPatient patient = patientRepository.findPatientByPatientAlias(
-                    updatedMetaDbSample.getPatient().getCmoPatientId().getPatientId());
-            if (patient != null) {
-                updatedMetaDbSample.setPatient(patient);
-            }
-            sampleRepository.save(updatedMetaDbSample);
+        if (existingMetaDbSample == null) {
+            UUID newSampleId = sampleRepository.save(updatedMetaDbSample).getMetaDbSampleId();
+            updatedMetaDbSample.setMetaDbSampleId(newSampleId);
+            return updatedMetaDbSample;
         } else {
-            foundSample.addSampleMetadata(updatedMetaDbSample.getSampleMetadataList().get(0));
-            sampleRepository.save(foundSample);
+            existingMetaDbSample.addSampleMetadata(updatedMetaDbSample.getLatestSampleMetadata());
+            sampleRepository.save(existingMetaDbSample);
+            return existingMetaDbSample;
         }
-        return updatedMetaDbSample;
     }
 
     @Override
     public MetaDbSample setUpMetaDbSample(MetaDbSample metaDbSample) throws Exception {
         SampleMetadata sampleMetadata = metaDbSample.getLatestSampleMetadata();
         metaDbSample.setSampleClass(sampleMetadata.getTumorOrNormal());
-        metaDbSample.addSample(new SampleAlias(sampleMetadata.getIgoId(), "igoId"));
-        metaDbSample.addSample(new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
+        metaDbSample.addSampleAlias(new SampleAlias(sampleMetadata.getIgoId(), "igoId"));
+        metaDbSample.addSampleAlias(
+                new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
+        // TODO: CONSIDER MOVING THIS TO PATIENT SERVICE?
+        // fetch existing patient from database or persist new patient node
         MetaDbPatient patient = new MetaDbPatient();
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
-        metaDbSample.setPatient(patient);
+        MetaDbPatient existingPatient = patientService.findPatientByCmoPatientId(
+                sampleMetadata.getCmoPatientId());
+        if (existingPatient == null) {
+            UUID newPatientId = patientService.savePatientMetadata(patient);
+            patient.setMetaDbPatientId(newPatientId);
+            metaDbSample.setPatient(patient);
+            metaDbSample.setPatientUuid(newPatientId);
+        } else {
+            metaDbSample.setPatient(existingPatient);
+            metaDbSample.setPatientUuid(existingPatient.getMetaDbPatientId());
+        }
 
         return metaDbSample;
     }
@@ -72,14 +91,68 @@ public class SampleServiceImpl implements SampleService {
         MetaDbSample metaDbSample = sampleRepository.findMetaDbSampleById(metaDbSampleId);
         metaDbSample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metaDbSampleId));
         for (SampleMetadata s: metaDbSample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patientRepository.findPatientIdBySample(metaDbSampleId));
+            s.setMetaDbPatientId(patientService.findPatientIdBySample(metaDbSampleId));
             s.setMetaDbSampleId(metaDbSampleId);
         }
         return metaDbSample;
     }
 
     @Override
+    public MetaDbSample getMetaDbSampleByRequestAndAlias(String requestId, SampleAlias igoId)
+            throws Exception {
+        MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        metadbSample.setSampleMetadataList(sampleRepository
+                .findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
+        for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
+            s.setMetaDbPatientId(patientService.findPatientIdBySample(metadbSample.getMetaDbSampleId()));
+            s.setMetaDbSampleId(metadbSample.getMetaDbSampleId());
+        }
+        return metadbSample;
+    }
+
+    @Override
+    public MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, String igoId)
+            throws Exception {
+        MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        metadbSample.setSampleMetadataList(sampleRepository
+                .findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
+
+        String cmoPatientId = metadbSample.getLatestSampleMetadata().getCmoPatientId();
+
+        MetaDbPatient pt = patientService.findPatientByCmoPatientId(cmoPatientId);
+        metadbSample.setPatient(pt);
+
+        for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
+            s.setMetaDbPatientId(pt.getMetaDbPatientId());
+            s.setMetaDbSampleId(metadbSample.getMetaDbSampleId());
+        }
+        return metadbSample;
+    }
+
+    @Override
     public List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception {
         return sampleRepository.findSampleMetadataListByCmoPatientId(cmoPatientId);
+    }
+
+    @Override
+    public List<MetaDbSample> getAllMetadbSamplesByRequestId(String requestId) throws Exception {
+        List<MetaDbSample> requestSamples = new ArrayList<>();
+        for (MetaDbSample s : sampleRepository.findAllMetaDbSamplesByRequest(requestId)) {
+            requestSamples.add(getMetaDbSample(s.getMetaDbSampleId()));
+        }
+        return requestSamples;
+    }
+
+    @Override
+    public List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoId) throws Exception {
+        return sampleRepository.getSampleMetadataHistoryByIgoId(igoId);
+    }
+
+    @Override
+    public Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata,
+            SampleMetadata sampleMetadata) throws Exception {
+        String existingMetadata = mapper.writeValueAsString(existingSampleMetadata);
+        String currentMetadata = mapper.writeValueAsString(sampleMetadata);
+        return (!metadbJsonComparator.isConsistent(currentMetadata, existingMetadata));
     }
 }
