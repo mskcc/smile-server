@@ -45,15 +45,15 @@ public class MetaDbSample implements Serializable {
         this.sampleAliases = sampleAliases;
     }
 
-    public void getSampleAliases(List<SampleAlias> sampleAlias) {
-        this.sampleAliases = sampleAlias;
+    public List<SampleAlias> getSampleAliases(List<SampleAlias> sampleAliases) {
+        return sampleAliases;
     }
 
     /**
      * Add sample to array.
      * @param sampleAlias
      */
-    public void addSample(SampleAlias sampleAlias) {
+    public void addSampleAlias(SampleAlias sampleAlias) {
         if (sampleAliases == null) {
             sampleAliases = new ArrayList<>();
         }
@@ -150,4 +150,8 @@ public class MetaDbSample implements Serializable {
         return null;
     }
 
+    public void updateSampleMetadata(MetaDbSample updatedSample) throws ParseException {
+        addSampleMetadata(updatedSample.getLatestSampleMetadata());
+        setSampleAliases(updatedSample.getSampleAliases(sampleAliases));
+    }
 }

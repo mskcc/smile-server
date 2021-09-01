@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
@@ -46,8 +47,8 @@ public class SampleServiceImpl implements SampleService {
     public MetaDbSample setUpMetaDbSample(MetaDbSample metaDbSample) throws Exception {
         SampleMetadata sampleMetadata = metaDbSample.getLatestSampleMetadata();
         metaDbSample.setSampleClass(sampleMetadata.getTumorOrNormal());
-        metaDbSample.addSample(new SampleAlias(sampleMetadata.getIgoId(), "igoId"));
-        metaDbSample.addSample(new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
+        metaDbSample.addSampleAlias(new SampleAlias(sampleMetadata.getIgoId(), "igoId"));
+        metaDbSample.addSampleAlias(new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
         MetaDbPatient patient = new MetaDbPatient();
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
@@ -79,7 +80,27 @@ public class SampleServiceImpl implements SampleService {
     }
 
     @Override
+    public MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, String igoId) throws Exception {
+        MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        metadbSample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
+        for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
+            s.setMetaDbPatientId(patientRepository.findPatientIdBySample(metadbSample.getMetaDbSampleId()));
+            s.setMetaDbSampleId(metadbSample.getMetaDbSampleId());
+        }
+        return metadbSample;
+    }
+
+    @Override
     public List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception {
         return sampleRepository.findSampleMetadataListByCmoPatientId(cmoPatientId);
+    }
+
+    @Override
+    public List<MetaDbSample> getAllMetadbSamplesByRequestId(String requestId) throws Exception {
+        List<MetaDbSample> requestSamples = new ArrayList<>();
+        for (MetaDbSample s : sampleRepository.findAllMetaDbSamplesByRequest(requestId)) {
+            requestSamples.add(getMetaDbSample(s.getMetaDbSampleId()));
+        }
+        return requestSamples;
     }
 }
