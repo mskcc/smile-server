@@ -358,6 +358,7 @@ public class MetaDbRequest implements Serializable {
         this.bicAnalysis = updatedRequest.getBicAnalysis();
         this.isCmoRequest = updatedRequest.getIsCmoRequest();
         this.requestJson = updatedRequest.getRequestJson();
+        addRequestMetadata(updatedRequest.getRequestMetadataList().get(0));
     }
 
     @Override

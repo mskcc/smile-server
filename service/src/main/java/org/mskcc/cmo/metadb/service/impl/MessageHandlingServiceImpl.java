@@ -25,10 +25,10 @@ import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
-import org.mskcc.cmo.metadb.service.MetaDbRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.mskcc.cmo.metadb.service.MetadbRequestService;
 
 @Component
 public class MessageHandlingServiceImpl implements MessageHandlingService {
@@ -43,7 +43,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     private int NUM_NEW_REQUEST_HANDLERS;
 
     @Autowired
-    private MetaDbRequestService requestService;
+    private MetadbRequestService requestService;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private static boolean initialized = false;
@@ -72,14 +72,34 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        if (requestService.saveRequest(request)) {
+                        MetaDbRequest existingRequest = requestService.getMetadbRequestById(request.getRequestId());
+
+                        // persist new request to database
+                        if (existingRequest == null) {
+                            requestService.saveRequest(request);
                             messagingGateway.publish(request.getRequestId(),
                                     CONSISTENCY_CHECK_NEW_REQUEST,
                                     mapper.writeValueAsString(
-                                            requestService.getMetaDbRequest(request.getRequestId())));
+                                            requestService.getPublishedMetadbRequestById(request.getRequestId())));
                         } else {
-                            LOG.warn("Request already in database - it will not be saved: "
-                                    + request.getRequestId());
+                            // check if there are updates to persist to db
+
+                            //TODO: ADD MECHANISM FOR DETERMINING IF REQUEST HAS SAMPLE-LEVEL METADATA UPDATES
+                            // Consider adding a data util tool that tells us at if the updates are 1. request-level,
+                            // sample-level, or both?
+                            // we need to be able to know which samples have updates so that they can be published
+                            // to the CMO_SAMPLE_METADATA_UPDATE topic
+                            // if there are request-level updates then they must be published to the
+                            // CMO_REQUEST_METADATA_UPDATE topic as well
+                            // regardless of which level the updates occur, the updates still need to be persisted
+                            // to the database
+                            if (requestService.requestHasUpdates(existingRequest, request)) {
+                                existingRequest.updateRequestMetadata(request);
+                                requestService.saveRequest(request);
+                            } else {
+                                LOG.warn("Request already in database - it will not be saved: "
+                                        + request.getRequestId());
+                            }
                         }
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
