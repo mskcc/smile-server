@@ -93,6 +93,11 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             // CMO_REQUEST_METADATA_UPDATE topic as well
                             // regardless of which level the updates occur, the updates still need to be persisted
                             // to the database
+
+                            // add method that returns the samples that contain updates. if the returned list is empty the
+                            // there are only request-level updates if hasUpdates() method returns true
+                            // however this wouldnt necessarily tell us that are specifically request-level metadata updates
+                            // to publish to CMO_REQUEST_METADATA_UPDATE
                             if (requestService.requestHasUpdates(existingRequest, request)) {
                                 existingRequest.updateRequestMetadata(request);
                                 requestService.saveRequest(request);
