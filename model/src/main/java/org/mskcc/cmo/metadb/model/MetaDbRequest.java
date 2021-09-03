@@ -356,7 +356,7 @@ public class MetaDbRequest implements Serializable {
         this.strand = updatedRequest.getStrand();
         this.libraryType = updatedRequest.getLibraryType();
         this.bicAnalysis = updatedRequest.getBicAnalysis();
-        this.cmoRequest = updatedRequest.getCmoRequest();
+        this.isCmoRequest = updatedRequest.getIsCmoRequest();
         this.requestJson = updatedRequest.getRequestJson();
     }
 
