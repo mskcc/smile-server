@@ -108,8 +108,8 @@ public class SampleServiceImpl implements SampleService {
     }
     
     @Override
-    public List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoSampleId) throws Exception {
-        List<SampleMetadata> requestSamples = sampleRepository.getSampleMetadataHistoryByIgoId(igoSampleId);
+    public List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoId) throws Exception {
+        List<SampleMetadata> requestSamples = sampleRepository.getSampleMetadataHistoryByIgoId(igoId);
         //This sorts a given list of SampleMetadata in ascending order based on importDate
         Collections.sort(requestSamples); 
         return requestSamples;
