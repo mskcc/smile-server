@@ -22,7 +22,7 @@ import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
-import org.mskcc.cmo.metadb.service.MetaDbRequestService;
+import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author ochoaa
  */
 @Component
-public class MetaDbRequestServiceImpl implements MetaDbRequestService {
+public class MetadbRequestServiceImpl implements MetadbRequestService {
     @Autowired
     private MetadbJsonComparator metadbJsonComparator;
 
@@ -50,12 +50,12 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     // 24 hours in milliseconds
     private final Integer TIME_ADJ_24HOURS_MS = 24 * 60 * 60 * 1000;
     private Map<String, Date> loggedExistingRequests = new HashMap<>();
-    private static final Log LOG = LogFactory.getLog(MetaDbRequestServiceImpl.class);
+    private static final Log LOG = LogFactory.getLog(MetadbRequestServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public boolean saveRequest(MetaDbRequest request) throws Exception {
+    public Boolean saveRequest(MetaDbRequest request) throws Exception {
         MetaDbProject project = new MetaDbProject();
         project.setProjectId(request.getProjectId());
         project.setNamespace(request.getNamespace());
@@ -74,45 +74,16 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
             }
             requestRepository.save(request);
             return Boolean.TRUE;
-        } else {
-            // determine whether there are changes in the current request that are not
-            // in the existing request
-            if (metadbJsonComparator.isConsistent(savedRequest.getRequestJson(), request.getRequestJson())) {
-                // consistent jsons indicate there are no new updates to persist to the graph db
-                logDuplicateRequest(request);
-                return Boolean.FALSE;
-            } else {
-                // update the saved request with changes in the current request
-                savedRequest.updateRequestMetadata(request);
-                savedRequest.addRequestMetadata(requestMetadata);
-
-                // check consistency for each sample in request samples list
-                // TODO: how to keep track of what samples are updated for the message handler to
-                // publish to CMO_SAMPLE_METADATA_UPDATE && publish request metadata history
-                // to CMO_REQUEST_METADATA_UPDATE
-                //   --> some ideas: in message handler check if request
-                //       exists already before persiting any udpates
-                List<MetaDbSample> updatedSamples = new ArrayList<>();
-                for (MetaDbSample s: request.getMetaDbSampleList()) {
-                    MetaDbSample savedSample = sampleService.getMetaDbSampleByRequestAndIgoId(
-                            savedRequest.getRequestId(), s.getSampleIgoId().getSampleId());
-                    // compare sample metadata from current request and the saved request
-                    String latestMetadata = mapper.writeValueAsString(savedSample.getLatestSampleMetadata());
-                    String currentMetadata = mapper.writeValueAsString(s.getLatestSampleMetadata());
-                    if (!metadbJsonComparator.isConsistent(latestMetadata, currentMetadata)) {
-                        // differences detected indicates we need to save these updates
-                        savedSample.updateSampleMetadata(s);
-                        sampleService.saveSampleMetadata(savedSample); // persist updates
-                    }
-                    updatedSamples.add(savedSample);
-                }
-                savedRequest.setMetaDbSampleList(updatedSamples);
-                requestRepository.save(savedRequest);
-                return Boolean.TRUE;
-            }
         }
+        logDuplicateRequest(request);
+        return Boolean.FALSE;
     }
 
+    /**
+     * Logs duplicate requests.
+     * @param request
+     * @throws IOException
+     */
     private void logDuplicateRequest(MetaDbRequest request) throws IOException {
         // if request has not been logged before then save request to request logger file
         // otherwise check if new timestamp occurs within 24 hours since the last time
@@ -139,18 +110,27 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
     }
 
     @Override
-    public PublishedMetaDbRequest getMetaDbRequest(String requestId) throws Exception {
-        MetaDbRequest metaDbRequest = requestRepository.findMetaDbRequestById(requestId);
-        if (metaDbRequest == null) {
+    public MetaDbRequest getMetadbRequestById(String requestId) throws Exception {
+        MetaDbRequest request = requestRepository.findMetaDbRequestById(requestId);
+        if (request == null) {
             LOG.error("Couldn't find a request with requestId " + requestId);
             return null;
         }
+        List<MetaDbSample> metadbSampleList = sampleService.getAllMetadbSamplesByRequestId(requestId);
+        request.setMetaDbSampleList(metadbSampleList);
+        return request;
+    }
+
+    @Override
+    public PublishedMetaDbRequest getPublishedMetadbRequestById(String requestId) throws Exception {
+        MetaDbRequest request = getMetadbRequestById(requestId);
+
+        // for each metadb sample get the latest version of its sample metadata
         List<SampleMetadata> samples = new ArrayList<>();
-        for (MetaDbSample metaDbSample: sampleService.getAllMetadbSamplesByRequestId(requestId)) {
-            samples.addAll(sampleService.getMetaDbSample(metaDbSample.getMetaDbSampleId())
-                    .getSampleMetadataList());
+        for (MetaDbSample sample : request.getMetaDbSampleList()) {
+            samples.add(sample.getLatestSampleMetadata());
         }
-        return new PublishedMetaDbRequest(metaDbRequest, samples);
+        return new PublishedMetaDbRequest(request, samples);
     }
 
     /**
@@ -169,12 +149,53 @@ public class MetaDbRequestServiceImpl implements MetaDbRequestService {
 
     private RequestMetadata extractRequestMetadata(String requestMetadataJson)
             throws JsonMappingException, JsonProcessingException {
-        Map<String, String> requestMetadataMap = mapper.readValue(requestMetadataJson.toString(), Map.class);
-        requestMetadataMap.remove("samples");
+        Map<String, String> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
+        // remove samples if present for request metadata
+        if (requestMetadataMap.containsKey("samples")) {
+            requestMetadataMap.remove("samples");
+        }
         RequestMetadata requestMetadata = new RequestMetadata(
+                requestMetadataMap.get("requestId"),
                 mapper.convertValue(requestMetadataMap, String.class),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return requestMetadata;
+    }
+
+    @Override
+    public Boolean requestHasUpdates(MetaDbRequest existingRequest, MetaDbRequest request) throws Exception {
+        return !metadbJsonComparator.isConsistent(existingRequest.getRequestJson(),
+                request.getRequestJson());
+    }
+
+    @Override
+    public Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
+            RequestMetadata requestMetadata) throws Exception {
+        String existingMetadata = mapper.writeValueAsString(existingRequestMetadata);
+        String currentMetadata = mapper.writeValueAsString(requestMetadata);
+        return (!metadbJsonComparator.isConsistent(currentMetadata, existingMetadata));
+    }
+
+    @Override
+    public List<MetaDbSample> getRequestSamplesWithUpdates(MetaDbRequest request) throws Exception {
+        List<MetaDbSample> updatedSamples = new ArrayList<>();
+        for (MetaDbSample sample: request.getMetaDbSampleList()) {
+            MetaDbSample existingSample = sampleService.getMetaDbSampleByRequestAndIgoId(
+                    request.getRequestId(), sample.getSampleIgoId());
+            // skip samples that do not already exist since they do not have a sample metadata
+            // history to publish to the CMO_SAMPLE_METADATA_UPDATE topic
+            if (existingSample == null) {
+                continue;
+            }
+            // compare sample metadata from current request and the saved request
+            String latestMetadata = mapper.writeValueAsString(existingSample.getLatestSampleMetadata());
+            String currentMetadata = mapper.writeValueAsString(sample.getLatestSampleMetadata());
+            if (!metadbJsonComparator.isConsistent(latestMetadata, currentMetadata)) {
+                // differences detected indicates we need to save these updates
+                existingSample.updateSampleMetadata(sample);
+                updatedSamples.add(existingSample);
+            }
+        }
+        return updatedSamples;
     }
 
 }

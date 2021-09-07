@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -135,7 +136,15 @@ public class MetaDbRequest implements Serializable {
         this.metaDbProject = metaDbProject;
     }
 
+    /**
+     * Returns sorted RequestMetadata list.
+     * @return List
+     */
     public List<RequestMetadata> getRequestMetadataList() {
+        if (requestMetadataList == null) {
+            requestMetadataList = new ArrayList<>();
+        }
+        Collections.sort(requestMetadataList);
         return requestMetadataList;
     }
 
@@ -356,8 +365,21 @@ public class MetaDbRequest implements Serializable {
         this.strand = updatedRequest.getStrand();
         this.libraryType = updatedRequest.getLibraryType();
         this.bicAnalysis = updatedRequest.getBicAnalysis();
-        this.cmoRequest = updatedRequest.getCmoRequest();
+        this.isCmoRequest = updatedRequest.getIsCmoRequest();
         this.requestJson = updatedRequest.getRequestJson();
+        addRequestMetadata(updatedRequest.getLatestRequestMetadata());
+    }
+
+    /**
+     * Returns the latest RequestMetadata.
+     * @return RequestMetadata
+     */
+    public RequestMetadata getLatestRequestMetadata() {
+        if (requestMetadataList != null && !requestMetadataList.isEmpty()) {
+            Collections.sort(requestMetadataList);
+            return requestMetadataList.get(requestMetadataList.size() - 1);
+        }
+        return null;
     }
 
     @Override

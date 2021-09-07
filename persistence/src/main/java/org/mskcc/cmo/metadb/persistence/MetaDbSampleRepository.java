@@ -61,8 +61,15 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
 
     @Query("MATCH (r: Request {requestId: $reqId}) "
             + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
-            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId}) "
+            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId.sampleId}) "
             + "RETURN sm")
+    MetaDbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
+            @Param("igoId") SampleAlias igoId);
+
+    @Query("MATCH (r: Request {requestId: $reqId}) "
+        + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
+        + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId}) "
+        + "RETURN sm")
     MetaDbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
             @Param("igoId") String igoId);
 
@@ -72,4 +79,8 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
             + "RETURN sm"
     )
     List<SampleMetadata> findSampleMetadataListByCmoPatientId(@Param("cmoPatientId") String cmoPatientId);
+
+    @Query("MATCH (sm:SampleMetadata {igoId: $igoId})"
+            + "RETURN sm")
+    List<SampleMetadata> getSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
 }
