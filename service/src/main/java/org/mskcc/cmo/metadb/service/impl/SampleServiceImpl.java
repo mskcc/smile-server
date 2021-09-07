@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
@@ -103,6 +104,14 @@ public class SampleServiceImpl implements SampleService {
         for (MetaDbSample s : sampleRepository.findAllMetaDbSamplesByRequest(requestId)) {
             requestSamples.add(getMetaDbSample(s.getMetaDbSampleId()));
         }
+        return requestSamples;
+    }
+    
+    @Override
+    public List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoId) throws Exception {
+        List<SampleMetadata> requestSamples = sampleRepository.getSampleMetadataHistoryByIgoId(igoId);
+        //This sorts a given list of SampleMetadata in ascending order based on importDate
+        Collections.sort(requestSamples); 
         return requestSamples;
     }
 }

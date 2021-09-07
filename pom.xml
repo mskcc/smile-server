@@ -46,8 +46,8 @@
     <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
     <cmo_metadb_messaging_java.version>c12bb160613ecf7bab6b3af8ee05044b17b69e3d</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
-    <cmo_metadb_common.group>com.github.ao508</cmo_metadb_common.group>
-    <cmo_metadb_common.version>81796bae984f474a127d85ebce3fa3066a4051c5</cmo_metadb_common.version>
+    <cmo_metadb_common.group>com.github.mskcc</cmo_metadb_common.group>
+    <cmo_metadb_common.version>7a2991cd9ecdb52400c2350286dbf9b2d360c3b1</cmo_metadb_common.version>
     <!-- metadb expected schema version -->
     <metadb.schema_version>v1.0</metadb.schema_version>
   </properties>
