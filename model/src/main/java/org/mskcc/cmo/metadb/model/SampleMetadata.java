@@ -37,7 +37,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private String mrn;
     private String cmoPatientId;
     private UUID metaDbPatientId;
-    private String igoId;
+    private String igoSampleId;
     private String investigatorSampleId;
     private String species;
     private String sex;
@@ -64,7 +64,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     /**
      * SampleMetadata constructor
-     * @param igoId
+     * @param igoSampleId
      * @param cmoInfoIgoId
      * @param cmoSampleName
      * @param sampleName
@@ -97,7 +97,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
      * @param sampleStatus
      * @param importDate
      */
-    public SampleMetadata(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
+    public SampleMetadata(String igoSampleId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
             String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
             String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
             String preservation, String collectionYear, String sex, String species, String tubeId,
@@ -111,7 +111,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.sampleName = sampleName;
         this.cmoSampleClass = cmoSampleClass;
         this.cmoPatientId = cmoPatientId;
-        this.igoId = igoId;
+        this.igoSampleId = igoSampleId;
         this.investigatorSampleId = investigatorSampleId;
         this.species = species;
         this.sex = sex;
@@ -304,12 +304,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.metaDbPatientId = metaDbPatientId;
     }
 
-    public String getIgoId() {
-        return igoId;
+    public String getIgoSampleId() {
+        return igoSampleId;
     }
 
-    public void setIgoId(String igoId) {
-        this.igoId = igoId;
+    public void setIgoSampleId(String igoSampleId) {
+        this.igoSampleId = igoSampleId;
     }
 
     public String getInvestigatorSampleId() {
