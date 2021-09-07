@@ -24,5 +24,5 @@ public interface SampleService {
 
     List<MetaDbSample> getAllMetadbSamplesByRequestId(String requestId) throws Exception;
     
-    List<SampleMetadata> getSampleMetadataHistory(String igoSampleId) throws Exception;
+    List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoSampleId) throws Exception;
 }
