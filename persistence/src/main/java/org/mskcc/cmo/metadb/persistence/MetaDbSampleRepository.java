@@ -73,7 +73,7 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     )
     List<SampleMetadata> findSampleMetadataListByCmoPatientId(@Param("cmoPatientId") String cmoPatientId);
     
-    @Query("MATCH (sm:SampleMetadata {igoSampleId: $igoSampleId})"
+    @Query("MATCH (sm:SampleMetadata {cmoInfoIgoId: $igoSampleId})"
             + "RETURN sm")
-    List<SampleMetadata> getSampleMetadataHistoryByIgoSampleId(@Param("igoSampleId") String igoSampleId);
+    List<SampleMetadata> getSampleMetadataHistory(@Param("igoSampleId") String igoSampleId);
 }
