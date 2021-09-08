@@ -22,12 +22,12 @@ import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
+import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.mskcc.cmo.metadb.service.MetadbRequestService;
 
 /**
  *
@@ -55,7 +55,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public boolean saveRequest(MetaDbRequest request) throws Exception {
+    public Boolean saveRequest(MetaDbRequest request) throws Exception {
         MetaDbProject project = new MetaDbProject();
         project.setProjectId(request.getProjectId());
         project.setNamespace(request.getNamespace());
@@ -75,46 +75,15 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
             requestRepository.save(request);
             return Boolean.TRUE;
         }
-        // check if there are updates in the current request not already persisted
-        // in the graph database
-        Boolean requestHasUpdates = requestHasUpdates(savedRequest, request);
-
-        // determine whether there are changes in the current request that are not
-        // in the existing request
-        if (metadbJsonComparator.isConsistent(savedRequest.getRequestJson(), request.getRequestJson())) {
-            // consistent jsons indicate there are no new updates to persist to the graph db
-            logDuplicateRequest(request);
-            return Boolean.FALSE;
-        } else {
-            // update the saved request with changes in the current request
-            savedRequest.updateRequestMetadata(request);
-
-            // check consistency for each sample in request samples list
-            // TODO: how to keep track of what samples are updated for the message handler to
-            // publish to CMO_SAMPLE_METADATA_UPDATE && publish request metadata history
-            // to CMO_REQUEST_METADATA_UPDATE
-            //   --> some ideas: in message handler check if request
-            //       exists already before persiting any udpates
-            List<MetaDbSample> updatedSamples = new ArrayList<>();
-            for (MetaDbSample s: request.getMetaDbSampleList()) {
-                MetaDbSample savedSample = sampleService.getMetaDbSampleByRequestAndIgoId(
-                        savedRequest.getRequestId(), s.getSampleIgoId().getSampleId());
-                // compare sample metadata from current request and the saved request
-                String latestMetadata = mapper.writeValueAsString(savedSample.getLatestSampleMetadata());
-                String currentMetadata = mapper.writeValueAsString(s.getLatestSampleMetadata());
-                if (!metadbJsonComparator.isConsistent(latestMetadata, currentMetadata)) {
-                    // differences detected indicates we need to save these updates
-                    savedSample.updateSampleMetadata(s);
-                    sampleService.saveSampleMetadata(savedSample); // persist updates
-                }
-                updatedSamples.add(savedSample);
-            }
-            savedRequest.setMetaDbSampleList(updatedSamples);
-            requestRepository.save(savedRequest);
-            return Boolean.TRUE;
-        }
+        logDuplicateRequest(request);
+        return Boolean.FALSE;
     }
 
+    /**
+     * Logs duplicate requests.
+     * @param request
+     * @throws IOException
+     */
     private void logDuplicateRequest(MetaDbRequest request) throws IOException {
         // if request has not been logged before then save request to request logger file
         // otherwise check if new timestamp occurs within 24 hours since the last time
@@ -195,6 +164,37 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
     public Boolean requestHasUpdates(MetaDbRequest existingRequest, MetaDbRequest request) throws Exception {
         return !metadbJsonComparator.isConsistent(existingRequest.getRequestJson(),
                 request.getRequestJson());
+    }
+
+    @Override
+    public Boolean requestHasMetadataUpdates(MetaDbRequest existingRequest, MetaDbRequest request)
+            throws Exception {
+        String latestMetadata = mapper.writeValueAsString(existingRequest.getLatestRequestMetadata());
+        String currentMetadata = mapper.writeValueAsString(request.getLatestRequestMetadata());
+        return (!metadbJsonComparator.isConsistent(currentMetadata, latestMetadata));
+    }
+
+    @Override
+    public List<MetaDbSample> getRequestSamplesWithUpdates(MetaDbRequest request) throws Exception {
+        List<MetaDbSample> updatedSamples = new ArrayList<>();
+        for (MetaDbSample sample: request.getMetaDbSampleList()) {
+            MetaDbSample existingSample = sampleService.getMetaDbSampleByRequestAndIgoId(
+                    request.getRequestId(), sample.getSampleIgoId());
+            // skip samples that do not already exist since they do not have a sample metadata
+            // history to publish to the CMO_SAMPLE_METADATA_UPDATE topic
+            if (existingSample == null) {
+                continue;
+            }
+            // compare sample metadata from current request and the saved request
+            String latestMetadata = mapper.writeValueAsString(existingSample.getLatestSampleMetadata());
+            String currentMetadata = mapper.writeValueAsString(sample.getLatestSampleMetadata());
+            if (!metadbJsonComparator.isConsistent(latestMetadata, currentMetadata)) {
+                // differences detected indicates we need to save these updates
+                existingSample.updateSampleMetadata(sample);
+                updatedSamples.add(existingSample);
+            }
+        }
+        return updatedSamples;
     }
 
 }

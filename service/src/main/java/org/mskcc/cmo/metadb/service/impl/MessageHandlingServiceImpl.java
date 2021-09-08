@@ -25,10 +25,11 @@ import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
+import org.mskcc.cmo.metadb.service.MetadbRequestService;
+import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.mskcc.cmo.metadb.service.MetadbRequestService;
 
 @Component
 public class MessageHandlingServiceImpl implements MessageHandlingService {
@@ -39,11 +40,21 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Value("${consistency_check.new_request_topic}")
     private String CONSISTENCY_CHECK_NEW_REQUEST;
 
+    @Value("${metadb.cmo_request_update_topic}")
+    private String CMO_REQUEST_UPDATE_TOPIC;
+
+    @Value("${metadb.cmo_sample_update_topic}")
+    private String CMO_SAMPLE_UPDATE_TOPIC;
+
+
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
 
     @Autowired
     private MetadbRequestService requestService;
+
+    @Autowired
+    private SampleService sampleService;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private static boolean initialized = false;
@@ -72,7 +83,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        MetaDbRequest existingRequest = requestService.getMetadbRequestById(request.getRequestId());
+                        MetaDbRequest existingRequest =
+                                requestService.getMetadbRequestById(request.getRequestId());
 
                         // persist new request to database
                         if (existingRequest == null) {
@@ -80,31 +92,75 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             messagingGateway.publish(request.getRequestId(),
                                     CONSISTENCY_CHECK_NEW_REQUEST,
                                     mapper.writeValueAsString(
-                                            requestService.getPublishedMetadbRequestById(request.getRequestId())));
-                        } else {
-                            // check if there are updates to persist to db
+                                            requestService.getPublishedMetadbRequestById(
+                                                    request.getRequestId())));
+                        } else if (requestService.requestHasUpdates(existingRequest, request)) {
+                            // PROPOSED FLOW:
+                            // 1. Persist the request json received in database
+                            //   - requestService.updateRequestJsonForRequest(request.getRequestJson())
+                            // 2. If there are request-level metadata updates:
+                            //   - pass request to RequestUpdateMessageHandler
+                            //   - message handler will persist updates to request metadata to database
+                            //     and will handle the request metadata versioning
+                            //   - message handler will also publish request metadata history to
+                            //     CMO_REQUEST_METADATA_UPDATE topic
+                            // 3. If there are sample-level metadata updates:
+                            //   - pass request to SampleUpdateMessageHandler
+                            //   - message handler will identify which samples in the request
+                            //     contain updates that haven't been persisted to the db yet
+                            //     and will handle the sample metadata versioning
+                            //   - message handler will also publish sample metadata history
+                            //     for each sample to CMO_SAMPLE_METADATA_UPDATE topic
 
-                            //TODO: ADD MECHANISM FOR DETERMINING IF REQUEST HAS SAMPLE-LEVEL METADATA UPDATES
-                            // Consider adding a data util tool that tells us at if the updates are 1. request-level,
-                            // sample-level, or both?
-                            // we need to be able to know which samples have updates so that they can be published
-                            // to the CMO_SAMPLE_METADATA_UPDATE topic
-                            // if there are request-level updates then they must be published to the
-                            // CMO_REQUEST_METADATA_UPDATE topic as well
-                            // regardless of which level the updates occur, the updates still need to be persisted
-                            // to the database
+                            // ********* NOTE *********
+                            // if request-level metadata updates exist then pass request to
+                            // new message handler RequestUpdateMessageHandler queue
+                            if (requestService.requestHasMetadataUpdates(existingRequest, request)) {
+                                // ********* NOTE *********
+                                // the chunk of code in this if-block would be moved to the
+                                // RequestUpdateMessageHandler
 
-                            // add method that returns the samples that contain updates. if the returned list is empty the
-                            // there are only request-level updates if hasUpdates() method returns true
-                            // however this wouldnt necessarily tell us that are specifically request-level metadata updates
-                            // to publish to CMO_REQUEST_METADATA_UPDATE
-                            if (requestService.requestHasUpdates(existingRequest, request)) {
-                                existingRequest.updateRequestMetadata(request);
-                                requestService.saveRequest(request);
-                            } else {
-                                LOG.warn("Request already in database - it will not be saved: "
-                                        + request.getRequestId());
+                                // persist request-level metadata updates to database
+                                // existingRequest.updateRequestMetadata(request)
+                                // requestService.updateRequestMetadata(existingRequest);
+
+                                //LOG.info("Publishing Request-level Metadata updates "
+                                //        + "to CMO_REQUEST_METADATA_UPDATE");
+                                // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC ..
+                                //messagingGateway.publish(existingRequest.getRequestId(),
+                                //        CMO_REQUEST_UPDATE_TOPIC,
+                                //        mapper.writeValueAsString(
+                                //              existingRequest.getRequestMetadataList()));
                             }
+
+                            // ********* NOTE *********
+                            // if sample-level metadata updates exist then add all samples with updates
+                            // to new message handler SampleUpdateMessageHandler queue
+                            List<MetaDbSample> updatedSamples =
+                                    requestService.getRequestSamplesWithUpdates(request);
+                            if (!updatedSamples.isEmpty()) {
+                                // ********* NOTE *********
+                                // only publish sample-level metadata history to CMO_SAMPLE_METADATA_UPDATE
+                                //  for samples containing updates in the new request json received
+                                //LOG.info("Publishing Sample-level Metadata updates to "
+                                //        + "CMO_SAMPLE_METADATA_UPDATE for " + updatedSamples.size()
+                                //        + " samples.");
+                                //for (MetaDbSample sample : updatedSamples) {
+                                    // persist sample-level metadata updates to database
+                                    // sampleService.updateSampleMetadata(sample)
+                                    //messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
+                                    //        mapper.writeValueAsString(sample.getSampleMetadataList()));
+                                //}
+                            }
+
+                            // ********* NOTE *********
+                            // use request/reply as indicator for whether udpates have finished persisting
+                            // to the database and THEN get the MetadbRequest from the graph database
+                            // and publish to the consistency checker topic as we would for a brand new
+                            // request received
+                        } else {
+                            LOG.warn("Request already in database - it will not be saved: "
+                                    + request.getRequestId());
                         }
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {

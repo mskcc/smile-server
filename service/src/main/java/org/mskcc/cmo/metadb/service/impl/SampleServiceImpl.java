@@ -82,7 +82,8 @@ public class SampleServiceImpl implements SampleService {
     }
 
     @Override
-    public MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, String igoId) throws Exception {
+    public MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, SampleAlias igoId)
+            throws Exception {
         MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
         metadbSample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
@@ -106,12 +107,12 @@ public class SampleServiceImpl implements SampleService {
         }
         return requestSamples;
     }
-    
+
     @Override
     public List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoId) throws Exception {
         List<SampleMetadata> requestSamples = sampleRepository.getSampleMetadataHistoryByIgoId(igoId);
         //This sorts a given list of SampleMetadata in ascending order based on importDate
-        Collections.sort(requestSamples); 
+        Collections.sort(requestSamples);
         return requestSamples;
     }
 }
