@@ -1,9 +1,11 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
@@ -17,12 +19,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SampleServiceImpl implements SampleService {
+    @Autowired
+    private MetadbJsonComparator metadbJsonComparator;
 
     @Autowired
     private MetaDbSampleRepository sampleRepository;
 
     @Autowired
     private MetaDbPatientRepository patientRepository;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public MetaDbSample saveSampleMetadata(MetaDbSample
@@ -95,6 +101,19 @@ public class SampleServiceImpl implements SampleService {
     }
 
     @Override
+    public MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, String igoId)
+            throws Exception {
+        MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        metadbSample.setSampleMetadataList(sampleRepository
+                .findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
+        for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
+            s.setMetaDbPatientId(patientRepository.findPatientIdBySample(metadbSample.getMetaDbSampleId()));
+            s.setMetaDbSampleId(metadbSample.getMetaDbSampleId());
+        }
+        return metadbSample;
+    }
+
+    @Override
     public List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception {
         return sampleRepository.findSampleMetadataListByCmoPatientId(cmoPatientId);
     }
@@ -114,5 +133,13 @@ public class SampleServiceImpl implements SampleService {
         //This sorts a given list of SampleMetadata in ascending order based on importDate
         Collections.sort(requestSamples);
         return requestSamples;
+    }
+
+    @Override
+    public Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata,
+            SampleMetadata sampleMetadata) throws Exception {
+        String existingMetadata = mapper.writeValueAsString(existingSampleMetadata);
+        String currentMetadata = mapper.writeValueAsString(sampleMetadata);
+        return (!metadbJsonComparator.isConsistent(currentMetadata, existingMetadata));
     }
 }

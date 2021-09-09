@@ -21,9 +21,14 @@ public interface SampleService {
 
     MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, SampleAlias igoId) throws Exception;
 
+    MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, String igoId) throws Exception;
+
     List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception;
 
     List<MetaDbSample> getAllMetadbSamplesByRequestId(String requestId) throws Exception;
 
     List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoId) throws Exception;
+
+    Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata, SampleMetadata sampleMetadata)
+            throws Exception;
 }

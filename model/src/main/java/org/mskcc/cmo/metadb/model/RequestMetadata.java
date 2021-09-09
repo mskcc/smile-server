@@ -8,17 +8,28 @@ import org.neo4j.ogm.annotation.Id;
 public class RequestMetadata implements Serializable, Comparable<RequestMetadata> {
     @Id @GeneratedValue
     private Long id;
+    private String requestId;
     private String requestMetadataJson;
     private String importDate;
 
     /**
-     *
+     * Default constructor.
+     * @param requestId
      * @param requestMetadataJson
      * @param importDate
      */
-    public RequestMetadata(String requestMetadataJson, String importDate) {
+    public RequestMetadata(String requestId, String requestMetadataJson, String importDate) {
+        this.requestId = requestId;
         this.requestMetadataJson = requestMetadataJson;
         this.importDate = importDate;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public String getRequestMetadataJson() {

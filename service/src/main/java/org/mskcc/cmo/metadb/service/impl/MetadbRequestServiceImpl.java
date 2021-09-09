@@ -155,6 +155,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
             requestMetadataMap.remove("samples");
         }
         RequestMetadata requestMetadata = new RequestMetadata(
+                requestMetadataMap.get("requestId"),
                 mapper.convertValue(requestMetadataMap, String.class),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return requestMetadata;
@@ -167,11 +168,11 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
     }
 
     @Override
-    public Boolean requestHasMetadataUpdates(MetaDbRequest existingRequest, MetaDbRequest request)
-            throws Exception {
-        String latestMetadata = mapper.writeValueAsString(existingRequest.getLatestRequestMetadata());
-        String currentMetadata = mapper.writeValueAsString(request.getLatestRequestMetadata());
-        return (!metadbJsonComparator.isConsistent(currentMetadata, latestMetadata));
+    public Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
+            RequestMetadata requestMetadata) throws Exception {
+        String existingMetadata = mapper.writeValueAsString(existingRequestMetadata);
+        String currentMetadata = mapper.writeValueAsString(requestMetadata);
+        return (!metadbJsonComparator.isConsistent(currentMetadata, existingMetadata));
     }
 
     @Override

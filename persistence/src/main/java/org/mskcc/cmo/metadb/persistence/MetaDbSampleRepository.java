@@ -66,6 +66,13 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     MetaDbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
             @Param("igoId") SampleAlias igoId);
 
+    @Query("MATCH (r: Request {requestId: $reqId}) "
+        + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
+        + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId}) "
+        + "RETURN sm")
+    MetaDbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
+            @Param("igoId") String igoId);
+
     @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
             + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "MATCH (r: Request)-[:HAS_SAMPLE]->(s) SET sm.requestId = r.requestId "
