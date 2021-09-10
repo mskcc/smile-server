@@ -156,7 +156,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
         }
         RequestMetadata requestMetadata = new RequestMetadata(
                 requestMetadataMap.get("requestId"),
-                mapper.convertValue(requestMetadataMap, String.class),
+                mapper.writeValueAsString(requestMetadataMap),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return requestMetadata;
     }
