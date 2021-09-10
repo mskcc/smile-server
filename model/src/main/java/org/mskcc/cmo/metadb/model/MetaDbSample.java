@@ -3,12 +3,10 @@ package org.mskcc.cmo.metadb.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import org.neo4j.driver.internal.shaded.io.netty.util.internal.StringUtil;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -72,7 +70,15 @@ public class MetaDbSample implements Serializable {
         this.sampleMetadataList = sampleMetadataList;
     }
 
+    /**
+     * Returns sorted SampleMetadata list.
+     * @return List
+     */
     public List<SampleMetadata> getSampleMetadataList() {
+        if (sampleMetadataList == null) {
+            sampleMetadataList = new ArrayList<>();
+        }
+        Collections.sort(sampleMetadataList);
         return sampleMetadataList;
     }
 
@@ -97,7 +103,7 @@ public class MetaDbSample implements Serializable {
      */
     public SampleAlias getSampleIgoId() {
         if (sampleAliases == null) {
-            this.sampleAliases = new ArrayList<>();
+            sampleAliases = new ArrayList<>();
         }
         for (SampleAlias s: sampleAliases) {
             if (s.getNamespace().equalsIgnoreCase("igoId")) {
@@ -122,30 +128,8 @@ public class MetaDbSample implements Serializable {
      */
     public SampleMetadata getLatestSampleMetadata() throws ParseException {
         if (sampleMetadataList != null && !sampleMetadataList.isEmpty()) {
-            LocalDate latest = null;
-            SampleMetadata smLatest = null;
-            for (int i = 0; i < sampleMetadataList.size(); i++) {
-                SampleMetadata sm = sampleMetadataList.get(i);
-                // if null or empty import date then set it to current date
-                if (StringUtil.isNullOrEmpty(sm.getImportDate())) {
-                    sm.setImportDate(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                    sampleMetadataList.set(i, sm);
-                }
-                // compare current date with 'latest' date encountered
-                // let's not assume that the most recent sample metadata will
-                // always be the first element in the sampleMetadataList
-                LocalDate current = LocalDate.parse(sm.getImportDate(),
-                        DateTimeFormatter.ISO_LOCAL_DATE);
-                if (latest == null) {
-                    latest = current;
-                    smLatest = sm;
-                } else if (current.isAfter(latest)) {
-                    // if current is later than the 'latest' then update 'latest' date and sample metadata
-                    latest = current;
-                    smLatest = sm;
-                }
-            }
-            return smLatest;
+            Collections.sort(sampleMetadataList);
+            return sampleMetadataList.get(sampleMetadataList.size() - 1);
         }
         return null;
     }
