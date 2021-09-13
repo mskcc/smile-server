@@ -1,25 +1,19 @@
 package org.mskcc.cmo.metadb.persistence;
 
-import java.util.HashMap;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mskcc.cmo.common.enums.NucleicAcid;
-import org.mskcc.cmo.common.enums.SpecimenType;
-import org.mskcc.cmo.metadb.model.MetaDbPatient;
+import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
-import org.mskcc.cmo.metadb.model.PatientAlias;
-import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
-import org.neo4j.driver.AuthToken;
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.Transaction;
-import org.neo4j.driver.TransactionWork;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -29,104 +23,79 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- *
+ * Might also be renaming this class.. maybe this will be where the data
+ * initialization occurs and other test classes can reference it?
  * @author ochoaa
  */
 @Testcontainers
 @DataNeo4jTest
 public class MockNeo4jDbTest {
-	@Container
-	private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
-		.withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
-	// end::copy-plugin[]
+    private final ObjectMapper mapper = new ObjectMapper();
 
-	// tag::sdn-neo4j-testcontainer-setup[]
-	@TestConfiguration // <2>
-	static class Config {
+    @Container
+    private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
+            .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
 
-		@Bean // <3>
-		public org.neo4j.ogm.config.Configuration configuration() {
-			return new org.neo4j.ogm.config.Configuration.Builder()
-				.uri(databaseServer.getBoltUrl())
-				.credentials("neo4j", databaseServer.getAdminPassword())
-				.build();
-		}
-	}
+    @TestConfiguration // <2>
+    static class Config {
+        @Bean
+        public org.neo4j.ogm.config.Configuration configuration() {
+            return new org.neo4j.ogm.config.Configuration.Builder()
+                    .uri(databaseServer.getBoltUrl())
+                    .credentials("neo4j", databaseServer.getAdminPassword())
+                    .build();
+        }
+    }
 
+    private final MetaDbRequestRepository requestRepository;
     private final MetaDbSampleRepository sampleRepository;
+
     @Autowired
-    public MockNeo4jDbTest(MetaDbSampleRepository sampleRepository) {
+    public MockNeo4jDbTest(MetaDbRequestRepository requestRepository,
+            MetaDbSampleRepository sampleRepository) {
+        this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
     }
-    
-//    private static final String TEST_DATA = "CREATE (s:SampleAlias {value: 'C-1235-X002-r', namespace: 'igoId'})";
-//    
-//    @BeforeAll
-//    public static void prepareTestData() {
-//        AuthToken token = AuthTokens.basic("neo4j", databaseServer.getAdminPassword());
-//        Driver driver = GraphDatabase.driver(databaseServer.getBoltUrl(), token);
-//        Session session = driver.session();
-//        session.writeTransaction(new TransactionWork() {
-//            @Override
-//            public Object execute(Transaction t) {
-//                return t.run(TEST_DATA);
-//            }
-//        });
-//    }
 
-    // not sure if we need this
-//    private static SessionFactory sessionFactory;
-//    @BeforeAll
-//    public void prepareSessionFactory() {
-//        org.neo4j.ogm.config.Configuration ogmConfiguration = new Configuration.Builder()
-//        .uri(databaseServer.getBoltUrl())
-//        .credentials("neo4j", databaseServer.getAdminPassword())
-//        .build();
-//        sessionFactory = new SessionFactory(
-//            ogmConfiguration,
-//            "org.mskcc.cmo.metadb.persistence");
-//    }
-    
     @Test
-    public void testDatabaseServer() {
-        System.out.println("\n\n\n\nDatabase server info:");
-    }
-    
-    @Test
-    public void testSaveMethod() {
-//        assertThat(sampleRepository.findAll()).isEmpty();
-        SampleMetadata metadata = getSampleMetadata("request_1234", "C-1235", "C-1235", SpecimenType.ORGANOID, NucleicAcid.DNA);
-        SampleAlias sample = new SampleAlias("C-1235-X002-r", "igoId");
-        MetaDbPatient patient = new MetaDbPatient();
-        patient.setMetaDbPatientId(UUID.randomUUID());
-        patient.addPatientAlias(new PatientAlias("C-1235", "igoId"));
-        
-        MetaDbSample mdbSample = new MetaDbSample();
-        mdbSample.addSampleAlias(sample);
-        mdbSample.setMetaDbSampleId(UUID.randomUUID());
-        mdbSample.setPatient(patient);
-        mdbSample.addSampleMetadata(metadata);
-        sampleRepository.save(mdbSample);
-        
-        MetaDbSample result = sampleRepository.findMetaDbSampleById(mdbSample.getMetaDbSampleId());
-        assertThat(result).isNotNull();
-//        System.out.println("\n\n\nsample result:");
-//        System.out.println(sample.getSampleId());
-//        assertThat(sample).isNotNull();
-//        System.out.println("SAVED SAMPLE IGO ID: " + sample.getSampleId());
-    }
-    
-    private SampleMetadata getSampleMetadata(String requestId, String igoId, String cmoPatientId,
-            SpecimenType specimenType, NucleicAcid naToExtract) {
-        SampleMetadata sample = new SampleMetadata();
-        sample.setRequestId(requestId);
-        sample.setIgoId(igoId);
-        sample.setCmoPatientId(cmoPatientId);
-        sample.setSpecimenType(specimenType.getValue());
+    public void testSaveMethod() throws Exception {
+        // this file might actually already be saved as a mock request json data file
+        // under a different name but this was just added temporarily to facilitate
+        // troubleshooting issues with initializing the mock database
+        File file = new File("/Users/laptop/metadb-projects/cmo-metadb/"
+                + "persistence/src/test/resources/data/incoming_requests"
+                + "/mocked_request_mockdb.json");
+        Map<String, Object> filedata = mapper.readValue(file, Map.class);
+        String requestJson = mapper.writeValueAsString(filedata);
 
-        Map<String, String> cmoSampleIdFields = new HashMap<>();
-        cmoSampleIdFields.put("naToExtract", naToExtract.getValue());
-        sample.setCmoSampleIdFields(cmoSampleIdFields);
-        return sample;
+        MetaDbRequest metaDbRequest = mapper.readValue(requestJson,
+                MetaDbRequest.class);
+        metaDbRequest.setRequestJson(requestJson);
+        metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(requestJson));
+        metaDbRequest.setNamespace("igo");
+
+        requestRepository.save(metaDbRequest);
+
+        List<MetaDbSample> sampleList = sampleRepository
+                .findAllMetaDbSamplesByRequest(metaDbRequest.getRequestId());
+        Assertions.assertTrue(sampleList.size() == 4);
+    }
+
+    private List<MetaDbSample> extractMetaDbSamplesFromIgoResponse(Object message)
+            throws JsonProcessingException, IOException {
+        Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
+        SampleMetadata[] sampleList = mapper.convertValue(map.get("samples"),
+                SampleMetadata[].class);
+
+        List<MetaDbSample> metaDbSampleList = new ArrayList<>();
+        for (SampleMetadata sample: sampleList) {
+            // update import date here since we are parsing from json
+            sample.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            sample.setRequestId((String) map.get("requestId"));
+            MetaDbSample metaDbSample = new MetaDbSample();
+            metaDbSample.addSampleMetadata(sample);
+            metaDbSampleList.add(metaDbSample);
+        }
+        return metaDbSampleList;
     }
 }
