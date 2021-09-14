@@ -87,6 +87,15 @@ public class SampleServiceTest {
     private final MetaDbRequestRepository requestRepository;
     private final MetaDbSampleRepository sampleRepository;
     private final MetaDbPatientRepository patientRepository;
+
+    /**
+     * Initializes the Neo4j repositories.
+     * @param requestRepository
+     * @param sampleRepository
+     * @param patientRepository
+     * @param requestService
+     * @param sampleService
+     */
     @Autowired
     public SampleServiceTest(MetaDbRequestRepository requestRepository,
             MetaDbSampleRepository sampleRepository, MetaDbPatientRepository patientRepository,
@@ -96,14 +105,22 @@ public class SampleServiceTest {
         this.patientRepository = patientRepository;
     }
 
+    /**
+     * Sets up the Mock Request JSON data resources.
+     * @throws Exception
+     */
     @BeforeAll
-    public static void loadAndPersistMockData() throws Exception {
+    public static void loadMockRequestDataResources() throws Exception {
         mockJsonTestDataResource = new ClassPathResource(MOCKED_JSON_DATA_DIR);
         mockedRequestJsonDataMap = mockedRequestJsonDataMap();
     }
 
+    /**
+     * Persists the Mock Request data to the test database.
+     * @throws Exception
+     */
     @Autowired
-    public void setUp() throws Exception {
+    public void persistMockRequestDataToTestDb() throws Exception {
         MockJsonTestData request1Data = mockedRequestJsonDataMap.get("mockIncomingRequest1JsonDataWith2T2N");
         MetaDbRequest request = extractRequestFromJsonData(request1Data.getJsonString());
         requestService.saveRequest(request);
@@ -144,7 +161,7 @@ public class SampleServiceTest {
         return metaDbSampleList;
     }
 
-    public static Map<String, MockJsonTestData> mockedRequestJsonDataMap() throws IOException {
+    private static Map<String, MockJsonTestData> mockedRequestJsonDataMap() throws IOException {
         SampleServiceTest.mockedRequestJsonDataMap = new HashMap<>();
         ClassPathResource jsonDataDetailsResource =
                 new ClassPathResource(MOCKED_REQUEST_DATA_DETAILS_FILEPATH);
