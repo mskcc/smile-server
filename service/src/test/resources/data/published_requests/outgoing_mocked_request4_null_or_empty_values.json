@@ -1,6 +1,6 @@
 {
   "requestId": "MOCKREQUEST1_B",
-  "recipe": "",
+  "recipe": null,
   "projectManagerName": "Bar, Foo",
   "piEmail": "request1pi@mskcc.org",
   "labHeadName": "Foo Bar",
@@ -10,8 +10,6 @@
   "dataAnalystName": "Poin Dexter",
   "dataAnalystEmail": "dexterp@mskcc.org",
   "otherContactEmails": "dexterp@mskcc.org",
-  "isCmoRequest":true,
-  "bicAnalysis": false,  
   "dataAccessEmails": "",
   "qcAccessEmails": "",
   "pooledNormals": [
@@ -32,7 +30,7 @@
       "igoId": "MOCKREQUEST1_B_1",
       "cmoSampleName": "C-MP789JR-X001-d",
       "sampleName": "XXX002_P3_12345_L1",
-      "cmoSampleClass": null,
+      "cmoSampleClass": "",
       "cmoPatientId": "C-MP789JR",
       "investigatorSampleId": "XXX002_P3_12345_L1",
       "tumorOrNormal": "Tumor",
@@ -49,7 +47,7 @@
       "libraries": [
         {
           "barcodeId": "IDT29",
-          "barcodeIndex": null,
+          "barcodeIndex": "",
           "libraryIgoId": "MOCKREQUEST1_B_1_1_1_1",
           "libraryVolume": 35.0,
           "libraryConcentrationNgul": 34.8,
@@ -83,16 +81,16 @@
       "cmoPatientId": "C-MP789JR",
       "investigatorSampleId": "01-0012345a",
       "tumorOrNormal": "Normal",
-      "tissueLocation": "",
+      "tissueLocation": null,
       "specimenType": "Blood",
       "sampleOrigin": "Whole Blood",
       "preservation": "Frozen",
-      "collectionYear": "",
+      "collectionYear": null,
       "sex": "F",
       "species": "Human",
       "tubeId": "",
       "baitSet": "GENESET101_BAITS",
-      "qcReports": [],
+      "qcReports": null,
       "libraries": [
         {
           "barcodeId": "TNG41",
@@ -189,7 +187,7 @@
       "qcReports": [],
       "libraries": [
         {
-          "barcodeId": null,
+          "barcodeId": "",
           "barcodeIndex": "TGGAACAA",
           "libraryIgoId": "MOCKREQUEST1_B_4_1_1_1",
           "libraryVolume": 35.0,

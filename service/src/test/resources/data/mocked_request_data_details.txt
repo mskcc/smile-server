@@ -1,0 +1,13 @@
+identifier	filepath	description
+mockIncomingRequest1JsonDataWith2T2N	incoming_requests/mocked_request1_complete_tumor_normal.json	Mock incoming request json with 2 tumor samples and 2 matching normals
+mockIncomingRequest2aJsonData1N	incoming_requests/mocked_request2a_one_normal.json	Mock incoming request json with a single normal sample
+mockIncomingRequest2bJsonDataMissing1N	incoming_requests/mocked_request2b_missing_one_normal.json	Mock incoming request json with a normal sample from a different request ('mockIncomingRequest2aJsonData1N')
+mockIncomingRequest3JsonDataPooledNormals	incoming_requests/mocked_request3_pooled_normals.json	Mock incoming request json with pooled normals
+mockIncomingRequest4JsonNullOrEmptyValues	incoming_requests/mocked_request4_null_or_empty_values.json	Mock incoming request json with null or empty values.
+mockPublishedRequest1JsonDataWith2T2N	published_requests/outgoing_mocked_request1_complete_tumor_normal.json	Mock published request json with 2 tumor samples and 2 matching normals, and metadb ids.
+mockPublishedRequest2aJsonData1N	published_requests/outgoing_mocked_request2a_one_normal.json	Mock published request with a single normal sample, and metadb ids.
+mockPublishedRequest2bJsonDataMissing1N	published_requests/outgoing_mocked_request2b_missing_one_normal.json	Mock published request missing a single normal sample, and metadb ids.
+mockPublishedRequest2bJsonDataComplete	published_requests/outgoing_mocked_request2b_all_pairs.json	Mock published request with all tumor and normal sample pairs. Same as request 'mockPublishedRequest2bJsonDataMissing1N' but includes the missing normal sample, and metadb ids.
+mockPublishedRequest3JsonDataPooledNormals	published_requests/outgoing_mocked_request3_pooled_normals.json	Mock published request with pooled normals, and metadb ids.
+mockPublishedRequest1JsonNullValues	published_requests/outgoing_mocked_request1_null_values.json	Mock published request with null values.
+mockPublishedRequest4JsonNullOrEmptyValues	published_requests/outgoing_mocked_request4_null_or_empty_values.json	Mock published request with null or empty values.
