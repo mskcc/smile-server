@@ -19,7 +19,8 @@ public interface SampleService {
 
     MetaDbSample getMetaDbSample(UUID metaDbSampleId) throws Exception;
 
-    MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, SampleAlias igoId) throws Exception;
+    MetaDbSample getMetaDbSampleByRequestAndIgoSampleAlias(String requestId,
+            SampleAlias igoId) throws Exception;
 
     MetaDbSample getMetaDbSampleByRequestAndIgoId(String requestId, String igoId) throws Exception;
 
