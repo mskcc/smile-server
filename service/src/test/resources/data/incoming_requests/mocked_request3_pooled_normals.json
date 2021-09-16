@@ -10,6 +10,8 @@
   "dataAnalystName": "",
   "dataAnalystEmail": "",
   "otherContactEmails": "whiteb@mskcc.org,dacruzpa@mskcc.org",
+  "isCmoRequest":true,
+  "bicAnalysis": false,  
   "dataAccessEmails": "",
   "qcAccessEmails": "",
   "pooledNormals": [
