@@ -88,7 +88,7 @@ public final class MockDataUtils {
     }
 
     /**
-     * Extracts a List<MetaDbSample> given a request json string;
+     * Extracts a List<MetaDbSample> given a request json string
      * @param message
      * @return List<MetaDbSample>
      * @throws JsonProcessingException
