@@ -7,11 +7,22 @@ version: 2.1
 orbs:
   maven: circleci/maven@1.0.3
 
+machine: true
+
 jobs:
   run_checkstyle:
     <<: *defaults
     working_directory: /tmp/repos/cmo-metadb
+    environment:
+      - TESTCONTAINERS_RYUK_DISABLED: true
     steps:
+      - setup_remote_docker:
+          version: 20.10.2
+      - run:
+          name: "Configure testcontainers.properties..."
+          command: |
+            touch /home/circleci/.testcontainers.properties && \
+            echo "DOCKER_HOST = unix:///var/run/docker.sock" > /home/circleci/.testcontainers.properties
       - checkout
       - run:
           name: Pull cmo metadb common code
@@ -24,11 +35,8 @@ jobs:
               git fetch --tags && \
               git checkout ${METADB_COMMON_VERSION}
       - run:
-          name: "Build project..."
-          command: mvn clean install
-      - run:
-          name: "Run checkstyle plugin..."
-          command: mvn checkstyle:checkstyle
+          name: "Build project and run checkstyle plugin..."
+          command: mvn clean install checkstyle:checkstyle
       - run:
           name: "Validating checkstyle plugin report..."
           command: bash /tmp/repos/cmo-metadb-common/test/scripts/generate_checkstyle_report.sh /tmp/repos/cmo-metadb
@@ -39,4 +47,4 @@ jobs:
 workflows:
   run_mvn_checkstyle:
     jobs:
-        - run_checkstyle
+      - run_checkstyle
