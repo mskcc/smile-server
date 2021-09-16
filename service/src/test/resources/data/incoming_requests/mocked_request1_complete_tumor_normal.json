@@ -10,6 +10,8 @@
   "dataAnalystName": "Poin Dexter",
   "dataAnalystEmail": "dexterp@mskcc.org",
   "otherContactEmails": "dexterp@mskcc.org",
+  "isCmoRequest":true,
+  "bicAnalysis": false,
   "dataAccessEmails": "",
   "qcAccessEmails": "",
   "pooledNormals": [
