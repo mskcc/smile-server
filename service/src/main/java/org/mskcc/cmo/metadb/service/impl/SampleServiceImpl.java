@@ -88,7 +88,7 @@ public class SampleServiceImpl implements SampleService {
     }
 
     @Override
-    public MetaDbSample getMetaDbSampleByRequestAndIgoSampleAlias(String requestId, SampleAlias igoId)
+    public MetaDbSample getMetaDbSampleByRequestAndAlias(String requestId, SampleAlias igoId)
             throws Exception {
         MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
         metadbSample.setSampleMetadataList(sampleRepository
