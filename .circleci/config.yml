@@ -1,29 +1,17 @@
-defaults: &defaults
-    docker:
-        - image: cimg/openjdk:8.0.275
-
 version: 2.1
-
-orbs:
-  maven: circleci/maven@1.0.3
-
-machine: true
 
 jobs:
   run_checkstyle:
-    <<: *defaults
     working_directory: /tmp/repos/cmo-metadb
-    environment:
-      - TESTCONTAINERS_RYUK_DISABLED: true
+    machine: true
     steps:
-      - setup_remote_docker:
-          version: 20.10.2
-      - run:
-          name: "Configure testcontainers.properties..."
-          command: |
-            touch /home/circleci/.testcontainers.properties && \
-            echo "DOCKER_HOST = unix:///var/run/docker.sock" > /home/circleci/.testcontainers.properties
       - checkout
+      - run: 
+          name: "Authenticating docker"
+          command: docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASSWORD}
+      - run:
+          name: "Verifying docker installation"
+          command: docker run hello-world
       - run:
           name: Pull cmo metadb common code
           command: |
