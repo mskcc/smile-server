@@ -18,7 +18,10 @@ jobs:
               git checkout ${METADB_COMMON_VERSION}
       - run:
           name: "Build project and run checkstyle plugin..."
-          command: mvn clean install checkstyle:checkstyle
+          command: mvn clean install
+      - run:
+          name: "Running checkstyle plugin..."
+          command: mvn checkstyle:checkstyle
       - run:
           name: "Validating checkstyle plugin report..."
           command: bash /tmp/repos/cmo-metadb-common/test/scripts/generate_checkstyle_report.sh /tmp/repos/cmo-metadb
