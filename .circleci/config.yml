@@ -4,6 +4,9 @@ jobs:
   run_checkstyle:
     working_directory: /tmp/repos/cmo-metadb
     machine: true
+    environment:
+      - DOCKERHUB_LOGIN: ${DOCKERHUB_LOGIN}
+      - DOCKERHUB_PASSWORD: ${DOCKERHUB_PASSWORD}
     steps:
       - checkout
       - run: 
