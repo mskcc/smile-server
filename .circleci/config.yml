@@ -4,14 +4,8 @@ jobs:
   run_checkstyle:
     working_directory: /tmp/repos/cmo-metadb
     machine: true
-    environment:
-      - DOCKERHUB_LOGIN: ${DOCKERHUB_LOGIN}
-      - DOCKERHUB_PASSWORD: ${DOCKERHUB_PASSWORD}
     steps:
       - checkout
-      - run: 
-          name: "Authenticating docker"
-          command: docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASSWORD}
       - run:
           name: "Verifying docker installation"
           command: docker run hello-world
