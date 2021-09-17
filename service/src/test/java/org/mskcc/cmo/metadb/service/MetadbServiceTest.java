@@ -82,14 +82,23 @@ public class MetadbServiceTest {
         MetaDbRequest request = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
         requestService.saveRequest(request);
     }
-
+    
+    
+    /**
+     * Tests if the graphDb is set up accurately
+     * @throws Exception
+     */
     @Test
     public void testRequestRepositoryAccess() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         MetaDbRequest savedRequest = requestService.getMetadbRequestById(requestId);
         Assertions.assertThat(savedRequest.getMetaDbSampleList().size() == 4);
     }
-
+    
+    /**
+     * Tests whether findMatchedNormalSample retrieves an accurate list MetaDbSample
+     * @throws Exception
+     */
     @Test
     public void testFindMatchedNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
@@ -98,7 +107,11 @@ public class MetadbServiceTest {
         List<MetaDbSample> matchedNormalList = sampleService.findMatchedNormalSample(metaDbSample);
         Assertions.assertThat(matchedNormalList.size() == 1);
     }
-
+    
+    /**
+     * Tests whether findPooledNormalSample retrieves an accurate list pooled normals
+     * @throws Exception
+     */
     @Test
     public void testFindPooledNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
@@ -108,6 +121,12 @@ public class MetadbServiceTest {
         Assertions.assertThat(pooledNormalList.size() == 10);
     }
 
+    /**
+     * Tests if the number of sampleMetadata, from a list retrieved
+     * using getSampleMetadataListByCmoPatientId,
+     * matches the expected number
+     * @throws Exception
+     */
     @Test
     public void testGetSampleMetadataListByCmoPatientId() throws Exception {
         String cmoPatientId = "22022_BZ";
@@ -116,6 +135,12 @@ public class MetadbServiceTest {
         Assertions.assertThat(savedSampleMetadataList.size() == 1);
     }
 
+    /**
+     * Tests if the number of sampleMetadata, from a list retrieved
+     * using getSampleMetadataListByCmoPatientId,
+     * matches the expected number
+     * @throws Exception
+     */
     @Test
     public void testGetAllMetadbSamplesByRequestId() throws Exception {
         String requestId = "33344_Z";
@@ -123,6 +148,12 @@ public class MetadbServiceTest {
         Assertions.assertThat(savedMetaDbSampleList.size() == 4);
     }
 
+    /**
+     * Tests if the number of sampleMetadata history nodes,
+     * from a list retrieved using getSampleMetadataHistoryByIgoId,
+     * matches the expected number
+     * @throws Exception
+     */
     @Test
     public void testGetSampleMetadataHistoryByIgoId() throws Exception {
         String igoId = "MOCKREQUEST1_B_1";
@@ -130,6 +161,10 @@ public class MetadbServiceTest {
         Assertions.assertThat(sampleMetadataHistory.size() == 1);
     }
 
+    /**
+     * Tests if sampleHasMetadataUpdates accurately recognizes changes in sampleMetadata
+     * @throws Exception
+     */
     @Test
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
@@ -143,6 +178,11 @@ public class MetadbServiceTest {
 
     }
 
+    /**
+     * Tests if the number of sampleMetadata history nodes
+     * matches the expected number after updating sampleMetadata
+     * @throws Exception
+     */
     @Test
     public void testSampleHistoryAfterUpdate() throws Exception {
         String requestId = "MOCKREQUEST1_B";
@@ -157,6 +197,10 @@ public class MetadbServiceTest {
 
     }
 
+    /**
+     * Tests if the returned list of sampleMetadata history is sorted based on importDate
+     * @throws Exception
+     */
     @Test
     public void testSampleHistoryListIsAscendingByImportDate() throws Exception {
         String igoId = "MOCKREQUEST1_B_4";
