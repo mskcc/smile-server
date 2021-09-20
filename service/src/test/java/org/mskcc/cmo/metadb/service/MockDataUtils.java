@@ -90,7 +90,7 @@ public final class MockDataUtils {
     /**
      * Extracts a List of MetaDbSample's given a request json string
      * @param message
-     * @return List<MetaDbSample>
+     * @return List
      * @throws JsonProcessingException
      * @throws IOException
      */

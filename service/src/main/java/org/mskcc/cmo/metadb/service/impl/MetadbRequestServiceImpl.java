@@ -191,7 +191,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
             String currentMetadata = mapper.writeValueAsString(sample.getLatestSampleMetadata());
             if (!metadbJsonComparator.isConsistent(latestMetadata, currentMetadata)) {
                 // differences detected indicates we need to save these updates
-                existingSample.updateSampleMetadata(sample);
+                existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
                 updatedSamples.add(existingSample);
             }
         }

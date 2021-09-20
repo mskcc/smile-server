@@ -17,8 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
@@ -225,12 +223,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                                 existingSample.getLatestSampleMetadata(), sampleMetadata)) {
                             // persist sample level updates to database and publish
                             // sample metadata history to CMO_SAMPLE_METADATA_UPDATE
-                            // existingSample.updatesampleMetadata(sampleMetadata)
-                            // sampleService.updateSampleMetadata(sample)
-                            // LOG.info("Publishing sample-level metadata history for sample: "
-                            // + sample.getIgoId());
-                            //messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
-                            //        mapper.writeValueAsString(sample.getSampleMetadataList()));
+                            existingSample.updateSampleMetadata(sampleMetadata);
+                            sampleService.saveSampleMetadata(existingSample);
+                            LOG.info("Publishing sample-level metadata history for sample: "
+                                    + sampleMetadata.getIgoId());
+                            messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
+                                    mapper.writeValueAsString(existingSample.getSampleMetadataList()));
                         }
                     } else {
                         LOG.warn("There are no updates to persist for current sample: "

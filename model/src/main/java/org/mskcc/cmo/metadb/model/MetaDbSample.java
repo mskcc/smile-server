@@ -134,8 +134,7 @@ public class MetaDbSample implements Serializable {
         return null;
     }
 
-    public void updateSampleMetadata(MetaDbSample updatedSample) throws ParseException {
-        addSampleMetadata(updatedSample.getLatestSampleMetadata());
-        setSampleAliases(updatedSample.getSampleAliases(sampleAliases));
+    public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
+        addSampleMetadata(sampleMetadata);
     }
 }
