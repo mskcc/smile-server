@@ -1,10 +1,16 @@
 package org.mskcc.cmo.metadb.service;
 
+
+import static org.junit.Assert.assertThrows;
+
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.PatientAlias;
+import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
@@ -14,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -34,6 +41,9 @@ public class MetadbServiceTest {
 
     @Autowired
     private SampleService sampleService;
+
+    @Autowired
+    private PatientService patientService;
 
     @Container
     private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
@@ -65,7 +75,8 @@ public class MetadbServiceTest {
     @Autowired
     public MetadbServiceTest(MetaDbRequestRepository requestRepository,
             MetaDbSampleRepository sampleRepository, MetaDbPatientRepository patientRepository,
-            MetadbRequestService requestService, SampleService sampleService) {
+            MetadbRequestService requestService, SampleService sampleService,
+            PatientService patientService) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
@@ -79,11 +90,21 @@ public class MetadbServiceTest {
     public void persistMockRequestDataToTestDb() throws Exception {
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        MetaDbRequest request = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
-        requestService.saveRequest(request);
+        MetaDbRequest request1 = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
+        requestService.saveRequest(request1);
+
+        MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest3JsonDataPooledNormals");
+        MetaDbRequest request3 = mockDataUtils.extractRequestFromJsonData(request3Data.getJsonString());
+        requestService.saveRequest(request3);
+
+        MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest5JsonPtMultiSamples");
+        MetaDbRequest request5 = mockDataUtils.extractRequestFromJsonData(request5Data.getJsonString());
+        requestService.saveRequest(request5);
     }
-    
-    
+
+
     /**
      * Tests if the graphDb is set up accurately
      * @throws Exception
@@ -94,7 +115,7 @@ public class MetadbServiceTest {
         MetaDbRequest savedRequest = requestService.getMetadbRequestById(requestId);
         Assertions.assertThat(savedRequest.getMetaDbSampleList().size() == 4);
     }
-    
+
     /**
      * Tests whether findMatchedNormalSample retrieves an accurate list MetaDbSample
      * @throws Exception
@@ -107,7 +128,7 @@ public class MetadbServiceTest {
         List<MetaDbSample> matchedNormalList = sampleService.findMatchedNormalSample(metaDbSample);
         Assertions.assertThat(matchedNormalList.size() == 1);
     }
-    
+
     /**
      * Tests whether findPooledNormalSample retrieves an accurate list pooled normals
      * @throws Exception
@@ -129,7 +150,7 @@ public class MetadbServiceTest {
      */
     @Test
     public void testGetSampleMetadataListByCmoPatientId() throws Exception {
-        String cmoPatientId = "22022_BZ";
+        String cmoPatientId = "C-PXXXD9";
         List<SampleMetadata> savedSampleMetadataList = sampleService
                 .getSampleMetadataListByCmoPatientId(cmoPatientId);
         Assertions.assertThat(savedSampleMetadataList.size() == 1);
@@ -206,6 +227,28 @@ public class MetadbServiceTest {
         String igoId = "MOCKREQUEST1_B_4";
         List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory).isSorted();
+    }
+
+    @Test
+    public void testFindPatientByPatientAlias() throws Exception {
+        String cmoPatientId = "C-1MP6YY";
+        Assertions.assertThat(
+                patientRepository.findPatientByCmoPatientId(cmoPatientId)).isNotNull();
+    }
+
+    @Test
+    public void testFindPatientByPatientAliasWithExpectedFailure() {
+        String cmoPatientId = "C-1MP6YY";
+        MetaDbPatient patient = new MetaDbPatient();
+        patient.addPatientAlias(new PatientAlias(cmoPatientId, "cmoId"));
+        // this should create a duplicate patient node that will throw the exception
+        // below when queried
+        patientRepository.save(patient);
+
+        Assertions.assertThatExceptionOfType(IncorrectResultSizeDataAccessException.class)
+            .isThrownBy(() -> {
+                patientRepository.findPatientByCmoPatientId(cmoPatientId);
+            });
     }
 
 }

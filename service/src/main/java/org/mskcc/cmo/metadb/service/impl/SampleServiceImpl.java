@@ -11,8 +11,8 @@ import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
-import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
 import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
+import org.mskcc.cmo.metadb.service.PatientService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class SampleServiceImpl implements SampleService {
     private MetaDbSampleRepository sampleRepository;
 
     @Autowired
-    private MetaDbPatientRepository patientRepository;
+    private PatientService patientService;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -34,20 +34,18 @@ public class SampleServiceImpl implements SampleService {
     public MetaDbSample saveSampleMetadata(MetaDbSample
             metaDbSample) throws Exception {
         MetaDbSample updatedMetaDbSample = setUpMetaDbSample(metaDbSample);
-        MetaDbSample foundSample =
+
+        MetaDbSample existingMetaDbSample =
                 sampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
-        if (foundSample == null) {
-            MetaDbPatient patient = patientRepository.findPatientByPatientAlias(
-                    updatedMetaDbSample.getPatient().getCmoPatientId().getPatientId());
-            if (patient != null) {
-                updatedMetaDbSample.setPatient(patient);
-            }
-            sampleRepository.save(updatedMetaDbSample);
+        if (existingMetaDbSample == null) {
+            UUID newSampleId = sampleRepository.save(updatedMetaDbSample).getMetaDbSampleId();
+            updatedMetaDbSample.setMetaDbSampleId(newSampleId);
+            return updatedMetaDbSample;
         } else {
-            foundSample.addSampleMetadata(updatedMetaDbSample.getSampleMetadataList().get(0));
-            sampleRepository.save(foundSample);
+            existingMetaDbSample.addSampleMetadata(updatedMetaDbSample.getLatestSampleMetadata());
+            sampleRepository.save(existingMetaDbSample);
+            return existingMetaDbSample;
         }
-        return updatedMetaDbSample;
     }
 
     @Override
@@ -58,9 +56,21 @@ public class SampleServiceImpl implements SampleService {
         metaDbSample.addSampleAlias(
                 new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
+        // TODO: CONSIDER MOVING THIS TO PATIENT SERVICE?
+        // fetch existing patient from database or persist new patient node
         MetaDbPatient patient = new MetaDbPatient();
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
-        metaDbSample.setPatient(patient);
+        MetaDbPatient existingPatient = patientService.findPatientByCmoPatientId(
+                sampleMetadata.getCmoPatientId());
+        if (existingPatient == null) {
+            UUID newPatientId = patientService.savePatientMetadata(patient);
+            patient.setMetaDbPatientId(newPatientId);
+            metaDbSample.setPatient(patient);
+            metaDbSample.setPatientUuid(newPatientId);
+        } else {
+            metaDbSample.setPatient(existingPatient);
+            metaDbSample.setPatientUuid(existingPatient.getMetaDbPatientId());
+        }
 
         return metaDbSample;
     }
@@ -81,7 +91,7 @@ public class SampleServiceImpl implements SampleService {
         MetaDbSample metaDbSample = sampleRepository.findMetaDbSampleById(metaDbSampleId);
         metaDbSample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metaDbSampleId));
         for (SampleMetadata s: metaDbSample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patientRepository.findPatientIdBySample(metaDbSampleId));
+            s.setMetaDbPatientId(patientService.findPatientIdBySample(metaDbSampleId));
             s.setMetaDbSampleId(metaDbSampleId);
         }
         return metaDbSample;
@@ -94,7 +104,7 @@ public class SampleServiceImpl implements SampleService {
         metadbSample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
         for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patientRepository.findPatientIdBySample(metadbSample.getMetaDbSampleId()));
+            s.setMetaDbPatientId(patientService.findPatientIdBySample(metadbSample.getMetaDbSampleId()));
             s.setMetaDbSampleId(metadbSample.getMetaDbSampleId());
         }
         return metadbSample;
@@ -106,8 +116,14 @@ public class SampleServiceImpl implements SampleService {
         MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
         metadbSample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
+
+        String cmoPatientId = metadbSample.getLatestSampleMetadata().getCmoPatientId();
+
+        MetaDbPatient pt = patientService.findPatientByCmoPatientId(cmoPatientId);
+        metadbSample.setPatient(pt);
+
         for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patientRepository.findPatientIdBySample(metadbSample.getMetaDbSampleId()));
+            s.setMetaDbPatientId(pt.getMetaDbPatientId());
             s.setMetaDbSampleId(metadbSample.getMetaDbSampleId());
         }
         return metadbSample;

@@ -3,6 +3,7 @@ package org.mskcc.cmo.metadb.service;
 import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.common.impl.MetadbJsonComparatorImpl;
 import org.mskcc.cmo.metadb.service.impl.MetadbRequestServiceImpl;
+import org.mskcc.cmo.metadb.service.impl.PatientServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.SampleServiceImpl;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,6 +31,10 @@ public class MetadbTestApp {
         return new SampleServiceImpl();
     }
 
+    @Bean
+    public PatientService patientService() {
+        return new PatientServiceImpl();
+    }
     @Bean
     public MetadbJsonComparator metadbJsonComparator() {
         return new MetadbJsonComparatorImpl();

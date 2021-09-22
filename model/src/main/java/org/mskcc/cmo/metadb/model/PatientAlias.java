@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
 import java.io.Serializable;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -52,5 +53,9 @@ public class PatientAlias implements Serializable {
     public void setPatientMetadata(MetaDbPatient metaDbPatient) {
         this.metaDbPatient = metaDbPatient;
     }
-
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }
