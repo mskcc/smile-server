@@ -26,7 +26,7 @@ public interface MetaDbRequestRepository extends Neo4jRepository<MetaDbRequest, 
     @Query("MATCH (r: Request)-[:HAS_SAMPLE]->(s:Sample)"
             + "<-[:HAS_SAMPLE]-(p:Patient)"
             + "<-[:IS_ALIAS]-(pa:PatientAlias {value: $patientAliasId}) RETURN r")
-    MetaDbRequest findMetaDbRequestByPatientAlias(@Param("patientAliasId") String patientAliasId);
+    MetaDbRequest findMetadbRequestByPatientAlias(@Param("patientAliasId") String patientAliasId);
 
     @Query("MATCH (r: Request {requestId: $reqId})"
             + "MATCH (r)-[:HAS_METADATA]->(rl)"
