@@ -29,7 +29,7 @@ public interface MetaDbRequestRepository extends Neo4jRepository<MetaDbRequest, 
     MetaDbRequest findMetadbRequestByPatientAlias(@Param("patientAliasId") String patientAliasId);
 
     @Query("MATCH (r: Request {requestId: $reqId})"
-            + "MATCH (r)-[:HAS_METADATA]->(rl)"
-            + "RETURN rl")
-    List<RequestMetadata> findRequestMetadataHistoryByRequestId(@Param("reqId") String reqId);
+            + "MATCH (r)-[:HAS_METADATA]->(rm: RequestMetadata)"
+            + "RETURN rm")
+    List<RequestMetadata> getRequestMetadataHistoryByRequestId(@Param("reqId") String reqId);
 }

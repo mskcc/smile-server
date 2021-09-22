@@ -23,7 +23,7 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
 
     @Query("MATCH (s: SampleAlias {value: $igoId}) RETURN s")
     SampleAlias findSampleAliasByIgoId(@Param("igoId") String igoId);
-    
+
     @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, namespace: 'igoId'}) "
         + "MATCH (s)<-[:IS_ALIAS]-(sm: Sample) "
         + "RETURN sm")
@@ -83,7 +83,7 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     )
     List<SampleMetadata> findSampleMetadataListByCmoPatientId(@Param("cmoPatientId") String cmoPatientId);
 
-    @Query("MATCH (sm:SampleMetadata {igoId: $igoId})"
+    @Query("MATCH (sm: SampleMetadata {igoId: $igoId})"
             + "RETURN sm")
     List<SampleMetadata> getSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
 }
