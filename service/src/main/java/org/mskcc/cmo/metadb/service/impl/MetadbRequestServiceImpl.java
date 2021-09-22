@@ -198,4 +198,9 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
         return updatedSamples;
     }
 
+    @Override
+    public List<RequestMetadata> findRequestMetadataHistoryByRequestId(String reqId) {
+        return requestRepository.findRequestMetadataHistoryByRequestId(reqId);
+    }
+
 }
