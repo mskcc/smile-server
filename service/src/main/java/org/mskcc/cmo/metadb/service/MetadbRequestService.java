@@ -5,7 +5,6 @@ import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
-import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -19,5 +18,5 @@ public interface MetadbRequestService {
     Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
             RequestMetadata requestMetadata) throws Exception;
     List<MetaDbSample> getRequestSamplesWithUpdates(MetaDbRequest request) throws Exception;
-    List<RequestMetadata> findRequestMetadataHistoryByRequestId(String reqId);
+    List<RequestMetadata> getRequestMetadataHistoryByRequestId(String reqId);
 }
