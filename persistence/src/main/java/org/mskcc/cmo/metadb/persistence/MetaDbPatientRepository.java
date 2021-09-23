@@ -5,11 +5,13 @@ import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author ochoaa
  */
+@Repository
 public interface MetaDbPatientRepository extends Neo4jRepository<MetaDbPatient, Long> {
     @Query("MATCH (pm: Patient)<-[:IS_ALIAS]-(pa:PatientAlias "
             + "{value: $patientId}) RETURN pm")

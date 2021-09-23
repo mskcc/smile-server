@@ -38,6 +38,9 @@ public class MetadbServiceTest {
     @Autowired
     private SampleService sampleService;
 
+    @Autowired
+    private PatientService patientService;
+
     @Container
     private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
@@ -68,7 +71,8 @@ public class MetadbServiceTest {
     @Autowired
     public MetadbServiceTest(MetaDbRequestRepository requestRepository,
             MetaDbSampleRepository sampleRepository, MetaDbPatientRepository patientRepository,
-            MetadbRequestService requestService, SampleService sampleService) {
+            MetadbRequestService requestService, SampleService sampleService,
+            PatientService patientService) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
@@ -85,8 +89,8 @@ public class MetadbServiceTest {
         MetaDbRequest request = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
         requestService.saveRequest(request);
     }
-    
-    
+
+
     /**
      * Tests if the graphDb is set up accurately
      * @throws Exception
@@ -97,7 +101,7 @@ public class MetadbServiceTest {
         MetaDbRequest savedRequest = requestService.getMetadbRequestById(requestId);
         Assertions.assertThat(savedRequest.getMetaDbSampleList().size() == 4);
     }
-    
+
     /**
      * Tests whether findMatchedNormalSample retrieves an accurate list MetaDbSample
      * @throws Exception
@@ -110,7 +114,7 @@ public class MetadbServiceTest {
         List<MetaDbSample> matchedNormalList = sampleService.findMatchedNormalSample(metaDbSample);
         Assertions.assertThat(matchedNormalList.size() == 1);
     }
-    
+
     /**
      * Tests whether findPooledNormalSample retrieves an accurate list pooled normals
      * @throws Exception
@@ -210,12 +214,12 @@ public class MetadbServiceTest {
         List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory).isSorted();
     }
-    
+
     @Test
     public void testFindPatientByPatientAlias() {
         Assertions.assertThat(patientRepository.findPatientByPatientAlias("C-MP789JR")).isNotNull();
     }
-    
+
     @Test
     public void testFindPatientByPatientAliasWithExpectedFailure() {
         MetaDbPatient patient = new MetaDbPatient();
@@ -223,7 +227,7 @@ public class MetadbServiceTest {
         patientAlias.setPatientId("C-MP789JR");
         patient.addPatientAlias(patientAlias);
         patientRepository.save(patient);
-        
+
         Assertions.assertThatExceptionOfType(IncorrectResultSizeDataAccessException.class)
         .isThrownBy( () -> {
             patientRepository.findPatientByPatientAlias("C-MP789JR");

@@ -1,0 +1,36 @@
+package org.mskcc.cmo.metadb.service.impl;
+
+import java.util.UUID;
+import org.mskcc.cmo.metadb.model.MetaDbPatient;
+import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
+import org.mskcc.cmo.metadb.service.PatientService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PatientServiceImpl implements PatientService {
+
+    @Autowired
+    private MetaDbPatientRepository patientRepository;
+
+    @Override
+    public MetaDbPatient savePatientMetadata(MetaDbPatient metaDbPatient) {
+        MetaDbPatient existingMetaDbPatient = findPatientByPatientAlias(metaDbPatient.getCmoPatientId().getPatientId());
+        if (existingMetaDbPatient != null) {
+            return existingMetaDbPatient;
+        }
+        patientRepository.save(metaDbPatient);
+        return metaDbPatient;
+    }
+
+    @Override
+    public MetaDbPatient findPatientByPatientAlias(String cmoPatientId) {
+        return patientRepository.findPatientByPatientAlias(cmoPatientId);
+    }
+
+    @Override
+    public UUID findPatientIdBySample(UUID metaDbSampleUuid) {
+        return patientRepository.findPatientIdBySample(metaDbSampleUuid);
+    }
+
+}
