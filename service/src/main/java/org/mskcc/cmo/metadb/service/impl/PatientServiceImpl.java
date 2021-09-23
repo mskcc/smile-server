@@ -14,13 +14,8 @@ public class PatientServiceImpl implements PatientService {
     private MetaDbPatientRepository patientRepository;
 
     @Override
-    public MetaDbPatient savePatientMetadata(MetaDbPatient metaDbPatient) {
-        MetaDbPatient existingMetaDbPatient = findPatientByPatientAlias(metaDbPatient.getCmoPatientId().getPatientId());
-        if (existingMetaDbPatient != null) {
-            return existingMetaDbPatient;
-        }
-        patientRepository.save(metaDbPatient);
-        return metaDbPatient;
+    public MetaDbPatient savePatientMetadata(MetaDbPatient metaDbPatient) {  
+        return patientRepository.save(metaDbPatient); 
     }
 
     @Override

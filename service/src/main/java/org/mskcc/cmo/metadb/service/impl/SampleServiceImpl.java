@@ -34,17 +34,25 @@ public class SampleServiceImpl implements SampleService {
     public MetaDbSample saveSampleMetadata(MetaDbSample
             metaDbSample) throws Exception {
         MetaDbSample updatedMetaDbSample = setUpMetaDbSample(metaDbSample);
-        MetaDbSample foundSample =
-                sampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
-        if (foundSample == null) {
-            updatedMetaDbSample.setPatient(patientService
-                    .savePatientMetadata(updatedMetaDbSample.getPatient()));
-            sampleRepository.save(updatedMetaDbSample);
-        } else {
-            foundSample.addSampleMetadata(updatedMetaDbSample.getSampleMetadataList().get(0));
-            sampleRepository.save(foundSample);
+        
+        MetaDbPatient existingMetaDbPatient = patientService.findPatientByPatientAlias(
+                updatedMetaDbSample.getPatient().getCmoPatientId().getPatientId());
+        if (existingMetaDbPatient == null) {
+            //existingMetaDbPatient = patientService.savePatientMetadata(updatedMetaDbSample.getPatient());
+            existingMetaDbPatient = updatedMetaDbSample.getPatient();
         }
-        return updatedMetaDbSample;
+        System.out.println("\n\n\n\n\n" + existingMetaDbPatient.toString());
+        updatedMetaDbSample.setPatient(existingMetaDbPatient);
+
+        MetaDbSample existingMetaDbSample =
+                sampleRepository.findMetaDbSampleByIgoId(updatedMetaDbSample.getSampleIgoId());
+        if (existingMetaDbSample == null) {
+            return sampleRepository.save(updatedMetaDbSample);
+        } else {
+            existingMetaDbSample.addSampleMetadata(updatedMetaDbSample.getSampleMetadataList().get(0));
+            sampleRepository.save(existingMetaDbSample);
+            return existingMetaDbSample;
+        }
     }
 
     @Override

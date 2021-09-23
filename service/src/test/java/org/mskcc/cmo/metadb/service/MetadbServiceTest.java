@@ -86,8 +86,13 @@ public class MetadbServiceTest {
     public void persistMockRequestDataToTestDb() throws Exception {
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        MetaDbRequest request = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
-        requestService.saveRequest(request);
+        MetaDbRequest request1 = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
+        requestService.saveRequest(request1);
+        
+        MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest5JsonPtMultiSamples");
+        MetaDbRequest request5 = mockDataUtils.extractRequestFromJsonData(request5Data.getJsonString());
+        requestService.saveRequest(request5);
     }
 
 
@@ -217,7 +222,11 @@ public class MetadbServiceTest {
 
     @Test
     public void testFindPatientByPatientAlias() {
-        Assertions.assertThat(patientRepository.findPatientByPatientAlias("C-MP789JR")).isNotNull();
+        List<MetaDbPatient> patientList = patientRepository.findPatientByPatientAliasList("C-1MP6YY");
+        for (MetaDbPatient p: patientList) {
+            System.out.println("\n\n\n\n\n\n\n\n" + p.toString());
+        }
+        Assertions.assertThat(patientRepository.findPatientByPatientAlias("C-1MP6YY")).isNotNull();
     }
 
     @Test

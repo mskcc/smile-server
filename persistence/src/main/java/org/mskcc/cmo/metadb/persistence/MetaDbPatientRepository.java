@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.persistence;
 
+import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.springframework.data.neo4j.annotation.Query;
@@ -18,6 +19,12 @@ public interface MetaDbPatientRepository extends Neo4jRepository<MetaDbPatient, 
     MetaDbPatient findPatientByPatientAlias(
             @Param("patientId") String patientId);
 
+    
+    @Query("MATCH (pm: Patient)<-[:IS_ALIAS]-(pa:PatientAlias "
+            + "{value: $patientId}) RETURN pm")
+    List<MetaDbPatient> findPatientByPatientAliasList(
+            @Param("patientId") String patientId);
+    
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)<-[:HAS_SAMPLE]-(p: Patient)"
             + "RETURN p;")
