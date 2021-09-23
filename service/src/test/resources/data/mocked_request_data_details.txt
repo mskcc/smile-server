@@ -5,6 +5,7 @@ mockIncomingRequest2bJsonDataMissing1N	incoming_requests/mocked_request2b_missin
 mockIncomingRequest2cJsonDataSharedPatient	incoming_requests/mocked_request2c_shared_patient.json	Mock incoming request json with a shared patient node
 mockIncomingRequest3JsonDataPooledNormals	incoming_requests/mocked_request3_pooled_normals.json	Mock incoming request json with pooled normals
 mockIncomingRequest4JsonNullOrEmptyValues	incoming_requests/mocked_request4_null_or_empty_values.json	Mock incoming request json with null or empty values.
+mockIncomingRequest5JsonPtMultiSamples	incoming_requests/mocked_request5_pt_multi_samples.json	Mock incoming request json with 6 samples having the same patient.
 mockPublishedRequest1JsonDataWith2T2N	published_requests/outgoing_mocked_request1_complete_tumor_normal.json	Mock published request json with 2 tumor samples and 2 matching normals, and metadb ids.
 mockPublishedRequest2aJsonData1N	published_requests/outgoing_mocked_request2a_one_normal.json	Mock published request with a single normal sample, and metadb ids.
 mockPublishedRequest2bJsonDataMissing1N	published_requests/outgoing_mocked_request2b_missing_one_normal.json	Mock published request missing a single normal sample, and metadb ids.
