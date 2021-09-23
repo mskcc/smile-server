@@ -1,5 +1,5 @@
 {
-  "requestId": "22022_CC",
+  "requestId": "22022_CD",
   "recipe": "GENESET101",
   "projectManagerName": "",
   "piEmail": "",
@@ -23,11 +23,11 @@
   "projectId": "22022",
   "samples": [
     {
-      "igoId": "22022_CC_3",
-      "cmoSampleName": "C-TX6DNG-N001-d",
-      "sampleName": "LMNO_4396_N",
+      "igoId": "22022_CC_3c",
+      "cmoSampleName": "C-TX6DNG-N001-dc",
+      "sampleName": "LMNO_4396_Nc",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-TX6DNG",
+      "cmoPatientId": "C-MP789JR",
       "investigatorSampleId": "LMNO_4396_N",
       "tumorOrNormal": "Normal",
       "tissueLocation": "Blood",

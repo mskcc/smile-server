@@ -41,8 +41,9 @@ public class SampleServiceImpl implements SampleService {
                     updatedMetaDbSample.getPatient().getCmoPatientId().getPatientId());
             if (patient != null) {
                 updatedMetaDbSample.setPatient(patient);
+            } else {
+                patientRepository.save(updatedMetaDbSample.getPatient());
             }
-            patientRepository.save(updatedMetaDbSample.getPatient());
             sampleRepository.save(updatedMetaDbSample);
         } else {
             foundSample.addSampleMetadata(updatedMetaDbSample.getSampleMetadataList().get(0));

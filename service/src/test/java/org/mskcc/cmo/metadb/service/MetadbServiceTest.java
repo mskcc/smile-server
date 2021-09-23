@@ -1,11 +1,7 @@
 package org.mskcc.cmo.metadb.service;
 
-
-import static org.junit.Assert.assertThrows;
-
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
@@ -20,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -227,12 +224,10 @@ public class MetadbServiceTest {
         patient.addPatientAlias(patientAlias);
         patientRepository.save(patient);
         
-        try {
-            MetaDbPatient retrievedPatient = patientRepository.findPatientByPatientAlias("C-MP789JR");
-            Assert.fail();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Assertions.assertThatExceptionOfType(IncorrectResultSizeDataAccessException.class)
+        .isThrownBy( () -> {
+            patientRepository.findPatientByPatientAlias("C-MP789JR");
+        });
     }
 
 }
