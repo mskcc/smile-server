@@ -14,13 +14,13 @@ public class PatientServiceImpl implements PatientService {
     private MetaDbPatientRepository patientRepository;
 
     @Override
-    public MetaDbPatient savePatientMetadata(MetaDbPatient metaDbPatient) {  
-        return patientRepository.save(metaDbPatient); 
+    public MetaDbPatient savePatientMetadata(MetaDbPatient metaDbPatient) {
+        return patientRepository.save(metaDbPatient);
     }
 
     @Override
-    public MetaDbPatient findPatientByPatientAlias(String cmoPatientId) {
-        return patientRepository.findPatientByPatientAlias(cmoPatientId);
+    public MetaDbPatient findPatientByCmoPatientId(String cmoPatientId) {
+        return patientRepository.findPatientByCmoPatientId(cmoPatientId);
     }
 
     @Override

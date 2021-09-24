@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
-import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
 import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
@@ -88,7 +87,12 @@ public class MetadbServiceTest {
                 .get("mockIncomingRequest1JsonDataWith2T2N");
         MetaDbRequest request1 = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
         requestService.saveRequest(request1);
-        
+
+        MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest3JsonDataPooledNormals");
+        MetaDbRequest request3 = mockDataUtils.extractRequestFromJsonData(request3Data.getJsonString());
+        requestService.saveRequest(request3);
+
         MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest5JsonPtMultiSamples");
         MetaDbRequest request5 = mockDataUtils.extractRequestFromJsonData(request5Data.getJsonString());
@@ -141,7 +145,7 @@ public class MetadbServiceTest {
      */
     @Test
     public void testGetSampleMetadataListByCmoPatientId() throws Exception {
-        String cmoPatientId = "22022_BZ";
+        String cmoPatientId = "C-PXXXD9";
         List<SampleMetadata> savedSampleMetadataList = sampleService
                 .getSampleMetadataListByCmoPatientId(cmoPatientId);
         Assertions.assertThat(savedSampleMetadataList.size() == 1);
@@ -222,25 +226,19 @@ public class MetadbServiceTest {
 
     @Test
     public void testFindPatientByPatientAlias() {
-        List<MetaDbPatient> patientList = patientRepository.findPatientByPatientAliasList("C-1MP6YY");
-        for (MetaDbPatient p: patientList) {
-            System.out.println("\n\n\n\n\n\n\n\n" + p.toString());
-        }
-        Assertions.assertThat(patientRepository.findPatientByPatientAlias("C-1MP6YY")).isNotNull();
+        Assertions.assertThat(patientRepository.findPatientByCmoPatientId("C-1MP6YY")).isNotNull();
     }
 
     @Test
     public void testFindPatientByPatientAliasWithExpectedFailure() {
         MetaDbPatient patient = new MetaDbPatient();
-        PatientAlias patientAlias = new PatientAlias();
-        patientAlias.setPatientId("C-MP789JR");
-        patient.addPatientAlias(patientAlias);
+        patient.setCmoPatient("C-PXXXD9");
         patientRepository.save(patient);
 
         Assertions.assertThatExceptionOfType(IncorrectResultSizeDataAccessException.class)
-        .isThrownBy( () -> {
-            patientRepository.findPatientByPatientAlias("C-MP789JR");
-        });
+            .isThrownBy(() -> {
+                patientRepository.findPatientByCmoPatientId("C-PXXXD9");
+            });
     }
 
 }

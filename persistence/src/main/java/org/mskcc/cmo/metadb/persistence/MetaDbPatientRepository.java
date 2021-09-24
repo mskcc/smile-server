@@ -19,12 +19,10 @@ public interface MetaDbPatientRepository extends Neo4jRepository<MetaDbPatient, 
     MetaDbPatient findPatientByPatientAlias(
             @Param("patientId") String patientId);
 
-    
-    @Query("MATCH (pm: Patient)<-[:IS_ALIAS]-(pa:PatientAlias "
-            + "{value: $patientId}) RETURN pm")
-    List<MetaDbPatient> findPatientByPatientAliasList(
-            @Param("patientId") String patientId);
-    
+    @Query("MATCH (pm: Patient{cmoPatientId: $cmoPatientId}) RETURN pm")
+    MetaDbPatient findPatientByCmoPatientId(
+            @Param("cmoPatientId") String cmoPatientId);
+
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)<-[:HAS_SAMPLE]-(p: Patient)"
             + "RETURN p;")

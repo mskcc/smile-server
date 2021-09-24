@@ -5,6 +5,6 @@ import org.mskcc.cmo.metadb.model.MetaDbPatient;
 
 public interface PatientService {
     MetaDbPatient savePatientMetadata(MetaDbPatient metaDbPatient);
-    MetaDbPatient findPatientByPatientAlias(String cmoPatientId);
+    MetaDbPatient findPatientByCmoPatientId(String cmoPatientId);
     UUID findPatientIdBySample(UUID metaDbSampleUuid);
 }

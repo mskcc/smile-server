@@ -34,14 +34,12 @@ public class SampleServiceImpl implements SampleService {
     public MetaDbSample saveSampleMetadata(MetaDbSample
             metaDbSample) throws Exception {
         MetaDbSample updatedMetaDbSample = setUpMetaDbSample(metaDbSample);
-        
-        MetaDbPatient existingMetaDbPatient = patientService.findPatientByPatientAlias(
-                updatedMetaDbSample.getPatient().getCmoPatientId().getPatientId());
+
+        MetaDbPatient existingMetaDbPatient = patientService.findPatientByCmoPatientId(
+                updatedMetaDbSample.getPatient().getCmoPatientId());
         if (existingMetaDbPatient == null) {
-            //existingMetaDbPatient = patientService.savePatientMetadata(updatedMetaDbSample.getPatient());
             existingMetaDbPatient = updatedMetaDbSample.getPatient();
         }
-        System.out.println("\n\n\n\n\n" + existingMetaDbPatient.toString());
         updatedMetaDbSample.setPatient(existingMetaDbPatient);
 
         MetaDbSample existingMetaDbSample =
@@ -64,6 +62,7 @@ public class SampleServiceImpl implements SampleService {
                 new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
         MetaDbPatient patient = new MetaDbPatient();
+        patient.setCmoPatient(sampleMetadata.getCmoPatientId());
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
         metaDbSample.setPatient(patient);
 
