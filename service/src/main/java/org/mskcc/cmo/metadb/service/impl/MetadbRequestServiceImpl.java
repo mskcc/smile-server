@@ -81,6 +81,32 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
         return Boolean.FALSE;
     }
 
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public Boolean saveRequestMetadata(MetaDbRequest request) {
+        // input is already an existing metadb request so there's no need
+        // to check for an existing request again - maybe something we can do
+        // is compare the size of the current request metadata history and
+        // compare the size after the update?
+        List<RequestMetadata> currentMetadataList = requestRepository
+                .getRequestMetadataHistory(request.getRequestId());
+        requestRepository.save(request);
+        List<RequestMetadata> updatedMetadataList = requestRepository
+                .getRequestMetadataHistory(request.getRequestId());
+        if (updatedMetadataList.size() != (currentMetadataList.size() + 1)) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("Failed to update the Request-level metadata for request id: ")
+                    .append(request.getRequestId())
+                    .append("\n\tTotal versions of request metadata -->\n\t\t - before save: ")
+                    .append(currentMetadataList.size())
+                    .append("\n\t\t - after save: ")
+                    .append(updatedMetadataList.size());
+            LOG.error(builder.toString());
+            return Boolean.FALSE;
+        }
+        return Boolean.TRUE;
+    }
+
     /**
      * Logs duplicate requests.
      * @param request
@@ -202,7 +228,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
 
     @Override
     public List<RequestMetadata> getRequestMetadataHistoryByRequestId(String reqId) {
-        return requestRepository.getRequestMetadataHistoryByRequestId(reqId);
+        return requestRepository.getRequestMetadataHistory(reqId);
     }
 
 }

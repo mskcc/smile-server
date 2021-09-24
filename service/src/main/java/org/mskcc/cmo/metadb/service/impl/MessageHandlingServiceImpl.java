@@ -108,21 +108,6 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                                             requestService.getPublishedMetadbRequestById(
                                                     request.getRequestId())));
                         } else if (requestService.requestHasUpdates(existingRequest, request)) {
-                            // PROPOSED FLOW:
-                            // 1. Persist the request json received in database
-                            //   - requestService.updateRequestJsonForRequest(request.getRequestJson())
-                            // 2. Pass request to RequestUpdateMessageHandler
-                            //   - message handler will persist updates to request metadata to database
-                            //     and will handle the request metadata versioning
-                            //   - message handler will also publish request metadata history to
-                            //     CMO_REQUEST_METADATA_UPDATE topic
-                            // 3. Pass SampleMetadata to SampleUpdateMessageHandler
-                            //   - message handler will identify which samples in the request
-                            //     contain updates that haven't been persisted to the db yet
-                            //     and will handle the sample metadata versioning
-                            //   - message handler will also publish sample metadata history
-                            //     for each sample to CMO_SAMPLE_METADATA_UPDATE topic
-
                             // make call to update the requestJson member of existingRequest in the
                             // database to reflect the latest version of the raw json string that we got
                             // directly from IGO LIMS
@@ -171,16 +156,19 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         if (requestService.requestHasMetadataUpdates(
                                 existingRequest.getLatestRequestMetadata(), requestMetadata)) {
                             // persist request-level metadata updates to database
-                            // existingRequest.updateRequestMetadata(request);
-                            // requestService.updateRequestMetadata(existingRequest);
-
-                            //LOG.info("Publishing Request-level Metadata updates "
-                            //        + "to CMO_REQUEST_METADATA_UPDATE");
-                            // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC ..
-                            //messagingGateway.publish(existingRequest.getRequestId(),
-                            //        CMO_REQUEST_UPDATE_TOPIC,
-                            //        mapper.writeValueAsString(
-                            //              existingRequest.getRequestMetadataList()));
+                            existingRequest.updateRequestMetadata(requestMetadata);
+                            if (requestService.saveRequestMetadata(existingRequest)) {
+                                LOG.info("Publishing Request-level Metadata updates "
+                                        + "to CMO_REQUEST_METADATA_UPDATE");
+                                // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC
+                                messagingGateway.publish(existingRequest.getRequestId(),
+                                        CMO_REQUEST_UPDATE_TOPIC,
+                                        mapper.writeValueAsString(
+                                              existingRequest.getRequestMetadataList()));
+                            } else {
+                                LOG.error("Failed to update the request metadata for request: "
+                                        + existingRequest.getRequestId());
+                            }
                         } else {
                             LOG.warn("There are no request-level metadata updates to persist: "
                                     + requestMetadata.getRequestId());
