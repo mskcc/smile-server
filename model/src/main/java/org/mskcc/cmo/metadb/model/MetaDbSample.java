@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -43,7 +44,7 @@ public class MetaDbSample implements Serializable {
         this.sampleAliases = sampleAliases;
     }
 
-    public List<SampleAlias> getSampleAliases(List<SampleAlias> sampleAliases) {
+    public List<SampleAlias> getSampleAliases() {
         return sampleAliases;
     }
 
@@ -137,4 +138,10 @@ public class MetaDbSample implements Serializable {
     public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
         addSampleMetadata(sampleMetadata);
     }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
+
 }

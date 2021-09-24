@@ -68,6 +68,8 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
             if (request.getMetaDbSampleList() != null) {
                 List<MetaDbSample> updatedSamples = new ArrayList<>();
                 for (MetaDbSample s: request.getMetaDbSampleList()) {
+                    // considering adding the patientService.savePatient() stuff here
+                    // and remove from the sample service.
                     updatedSamples.add(sampleService.saveSampleMetadata(s));
                 }
                 request.setMetaDbSampleList(updatedSamples);
