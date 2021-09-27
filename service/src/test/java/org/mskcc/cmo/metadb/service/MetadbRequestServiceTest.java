@@ -1,7 +1,6 @@
 package org.mskcc.cmo.metadb.service;
 
 import java.util.List;
-import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
@@ -17,8 +16,6 @@ import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Testcontainers
 @DataNeo4jTest
@@ -96,6 +93,11 @@ public class MetadbRequestServiceTest {
     }
 
 
+    /**
+     * Tests getMetadbRequestById
+     * By checking if it retrieves not null or empty MetaDbRequest
+     * @throws Exception
+     */
     @Test
     public void getMetadbRequestByIdTest() throws Exception {
         String requestId = "MOCKREQUEST1_B";
@@ -103,6 +105,11 @@ public class MetadbRequestServiceTest {
         Assertions.assertThat(existingRequest).isNotNull();
     }
 
+    /**
+     * Tests getMetadbRequestById
+     * By checking if it returns null when requestId is invalid
+     * @throws Exception
+     */
     @Test
     public void getNullMetadbRequestByIdTest() throws Exception {
         String requestId = "";
@@ -110,6 +117,11 @@ public class MetadbRequestServiceTest {
         Assertions.assertThat(existingRequest).isNull();
     }
 
+    /**
+     * Tests requestHasUpdates
+     * By checking if it returns false with the exact same requestJsons
+     * @throws Exception
+     */
     @Test
     public void requestWithNoUpdatesTest() throws Exception {
         String requestId = "MOCKREQUEST1_B";
@@ -119,6 +131,11 @@ public class MetadbRequestServiceTest {
         Assertions.assertThat(isUpdated).isEqualTo(false);
     }
 
+    /**
+     * Tests requestHasUpdates
+     * Using updated requestJsons, should return true
+     * @throws Exception
+     */
     @Test
     public void requestHasMetadataUpdatesTest() throws Exception {
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
@@ -126,26 +143,38 @@ public class MetadbRequestServiceTest {
         String requestId = "MOCKREQUEST1_B";
         MetaDbRequest origRequest = requestService.getMetadbRequestById(requestId);
         // this updated request as a different investigator email than its original
-        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(updatedRequestData.getJsonString());
+        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+                updatedRequestData.getJsonString());
 
         Boolean hasUpdates = requestService.requestHasUpdates(
                 origRequest, updatedRequest);
         Assertions.assertThat(hasUpdates).isEqualTo(true);
     }
 
+    /**
+     * Tests getMetadbRequestById
+     * By checking the number of returned list of sampleMetadata
+     * @throws Exception
+     */
     @Test
     public void getRequestSamplesWithUpdatesTest() throws Exception {
         String requestId = "33344_Z";
         MetaDbRequest existingRequest = requestService.getMetadbRequestById(requestId);
 
-        Assertions.assertThat(existingRequest.getMetaDbSampleList().size() == 4);
+        Assertions.assertThat(requestService.getRequestSamplesWithUpdates(
+                existingRequest).size() == 4);
     }
 
+    /**
+     * Tests getRequestMetadataHistoryByRequestId
+     * By checking the size of returned list of RequestMetadata
+     * @throws Exception
+     */
     @Test
     public void getRequestMetadataHistoryByRequestIdTest() throws Exception {
         String requestId = "145145_IM";
-        List<RequestMetadata> existingRequestHistoryList = requestService.
-                getRequestMetadataHistoryByRequestId(requestId);
+        List<RequestMetadata> existingRequestHistoryList = requestService
+                .getRequestMetadataHistoryByRequestId(requestId);
 
         Assertions.assertThat(existingRequestHistoryList.size() == 1);
     }
