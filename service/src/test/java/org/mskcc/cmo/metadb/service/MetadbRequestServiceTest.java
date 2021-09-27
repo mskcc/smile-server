@@ -121,23 +121,16 @@ public class MetadbRequestServiceTest {
 
     @Test
     public void requestHasMetadataUpdatesTest() throws Exception {
+        MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         String requestId = "MOCKREQUEST1_B";
-        List<RequestMetadata> existingRequestHistoryList = requestService.
-                getRequestMetadataHistoryByRequestId(requestId);
-        RequestMetadata updatedRequestMetadata = existingRequestHistoryList.get(0);
+        MetaDbRequest origRequest = requestService.getMetadbRequestById(requestId);
+        // this updated request as a different investigator email than its original
+        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(updatedRequestData.getJsonString());
 
-        String updatedRequestJson = updatedRequestMetadata.getRequestMetadataJson();
-        final ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> requestMetadataMap = mapper.readValue(updatedRequestJson, Map.class);
-        requestMetadataMap.put("dataAnalystName", "new data analyst name");
-        updatedRequestMetadata.setRequestMetadataJson(mapper.writeValueAsString(requestMetadataMap));
-
-        System.out.println("\n\n\n\n\n" + updatedRequestMetadata.getRequestMetadataJson());
-
-        Boolean hasMetadataUpdates = requestService.requestHasMetadataUpdates(
-                existingRequestHistoryList.get(0),
-                updatedRequestMetadata);
-        Assertions.assertThat(hasMetadataUpdates).isEqualTo(true);
+        Boolean hasUpdates = requestService.requestHasUpdates(
+                origRequest, updatedRequest);
+        Assertions.assertThat(hasUpdates).isEqualTo(true);
     }
 
     @Test
@@ -154,7 +147,7 @@ public class MetadbRequestServiceTest {
         List<RequestMetadata> existingRequestHistoryList = requestService.
                 getRequestMetadataHistoryByRequestId(requestId);
 
-        Assertions.assertThat(existingRequestHistoryList.size() == 1);    
+        Assertions.assertThat(existingRequestHistoryList.size() == 1);
     }
 
-} 
+}

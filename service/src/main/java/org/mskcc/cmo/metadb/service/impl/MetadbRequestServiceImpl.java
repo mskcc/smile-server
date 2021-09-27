@@ -151,13 +151,13 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
 
     private RequestMetadata extractRequestMetadata(String requestMetadataJson)
             throws JsonMappingException, JsonProcessingException {
-        Map<String, String> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
+        Map<String, Object> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
         // remove samples if present for request metadata
         if (requestMetadataMap.containsKey("samples")) {
             requestMetadataMap.remove("samples");
         }
         RequestMetadata requestMetadata = new RequestMetadata(
-                requestMetadataMap.get("requestId"),
+                requestMetadataMap.get("requestId").toString(),
                 mapper.writeValueAsString(requestMetadataMap),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return requestMetadata;
@@ -165,8 +165,14 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
 
     @Override
     public Boolean requestHasUpdates(MetaDbRequest existingRequest, MetaDbRequest request) throws Exception {
-        return !metadbJsonComparator.isConsistent(existingRequest.getRequestJson(),
+        try {
+            metadbJsonComparator.isConsistent(existingRequest.getRequestJson(),
                 request.getRequestJson());
+        } catch (AssertionError e) {
+            LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     @Override
