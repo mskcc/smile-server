@@ -12,6 +12,7 @@ import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
  */
 public interface MetadbRequestService {
     Boolean saveRequest(MetaDbRequest request) throws Exception;
+    Boolean saveRequestMetadata(MetaDbRequest request);
     MetaDbRequest getMetadbRequestById(String requestId) throws Exception;
     PublishedMetaDbRequest getPublishedMetadbRequestById(String requestId) throws Exception;
     Boolean requestHasUpdates(MetaDbRequest existingRequest, MetaDbRequest request) throws Exception;

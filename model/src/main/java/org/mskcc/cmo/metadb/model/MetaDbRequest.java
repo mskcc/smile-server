@@ -3,10 +3,13 @@ package org.mskcc.cmo.metadb.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -368,6 +371,36 @@ public class MetaDbRequest implements Serializable {
         this.isCmoRequest = updatedRequest.getIsCmoRequest();
         this.requestJson = updatedRequest.getRequestJson();
         addRequestMetadata(updatedRequest.getLatestRequestMetadata());
+    }
+
+    /**
+     * Updates the metadata for the current request provided a RequestMetadata object.
+     * @param requestMetadata
+     * @throws com.fasterxml.jackson.core.JsonProcessingException
+     */
+    public void updateRequestMetadata(RequestMetadata requestMetadata)
+            throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> metadataMap =
+                mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
+
+        this.requestId = metadataMap.get("requestId");
+        this.recipe = metadataMap.get("recipe");
+        this.projectManagerName = metadataMap.get("projectManagerName");
+        this.piEmail = metadataMap.get("piEmail");
+        this.labHeadName = metadataMap.get("labHeadName");
+        this.labHeadEmail = metadataMap.get("labHeadEmail");
+        this.investigatorName = metadataMap.get("investigatorName");
+        this.investigatorEmail = metadataMap.get("investigatorEmail");
+        this.dataAnalystName = metadataMap.get("dataAnalystName");
+        this.otherContactEmails = metadataMap.get("otherContactEmails");
+        this.dataAccessEmails = metadataMap.get("dataAccessEmails");
+        this.qcAccessEmails = metadataMap.get("qcAccessEmails");
+        this.strand = metadataMap.get("strand");
+        this.libraryType = metadataMap.get("libraryType");
+        this.bicAnalysis = Boolean.getBoolean(metadataMap.get("bicAnalysis"));
+        this.isCmoRequest = Boolean.getBoolean(metadataMap.get("isCmoRequest"));
+        addRequestMetadata(requestMetadata);
     }
 
     /**
