@@ -94,19 +94,22 @@ public class SampleServiceImpl implements SampleService {
             s.setMetaDbPatientId(patientService.findPatientIdBySample(metaDbSampleId));
             s.setMetaDbSampleId(metaDbSampleId);
         }
+        metaDbSample.setSampleAliases(sampleRepository.findAllSampleAlias(metaDbSampleId));
         return metaDbSample;
     }
 
     @Override
     public MetaDbSample getMetaDbSampleByRequestAndAlias(String requestId, SampleAlias igoId)
             throws Exception {
-        MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        MetaDbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId,
+                igoId.getSampleId());
         metadbSample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
         for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
             s.setMetaDbPatientId(patientService.findPatientIdBySample(metadbSample.getMetaDbSampleId()));
             s.setMetaDbSampleId(metadbSample.getMetaDbSampleId());
         }
+        metadbSample.setSampleAliases(sampleRepository.findAllSampleAlias(metadbSample.getMetaDbSampleId()));
         return metadbSample;
     }
 

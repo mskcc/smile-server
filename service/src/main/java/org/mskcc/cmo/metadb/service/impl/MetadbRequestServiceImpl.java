@@ -180,15 +180,21 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
             RequestMetadata requestMetadata) throws Exception {
         String existingMetadata = mapper.writeValueAsString(existingRequestMetadata);
         String currentMetadata = mapper.writeValueAsString(requestMetadata);
-        return (!metadbJsonComparator.isConsistent(currentMetadata, existingMetadata));
+        try {
+            metadbJsonComparator.isConsistent(currentMetadata, existingMetadata);
+        } catch (AssertionError e) {
+            LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     @Override
     public List<MetaDbSample> getRequestSamplesWithUpdates(MetaDbRequest request) throws Exception {
         List<MetaDbSample> updatedSamples = new ArrayList<>();
         for (MetaDbSample sample: request.getMetaDbSampleList()) {
-            MetaDbSample existingSample = sampleService.getMetaDbSampleByRequestAndAlias(
-                    request.getRequestId(), sample.getSampleIgoId());
+            MetaDbSample existingSample = sampleService.getMetaDbSampleByRequestAndIgoId(
+                    request.getRequestId(), sample.getLatestSampleMetadata().getIgoId());
             // skip samples that do not already exist since they do not have a sample metadata
             // history to publish to the CMO_SAMPLE_METADATA_UPDATE topic
             if (existingSample == null) {
@@ -197,8 +203,11 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
             // compare sample metadata from current request and the saved request
             String latestMetadata = mapper.writeValueAsString(existingSample.getLatestSampleMetadata());
             String currentMetadata = mapper.writeValueAsString(sample.getLatestSampleMetadata());
-            if (!metadbJsonComparator.isConsistent(latestMetadata, currentMetadata)) {
-                // differences detected indicates we need to save these updates
+
+            try {
+                metadbJsonComparator.isConsistent(latestMetadata, currentMetadata);
+            } catch (AssertionError e) {
+                LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
                 existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
                 updatedSamples.add(existingSample);
             }

@@ -40,6 +40,11 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     SampleAlias findSampleInvestigatorId(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
+            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
+            + "RETURN s;")
+    List<SampleAlias> findAllSampleAlias(@Param("metaDbSampleId") UUID metaDbSampleId);
+
+    @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)-[:HAS_METADATA]->(s: SampleMetadata)"
             + "RETURN s;")
     List<SampleMetadata> findSampleMetadataListBySampleId(@Param("metaDbSampleId") UUID metaDbSampleId);
