@@ -173,7 +173,7 @@ public class MetadbRequestServiceTest {
     @Test
     public void getRequestSamplesWithUpdatesTest() throws Exception {
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
-                .get("mockIncomingRequest1UpdatedSampleJsonDataWith2T2N");
+                .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
 
