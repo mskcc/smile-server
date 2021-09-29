@@ -3,6 +3,7 @@ package org.mskcc.cmo.metadb.persistence;
 import java.util.List;
 import org.mskcc.cmo.metadb.model.MetaDbProject;
 import org.mskcc.cmo.metadb.model.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -22,6 +23,11 @@ public interface MetaDbRequestRepository extends Neo4jRepository<MetaDbRequest, 
             + "MATCH (r)<-[:HAS_REQUEST]-(p: Project) "
             + "RETURN p")
     MetaDbProject findMetaDbProjectByRequest(@Param("reqId") String reqId);
+
+    @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSample.metaDbSampleId}) "
+            + "MATCH (s)<-[:HAS_SAMPLE]-(r: Request)"
+            + "RETURN r")
+    MetaDbRequest getRequestBySample(@Param("metaDbSample") MetaDbSample metaDbSample);
 
     @Query("MATCH (r: Request)-[:HAS_SAMPLE]->(s:Sample)"
             + "<-[:HAS_SAMPLE]-(p:Patient)"

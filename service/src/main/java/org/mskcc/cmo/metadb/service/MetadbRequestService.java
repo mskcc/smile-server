@@ -20,4 +20,5 @@ public interface MetadbRequestService {
             RequestMetadata requestMetadata) throws Exception;
     List<MetaDbSample> getRequestSamplesWithUpdates(MetaDbRequest request) throws Exception;
     List<RequestMetadata> getRequestMetadataHistoryByRequestId(String reqId);
+    MetaDbRequest getRequestBySample(MetaDbSample sample) throws Exception;
 }

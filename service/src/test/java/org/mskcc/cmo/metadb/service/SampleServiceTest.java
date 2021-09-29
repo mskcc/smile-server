@@ -32,7 +32,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @DataNeo4jTest
 @Import(MockDataUtils.class)
-public class MetadbServiceTest {
+public class SampleServiceTest {
     @Autowired
     private MockDataUtils mockDataUtils;
 
@@ -73,7 +73,7 @@ public class MetadbServiceTest {
      * @param sampleService
      */
     @Autowired
-    public MetadbServiceTest(MetaDbRequestRepository requestRepository,
+    public SampleServiceTest(MetaDbRequestRepository requestRepository,
             MetaDbSampleRepository sampleRepository, MetaDbPatientRepository patientRepository,
             MetadbRequestService requestService, SampleService sampleService,
             PatientService patientService) {
@@ -113,7 +113,7 @@ public class MetadbServiceTest {
     public void testRequestRepositoryAccess() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         MetaDbRequest savedRequest = requestService.getMetadbRequestById(requestId);
-        Assertions.assertThat(savedRequest.getMetaDbSampleList().size() == 4);
+        Assertions.assertThat(savedRequest.getMetaDbSampleList().size()).isEqualTo(4);
     }
 
     /**
@@ -126,7 +126,7 @@ public class MetadbServiceTest {
         String igoId = "MOCKREQUEST1_B_1";
         MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
         List<MetaDbSample> matchedNormalList = sampleService.findMatchedNormalSample(metaDbSample);
-        Assertions.assertThat(matchedNormalList.size() == 1);
+        Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
     }
 
     /**
@@ -139,7 +139,7 @@ public class MetadbServiceTest {
         String igoId = "MOCKREQUEST1_B_3";
         MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
         List<String> pooledNormalList = sampleService.findPooledNormalSample(metaDbSample);
-        Assertions.assertThat(pooledNormalList.size() == 10);
+        Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
 
     /**
@@ -153,7 +153,9 @@ public class MetadbServiceTest {
         String cmoPatientId = "C-PXXXD9";
         List<SampleMetadata> savedSampleMetadataList = sampleService
                 .getSampleMetadataListByCmoPatientId(cmoPatientId);
-        Assertions.assertThat(savedSampleMetadataList.size() == 1);
+        System.out.println("\n\n\n\n\n sample list size: " + savedSampleMetadataList.size());
+
+        Assertions.assertThat(savedSampleMetadataList.size()).isEqualTo(2);
     }
 
     /**
@@ -166,7 +168,7 @@ public class MetadbServiceTest {
     public void testGetAllMetadbSamplesByRequestId() throws Exception {
         String requestId = "33344_Z";
         List<MetaDbSample> savedMetaDbSampleList = sampleService.getAllMetadbSamplesByRequestId(requestId);
-        Assertions.assertThat(savedMetaDbSampleList.size() == 4);
+        Assertions.assertThat(savedMetaDbSampleList.size()).isEqualTo(4);
     }
 
     /**
@@ -179,7 +181,7 @@ public class MetadbServiceTest {
     public void testGetSampleMetadataHistoryByIgoId() throws Exception {
         String igoId = "MOCKREQUEST1_B_1";
         List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory.size() == 1);
+        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(1);
     }
 
     /**
@@ -189,13 +191,19 @@ public class MetadbServiceTest {
     @Test
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
-        String igoId = "MOCKREQUEST1_B_4";
+        String igoId = "MOCKREQUEST1_B_1";
         MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
-        SampleMetadata updatedSampleMetadata = metaDbSample.getLatestSampleMetadata();
-        updatedSampleMetadata.setCmoSampleClass("updatedSampleClass");
+
+        MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
+        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+                updatedRequestData.getJsonString());
+        MetaDbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(0);
+
         Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(
-                metaDbSample.getLatestSampleMetadata(), updatedSampleMetadata);
-        Assertions.assertThat(hasUpdates == Boolean.TRUE);
+                metaDbSample.getLatestSampleMetadata(),
+                updatedMetaDbSample.getLatestSampleMetadata());
+        Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
 
     }
 
@@ -207,14 +215,17 @@ public class MetadbServiceTest {
     @Test
     public void testSampleHistoryAfterUpdate() throws Exception {
         String requestId = "MOCKREQUEST1_B";
-        String igoId = "MOCKREQUEST1_B_4";
-        MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
-        SampleMetadata updatedSampleMetadata = metaDbSample.getLatestSampleMetadata();
-        updatedSampleMetadata.setAncestorSample("updated ancestor sample");
-        metaDbSample.addSampleMetadata(updatedSampleMetadata);
-        MetaDbSample updatedSample = sampleService.saveSampleMetadata(metaDbSample);
+        String igoId = "MOCKREQUEST1_B_2";
+
+        MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
+        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+                updatedRequestData.getJsonString());
+        MetaDbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(1);
+        sampleService.saveSampleMetadata(updatedMetaDbSample);
+
         List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory.size() == 2);
+        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
 
     }
 

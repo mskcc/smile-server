@@ -246,4 +246,9 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
         return requestRepository.getRequestMetadataHistory(reqId);
     }
 
+    @Override
+    public MetaDbRequest getRequestBySample(MetaDbSample sample) throws Exception {
+        return requestRepository.getRequestBySample(sample);
+    }
+
 }

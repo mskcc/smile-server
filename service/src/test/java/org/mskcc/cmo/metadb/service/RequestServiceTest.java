@@ -21,7 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @DataNeo4jTest
 @Import(MockDataUtils.class)
-public class MetadbRequestServiceTest {
+public class RequestServiceTest {
     @Autowired
     private MockDataUtils mockDataUtils;
 
@@ -62,7 +62,7 @@ public class MetadbRequestServiceTest {
      * @param sampleService
      */
     @Autowired
-    public MetadbRequestServiceTest(MetaDbRequestRepository requestRepository,
+    public RequestServiceTest(MetaDbRequestRepository requestRepository,
             MetaDbSampleRepository sampleRepository, MetaDbPatientRepository patientRepository,
             MetadbRequestService requestService, SampleService sampleService,
             PatientService patientService) {
