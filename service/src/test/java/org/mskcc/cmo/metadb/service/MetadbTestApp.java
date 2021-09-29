@@ -2,7 +2,7 @@ package org.mskcc.cmo.metadb.service;
 
 import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.common.impl.MetadbJsonComparatorImpl;
-import org.mskcc.cmo.metadb.service.impl.MetadbRequestServiceImpl;
+import org.mskcc.cmo.metadb.service.impl.RequestServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.PatientServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.SampleServiceImpl;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
@@ -23,16 +23,16 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 public class MetadbTestApp {
     @Bean
     public MetadbRequestService requestService() {
-        return new MetadbRequestServiceImpl();
+        return new RequestServiceImpl();
     }
 
     @Bean
-    public SampleService sampleService() {
+    public MetadbSampleService sampleService() {
         return new SampleServiceImpl();
     }
 
     @Bean
-    public PatientService patientService() {
+    public MetadbPatientService patientService() {
         return new PatientServiceImpl();
     }
     @Bean

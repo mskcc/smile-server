@@ -3,12 +3,9 @@ package org.mskcc.cmo.metadb.service;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.MetadbRequest;
+import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
-import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
-import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
-import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -17,6 +14,9 @@ import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.mskcc.cmo.metadb.persistence.MetadbPatientRepository;
+import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
+import org.mskcc.cmo.metadb.persistence.MetadbSampleRepository;
 
 @Testcontainers
 @DataNeo4jTest
@@ -29,10 +29,10 @@ public class RequestServiceTest {
     private MetadbRequestService requestService;
 
     @Autowired
-    private SampleService sampleService;
+    private MetadbSampleService sampleService;
 
     @Autowired
-    private PatientService patientService;
+    private MetadbPatientService patientService;
 
     @Container
     private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
@@ -49,9 +49,9 @@ public class RequestServiceTest {
         }
     }
 
-    private final MetaDbRequestRepository requestRepository;
-    private final MetaDbSampleRepository sampleRepository;
-    private final MetaDbPatientRepository patientRepository;
+    private final MetadbRequestRepository requestRepository;
+    private final MetadbSampleRepository sampleRepository;
+    private final MetadbPatientRepository patientRepository;
 
     /**
      * Initializes the Neo4j repositories.
@@ -62,10 +62,10 @@ public class RequestServiceTest {
      * @param sampleService
      */
     @Autowired
-    public RequestServiceTest(MetaDbRequestRepository requestRepository,
-            MetaDbSampleRepository sampleRepository, MetaDbPatientRepository patientRepository,
-            MetadbRequestService requestService, SampleService sampleService,
-            PatientService patientService) {
+    public RequestServiceTest(MetadbRequestRepository requestRepository,
+            MetadbSampleRepository sampleRepository, MetadbPatientRepository patientRepository,
+            MetadbRequestService requestService, MetadbSampleService sampleService,
+            MetadbPatientService patientService) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
@@ -79,17 +79,17 @@ public class RequestServiceTest {
     public void persistMockRequestDataToTestDb() throws Exception {
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        MetaDbRequest request1 = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
+        MetadbRequest request1 = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
         requestService.saveRequest(request1);
 
         MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest3JsonDataPooledNormals");
-        MetaDbRequest request3 = mockDataUtils.extractRequestFromJsonData(request3Data.getJsonString());
+        MetadbRequest request3 = mockDataUtils.extractRequestFromJsonData(request3Data.getJsonString());
         requestService.saveRequest(request3);
 
         MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest5JsonPtMultiSamples");
-        MetaDbRequest request5 = mockDataUtils.extractRequestFromJsonData(request5Data.getJsonString());
+        MetadbRequest request5 = mockDataUtils.extractRequestFromJsonData(request5Data.getJsonString());
         requestService.saveRequest(request5);
     }
 
@@ -102,7 +102,7 @@ public class RequestServiceTest {
     @Test
     public void getMetadbRequestByIdTest() throws Exception {
         String requestId = "MOCKREQUEST1_B";
-        MetaDbRequest existingRequest = requestService.getMetadbRequestById(requestId);
+        MetadbRequest existingRequest = requestService.getMetadbRequestById(requestId);
         Assertions.assertThat(existingRequest).isNotNull();
     }
 
@@ -114,7 +114,7 @@ public class RequestServiceTest {
     @Test
     public void getNullMetadbRequestByIdTest() throws Exception {
         String requestId = "";
-        MetaDbRequest existingRequest = requestService.getMetadbRequestById(requestId);
+        MetadbRequest existingRequest = requestService.getMetadbRequestById(requestId);
         Assertions.assertThat(existingRequest).isNull();
     }
 
@@ -126,7 +126,7 @@ public class RequestServiceTest {
     @Test
     public void requestWithNoUpdatesTest() throws Exception {
         String requestId = "MOCKREQUEST1_B";
-        MetaDbRequest existingRequest = requestService.getMetadbRequestById(requestId);
+        MetadbRequest existingRequest = requestService.getMetadbRequestById(requestId);
 
         Boolean isUpdated = requestService.requestHasUpdates(existingRequest, existingRequest);
         Assertions.assertThat(isUpdated).isEqualTo(false);
@@ -142,9 +142,9 @@ public class RequestServiceTest {
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         String requestId = "MOCKREQUEST1_B";
-        MetaDbRequest origRequest = requestService.getMetadbRequestById(requestId);
+        MetadbRequest origRequest = requestService.getMetadbRequestById(requestId);
         // this updated request as a different investigator email than its original
-        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+        MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
 
         Boolean hasUpdates = requestService.requestHasUpdates(
@@ -160,7 +160,7 @@ public class RequestServiceTest {
     @Test
     public void getRequestSamplesWithNoUpdatesTest() throws Exception {
         String requestId = "33344_Z";
-        MetaDbRequest existingRequest = requestService.getMetadbRequestById(requestId);
+        MetadbRequest existingRequest = requestService.getMetadbRequestById(requestId);
 
         Assertions.assertThat(requestService.getRequestSamplesWithUpdates(
                 existingRequest)).isEmpty();
@@ -174,10 +174,10 @@ public class RequestServiceTest {
     public void getRequestSamplesWithUpdatesTest() throws Exception {
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
-        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+        MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
 
-        List<MetaDbSample> sampleList = requestService.getRequestSamplesWithUpdates(
+        List<MetadbSample> sampleList = requestService.getRequestSamplesWithUpdates(
                 updatedRequest);
         Assertions.assertThat(sampleList.size()).isEqualTo(2);
 

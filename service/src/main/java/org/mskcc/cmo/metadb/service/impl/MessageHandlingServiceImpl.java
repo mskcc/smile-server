@@ -21,16 +21,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.MetadbRequest;
+import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
-import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.mskcc.cmo.metadb.service.MetadbSampleService;
 
 @Component
 public class MessageHandlingServiceImpl implements MessageHandlingService {
@@ -60,14 +60,14 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     private MetadbRequestService requestService;
 
     @Autowired
-    private SampleService sampleService;
+    private MetadbSampleService sampleService;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
     private static final ExecutorService exec = Executors.newCachedThreadPool();
-    private static final BlockingQueue<MetaDbRequest> newRequestQueue =
-        new LinkedBlockingQueue<MetaDbRequest>();
+    private static final BlockingQueue<MetadbRequest> newRequestQueue =
+        new LinkedBlockingQueue<MetadbRequest>();
     private static final BlockingQueue<RequestMetadata> requestUpdateQueue =
             new LinkedBlockingQueue<RequestMetadata>();
     private static final BlockingQueue<SampleMetadata> sampleUpdateQueue =
@@ -94,9 +94,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             phaser.arrive();
             while (true) {
                 try {
-                    MetaDbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
+                    MetadbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        MetaDbRequest existingRequest =
+                        MetadbRequest existingRequest =
                                 requestService.getMetadbRequestById(request.getRequestId());
 
                         // persist new request to database
@@ -114,7 +114,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
                             // message handlers will check if there are updates to persist or not
                             requestUpdateQueue.add(request.getLatestRequestMetadata());
-                            for (MetaDbSample sample : request.getMetaDbSampleList()) {
+                            for (MetadbSample sample : request.getMetaDbSampleList()) {
                                 sampleUpdateQueue.add(sample.getLatestSampleMetadata());
                             }
                         } else {
@@ -150,7 +150,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     RequestMetadata requestMetadata = requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (requestMetadata != null) {
-                        MetaDbRequest existingRequest =
+                        MetadbRequest existingRequest =
                                 requestService.getMetadbRequestById(requestMetadata.getRequestId());
 
                         if (requestService.requestHasMetadataUpdates(
@@ -203,7 +203,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     SampleMetadata sampleMetadata = sampleUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (sampleMetadata != null) {
-                        MetaDbSample existingSample = sampleService.getMetaDbSampleByRequestAndIgoId(
+                        MetadbSample existingSample = sampleService.getMetaDbSampleByRequestAndIgoId(
                                 sampleMetadata.getRequestId(), sampleMetadata.getIgoId());
                         if (existingSample == null) {
                             // handle and persist new sample received
@@ -250,7 +250,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     }
 
     @Override
-    public void newRequestHandler(MetaDbRequest request) throws Exception {
+    public void newRequestHandler(MetadbRequest request) throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
@@ -340,8 +340,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     String requestJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8),
                             String.class);
-                    MetaDbRequest metaDbRequest = mapper.readValue(requestJson,
-                            MetaDbRequest.class);
+                    MetadbRequest metaDbRequest = mapper.readValue(requestJson,
+                            MetadbRequest.class);
                     metaDbRequest.setRequestJson(requestJson);
                     metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(requestJson));
                     metaDbRequest.setNamespace("igo");
@@ -397,18 +397,18 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         });
     }
 
-    private List<MetaDbSample> extractMetaDbSamplesFromIgoResponse(Object message)
+    private List<MetadbSample> extractMetaDbSamplesFromIgoResponse(Object message)
             throws JsonProcessingException, IOException {
         Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
         SampleMetadata[] sampleList = mapper.convertValue(map.get("samples"),
                 SampleMetadata[].class);
 
-        List<MetaDbSample> metaDbSampleList = new ArrayList<>();
+        List<MetadbSample> metaDbSampleList = new ArrayList<>();
         for (SampleMetadata sample: sampleList) {
             // update import date here since we are parsing from json
             sample.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
             sample.setRequestId((String) map.get("requestId"));
-            MetaDbSample metaDbSample = new MetaDbSample();
+            MetadbSample metaDbSample = new MetadbSample();
             metaDbSample.addSampleMetadata(sample);
             metaDbSampleList.add(metaDbSample);
         }

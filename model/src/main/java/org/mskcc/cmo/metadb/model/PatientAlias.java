@@ -21,7 +21,7 @@ public class PatientAlias implements Serializable {
     private String patientId;
     private String namespace;
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
-    private MetaDbPatient metaDbPatient;
+    private MetadbPatient metaDbPatient;
 
     public PatientAlias() {}
 
@@ -46,11 +46,11 @@ public class PatientAlias implements Serializable {
         this.namespace = namespace;
     }
 
-    public MetaDbPatient getPatientMetadata() {
+    public MetadbPatient getPatientMetadata() {
         return metaDbPatient;
     }
 
-    public void setPatientMetadata(MetaDbPatient metaDbPatient) {
+    public void setPatientMetadata(MetadbPatient metaDbPatient) {
         this.metaDbPatient = metaDbPatient;
     }
     

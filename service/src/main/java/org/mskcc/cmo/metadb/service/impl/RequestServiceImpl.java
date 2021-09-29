@@ -15,34 +15,34 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.common.MetadbJsonComparator;
-import org.mskcc.cmo.metadb.model.MetaDbProject;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.MetadbProject;
+import org.mskcc.cmo.metadb.model.MetadbRequest;
+import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
-import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
-import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
+import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
-import org.mskcc.cmo.metadb.service.SampleService;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.mskcc.cmo.metadb.service.MetadbSampleService;
+import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
 
 /**
  *
  * @author ochoaa
  */
 @Component
-public class MetadbRequestServiceImpl implements MetadbRequestService {
+public class RequestServiceImpl implements MetadbRequestService {
     @Autowired
     private MetadbJsonComparator metadbJsonComparator;
 
     @Autowired
-    private MetaDbRequestRepository requestRepository;
+    private MetadbRequestRepository requestRepository;
 
     @Autowired
-    private SampleService sampleService;
+    private MetadbSampleService sampleService;
 
     @Autowired
     private RequestStatusLogger requestStatusLogger;
@@ -50,24 +50,24 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
     // 24 hours in milliseconds
     private final Integer TIME_ADJ_24HOURS_MS = 24 * 60 * 60 * 1000;
     private Map<String, Date> loggedExistingRequests = new HashMap<>();
-    private static final Log LOG = LogFactory.getLog(MetadbRequestServiceImpl.class);
+    private static final Log LOG = LogFactory.getLog(RequestServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Boolean saveRequest(MetaDbRequest request) throws Exception {
-        MetaDbProject project = new MetaDbProject();
+    public Boolean saveRequest(MetadbRequest request) throws Exception {
+        MetadbProject project = new MetadbProject();
         project.setProjectId(request.getProjectId());
         project.setNamespace(request.getNamespace());
         RequestMetadata requestMetadata = extractRequestMetadata(request.getRequestJson());
         request.setMetaDbProject(project);
         request.addRequestMetadata(requestMetadata);
 
-        MetaDbRequest savedRequest = requestRepository.findRequestById(request.getRequestId());
+        MetadbRequest savedRequest = requestRepository.findRequestById(request.getRequestId());
         if (savedRequest == null) {
             if (request.getMetaDbSampleList() != null) {
-                List<MetaDbSample> updatedSamples = new ArrayList<>();
-                for (MetaDbSample s: request.getMetaDbSampleList()) {
+                List<MetadbSample> updatedSamples = new ArrayList<>();
+                for (MetadbSample s: request.getMetaDbSampleList()) {
                     // considering adding the patientService.savePatient() stuff here
                     // and remove from the sample service.
                     updatedSamples.add(sampleService.saveSampleMetadata(s));
@@ -83,7 +83,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Boolean saveRequestMetadata(MetaDbRequest request) {
+    public Boolean saveRequestMetadata(MetadbRequest request) {
         // input is already an existing metadb request so there's no need
         // to check for an existing request again - maybe something we can do
         // is compare the size of the current request metadata history and
@@ -112,7 +112,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
      * @param request
      * @throws IOException
      */
-    private void logDuplicateRequest(MetaDbRequest request) throws IOException {
+    private void logDuplicateRequest(MetadbRequest request) throws IOException {
         // if request has not been logged before then save request to request logger file
         // otherwise check if new timestamp occurs within 24 hours since the last time
         // the same request was seen. If it does not then save request to logger file
@@ -138,27 +138,27 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
     }
 
     @Override
-    public MetaDbRequest getMetadbRequestById(String requestId) throws Exception {
-        MetaDbRequest request = requestRepository.findRequestById(requestId);
+    public MetadbRequest getMetadbRequestById(String requestId) throws Exception {
+        MetadbRequest request = requestRepository.findRequestById(requestId);
         if (request == null) {
             LOG.error("Couldn't find a request with requestId " + requestId);
             return null;
         }
-        List<MetaDbSample> metadbSampleList = sampleService.getAllMetadbSamplesByRequestId(requestId);
+        List<MetadbSample> metadbSampleList = sampleService.getAllMetadbSamplesByRequestId(requestId);
         request.setMetaDbSampleList(metadbSampleList);
         return request;
     }
 
     @Override
-    public PublishedMetaDbRequest getPublishedMetadbRequestById(String requestId) throws Exception {
-        MetaDbRequest request = getMetadbRequestById(requestId);
+    public PublishedMetadbRequest getPublishedMetadbRequestById(String requestId) throws Exception {
+        MetadbRequest request = getMetadbRequestById(requestId);
 
         // for each metadb sample get the latest version of its sample metadata
         List<SampleMetadata> samples = new ArrayList<>();
-        for (MetaDbSample sample : request.getMetaDbSampleList()) {
+        for (MetadbSample sample : request.getMetaDbSampleList()) {
             samples.add(sample.getLatestSampleMetadata());
         }
-        return new PublishedMetaDbRequest(request, samples);
+        return new PublishedMetadbRequest(request, samples);
     }
 
     /**
@@ -190,7 +190,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
     }
 
     @Override
-    public Boolean requestHasUpdates(MetaDbRequest existingRequest, MetaDbRequest request) throws Exception {
+    public Boolean requestHasUpdates(MetadbRequest existingRequest, MetadbRequest request) throws Exception {
         try {
             metadbJsonComparator.isConsistent(existingRequest.getRequestJson(),
                 request.getRequestJson());
@@ -216,10 +216,10 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
     }
 
     @Override
-    public List<MetaDbSample> getRequestSamplesWithUpdates(MetaDbRequest request) throws Exception {
-        List<MetaDbSample> updatedSamples = new ArrayList<>();
-        for (MetaDbSample sample: request.getMetaDbSampleList()) {
-            MetaDbSample existingSample = sampleService.getMetaDbSampleByRequestAndIgoId(
+    public List<MetadbSample> getRequestSamplesWithUpdates(MetadbRequest request) throws Exception {
+        List<MetadbSample> updatedSamples = new ArrayList<>();
+        for (MetadbSample sample: request.getMetaDbSampleList()) {
+            MetadbSample existingSample = sampleService.getMetaDbSampleByRequestAndIgoId(
                     request.getRequestId(), sample.getLatestSampleMetadata().getIgoId());
             // skip samples that do not already exist since they do not have a sample metadata
             // history to publish to the CMO_SAMPLE_METADATA_UPDATE topic
@@ -247,7 +247,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
     }
 
     @Override
-    public MetaDbRequest getRequestBySample(MetaDbSample sample) throws Exception {
+    public MetadbRequest getRequestBySample(MetadbSample sample) throws Exception {
         return requestRepository.findRequestBySample(sample);
     }
 

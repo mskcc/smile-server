@@ -27,14 +27,14 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 @NodeEntity(label = "Request")
 @JsonIgnoreProperties({"samples"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MetaDbRequest implements Serializable {
+public class MetadbRequest implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID metaDbRequestId;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
-    private List<MetaDbSample> metaDbSampleList;
+    private List<MetadbSample> metaDbSampleList;
     @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
-    private MetaDbProject metaDbProject;
+    private MetadbProject metaDbProject;
     @JsonIgnore
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     private List<RequestMetadata> requestMetadataList;
@@ -62,7 +62,7 @@ public class MetaDbRequest implements Serializable {
     private boolean isCmoRequest;
     private boolean bicAnalysis;
 
-    public MetaDbRequest() {}
+    public MetadbRequest() {}
 
     /**
      * MetaDbRequest constructor
@@ -86,12 +86,12 @@ public class MetaDbRequest implements Serializable {
      * @param bicAnalysis
      * @param isCmoRequest
      */
-    public MetaDbRequest(String requestId, String recipe, String projectManagerName,
+    public MetadbRequest(String requestId, String recipe, String projectManagerName,
             String piEmail, String labHeadName, String labHeadEmail,
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
-            List<MetaDbSample> metaDbSampleList, String requestJson,
+            List<MetadbSample> metaDbSampleList, String requestJson,
             boolean bicAnalysis, boolean isCmoRequest) {
         this.requestId = requestId;
         this.recipe = recipe;
@@ -109,7 +109,7 @@ public class MetaDbRequest implements Serializable {
         this.strand = strand;
         this.libraryType = libraryType;
         this.metaDbSampleList = metaDbSampleList;
-        this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
+        this.metaDbProject = new MetadbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
         this.bicAnalysis = bicAnalysis;
         this.isCmoRequest = isCmoRequest;
@@ -123,19 +123,19 @@ public class MetaDbRequest implements Serializable {
         this.metaDbRequestId = metaDbRequestId;
     }
 
-    public List<MetaDbSample> getMetaDbSampleList() {
+    public List<MetadbSample> getMetaDbSampleList() {
         return metaDbSampleList;
     }
 
-    public void setMetaDbSampleList(List<MetaDbSample> metaDbSampleList) {
+    public void setMetaDbSampleList(List<MetadbSample> metaDbSampleList) {
         this.metaDbSampleList = metaDbSampleList;
     }
 
-    public MetaDbProject getMetaDbProject() {
+    public MetadbProject getMetaDbProject() {
         return metaDbProject;
     }
 
-    public void setMetaDbProject(MetaDbProject metaDbProject) {
+    public void setMetaDbProject(MetadbProject metaDbProject) {
         this.metaDbProject = metaDbProject;
     }
 
@@ -196,7 +196,7 @@ public class MetaDbRequest implements Serializable {
      *
      * @param metaDbSample
      */
-    public void addMetaDbSampleList(MetaDbSample metaDbSample) {
+    public void addMetaDbSampleList(MetadbSample metaDbSample) {
         if (metaDbSampleList == null) {
             metaDbSampleList = new ArrayList<>();
         }
@@ -352,7 +352,7 @@ public class MetaDbRequest implements Serializable {
      * Updates the RequestMetadata with provided request.
      * @param updatedRequest
      */
-    public void updateRequestMetadata(MetaDbRequest updatedRequest) {
+    public void updateRequestMetadata(MetadbRequest updatedRequest) {
         this.requestId = updatedRequest.getRequestId();
         this.recipe = updatedRequest.getRecipe();
         this.projectManagerName = updatedRequest.getProjectManagerName();

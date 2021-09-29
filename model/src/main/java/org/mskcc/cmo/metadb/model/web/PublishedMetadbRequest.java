@@ -3,7 +3,7 @@ package org.mskcc.cmo.metadb.model.web;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
+import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
@@ -12,7 +12,7 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
  *
  * @author ochoaa
  */
-public class PublishedMetaDbRequest {
+public class PublishedMetadbRequest {
     @Convert(UuidStringConverter.class)
     private UUID metaDbRequestId;
     private String projectId;
@@ -37,14 +37,14 @@ public class PublishedMetaDbRequest {
     private List<String> pooledNormals;
     private List<SampleMetadata> samples;
 
-    public PublishedMetaDbRequest() {}
+    public PublishedMetadbRequest() {}
 
     /**
      * MetaDbRequestWeb constructor.
      * @param metaDbRequest
      * @param samples
      */
-    public PublishedMetaDbRequest(MetaDbRequest metaDbRequest, List<SampleMetadata> samples) {
+    public PublishedMetadbRequest(MetadbRequest metaDbRequest, List<SampleMetadata> samples) {
         this.metaDbRequestId = metaDbRequest.getMetaDbRequestId();
         this.projectId = metaDbRequest.getRequestId().split("_")[0];
         this.requestId = metaDbRequest.getRequestId();
@@ -94,7 +94,7 @@ public class PublishedMetaDbRequest {
      * @param pooledNormals
      * @param samples
      */
-    public PublishedMetaDbRequest(UUID metaDbRequestId, String projectId, String requestId,
+    public PublishedMetadbRequest(UUID metaDbRequestId, String projectId, String requestId,
             String recipe, String projectManagerName, String piEmail, String labHeadName,
             String labHeadEmail, String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,

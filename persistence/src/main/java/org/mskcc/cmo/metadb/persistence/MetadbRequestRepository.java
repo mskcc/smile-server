@@ -1,9 +1,9 @@
 package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
-import org.mskcc.cmo.metadb.model.MetaDbProject;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.MetadbProject;
+import org.mskcc.cmo.metadb.model.MetadbRequest;
+import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -15,24 +15,24 @@ import org.springframework.stereotype.Repository;
  * @author ochoaa
  */
 @Repository
-public interface MetaDbRequestRepository extends Neo4jRepository<MetaDbRequest, Long> {
+public interface MetadbRequestRepository extends Neo4jRepository<MetadbRequest, Long> {
     @Query("MATCH (r: Request {requestId: $reqId}) RETURN r;")
-    MetaDbRequest findRequestById(@Param("reqId") String reqId);
+    MetadbRequest findRequestById(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request {requestId: $reqId}) "
             + "MATCH (r)<-[:HAS_REQUEST]-(p: Project) "
             + "RETURN p")
-    MetaDbProject findProjectByRequest(@Param("reqId") String reqId);
+    MetadbProject findProjectByRequest(@Param("reqId") String reqId);
 
     @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSample.metaDbSampleId}) "
             + "MATCH (s)<-[:HAS_SAMPLE]-(r: Request)"
             + "RETURN r")
-    MetaDbRequest findRequestBySample(@Param("metaDbSample") MetaDbSample metaDbSample);
+    MetadbRequest findRequestBySample(@Param("metaDbSample") MetadbSample metaDbSample);
 
     @Query("MATCH (r: Request)-[:HAS_SAMPLE]->(s:Sample)"
             + "<-[:HAS_SAMPLE]-(p:Patient)"
             + "<-[:IS_ALIAS]-(pa:PatientAlias {value: $patientAliasId}) RETURN r")
-    MetaDbRequest findRequestByPatientAlias(@Param("patientAliasId") String patientAliasId);
+    MetadbRequest findRequestByPatientAlias(@Param("patientAliasId") String patientAliasId);
 
     @Query("MATCH (r: Request {requestId: $reqId})"
             + "MATCH (r)-[:HAS_METADATA]->(rm: RequestMetadata)"

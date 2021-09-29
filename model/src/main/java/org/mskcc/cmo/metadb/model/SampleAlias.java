@@ -20,7 +20,7 @@ public class SampleAlias implements Serializable {
     private String sampleId;
     private String namespace;
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
-    private MetaDbSample sampleMetadata;
+    private MetadbSample sampleMetadata;
 
     public SampleAlias() {}
 
@@ -50,11 +50,11 @@ public class SampleAlias implements Serializable {
         this.namespace = namespace;
     }
 
-    public MetaDbSample getSampleMetadata() {
+    public MetadbSample getSampleMetadata() {
         return sampleMetadata;
     }
 
-    public void setSampleMetadata(MetaDbSample sampleMetadata) {
+    public void setSampleMetadata(MetadbSample sampleMetadata) {
         this.sampleMetadata = sampleMetadata;
     }
 

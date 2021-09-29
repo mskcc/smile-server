@@ -6,15 +6,12 @@ import static org.junit.Assert.assertThrows;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mskcc.cmo.metadb.model.MetaDbPatient;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.MetadbPatient;
+import org.mskcc.cmo.metadb.model.MetadbRequest;
+import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
-import org.mskcc.cmo.metadb.persistence.MetaDbPatientRepository;
-import org.mskcc.cmo.metadb.persistence.MetaDbRequestRepository;
-import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -24,6 +21,9 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.mskcc.cmo.metadb.persistence.MetadbPatientRepository;
+import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
+import org.mskcc.cmo.metadb.persistence.MetadbSampleRepository;
 
 /**
  *
@@ -40,10 +40,10 @@ public class SampleServiceTest {
     private MetadbRequestService requestService;
 
     @Autowired
-    private SampleService sampleService;
+    private MetadbSampleService sampleService;
 
     @Autowired
-    private PatientService patientService;
+    private MetadbPatientService patientService;
 
     @Container
     private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
@@ -60,9 +60,9 @@ public class SampleServiceTest {
         }
     }
 
-    private final MetaDbRequestRepository requestRepository;
-    private final MetaDbSampleRepository sampleRepository;
-    private final MetaDbPatientRepository patientRepository;
+    private final MetadbRequestRepository requestRepository;
+    private final MetadbSampleRepository sampleRepository;
+    private final MetadbPatientRepository patientRepository;
 
     /**
      * Initializes the Neo4j repositories.
@@ -73,10 +73,10 @@ public class SampleServiceTest {
      * @param sampleService
      */
     @Autowired
-    public SampleServiceTest(MetaDbRequestRepository requestRepository,
-            MetaDbSampleRepository sampleRepository, MetaDbPatientRepository patientRepository,
-            MetadbRequestService requestService, SampleService sampleService,
-            PatientService patientService) {
+    public SampleServiceTest(MetadbRequestRepository requestRepository,
+            MetadbSampleRepository sampleRepository, MetadbPatientRepository patientRepository,
+            MetadbRequestService requestService, MetadbSampleService sampleService,
+            MetadbPatientService patientService) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
@@ -90,17 +90,17 @@ public class SampleServiceTest {
     public void persistMockRequestDataToTestDb() throws Exception {
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        MetaDbRequest request1 = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
+        MetadbRequest request1 = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
         requestService.saveRequest(request1);
 
         MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest3JsonDataPooledNormals");
-        MetaDbRequest request3 = mockDataUtils.extractRequestFromJsonData(request3Data.getJsonString());
+        MetadbRequest request3 = mockDataUtils.extractRequestFromJsonData(request3Data.getJsonString());
         requestService.saveRequest(request3);
 
         MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest5JsonPtMultiSamples");
-        MetaDbRequest request5 = mockDataUtils.extractRequestFromJsonData(request5Data.getJsonString());
+        MetadbRequest request5 = mockDataUtils.extractRequestFromJsonData(request5Data.getJsonString());
         requestService.saveRequest(request5);
     }
 
@@ -112,7 +112,7 @@ public class SampleServiceTest {
     @Test
     public void testRequestRepositoryAccess() throws Exception {
         String requestId = "MOCKREQUEST1_B";
-        MetaDbRequest savedRequest = requestService.getMetadbRequestById(requestId);
+        MetadbRequest savedRequest = requestService.getMetadbRequestById(requestId);
         Assertions.assertThat(savedRequest.getMetaDbSampleList().size()).isEqualTo(4);
     }
 
@@ -124,8 +124,8 @@ public class SampleServiceTest {
     public void testFindMatchedNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
-        List<MetaDbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(metaDbSample);
+        MetadbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(metaDbSample);
         Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
     }
 
@@ -137,7 +137,7 @@ public class SampleServiceTest {
     public void testFindPooledNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
-        MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
         List<String> pooledNormalList = sampleService.getPooledNormalsBySample(metaDbSample);
         Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
@@ -167,7 +167,7 @@ public class SampleServiceTest {
     @Test
     public void testGetAllMetadbSamplesByRequestId() throws Exception {
         String requestId = "33344_Z";
-        List<MetaDbSample> savedMetaDbSampleList = sampleService.getAllMetadbSamplesByRequestId(requestId);
+        List<MetadbSample> savedMetaDbSampleList = sampleService.getAllMetadbSamplesByRequestId(requestId);
         Assertions.assertThat(savedMetaDbSampleList.size()).isEqualTo(4);
     }
 
@@ -192,13 +192,13 @@ public class SampleServiceTest {
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
 
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
-        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+        MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
-        MetaDbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(0);
+        MetadbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(0);
 
         Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(
                 metaDbSample.getLatestSampleMetadata(),
@@ -219,9 +219,9 @@ public class SampleServiceTest {
 
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
-        MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+        MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
-        MetaDbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(1);
+        MetadbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(1);
         sampleService.saveSampleMetadata(updatedMetaDbSample);
 
         List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
@@ -250,7 +250,7 @@ public class SampleServiceTest {
     @Test
     public void testFindPatientByPatientAliasWithExpectedFailure() {
         String cmoPatientId = "C-1MP6YY";
-        MetaDbPatient patient = new MetaDbPatient();
+        MetadbPatient patient = new MetadbPatient();
         patient.addPatientAlias(new PatientAlias(cmoPatientId, "cmoId"));
         // this should create a duplicate patient node that will throw the exception
         // below when queried

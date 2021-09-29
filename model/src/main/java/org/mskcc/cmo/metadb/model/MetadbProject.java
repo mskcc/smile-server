@@ -9,16 +9,16 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
 @NodeEntity(label = "Project")
-public class MetaDbProject implements Serializable {
+public class MetadbProject implements Serializable {
     @Id
     private String projectId;
     private String namespace;
     @Relationship(type = "HAS_REQUEST", direction = Relationship.OUTGOING)
-    private List<MetaDbRequest> requestList;
+    private List<MetadbRequest> requestList;
 
-    public MetaDbProject() {}
+    public MetadbProject() {}
 
-    public MetaDbProject(String projectId) {
+    public MetadbProject(String projectId) {
         this.projectId = projectId;
     }
 
@@ -28,7 +28,7 @@ public class MetaDbProject implements Serializable {
      * @param namespace
      * @param requestList
      */
-    public MetaDbProject(String projectId, String namespace, List<MetaDbRequest> requestList) {
+    public MetadbProject(String projectId, String namespace, List<MetadbRequest> requestList) {
         this.projectId = projectId;
         this.namespace = namespace;
         this.requestList = requestList;
@@ -50,11 +50,11 @@ public class MetaDbProject implements Serializable {
         this.namespace = namespace;
     }
 
-    public List<MetaDbRequest> getRequestList() {
+    public List<MetadbRequest> getRequestList() {
         return requestList;
     }
 
-    public void setRequestList(List<MetaDbRequest> requestList) {
+    public void setRequestList(List<MetadbRequest> requestList) {
         this.requestList = requestList;
     }
 
@@ -62,7 +62,7 @@ public class MetaDbProject implements Serializable {
      *
      * @param metaDbRequest
      */
-    public void addRequest(MetaDbRequest metaDbRequest) {
+    public void addRequest(MetadbRequest metaDbRequest) {
         if (requestList == null) {
             requestList = new ArrayList<>();
         }

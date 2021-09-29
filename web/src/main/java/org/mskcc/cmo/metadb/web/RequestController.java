@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.mskcc.cmo.metadb.model.web.PublishedMetaDbRequest;
+import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,11 +50,11 @@ public class RequestController {
     @RequestMapping(value = "/request/{requestId}",
         method = RequestMethod.GET,
         produces = "application/json")
-    public ResponseEntity<PublishedMetaDbRequest> fetchMetaDbRequestGET(@ApiParam(value =
+    public ResponseEntity<PublishedMetadbRequest> fetchMetaDbRequestGET(@ApiParam(value =
         "Retrieves MetaDbRequest from a RequestId.",
         required = true)
         @PathVariable String requestId) throws Exception {
-        PublishedMetaDbRequest request = requestService.getPublishedMetadbRequestById(requestId);
+        PublishedMetadbRequest request = requestService.getPublishedMetadbRequestById(requestId);
         if (request == null) {
             return requestNotFoundHandler("Request does not exist by id: " + requestId);
         }
@@ -74,12 +74,12 @@ public class RequestController {
     @RequestMapping(value = "/request",
         method = RequestMethod.POST,
         produces = "application/json")
-    public ResponseEntity<List<PublishedMetaDbRequest>> fetchMetaDbRequestPOST(@ApiParam(value =
+    public ResponseEntity<List<PublishedMetadbRequest>> fetchMetaDbRequestPOST(@ApiParam(value =
         "List of request ids", required = true, allowMultiple = true)
         @RequestBody List<String> requestIds) throws Exception {
-        List<PublishedMetaDbRequest> requestList = new ArrayList<>();
+        List<PublishedMetadbRequest> requestList = new ArrayList<>();
         for (String requestId: requestIds) {
-            PublishedMetaDbRequest request = requestService.getPublishedMetadbRequestById(requestId);
+            PublishedMetadbRequest request = requestService.getPublishedMetadbRequestById(requestId);
             if (request != null) {
                 requestList.add(request);
             }
@@ -103,7 +103,7 @@ public class RequestController {
         "Retrieves MetaDbRequest from a RequestId.",
         required = true)
         @PathVariable String requestId) throws Exception {
-        PublishedMetaDbRequest request = requestService.getPublishedMetadbRequestById(requestId);
+        PublishedMetadbRequest request = requestService.getPublishedMetadbRequestById(requestId);
         if (request == null) {
             return requestNotFoundHandler("Request not found by id: " + requestId);
         }

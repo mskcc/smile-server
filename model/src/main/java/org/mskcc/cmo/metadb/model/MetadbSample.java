@@ -18,19 +18,19 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
 @NodeEntity(label = "Sample")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MetaDbSample implements Serializable {
+public class MetadbSample implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID metaDbSampleId;
     @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
     private List<SampleAlias> sampleAliases;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.INCOMING)
-    private MetaDbPatient patient;
+    private MetadbPatient patient;
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     private List<SampleMetadata> sampleMetadataList;
     private String sampleClass;
 
-    public MetaDbSample() {}
+    public MetadbSample() {}
 
     public UUID getMetaDbSampleId() {
         return metaDbSampleId;
@@ -59,11 +59,11 @@ public class MetaDbSample implements Serializable {
         sampleAliases.add(sampleAlias);
     }
 
-    public MetaDbPatient getPatient() {
+    public MetadbPatient getPatient() {
         return patient;
     }
 
-    public void setPatient(MetaDbPatient patient) {
+    public void setPatient(MetadbPatient patient) {
         this.patient = patient;
     }
 

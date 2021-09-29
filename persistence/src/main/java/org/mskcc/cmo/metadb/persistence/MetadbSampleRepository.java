@@ -2,8 +2,8 @@ package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
 import java.util.UUID;
-import org.mskcc.cmo.metadb.model.MetaDbRequest;
-import org.mskcc.cmo.metadb.model.MetaDbSample;
+import org.mskcc.cmo.metadb.model.MetadbRequest;
+import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.springframework.data.neo4j.annotation.Query;
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UUID> {
+public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UUID> {
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId}) "
             + "RETURN sm")
-    MetaDbSample findMetaDbSampleById(@Param("metaDbSampleId") UUID metaDbSampleId);
+    MetadbSample findMetaDbSampleById(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (s: SampleAlias {value: $igoId}) RETURN s")
     SampleAlias findSampleAliasByIgoId(@Param("igoId") String igoId);
@@ -28,7 +28,7 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
     @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, namespace: 'igoId'}) "
         + "MATCH (s)<-[:IS_ALIAS]-(sm: Sample) "
         + "RETURN sm")
-    MetaDbSample findMetaDbSampleByIgoId(@Param("igoId") SampleAlias igoId);
+    MetadbSample findMetaDbSampleByIgoId(@Param("igoId") SampleAlias igoId);
 
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
@@ -55,26 +55,26 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
             + "MATCH (n: Sample)<-[:HAS_SAMPLE]-(p) "
             + "WHERE toLower(n.sampleClass) = 'normal'"
             + "RETURN n")
-    List<MetaDbSample> findMatchedNormalsBySample(
-            @Param("metaDbSample") MetaDbSample metaDbSample);
+    List<MetadbSample> findMatchedNormalsBySample(
+            @Param("metaDbSample") MetadbSample metaDbSample);
 
     @Query("Match (r: Request {requestId: $reqId})-[:HAS_SAMPLE]->"
             + "(s: Sample) "
             + "RETURN s;")
-    List<MetaDbSample> findAllMetaDbSamplesByRequest(@Param("reqId") String reqId);
+    List<MetadbSample> findAllMetaDbSamplesByRequest(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request {requestId: $reqId}) "
             + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
             + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId.sampleId}) "
             + "RETURN sm")
-    MetaDbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
+    MetadbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
             @Param("igoId") SampleAlias igoId);
 
     @Query("MATCH (r: Request {requestId: $reqId}) "
         + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
         + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId}) "
         + "RETURN sm")
-    MetaDbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
+    MetadbSample findMetaDbSampleByRequestAndIgoId(@Param("reqId") String reqId,
             @Param("igoId") String igoId);
 
     @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
