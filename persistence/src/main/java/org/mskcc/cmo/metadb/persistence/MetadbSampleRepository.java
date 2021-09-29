@@ -2,7 +2,6 @@ package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
 import java.util.UUID;
-import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;

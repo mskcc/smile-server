@@ -117,15 +117,15 @@ public class SampleServiceTest {
     }
 
     /**
-     * Tests whether findMatchedNormalSample retrieves an accurate list MetaDbSample
+     * Tests whether findMatchedNormalSample retrieves an accurate list MetadbSample
      * @throws Exception
      */
     @Test
     public void testFindMatchedNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample metaDbSample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
-        List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(metaDbSample);
+        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(sample);
         Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
     }
 
@@ -137,8 +137,8 @@ public class SampleServiceTest {
     public void testFindPooledNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
-        MetadbSample metaDbSample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
-        List<String> pooledNormalList = sampleService.getPooledNormalsBySample(metaDbSample);
+        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        List<String> pooledNormalList = sampleService.getPooledNormalsBySample(sample);
         Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
 
@@ -167,8 +167,8 @@ public class SampleServiceTest {
     @Test
     public void testGetAllMetadbSamplesByRequestId() throws Exception {
         String requestId = "33344_Z";
-        List<MetadbSample> savedMetaDbSampleList = sampleService.getAllMetadbSamplesByRequestId(requestId);
-        Assertions.assertThat(savedMetaDbSampleList.size()).isEqualTo(4);
+        List<MetadbSample> requestSamplesList = sampleService.getAllMetadbSamplesByRequestId(requestId);
+        Assertions.assertThat(requestSamplesList.size()).isEqualTo(4);
     }
 
     /**
@@ -192,17 +192,16 @@ public class SampleServiceTest {
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample metaDbSample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
 
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
-        MetadbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(0);
+        MetadbSample updatedSample = updatedRequest.getMetaDbSampleList().get(0);
 
-        Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(
-                metaDbSample.getLatestSampleMetadata(),
-                updatedMetaDbSample.getLatestSampleMetadata());
+        Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(sample.getLatestSampleMetadata(),
+                updatedSample.getLatestSampleMetadata());
         Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
 
     }
@@ -221,8 +220,8 @@ public class SampleServiceTest {
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
-        MetadbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(1);
-        sampleService.saveSampleMetadata(updatedMetaDbSample);
+        MetadbSample updatedSample = updatedRequest.getMetaDbSampleList().get(1);
+        sampleService.saveSampleMetadata(updatedSample);
 
         List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
