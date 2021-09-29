@@ -203,7 +203,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     SampleMetadata sampleMetadata = sampleUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (sampleMetadata != null) {
-                        MetadbSample existingSample = sampleService.getMetaDbSampleByRequestAndIgoId(
+                        MetadbSample existingSample = sampleService.getMetadbSampleByRequestAndIgoId(
                                 sampleMetadata.getRequestId(), sampleMetadata.getIgoId());
                         if (existingSample == null) {
                             // handle and persist new sample received

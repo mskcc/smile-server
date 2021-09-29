@@ -17,12 +17,12 @@ public interface MetadbSampleService {
 
     List<String> getPooledNormalsBySample(MetadbSample metaDbSample) throws Exception;
 
-    MetadbSample getMetaDbSample(UUID metaDbSampleId) throws Exception;
+    MetadbSample getMetadbSample(UUID metaDbSampleId) throws Exception;
 
-    MetadbSample getMetaDbSampleByRequestAndAlias(String requestId,
+    MetadbSample getMetadbSampleByRequestAndAlias(String requestId,
             SampleAlias igoId) throws Exception;
 
-    MetadbSample getMetaDbSampleByRequestAndIgoId(String requestId, String igoId) throws Exception;
+    MetadbSample getMetadbSampleByRequestAndIgoId(String requestId, String igoId) throws Exception;
 
     List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception;
 

@@ -92,7 +92,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     }
 
     @Override
-    public MetadbSample getMetaDbSample(UUID metaDbSampleId) throws Exception {
+    public MetadbSample getMetadbSample(UUID metaDbSampleId) throws Exception {
         MetadbSample metaDbSample = sampleRepository.findMetaDbSampleById(metaDbSampleId);
         metaDbSample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metaDbSampleId));
         for (SampleMetadata s: metaDbSample.getSampleMetadataList()) {
@@ -104,7 +104,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     }
 
     @Override
-    public MetadbSample getMetaDbSampleByRequestAndAlias(String requestId, SampleAlias igoId)
+    public MetadbSample getMetadbSampleByRequestAndAlias(String requestId, SampleAlias igoId)
             throws Exception {
         MetadbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId,
                 igoId.getSampleId());
@@ -119,7 +119,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     }
 
     @Override
-    public MetadbSample getMetaDbSampleByRequestAndIgoId(String requestId, String igoId)
+    public MetadbSample getMetadbSampleByRequestAndIgoId(String requestId, String igoId)
             throws Exception {
         MetadbSample metadbSample = sampleRepository.findMetaDbSampleByRequestAndIgoId(requestId, igoId);
         metadbSample.setSampleMetadataList(sampleRepository
@@ -146,7 +146,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     public List<MetadbSample> getAllMetadbSamplesByRequestId(String requestId) throws Exception {
         List<MetadbSample> requestSamples = new ArrayList<>();
         for (MetadbSample s : sampleRepository.findAllMetaDbSamplesByRequest(requestId)) {
-            requestSamples.add(getMetaDbSample(s.getMetaDbSampleId()));
+            requestSamples.add(getMetadbSample(s.getMetaDbSampleId()));
         }
         return requestSamples;
     }

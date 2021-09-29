@@ -124,7 +124,7 @@ public class SampleServiceTest {
     public void testFindMatchedNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample metaDbSample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
         List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(metaDbSample);
         Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
     }
@@ -137,7 +137,7 @@ public class SampleServiceTest {
     public void testFindPooledNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
-        MetadbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample metaDbSample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
         List<String> pooledNormalList = sampleService.getPooledNormalsBySample(metaDbSample);
         Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
@@ -192,7 +192,7 @@ public class SampleServiceTest {
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample metaDbSample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
 
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
