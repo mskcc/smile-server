@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.PatientAlias;
+import org.mskcc.cmo.metadb.persistence.MetadbPatientRepository;
+import org.mskcc.cmo.metadb.service.MetadbPatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.mskcc.cmo.metadb.service.MetadbPatientService;
-import org.mskcc.cmo.metadb.persistence.MetadbPatientRepository;
 
 @Component
 public class PatientServiceImpl implements MetadbPatientService {

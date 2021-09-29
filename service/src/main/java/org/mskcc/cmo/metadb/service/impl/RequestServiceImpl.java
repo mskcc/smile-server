@@ -21,13 +21,13 @@ import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
+import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
+import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.mskcc.cmo.metadb.service.MetadbSampleService;
-import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
 
 /**
  *

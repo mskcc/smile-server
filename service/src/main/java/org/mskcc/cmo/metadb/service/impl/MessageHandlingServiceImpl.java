@@ -27,10 +27,10 @@ import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
+import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.mskcc.cmo.metadb.service.MetadbSampleService;
 
 @Component
 public class MessageHandlingServiceImpl implements MessageHandlingService {

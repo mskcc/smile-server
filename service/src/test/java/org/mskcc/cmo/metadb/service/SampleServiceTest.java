@@ -1,8 +1,5 @@
 package org.mskcc.cmo.metadb.service;
 
-
-import static org.junit.Assert.assertThrows;
-
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,8 +7,10 @@ import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
-import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.persistence.MetadbPatientRepository;
+import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
+import org.mskcc.cmo.metadb.persistence.MetadbSampleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -21,9 +20,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.mskcc.cmo.metadb.persistence.MetadbPatientRepository;
-import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
-import org.mskcc.cmo.metadb.persistence.MetadbSampleRepository;
 
 /**
  *
