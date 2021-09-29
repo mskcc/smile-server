@@ -64,7 +64,7 @@ public class SampleServiceImpl implements SampleService {
         // fetch existing patient from database or persist new patient node
         MetaDbPatient patient = new MetaDbPatient();
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
-        MetaDbPatient existingPatient = patientService.findPatientByCmoPatientId(
+        MetaDbPatient existingPatient = patientService.getPatientByCmoPatientId(
                 sampleMetadata.getCmoPatientId());
         if (existingPatient == null) {
             UUID newPatientId = patientService.savePatientMetadata(patient);
@@ -80,13 +80,13 @@ public class SampleServiceImpl implements SampleService {
     }
 
     @Override
-    public List<MetaDbSample> findMatchedNormalSample(
+    public List<MetaDbSample> getMatchedNormalsBySample(
             MetaDbSample metaDbSample) throws Exception {
         return sampleRepository.findMatchedNormalsBySample(metaDbSample);
     }
 
     @Override
-    public List<String> findPooledNormalSample(MetaDbSample metaDbSample) throws Exception {
+    public List<String> getPooledNormalsBySample(MetaDbSample metaDbSample) throws Exception {
         MetaDbRequest request = requestService.getRequestBySample(metaDbSample);
         return request.getPooledNormals();
     }
@@ -96,7 +96,7 @@ public class SampleServiceImpl implements SampleService {
         MetaDbSample metaDbSample = sampleRepository.findMetaDbSampleById(metaDbSampleId);
         metaDbSample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metaDbSampleId));
         for (SampleMetadata s: metaDbSample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patientService.findPatientIdBySample(metaDbSampleId));
+            s.setMetaDbPatientId(patientService.getPatientIdBySample(metaDbSampleId));
             s.setMetaDbSampleId(metaDbSampleId);
         }
         metaDbSample.setSampleAliases(sampleRepository.findAllSampleAlias(metaDbSampleId));
@@ -111,7 +111,7 @@ public class SampleServiceImpl implements SampleService {
         metadbSample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(metadbSample.getMetaDbSampleId()));
         for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patientService.findPatientIdBySample(metadbSample.getMetaDbSampleId()));
+            s.setMetaDbPatientId(patientService.getPatientIdBySample(metadbSample.getMetaDbSampleId()));
             s.setMetaDbSampleId(metadbSample.getMetaDbSampleId());
         }
         metadbSample.setSampleAliases(sampleRepository.findAllSampleAlias(metadbSample.getMetaDbSampleId()));
@@ -127,7 +127,7 @@ public class SampleServiceImpl implements SampleService {
 
         String cmoPatientId = metadbSample.getLatestSampleMetadata().getCmoPatientId();
 
-        MetaDbPatient pt = patientService.findPatientByCmoPatientId(cmoPatientId);
+        MetaDbPatient pt = patientService.getPatientByCmoPatientId(cmoPatientId);
         metadbSample.setPatient(pt);
 
         for (SampleMetadata s : metadbSample.getSampleMetadataList()) {
@@ -153,7 +153,7 @@ public class SampleServiceImpl implements SampleService {
 
     @Override
     public List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoId) throws Exception {
-        return sampleRepository.getSampleMetadataHistoryByIgoId(igoId);
+        return sampleRepository.findSampleMetadataHistoryByIgoId(igoId);
     }
 
     @Override

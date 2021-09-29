@@ -63,7 +63,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
         request.setMetaDbProject(project);
         request.addRequestMetadata(requestMetadata);
 
-        MetaDbRequest savedRequest = requestRepository.findMetaDbRequestById(request.getRequestId());
+        MetaDbRequest savedRequest = requestRepository.findRequestById(request.getRequestId());
         if (savedRequest == null) {
             if (request.getMetaDbSampleList() != null) {
                 List<MetaDbSample> updatedSamples = new ArrayList<>();
@@ -89,10 +89,10 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
         // is compare the size of the current request metadata history and
         // compare the size after the update?
         List<RequestMetadata> currentMetadataList = requestRepository
-                .getRequestMetadataHistory(request.getRequestId());
+                .findRequestMetadataHistoryById(request.getRequestId());
         requestRepository.save(request);
         List<RequestMetadata> updatedMetadataList = requestRepository
-                .getRequestMetadataHistory(request.getRequestId());
+                .findRequestMetadataHistoryById(request.getRequestId());
         if (updatedMetadataList.size() != (currentMetadataList.size() + 1)) {
             StringBuilder builder = new StringBuilder();
             builder.append("Failed to update the Request-level metadata for request id: ")
@@ -139,7 +139,7 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
 
     @Override
     public MetaDbRequest getMetadbRequestById(String requestId) throws Exception {
-        MetaDbRequest request = requestRepository.findMetaDbRequestById(requestId);
+        MetaDbRequest request = requestRepository.findRequestById(requestId);
         if (request == null) {
             LOG.error("Couldn't find a request with requestId " + requestId);
             return null;
@@ -243,12 +243,12 @@ public class MetadbRequestServiceImpl implements MetadbRequestService {
 
     @Override
     public List<RequestMetadata> getRequestMetadataHistoryByRequestId(String reqId) {
-        return requestRepository.getRequestMetadataHistory(reqId);
+        return requestRepository.findRequestMetadataHistoryById(reqId);
     }
 
     @Override
     public MetaDbRequest getRequestBySample(MetaDbSample sample) throws Exception {
-        return requestRepository.getRequestBySample(sample);
+        return requestRepository.findRequestBySample(sample);
     }
 
 }

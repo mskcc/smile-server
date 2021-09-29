@@ -22,17 +22,17 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public MetaDbPatient findPatientByCmoPatientId(String cmoPatientId) {
+    public MetaDbPatient getPatientByCmoPatientId(String cmoPatientId) {
         MetaDbPatient patient = patientRepository.findPatientByCmoPatientId(cmoPatientId);
         if (patient != null) {
-            List<PatientAlias> aliases = patientRepository.getPatientAliasesByPatient(patient);
+            List<PatientAlias> aliases = patientRepository.findPatientAliasesByPatient(patient);
             patient.setPatientAliases(aliases);
         }
         return patient;
     }
 
     @Override
-    public UUID findPatientIdBySample(UUID metaDbSampleUuid) {
+    public UUID getPatientIdBySample(UUID metaDbSampleUuid) {
         return patientRepository.findPatientIdBySample(metaDbSampleUuid);
     }
 

@@ -12,10 +12,10 @@ public interface SampleService {
 
     MetaDbSample setUpMetaDbSample(MetaDbSample metaDbSample) throws Exception;
 
-    List<MetaDbSample> findMatchedNormalSample(MetaDbSample metaDbSample)
+    List<MetaDbSample> getMatchedNormalsBySample(MetaDbSample metaDbSample)
             throws Exception;
 
-    List<String> findPooledNormalSample(MetaDbSample metaDbSample) throws Exception;
+    List<String> getPooledNormalsBySample(MetaDbSample metaDbSample) throws Exception;
 
     MetaDbSample getMetaDbSample(UUID metaDbSampleId) throws Exception;
 

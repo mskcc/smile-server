@@ -86,5 +86,5 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
 
     @Query("MATCH (sm: SampleMetadata {igoId: $igoId})"
             + "RETURN sm")
-    List<SampleMetadata> getSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
+    List<SampleMetadata> findSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
 }

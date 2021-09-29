@@ -125,7 +125,7 @@ public class SampleServiceTest {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
         MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
-        List<MetaDbSample> matchedNormalList = sampleService.findMatchedNormalSample(metaDbSample);
+        List<MetaDbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(metaDbSample);
         Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
     }
 
@@ -138,7 +138,7 @@ public class SampleServiceTest {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
         MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
-        List<String> pooledNormalList = sampleService.findPooledNormalSample(metaDbSample);
+        List<String> pooledNormalList = sampleService.getPooledNormalsBySample(metaDbSample);
         Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
 

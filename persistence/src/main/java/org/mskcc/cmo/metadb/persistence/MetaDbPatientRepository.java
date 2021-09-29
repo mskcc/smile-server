@@ -22,7 +22,7 @@ public interface MetaDbPatientRepository extends Neo4jRepository<MetaDbPatient, 
 
     @Query("MATCH (pa: PatientAlias)-[:IS_ALIAS]->(p: Patient {metaDbPatientId: $patient.metaDbPatientId}) "
             + "RETURN pa")
-    List<PatientAlias> getPatientAliasesByPatient(@Param("patient") MetaDbPatient patient);
+    List<PatientAlias> findPatientAliasesByPatient(@Param("patient") MetaDbPatient patient);
 
     @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias {value: $cmoPatientId, namespace: 'cmoId'}) "
             + " RETURN p")

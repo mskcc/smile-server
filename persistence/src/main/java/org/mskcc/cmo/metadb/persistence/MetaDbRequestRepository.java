@@ -17,25 +17,25 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MetaDbRequestRepository extends Neo4jRepository<MetaDbRequest, Long> {
     @Query("MATCH (r: Request {requestId: $reqId}) RETURN r;")
-    MetaDbRequest findMetaDbRequestById(@Param("reqId") String reqId);
+    MetaDbRequest findRequestById(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request {requestId: $reqId}) "
             + "MATCH (r)<-[:HAS_REQUEST]-(p: Project) "
             + "RETURN p")
-    MetaDbProject findMetaDbProjectByRequest(@Param("reqId") String reqId);
+    MetaDbProject findProjectByRequest(@Param("reqId") String reqId);
 
     @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSample.metaDbSampleId}) "
             + "MATCH (s)<-[:HAS_SAMPLE]-(r: Request)"
             + "RETURN r")
-    MetaDbRequest getRequestBySample(@Param("metaDbSample") MetaDbSample metaDbSample);
+    MetaDbRequest findRequestBySample(@Param("metaDbSample") MetaDbSample metaDbSample);
 
     @Query("MATCH (r: Request)-[:HAS_SAMPLE]->(s:Sample)"
             + "<-[:HAS_SAMPLE]-(p:Patient)"
             + "<-[:IS_ALIAS]-(pa:PatientAlias {value: $patientAliasId}) RETURN r")
-    MetaDbRequest findMetadbRequestByPatientAlias(@Param("patientAliasId") String patientAliasId);
+    MetaDbRequest findRequestByPatientAlias(@Param("patientAliasId") String patientAliasId);
 
     @Query("MATCH (r: Request {requestId: $reqId})"
             + "MATCH (r)-[:HAS_METADATA]->(rm: RequestMetadata)"
             + "RETURN rm")
-    List<RequestMetadata> getRequestMetadataHistory(@Param("reqId") String reqId);
+    List<RequestMetadata> findRequestMetadataHistoryById(@Param("reqId") String reqId);
 }
