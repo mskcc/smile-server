@@ -73,42 +73,42 @@ public final class MockDataUtils {
     }
 
     /**
-     * Returns an instance of MetaDbRequest from a request json string.
+     * Returns an instance of MetadbRequest from a request json string.
      * @param requestJson
-     * @return MetaDbRequest
+     * @return MetadbRequest
      * @throws Exception
      */
     public MetadbRequest extractRequestFromJsonData(String requestJson) throws Exception {
         MetadbRequest request = mapper.readValue(requestJson,
                 MetadbRequest.class);
         request.setRequestJson(requestJson);
-        request.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(requestJson));
+        request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
         request.setNamespace("igo");
         return request;
     }
 
     /**
-     * Extracts a List of MetaDbSample's given a request json string
+     * Extracts a List of MetadbSample's given a request json string
      * @param message
      * @return List
      * @throws JsonProcessingException
      * @throws IOException
      */
-    public List<MetadbSample> extractMetaDbSamplesFromIgoResponse(Object message)
+    public List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
             throws JsonProcessingException, IOException {
         Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        SampleMetadata[] sampleList = mapper.convertValue(map.get("samples"),
+        SampleMetadata[] samples = mapper.convertValue(map.get("samples"),
                 SampleMetadata[].class);
 
-        List<MetadbSample> metaDbSampleList = new ArrayList<>();
-        for (SampleMetadata sample: sampleList) {
+        List<MetadbSample> requestSamplesList = new ArrayList<>();
+        for (SampleMetadata s: samples) {
             // update import date here since we are parsing from json
-            sample.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-            sample.setRequestId((String) map.get("requestId"));
-            MetadbSample metaDbSample = new MetadbSample();
-            metaDbSample.addSampleMetadata(sample);
-            metaDbSampleList.add(metaDbSample);
+            s.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            s.setRequestId((String) map.get("requestId"));
+            MetadbSample sample = new MetadbSample();
+            sample.addSampleMetadata(s);
+            requestSamplesList.add(sample);
         }
-        return metaDbSampleList;
+        return requestSamplesList;
     }
 }
