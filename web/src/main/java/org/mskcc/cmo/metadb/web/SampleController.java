@@ -31,7 +31,7 @@ import org.mskcc.cmo.metadb.service.MetadbSampleService;
 @PropertySource("classpath:/maven.properties")
 public class SampleController {
     @Value("${metadb.schema_version}")
-    private String metaDbSchemaVersion;
+    private String metadbSchemaVersion;
 
     @Autowired
     private MetadbSampleService sampleService;
@@ -65,7 +65,7 @@ public class SampleController {
 
     private HttpHeaders responseHeaders() {
         HttpHeaders headers  = new HttpHeaders();
-        headers.set("metadb-schema-version", metaDbSchemaVersion);
+        headers.set("metadb-schema-version", metadbSchemaVersion);
         return headers;
     }
 

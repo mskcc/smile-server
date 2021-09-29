@@ -16,9 +16,9 @@ public class PatientServiceImpl implements MetadbPatientService {
     private MetadbPatientRepository patientRepository;
 
     @Override
-    public UUID savePatientMetadata(MetadbPatient metaDbPatient) {
-        MetadbPatient result = patientRepository.save(metaDbPatient);
-        return metaDbPatient.getMetaDbPatientId();
+    public UUID savePatientMetadata(MetadbPatient patient) {
+        MetadbPatient result = patientRepository.save(patient);
+        return result.getMetaDbPatientId();
     }
 
     @Override
@@ -32,8 +32,8 @@ public class PatientServiceImpl implements MetadbPatientService {
     }
 
     @Override
-    public UUID getPatientIdBySample(UUID metaDbSampleUuid) {
-        return patientRepository.findPatientIdBySample(metaDbSampleUuid);
+    public UUID getPatientIdBySample(UUID metadbSampleId) {
+        return patientRepository.findPatientIdBySample(metadbSampleId);
     }
 
 }

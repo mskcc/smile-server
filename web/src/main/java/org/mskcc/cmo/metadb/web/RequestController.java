@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RequestController {
 
     @Value("${metadb.schema_version}")
-    private String metaDbSchemaVersion;
+    private String metadbSchemaVersion;
 
     @Autowired
     private MetadbRequestService requestService;
@@ -45,13 +45,13 @@ public class RequestController {
      * @param requestId
      * @return ResponseEntity
      */
-    @ApiOperation(value = "Retrieve MetaDbRequest",
-        nickname = "fetchMetaDbRequestGET")
+    @ApiOperation(value = "Retrieve MetadbRequest",
+        nickname = "fetchMetadbRequestGET")
     @RequestMapping(value = "/request/{requestId}",
         method = RequestMethod.GET,
         produces = "application/json")
-    public ResponseEntity<PublishedMetadbRequest> fetchMetaDbRequestGET(@ApiParam(value =
-        "Retrieves MetaDbRequest from a RequestId.",
+    public ResponseEntity<PublishedMetadbRequest> fetchMetadbRequestGET(@ApiParam(value =
+        "Retrieves MetadbRequest from a RequestId.",
         required = true)
         @PathVariable String requestId) throws Exception {
         PublishedMetadbRequest request = requestService.getPublishedMetadbRequestById(requestId);
@@ -69,12 +69,12 @@ public class RequestController {
      * TODO properly set-up POST
      * @return ResponseEntity
      */
-    @ApiOperation(value = "Retrieves list of MetaDbRequest from a list of RequestIds.",
-        nickname = "fetchMetaDbRequestListPOST")
+    @ApiOperation(value = "Retrieves list of MetadbRequest from a list of RequestIds.",
+        nickname = "fetchMetadbRequestListPOST")
     @RequestMapping(value = "/request",
         method = RequestMethod.POST,
         produces = "application/json")
-    public ResponseEntity<List<PublishedMetadbRequest>> fetchMetaDbRequestPOST(@ApiParam(value =
+    public ResponseEntity<List<PublishedMetadbRequest>> fetchMetadbRequestPOST(@ApiParam(value =
         "List of request ids", required = true, allowMultiple = true)
         @RequestBody List<String> requestIds) throws Exception {
         List<PublishedMetadbRequest> requestList = new ArrayList<>();
@@ -94,13 +94,13 @@ public class RequestController {
      * @param requestId
      * @return ResponseEntity
      */
-    @ApiOperation(value = "Retrieve MetaDbRequest",
-        nickname = "fetchMetaDbRequestJsonGET")
+    @ApiOperation(value = "Retrieve MetadbRequest",
+        nickname = "fetchMetadbRequestJsonGET")
     @RequestMapping(value = "/requestJson/{requestId}",
         method = RequestMethod.GET,
         produces = "application/json")
-    public ResponseEntity<String> fetchMetaDbRequestJsonGET(@ApiParam(value =
-        "Retrieves MetaDbRequest from a RequestId.",
+    public ResponseEntity<String> fetchMetadbRequestJsonGET(@ApiParam(value =
+        "Retrieves MetadbRequest from a RequestId.",
         required = true)
         @PathVariable String requestId) throws Exception {
         PublishedMetadbRequest request = requestService.getPublishedMetadbRequestById(requestId);
@@ -114,7 +114,7 @@ public class RequestController {
 
     private HttpHeaders responseHeaders() {
         HttpHeaders headers  = new HttpHeaders();
-        headers.set("metadb-schema-version", metaDbSchemaVersion);
+        headers.set("metadb-schema-version", metadbSchemaVersion);
         return headers;
     }
 

@@ -340,12 +340,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     String requestJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8),
                             String.class);
-                    MetadbRequest metaDbRequest = mapper.readValue(requestJson,
+                    MetadbRequest request = mapper.readValue(requestJson,
                             MetadbRequest.class);
-                    metaDbRequest.setRequestJson(requestJson);
-                    metaDbRequest.setMetaDbSampleList(extractMetaDbSamplesFromIgoResponse(requestJson));
-                    metaDbRequest.setNamespace("igo");
-                    messageHandlingService.newRequestHandler(metaDbRequest);
+                    request.setRequestJson(requestJson);
+                    request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
+                    request.setNamespace("igo");
+                    messageHandlingService.newRequestHandler(request);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of request on topic: " + IGO_NEW_REQUEST_TOPIC, e);
                 }
@@ -397,21 +397,21 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         });
     }
 
-    private List<MetadbSample> extractMetaDbSamplesFromIgoResponse(Object message)
+    private List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
             throws JsonProcessingException, IOException {
         Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        SampleMetadata[] sampleList = mapper.convertValue(map.get("samples"),
+        SampleMetadata[] samples = mapper.convertValue(map.get("samples"),
                 SampleMetadata[].class);
 
-        List<MetadbSample> metaDbSampleList = new ArrayList<>();
-        for (SampleMetadata sample: sampleList) {
+        List<MetadbSample> requestSamplesList = new ArrayList<>();
+        for (SampleMetadata s: samples) {
             // update import date here since we are parsing from json
-            sample.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-            sample.setRequestId((String) map.get("requestId"));
-            MetadbSample metaDbSample = new MetadbSample();
-            metaDbSample.addSampleMetadata(sample);
-            metaDbSampleList.add(metaDbSample);
+            s.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            s.setRequestId((String) map.get("requestId"));
+            MetadbSample sample = new MetadbSample();
+            sample.addSampleMetadata(s);
+            requestSamplesList.add(sample);
         }
-        return metaDbSampleList;
+        return requestSamplesList;
     }
 }

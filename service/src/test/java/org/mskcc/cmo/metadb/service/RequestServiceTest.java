@@ -96,7 +96,7 @@ public class RequestServiceTest {
 
     /**
      * Tests getMetadbRequestById
-     * By checking if it retrieves not null or empty MetaDbRequest
+     * By checking if it retrieves not null or empty MetadbRequest
      * @throws Exception
      */
     @Test
