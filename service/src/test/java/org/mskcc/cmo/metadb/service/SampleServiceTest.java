@@ -25,8 +25,6 @@ import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  *
  * @author ochoaa
@@ -34,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Testcontainers
 @DataNeo4jTest
 @Import(MockDataUtils.class)
-public class MetadbServiceTest {
+public class SampleServiceTest {
     @Autowired
     private MockDataUtils mockDataUtils;
 
@@ -75,7 +73,7 @@ public class MetadbServiceTest {
      * @param sampleService
      */
     @Autowired
-    public MetadbServiceTest(MetaDbRequestRepository requestRepository,
+    public SampleServiceTest(MetaDbRequestRepository requestRepository,
             MetaDbSampleRepository sampleRepository, MetaDbPatientRepository patientRepository,
             MetadbRequestService requestService, SampleService sampleService,
             PatientService patientService) {
@@ -141,12 +139,7 @@ public class MetadbServiceTest {
         String igoId = "MOCKREQUEST1_B_3";
         MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
         List<String> pooledNormalList = sampleService.findPooledNormalSample(metaDbSample);
-        
-        final ObjectMapper mapper = new ObjectMapper();
-        //System.out.println("\n\n\n\n\n " + pooledNormalListupdate.size());
-        //The List of pooled normals is one long string of all normals
-        //Need to figure out why this is happening
-        //Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
+        Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
 
     /**
@@ -200,13 +193,13 @@ public class MetadbServiceTest {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
         MetaDbSample metaDbSample = sampleService.getMetaDbSampleByRequestAndIgoId(requestId, igoId);
-        
+
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
         MetaDbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(0);
-        
+
         Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(
                 metaDbSample.getLatestSampleMetadata(),
                 updatedMetaDbSample.getLatestSampleMetadata());
@@ -223,14 +216,14 @@ public class MetadbServiceTest {
     public void testSampleHistoryAfterUpdate() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_2";
-        
+
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         MetaDbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
         MetaDbSample updatedMetaDbSample = updatedRequest.getMetaDbSampleList().get(1);
         sampleService.saveSampleMetadata(updatedMetaDbSample);
-        
+
         List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
 

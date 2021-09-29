@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetaDbPatient;
+import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.persistence.MetaDbSampleRepository;
+import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.PatientService;
 import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ import org.springframework.stereotype.Component;
 public class SampleServiceImpl implements SampleService {
     @Autowired
     private MetadbJsonComparator metadbJsonComparator;
+
+    @Autowired
+    private MetadbRequestService requestService;
 
     @Autowired
     private MetaDbSampleRepository sampleRepository;
@@ -82,7 +87,8 @@ public class SampleServiceImpl implements SampleService {
 
     @Override
     public List<String> findPooledNormalSample(MetaDbSample metaDbSample) throws Exception {
-        return sampleRepository.findPooledNormalsBySample(metaDbSample);
+        MetaDbRequest request = requestService.getRequestBySample(metaDbSample);
+        return request.getPooledNormals();
     }
 
     @Override

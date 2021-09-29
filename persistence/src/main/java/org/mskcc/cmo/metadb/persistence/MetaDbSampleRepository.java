@@ -2,6 +2,7 @@ package org.mskcc.cmo.metadb.persistence;
 
 import java.util.List;
 import java.util.UUID;
+import org.mskcc.cmo.metadb.model.MetaDbRequest;
 import org.mskcc.cmo.metadb.model.MetaDbSample;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
@@ -56,11 +57,6 @@ public interface MetaDbSampleRepository extends Neo4jRepository<MetaDbSample, UU
             + "RETURN n")
     List<MetaDbSample> findMatchedNormalsBySample(
             @Param("metaDbSample") MetaDbSample metaDbSample);
-
-    @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSample.metaDbSampleId}) "
-            + "MATCH (s)<-[:HAS_SAMPLE]-(r: Request)"
-            + "RETURN r.pooledNormals")
-    List<String> findPooledNormalsBySample(@Param("metaDbSample") MetaDbSample metaDbSample);
 
     @Query("Match (r: Request {requestId: $reqId})-[:HAS_SAMPLE]->"
             + "(s: Sample) "
