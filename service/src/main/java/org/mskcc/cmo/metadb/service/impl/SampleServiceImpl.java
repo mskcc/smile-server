@@ -155,6 +155,11 @@ public class SampleServiceImpl implements SampleService {
             SampleMetadata sampleMetadata) throws Exception {
         String existingMetadata = mapper.writeValueAsString(existingSampleMetadata);
         String currentMetadata = mapper.writeValueAsString(sampleMetadata);
-        return (!metadbJsonComparator.isConsistent(currentMetadata, existingMetadata));
+        try {
+            metadbJsonComparator.isConsistent(currentMetadata, existingMetadata);
+        } catch (AssertionError e) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 }
