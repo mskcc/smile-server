@@ -59,9 +59,15 @@ public class RequestServiceImpl implements MetadbRequestService {
         MetadbProject project = new MetadbProject();
         project.setProjectId(request.getProjectId());
         project.setNamespace(request.getNamespace());
-        RequestMetadata requestMetadata = extractRequestMetadata(request.getRequestJson());
         request.setMetaDbProject(project);
-        request.addRequestMetadata(requestMetadata);
+        try {
+            RequestMetadata requestMetadata = extractRequestMetadata(request.getRequestJson());
+            request.addRequestMetadata(requestMetadata);
+        } catch (Exception e) {
+            LOG.error("Attempt to extract requestMetadata from requestJson failed:\n"
+            + request.getRequestJson());
+            throw new RuntimeException(e);
+        }
 
         MetadbRequest savedRequest = requestRepository.findRequestById(request.getRequestId());
         if (savedRequest == null) {
