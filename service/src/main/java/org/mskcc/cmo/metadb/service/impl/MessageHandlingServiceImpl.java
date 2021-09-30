@@ -115,9 +115,14 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             // directly from IGO LIMS
 
                             // message handlers will check if there are updates to persist or not
-                            requestUpdateQueue.add(request.getLatestRequestMetadata());
-                            for (MetadbSample sample : request.getMetaDbSampleList()) {
-                                sampleUpdateQueue.add(sample.getLatestSampleMetadata());
+                            try {
+                                requestUpdateQueue.add(request.getLatestRequestMetadata());
+                                for (MetadbSample sample : request.getMetaDbSampleList()) {
+                                    sampleUpdateQueue.add(sample.getLatestSampleMetadata());
+                                }
+                            } catch (NullPointerException e) {
+                                throw new RuntimeException("Encountered NPE while handling request: "
+                                        + request.getRequestId(), e);
                             }
                         } else {
                             LOG.warn("Request already in database - it will not be saved: "
