@@ -381,25 +381,25 @@ public class MetadbRequest implements Serializable {
     public void updateRequestMetadata(RequestMetadata requestMetadata)
             throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> metadataMap =
+        Map<String, Object> metadataMap =
                 mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
 
-        this.requestId = metadataMap.get("requestId");
-        this.recipe = metadataMap.get("recipe");
-        this.projectManagerName = metadataMap.get("projectManagerName");
-        this.piEmail = metadataMap.get("piEmail");
-        this.labHeadName = metadataMap.get("labHeadName");
-        this.labHeadEmail = metadataMap.get("labHeadEmail");
-        this.investigatorName = metadataMap.get("investigatorName");
-        this.investigatorEmail = metadataMap.get("investigatorEmail");
-        this.dataAnalystName = metadataMap.get("dataAnalystName");
-        this.otherContactEmails = metadataMap.get("otherContactEmails");
-        this.dataAccessEmails = metadataMap.get("dataAccessEmails");
-        this.qcAccessEmails = metadataMap.get("qcAccessEmails");
-        this.strand = metadataMap.get("strand");
-        this.libraryType = metadataMap.get("libraryType");
-        this.bicAnalysis = Boolean.valueOf(metadataMap.get("bicAnalysis"));
-        this.isCmoRequest = Boolean.valueOf(metadataMap.get("isCmoRequest"));
+        this.requestId = String.valueOf(metadataMap.get("requestId"));
+        this.recipe = String.valueOf(metadataMap.get("recipe"));
+        this.projectManagerName = String.valueOf(metadataMap.get("projectManagerName"));
+        this.piEmail = String.valueOf(metadataMap.get("piEmail"));
+        this.labHeadName = String.valueOf(metadataMap.get("labHeadName"));
+        this.labHeadEmail = String.valueOf(metadataMap.get("labHeadEmail"));
+        this.investigatorName = String.valueOf(metadataMap.get("investigatorName"));
+        this.investigatorEmail = String.valueOf(metadataMap.get("investigatorEmail"));
+        this.dataAnalystName = String.valueOf(metadataMap.get("dataAnalystName"));
+        this.otherContactEmails = String.valueOf(metadataMap.get("otherContactEmails"));
+        this.dataAccessEmails = String.valueOf(metadataMap.get("dataAccessEmails"));
+        this.qcAccessEmails = String.valueOf(metadataMap.get("qcAccessEmails"));
+        this.strand = String.valueOf(metadataMap.get("strand"));
+        this.libraryType = String.valueOf(metadataMap.get("libraryType"));
+        this.bicAnalysis = Boolean.parseBoolean(String.valueOf(metadataMap.get("bicAnalysis")));
+        this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
         this.metaDbProject = new MetadbProject(requestId.split("_")[0]);
         addRequestMetadata(requestMetadata);
     }
