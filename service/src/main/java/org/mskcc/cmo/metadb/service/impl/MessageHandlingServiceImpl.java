@@ -438,10 +438,4 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         return requestSamplesList;
     }
 
-    private MetadbSample createSampleFromSampleMetadata(SampleMetadata sampleMetadata) {
-        MetadbSample sample = new MetadbSample();
-        sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        sample.addSampleMetadata(sampleMetadata);
-        return sample;
-    }
 }
