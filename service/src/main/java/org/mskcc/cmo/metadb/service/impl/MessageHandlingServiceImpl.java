@@ -21,9 +21,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
+import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
@@ -152,14 +154,24 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     if (requestMetadata != null) {
                         MetadbRequest existingRequest =
                                 requestService.getMetadbRequestById(requestMetadata.getRequestId());
-
+                        if (existingRequest == null) {
+                            // persist and handle new request
+                            MetadbRequest request = new MetadbRequest();
+                            request.updateRequestMetadata(requestMetadata);
+                            LOG.info("Publishing new request metadata to " + CMO_REQUEST_UPDATE_TOPIC);
+                            requestService.saveRequest(request);
+                            messagingGateway.publish(request.getRequestId(),
+                                    CMO_REQUEST_UPDATE_TOPIC,
+                                    mapper.writeValueAsString(
+                                          request.getRequestMetadataList()));
+                        }
                         if (requestService.requestHasMetadataUpdates(
                                 existingRequest.getLatestRequestMetadata(), requestMetadata)) {
                             // persist request-level metadata updates to database
                             existingRequest.updateRequestMetadata(requestMetadata);
                             if (requestService.saveRequestMetadata(existingRequest)) {
                                 LOG.info("Publishing Request-level Metadata updates "
-                                        + "to CMO_REQUEST_METADATA_UPDATE");
+                                        + "to " + CMO_REQUEST_UPDATE_TOPIC);
                                 // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC
                                 messagingGateway.publish(existingRequest.getRequestId(),
                                         CMO_REQUEST_UPDATE_TOPIC,
@@ -207,6 +219,15 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                                 sampleMetadata.getRequestId(), sampleMetadata.getIgoId());
                         if (existingSample == null) {
                             // handle and persist new sample received
+                            MetadbSample sample = new MetadbSample();
+                            sampleMetadata.setImportDate(
+                                    LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                            sample.addSampleMetadata(sampleMetadata);
+                            sampleService.saveSampleMetadata(sample);
+                            LOG.info("Publishing metadata history for new sample: "
+                                    + sampleMetadata.getIgoId());
+                            messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
+                                    mapper.writeValueAsString(sample.getSampleMetadataList()));
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(), sampleMetadata)) {
                             // persist sample level updates to database and publish
@@ -218,9 +239,6 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(existingSample.getSampleMetadataList()));
                         }
-                    } else {
-                        LOG.warn("There are no updates to persist for current sample: "
-                                + sampleMetadata.getIgoId());
                     }
                     if (interrupted && sampleUpdateQueue.isEmpty()) {
                         break;
@@ -413,5 +431,12 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             requestSamplesList.add(sample);
         }
         return requestSamplesList;
+    }
+
+    private MetadbSample createSampleFromSampleMetadata(SampleMetadata sampleMetadata) {
+        MetadbSample sample = new MetadbSample();
+        sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        sample.addSampleMetadata(sampleMetadata);
+        return sample;
     }
 }

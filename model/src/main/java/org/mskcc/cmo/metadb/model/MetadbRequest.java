@@ -400,6 +400,7 @@ public class MetadbRequest implements Serializable {
         this.libraryType = metadataMap.get("libraryType");
         this.bicAnalysis = Boolean.getBoolean(metadataMap.get("bicAnalysis"));
         this.isCmoRequest = Boolean.getBoolean(metadataMap.get("isCmoRequest"));
+        this.metaDbProject = new MetadbProject(requestId.split("_")[0]);
         addRequestMetadata(requestMetadata);
     }
 
