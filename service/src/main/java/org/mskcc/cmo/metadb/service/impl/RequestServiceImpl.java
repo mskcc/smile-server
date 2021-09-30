@@ -59,9 +59,19 @@ public class RequestServiceImpl implements MetadbRequestService {
         MetadbProject project = new MetadbProject();
         project.setProjectId(request.getProjectId());
         project.setNamespace(request.getNamespace());
-        RequestMetadata requestMetadata = extractRequestMetadata(request.getRequestJson());
         request.setMetaDbProject(project);
-        request.addRequestMetadata(requestMetadata);
+
+        // the actual request.getRequestJson() is returning null...
+        // something is up with the logic/flow of a new request coming in if it keeps trying
+        // to publish the result to MDB_STREAM.consumers.cmo-request-update
+        try {
+            RequestMetadata requestMetadata = extractRequestMetadata(request.getRequestJson());
+            request.addRequestMetadata(requestMetadata);
+        } catch (Exception e) {
+            LOG.error("Attempt to extract requestMetadata from requestJson failed:\n"
+            + request.getRequestJson());
+            throw new RuntimeException(e);
+        }
 
         MetadbRequest savedRequest = requestRepository.findRequestById(request.getRequestId());
         if (savedRequest == null) {

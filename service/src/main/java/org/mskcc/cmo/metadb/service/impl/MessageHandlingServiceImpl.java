@@ -36,6 +36,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MessageHandlingServiceImpl implements MessageHandlingService {
+    @Value("${nats.consumer_name}")
+    private String consumerName;
 
     @Value("${igo.new_request_topic}")
     private String IGO_NEW_REQUEST_TOPIC;
@@ -82,6 +84,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
     private static final Log LOG = LogFactory.getLog(MessageHandlingServiceImpl.class);
 
+    private String getConsumerRequestMsgId(String requestId) {
+        return requestId + "_" + consumerName;
+    }
+
     private class NewIgoRequestHandler implements Runnable {
 
         final Phaser phaser;
@@ -103,8 +109,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
                         // persist new request to database
                         if (existingRequest == null) {
+                            LOG.info("Received new request with id: " + request.getRequestId());
                             requestService.saveRequest(request);
-                            messagingGateway.publish(request.getRequestId(),
+                            messagingGateway.publish(getConsumerRequestMsgId(request.getRequestId()),
                                     CONSISTENCY_CHECK_NEW_REQUEST,
                                     mapper.writeValueAsString(
                                             requestService.getPublishedMetadbRequestById(
@@ -165,7 +172,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             request.updateRequestMetadata(requestMetadata);
                             LOG.info("Publishing new request metadata to " + CMO_REQUEST_UPDATE_TOPIC);
                             requestService.saveRequest(request);
-                            messagingGateway.publish(request.getRequestId(),
+                            messagingGateway.publish(getConsumerRequestMsgId(request.getRequestId()),
                                     CMO_REQUEST_UPDATE_TOPIC,
                                     mapper.writeValueAsString(
                                           request.getRequestMetadataList()));
@@ -178,7 +185,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                                 LOG.info("Publishing Request-level Metadata updates "
                                         + "to " + CMO_REQUEST_UPDATE_TOPIC);
                                 // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC
-                                messagingGateway.publish(existingRequest.getRequestId(),
+                                messagingGateway.publish(
+                                        getConsumerRequestMsgId(existingRequest.getRequestId()),
                                         CMO_REQUEST_UPDATE_TOPIC,
                                         mapper.writeValueAsString(
                                               existingRequest.getRequestMetadataList()));
@@ -438,10 +446,4 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         return requestSamplesList;
     }
 
-    private MetadbSample createSampleFromSampleMetadata(SampleMetadata sampleMetadata) {
-        MetadbSample sample = new MetadbSample();
-        sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        sample.addSampleMetadata(sampleMetadata);
-        return sample;
-    }
 }
