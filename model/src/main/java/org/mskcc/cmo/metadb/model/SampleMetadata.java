@@ -16,7 +16,7 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SampleMetadata implements Serializable {
+public class SampleMetadata implements Serializable, Comparable<SampleMetadata> {
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
@@ -470,6 +470,14 @@ public class SampleMetadata implements Serializable {
 
     public void setCmoSampleIdFields(Map<String, String> cmoSampleIdFields) {
         this.cmoSampleIdFields = cmoSampleIdFields;
+    }
+    
+    @Override
+    public int compareTo(SampleMetadata sampleMetadata) {
+        if (getImportDate() == null || sampleMetadata.getImportDate() == null) {
+            return 0;
+        }
+        return getImportDate().compareTo(sampleMetadata.getImportDate());
     }
 
     @Override

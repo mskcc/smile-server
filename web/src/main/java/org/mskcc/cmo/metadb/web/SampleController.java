@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
-import org.mskcc.cmo.metadb.service.SampleService;
+import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -31,13 +31,13 @@ import org.springframework.web.bind.annotation.RestController;
 @PropertySource("classpath:/maven.properties")
 public class SampleController {
     @Value("${metadb.schema_version}")
-    private String metaDbSchemaVersion;
+    private String metadbSchemaVersion;
 
     @Autowired
-    private SampleService sampleService;
+    private MetadbSampleService sampleService;
 
     @Autowired
-    public SampleController(SampleService sampleService) {
+    public SampleController(MetadbSampleService sampleService) {
         this.sampleService = sampleService;
     }
 
@@ -65,7 +65,7 @@ public class SampleController {
 
     private HttpHeaders responseHeaders() {
         HttpHeaders headers  = new HttpHeaders();
-        headers.set("metadb-schema-version", metaDbSchemaVersion);
+        headers.set("metadb-schema-version", metadbSchemaVersion);
         return headers;
     }
 

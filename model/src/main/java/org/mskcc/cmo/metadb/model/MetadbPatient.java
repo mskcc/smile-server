@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -18,16 +19,16 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
  */
 
 @NodeEntity(label = "Patient")
-public class MetaDbPatient implements Serializable {
+public class MetadbPatient implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID metaDbPatientId;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
-    private List<MetaDbSample> metaDbSampleList;
+    private List<MetadbSample> metaDbSampleList;
     @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
     private List<PatientAlias>  patientAliases;
 
-    public MetaDbPatient() {}
+    public MetadbPatient() {}
 
     public UUID getMetaDbPatientId() {
         return metaDbPatientId;
@@ -53,11 +54,11 @@ public class MetaDbPatient implements Serializable {
         return null;
     }
 
-    public List<MetaDbSample> getMetaDbSampleList() {
+    public List<MetadbSample> getMetaDbSampleList() {
         return metaDbSampleList;
     }
 
-    public void setMetaDbSampleList(List<MetaDbSample> metaDbSampleList) {
+    public void setMetaDbSampleList(List<MetadbSample> metaDbSampleList) {
         this.metaDbSampleList = metaDbSampleList;
     }
 
@@ -65,7 +66,7 @@ public class MetaDbPatient implements Serializable {
      * Add sample to array list.
      * @param metaDbSample
      */
-    public void addMetaDbSample(MetaDbSample metaDbSample) {
+    public void addMetaDbSample(MetadbSample metaDbSample) {
         if (metaDbSampleList == null) {
             metaDbSampleList = new ArrayList<>();
         }
@@ -91,4 +92,8 @@ public class MetaDbPatient implements Serializable {
         patientAliases.add(patientAlias);
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }
