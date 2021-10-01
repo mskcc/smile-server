@@ -1,16 +1,9 @@
-defaults: &defaults
-    docker:
-        - image: cimg/openjdk:8.0.275
-
 version: 2.1
-
-orbs:
-  maven: circleci/maven@1.0.3
 
 jobs:
   run_checkstyle:
-    <<: *defaults
     working_directory: /tmp/repos/cmo-metadb
+    machine: true
     steps:
       - checkout
       - run:
@@ -24,10 +17,10 @@ jobs:
               git fetch --tags && \
               git checkout ${METADB_COMMON_VERSION}
       - run:
-          name: "Build project..."
+          name: "Build project and run checkstyle plugin..."
           command: mvn clean install
       - run:
-          name: "Run checkstyle plugin..."
+          name: "Running checkstyle plugin..."
           command: mvn checkstyle:checkstyle
       - run:
           name: "Validating checkstyle plugin report..."
@@ -39,4 +32,4 @@ jobs:
 workflows:
   run_mvn_checkstyle:
     jobs:
-        - run_checkstyle
+      - run_checkstyle

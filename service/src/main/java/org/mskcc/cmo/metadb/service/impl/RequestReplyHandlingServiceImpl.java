@@ -15,8 +15,8 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.mskcc.cmo.metadb.service.RequestReplyHandlingService;
-import org.mskcc.cmo.metadb.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
     private int NUM_NEW_REQUEST_HANDLERS;
 
     @Autowired
-    private SampleService sampleService;
+    private MetadbSampleService sampleService;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private static boolean initialized = false;

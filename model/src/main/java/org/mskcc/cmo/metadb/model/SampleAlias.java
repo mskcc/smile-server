@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
 import java.io.Serializable;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -19,7 +20,7 @@ public class SampleAlias implements Serializable {
     private String sampleId;
     private String namespace;
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
-    private MetaDbSample sampleMetadata;
+    private MetadbSample sampleMetadata;
 
     public SampleAlias() {}
 
@@ -49,11 +50,16 @@ public class SampleAlias implements Serializable {
         this.namespace = namespace;
     }
 
-    public MetaDbSample getSampleMetadata() {
+    public MetadbSample getSampleMetadata() {
         return sampleMetadata;
     }
 
-    public void setSampleMetadata(MetaDbSample sampleMetadata) {
+    public void setSampleMetadata(MetadbSample sampleMetadata) {
         this.sampleMetadata = sampleMetadata;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
