@@ -3,9 +3,13 @@ package org.mskcc.cmo.metadb.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -23,14 +27,17 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 @NodeEntity(label = "Request")
 @JsonIgnoreProperties({"samples"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MetaDbRequest implements Serializable {
+public class MetadbRequest implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID metaDbRequestId;
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
-    private List<MetaDbSample> metaDbSampleList;
+    private List<MetadbSample> metaDbSampleList;
     @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
-    private MetaDbProject metaDbProject;
+    private MetadbProject metaDbProject;
+    @JsonIgnore
+    @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
+    private List<RequestMetadata> requestMetadataList;
     @JsonIgnore
     private String namespace;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
@@ -55,7 +62,7 @@ public class MetaDbRequest implements Serializable {
     private boolean isCmoRequest;
     private boolean bicAnalysis;
 
-    public MetaDbRequest() {}
+    public MetadbRequest() {}
 
     /**
      * MetaDbRequest constructor
@@ -79,12 +86,12 @@ public class MetaDbRequest implements Serializable {
      * @param bicAnalysis
      * @param isCmoRequest
      */
-    public MetaDbRequest(String requestId, String recipe, String projectManagerName,
+    public MetadbRequest(String requestId, String recipe, String projectManagerName,
             String piEmail, String labHeadName, String labHeadEmail,
             String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType,
-            List<MetaDbSample> metaDbSampleList, String requestJson,
+            List<MetadbSample> metaDbSampleList, String requestJson,
             boolean bicAnalysis, boolean isCmoRequest) {
         this.requestId = requestId;
         this.recipe = recipe;
@@ -102,7 +109,7 @@ public class MetaDbRequest implements Serializable {
         this.strand = strand;
         this.libraryType = libraryType;
         this.metaDbSampleList = metaDbSampleList;
-        this.metaDbProject = new MetaDbProject(requestId.split("_")[0]);
+        this.metaDbProject = new MetadbProject(requestId.split("_")[0]);
         this.requestJson = requestJson;
         this.bicAnalysis = bicAnalysis;
         this.isCmoRequest = isCmoRequest;
@@ -116,20 +123,49 @@ public class MetaDbRequest implements Serializable {
         this.metaDbRequestId = metaDbRequestId;
     }
 
-    public List<MetaDbSample> getMetaDbSampleList() {
+    public List<MetadbSample> getMetaDbSampleList() {
         return metaDbSampleList;
     }
 
-    public void setMetaDbSampleList(List<MetaDbSample> metaDbSampleList) {
+    public void setMetaDbSampleList(List<MetadbSample> metaDbSampleList) {
         this.metaDbSampleList = metaDbSampleList;
     }
 
-    public MetaDbProject getMetaDbProject() {
+    public MetadbProject getMetaDbProject() {
         return metaDbProject;
     }
 
-    public void setMetaDbProject(MetaDbProject metaDbProject) {
+    public void setMetaDbProject(MetadbProject metaDbProject) {
         this.metaDbProject = metaDbProject;
+    }
+
+    /**
+     * Returns sorted RequestMetadata list.
+     * @return List
+     */
+    public List<RequestMetadata> getRequestMetadataList() {
+        if (requestMetadataList == null) {
+            requestMetadataList = new ArrayList<>();
+        }
+        Collections.sort(requestMetadataList);
+        return requestMetadataList;
+    }
+
+    public void setRequestMetadataList(List<RequestMetadata> requestMetadataList) {
+        this.requestMetadataList = requestMetadataList;
+    }
+
+    /**
+     * Adds new RequestMetadata to requestMetadataList
+     * If the requestMetadataList is empty, a new one is instantiated.
+     * Otherwise its simply added to the list
+     * @param requestMetadata
+     */
+    public void addRequestMetadata(RequestMetadata requestMetadata) {
+        if (requestMetadataList == null) {
+            requestMetadataList = new ArrayList<>();
+        }
+        requestMetadataList.add(requestMetadata);
     }
 
     public String getNamespace() {
@@ -157,14 +193,14 @@ public class MetaDbRequest implements Serializable {
     }
 
     /**
-     *
-     * @param metaDbSample
+     * Adds a MetadbSample to the sample list.
+     * @param metadbSample
      */
-    public void addMetaDbSampleList(MetaDbSample metaDbSample) {
+    public void addMetadbSample(MetadbSample metadbSample) {
         if (metaDbSampleList == null) {
             metaDbSampleList = new ArrayList<>();
         }
-        metaDbSampleList.add(metaDbSample);
+        metaDbSampleList.add(metadbSample);
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -310,6 +346,76 @@ public class MetaDbRequest implements Serializable {
 
     public void setBicAnalysis(boolean bicAnalysis) {
         this.bicAnalysis = bicAnalysis;
+    }
+
+    /**
+     * Updates the RequestMetadata with provided request.
+     * @param updatedRequest
+     */
+    public void updateRequestMetadata(MetadbRequest updatedRequest) {
+        this.requestId = updatedRequest.getRequestId();
+        this.recipe = updatedRequest.getRecipe();
+        this.projectManagerName = updatedRequest.getProjectManagerName();
+        this.piEmail = updatedRequest.getPiEmail();
+        this.labHeadName = updatedRequest.getLabHeadName();
+        this.labHeadEmail = updatedRequest.getLabHeadEmail();
+        this.investigatorName = updatedRequest.getInvestigatorName();
+        this.investigatorEmail = updatedRequest.getInvestigatorEmail();
+        this.dataAnalystName = updatedRequest.getDataAnalystName();
+        this.otherContactEmails = updatedRequest.getOtherContactEmails();
+        this.dataAccessEmails = updatedRequest.getDataAccessEmails();
+        this.qcAccessEmails = updatedRequest.getQcAccessEmails();
+        this.strand = updatedRequest.getStrand();
+        this.libraryType = updatedRequest.getLibraryType();
+        this.bicAnalysis = updatedRequest.getBicAnalysis();
+        this.isCmoRequest = updatedRequest.getIsCmoRequest();
+        this.requestJson = updatedRequest.getRequestJson();
+        addRequestMetadata(updatedRequest.getLatestRequestMetadata());
+    }
+
+    /**
+     * Updates the metadata for the current request provided a RequestMetadata object.
+     * @param requestMetadata
+     * @throws com.fasterxml.jackson.core.JsonProcessingException
+     */
+    public void updateRequestMetadata(RequestMetadata requestMetadata)
+            throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> metadataMap =
+                mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
+
+        this.requestId = String.valueOf(metadataMap.get("requestId"));
+        this.recipe = String.valueOf(metadataMap.get("recipe"));
+        this.projectManagerName = String.valueOf(metadataMap.get("projectManagerName"));
+        this.piEmail = String.valueOf(metadataMap.get("piEmail"));
+        this.labHeadName = String.valueOf(metadataMap.get("labHeadName"));
+        this.labHeadEmail = String.valueOf(metadataMap.get("labHeadEmail"));
+        this.investigatorName = String.valueOf(metadataMap.get("investigatorName"));
+        this.investigatorEmail = String.valueOf(metadataMap.get("investigatorEmail"));
+        this.dataAnalystName = String.valueOf(metadataMap.get("dataAnalystName"));
+        this.otherContactEmails = String.valueOf(metadataMap.get("otherContactEmails"));
+        this.dataAccessEmails = String.valueOf(metadataMap.get("dataAccessEmails"));
+        this.qcAccessEmails = String.valueOf(metadataMap.get("qcAccessEmails"));
+        this.strand = String.valueOf(metadataMap.get("strand"));
+        this.libraryType = String.valueOf(metadataMap.get("libraryType"));
+        this.bicAnalysis = Boolean.parseBoolean(String.valueOf(metadataMap.get("bicAnalysis")));
+        this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
+        this.metaDbProject = new MetadbProject(requestId.split("_")[0]);
+        addRequestMetadata(requestMetadata);
+    }
+
+    /**
+     * Returns the latest RequestMetadata.
+     * Collections is sorting by date in ascending order so the last item
+     * in the list reflects the latest RequestMetadata.
+     * @return RequestMetadata
+     */
+    public RequestMetadata getLatestRequestMetadata() {
+        if (requestMetadataList != null && !requestMetadataList.isEmpty()) {
+            Collections.sort(requestMetadataList);
+            return requestMetadataList.get(requestMetadataList.size() - 1);
+        }
+        return null;
     }
 
     @Override

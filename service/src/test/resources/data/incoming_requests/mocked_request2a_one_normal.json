@@ -11,6 +11,8 @@
   "dataAnalystEmail": "",
   "otherContactEmails": "preclinical_group_shared@mskcc.org",
   "dataAccessEmails": "",
+  "isCmoRequest":true,
+  "bicAnalysis": false,
   "qcAccessEmails": "",
   "pooledNormals": [
     "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz",
