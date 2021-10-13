@@ -48,10 +48,10 @@
     <testcontainers.version>1.16.0</testcontainers.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
-    <cmo_metadb_messaging_java.version>cac102e3f4949e385e327cf8f52d7b56f0f47358</cmo_metadb_messaging_java.version>
+    <cmo_metadb_messaging_java.version>1.1.4.RELEASE</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.group>com.github.mskcc</cmo_metadb_common.group>
-    <cmo_metadb_common.version>01ccbf0e0d8c0b8694abdfda3fcb3c1982e0f4c3</cmo_metadb_common.version>
+    <cmo_metadb_common.version>1.1.7.RELEASE</cmo_metadb_common.version>
     <!-- metadb expected schema version -->
     <metadb.schema_version>v1.1</metadb.schema_version>
   </properties>
