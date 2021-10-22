@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
+import org.mskcc.cmo.metadb.service.exception.MetadbWebServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -41,17 +42,19 @@ public class RequestController {
     }
 
     /**
-     * fetchRequestGET
+     * Returns a MetadbRequest given a Request ID.
+     * If the given request is not found then returns a 'not found' error.
      * @param requestId
      * @return ResponseEntity
+     * @throws Exception
      */
-    @ApiOperation(value = "Retrieve MetadbRequest",
+    @ApiOperation(value = "Returns a MetadbRequest given a Request ID",
         nickname = "fetchMetadbRequestGET")
     @RequestMapping(value = "/request/{requestId}",
         method = RequestMethod.GET,
         produces = "application/json")
     public ResponseEntity<PublishedMetadbRequest> fetchMetadbRequestGET(@ApiParam(value =
-        "Retrieves MetadbRequest from a RequestId.",
+        "Request ID to retrieve",
         required = true)
         @PathVariable String requestId) throws Exception {
         PublishedMetadbRequest request = requestService.getPublishedMetadbRequestById(requestId);
@@ -64,18 +67,19 @@ public class RequestController {
     }
 
     /**
-     * fetchRequestListPOST
+     * Returns a list of MetadbRequest's given a list of Request IDs.
+     * Only requests which exist in the database will be returned.
      * @param requestIds
-     * TODO properly set-up POST
      * @return ResponseEntity
+     * @throws Exception
      */
-    @ApiOperation(value = "Retrieves list of MetadbRequest from a list of RequestIds.",
+    @ApiOperation(value = "Returns a list of MetadbRequest given a list of Request IDs.",
         nickname = "fetchMetadbRequestListPOST")
     @RequestMapping(value = "/request",
         method = RequestMethod.POST,
         produces = "application/json")
     public ResponseEntity<List<PublishedMetadbRequest>> fetchMetadbRequestPOST(@ApiParam(value =
-        "List of request ids", required = true, allowMultiple = true)
+        "List of Request IDs", required = true, allowMultiple = true)
         @RequestBody List<String> requestIds) throws Exception {
         List<PublishedMetadbRequest> requestList = new ArrayList<>();
         for (String requestId: requestIds) {
@@ -90,17 +94,19 @@ public class RequestController {
     }
 
     /**
-     * fetchRequestGET
+     * Returns the Request JSON payload as it was received from pub-sub channels,
+     * such as by LimsRest publisher.
      * @param requestId
      * @return ResponseEntity
+     * @throws Exception
      */
-    @ApiOperation(value = "Retrieve MetadbRequest",
+    @ApiOperation(value = "Returns the unprocessed Request JSON for a given request ID",
         nickname = "fetchMetadbRequestJsonGET")
     @RequestMapping(value = "/requestJson/{requestId}",
         method = RequestMethod.GET,
         produces = "application/json")
     public ResponseEntity<String> fetchMetadbRequestJsonGET(@ApiParam(value =
-        "Retrieves MetadbRequest from a RequestId.",
+        "Request ID",
         required = true)
         @PathVariable String requestId) throws Exception {
         PublishedMetadbRequest request = requestService.getPublishedMetadbRequestById(requestId);
@@ -110,6 +116,54 @@ public class RequestController {
         return ResponseEntity.ok()
                 .headers(responseHeaders())
                 .body(request.getRequestJson());
+    }
+
+    /**
+     * Returns a list of request summaries or a list of request IDs for the provided
+     * date range. If an end date is not provided then the current local timestamp
+     * will be used as the end date.
+     * @param dateRange
+     * @param returnType
+     * @return ResponseEntity
+     * @throws Exception
+     */
+    @ApiOperation(value = "Returns a list of request summaries or list of request IDs imported"
+            + "into the database within the provided date range.",
+            nickname = "fetchRequestListByImportDatePOST")
+    @RequestMapping(value = "/requestsByImportDate",
+            method = RequestMethod.POST,
+            produces = "application/json")
+    public ResponseEntity<Object> fetchRequestsByImportDatePOST(@ApiParam(value =
+            "JSON with 'startDate' (required) and 'endDate' (optional) to query for.", required = true)
+            @RequestBody DateRange dateRange,  ReturnTypeDetails returnType) throws Exception {
+        // get request summary for given date range
+        List<List<String>> requestSummaryList;
+        try {
+            requestSummaryList = requestService.getRequestsByDate(
+                    dateRange.getStartDate(), dateRange.getEndDate());
+        } catch (Exception e) {
+            throw new MetadbWebServiceException(e.getMessage());
+        }
+        // nothing to do if response is null
+        if (requestSummaryList == null || requestSummaryList.isEmpty()) {
+            requestNotFoundHandler("No requests were imported in provided date range.");
+        }
+
+        // make list of request ids if specified
+        if (returnType.equals(ReturnTypeDetails.REQUEST_ID_LIST)) {
+            List<String> requestIds = new ArrayList<>();
+            for (List<String> request: requestSummaryList) {
+                requestIds.add(request.get(1));
+            }
+            return sendResponse(requestIds);
+        }
+        return sendResponse(requestSummaryList);
+    }
+
+    private ResponseEntity<Object> sendResponse(Object toReturn) {
+        return ResponseEntity.ok()
+                .headers(responseHeaders())
+                .body(toReturn);
     }
 
     private HttpHeaders responseHeaders() {
@@ -122,5 +176,46 @@ public class RequestController {
         Map<String, String> map = new HashMap<>();
         map.put("message", message);
         return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+    }
+
+    public class DateRange {
+        String startDate;
+        String endDate;
+
+        String getStartDate() {
+            return startDate;
+        }
+
+        void setStartDate(String startDate) {
+            this.startDate = startDate;
+        }
+
+        String getEndDate() {
+            return endDate;
+        }
+
+        void setEndDate(String endDate) {
+            this.endDate = endDate;
+        }
+    }
+
+    public enum ReturnTypeDetails {
+        REQUEST_ID_LIST("Request ID list"),
+        REQUEST_SUMMARY_LIST("Request Summary list");
+
+        private String value;
+
+        ReturnTypeDetails(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 }

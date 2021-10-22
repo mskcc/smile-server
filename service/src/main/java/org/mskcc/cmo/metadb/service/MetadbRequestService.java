@@ -19,6 +19,7 @@ public interface MetadbRequestService {
     Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
             RequestMetadata requestMetadata) throws Exception;
     List<MetadbSample> getRequestSamplesWithUpdates(MetadbRequest request) throws Exception;
+    List<List<String>> getRequestsByDate(String startDate, String endDate) throws Exception;
     List<RequestMetadata> getRequestMetadataHistory(String reqId);
     MetadbRequest getRequestBySample(MetadbSample sample) throws Exception;
 }
