@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -238,6 +239,27 @@ public class RequestServiceImpl implements MetadbRequestService {
             }
         }
         return updatedSamples;
+    }
+
+    @Override
+    public List<List<String>> getRequestsByDate(String startDate, String endDate) throws Exception {
+        if (startDate == null || startDate.isEmpty()) {
+            return null;
+        }
+        if (endDate == null || endDate.isEmpty()) {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime now = LocalDateTime.now();
+            endDate = dtf.format(now).toString();
+        }
+
+        Date formattedStartDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+        Date formattedEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
+        if (formattedStartDate.after(formattedEndDate)) {
+            return null;
+        }
+
+        List<List<String>> requestIdList = requestRepository.findRequestWithinDateRange(startDate, endDate);
+        return requestIdList;
     }
 
     @Override

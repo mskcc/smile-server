@@ -112,6 +112,41 @@ public class RequestController {
                 .body(request.getRequestJson());
     }
 
+    /**
+     * fetchRequestListByImportDatePOST
+     * @param dateRange
+     * @param returnType
+     * @return ResponseEntity
+     * @throws Exception
+     */
+    @ApiOperation(value = "Retrieves list of metaDbRequestId, requestId and importDate"
+            + "published within the given start and end date.",
+            nickname = "fetchRequestListByImportDatePOST")
+    @RequestMapping(value = "/requestsByImportDate",
+            method = RequestMethod.POST,
+            produces = "application/json")
+    public ResponseEntity<Object> fetchRequestListByImportDatePOST(@ApiParam(value =
+            "Retrieves list of metaDbRequestId, requestId and importDate"
+            + " published between the given start and end date.", required = true)
+            @RequestBody Map<String, String> dateRange,
+            ReturnTypeEnum returnType) throws Exception {
+        List<List<String>> requestSummaryList = requestService.getRequestsByDate(
+                dateRange.get("startDate"), dateRange.get("endDate"));
+        if (returnType.equals(ReturnTypeEnum.RequestId)) {
+            List<String> RequestIdList = new ArrayList<>();
+            for (List<String> requestData: requestSummaryList) {
+                RequestIdList.add(requestData.get(1));
+            }
+            return ResponseEntity.ok()
+                    .headers(responseHeaders())
+                    .body(RequestIdList);
+        }
+        return ResponseEntity.ok()
+                .headers(responseHeaders())
+                .body(requestSummaryList);
+
+    }
+
     private HttpHeaders responseHeaders() {
         HttpHeaders headers  = new HttpHeaders();
         headers.set("metadb-schema-version", metadbSchemaVersion);
@@ -122,5 +157,20 @@ public class RequestController {
         Map<String, String> map = new HashMap<>();
         map.put("message", message);
         return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+    }
+
+    public enum ReturnTypeEnum {
+        RequestId("RequestId"),
+        RequestSummary("RequestSummary");
+
+        private String str;
+
+        ReturnTypeEnum(String str) {
+            this.str = str;
+        }
+
+        public String getStr() {
+            return str;
+        }
     }
 }
