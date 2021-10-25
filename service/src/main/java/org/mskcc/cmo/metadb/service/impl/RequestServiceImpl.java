@@ -3,7 +3,9 @@ package org.mskcc.cmo.metadb.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +27,7 @@ import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
 import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
+import org.mskcc.cmo.metadb.service.exception.MetadbWebServiceException;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -243,23 +246,32 @@ public class RequestServiceImpl implements MetadbRequestService {
 
     @Override
     public List<List<String>> getRequestsByDate(String startDate, String endDate) throws Exception {
-        if (startDate == null || startDate.isEmpty()) {
+        if (Strings.isNullOrEmpty(startDate)) {
             return null;
         }
-        if (endDate == null || endDate.isEmpty()) {
+        if (Strings.isNullOrEmpty(endDate)) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDateTime now = LocalDateTime.now();
-            endDate = dtf.format(now).toString();
+            endDate = dtf.format(now);
         }
+        // get formatted dates and validate inputs
+        Date formattedStartDate = getFormattedDate(startDate);
+        Date formattedEndDate = getFormattedDate(endDate);
 
-        Date formattedStartDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
-        Date formattedEndDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
         if (formattedStartDate.after(formattedEndDate)) {
-            return null;
+            throw new RuntimeException("Start date " + startDate + " cannot occur after end date "
+            + endDate);
         }
 
-        List<List<String>> requestIdList = requestRepository.findRequestWithinDateRange(startDate, endDate);
-        return requestIdList;
+        return requestRepository.findRequestWithinDateRange(startDate, endDate);
+    }
+
+    private Date getFormattedDate(String dateString) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+        } catch (ParseException e) {
+            throw new RuntimeException("Could not parse date: " + dateString, e);
+        }
     }
 
     @Override
