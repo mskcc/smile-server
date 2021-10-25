@@ -204,5 +204,52 @@ public class RequestServiceTest {
 
         Assertions.assertThat(existingRequestHistoryList.size()).isEqualTo(1);
     }
-
+    /**
+     * Case 1: Tests when end date is null
+     */
+    
+    @Test
+    public void testGetRequestsByNullEndDate() {
+        
+    }
+    
+    /**
+     * Case 2: Test when both start and end date are null, should not throw any exception. Expected to return empty list
+     */
+    @Test
+    public void testGetRequestsByNullDates() {
+        
+    }
+    
+    /**
+     * Case 3: Test when start date is null and end date isn't. Should return null
+     */
+    @Test
+    public void testGetRequestsByNullStartDate() {
+        
+    }
+    
+    /**
+     * Case 4: Test when end date is less than start date, should return null
+     */
+    @Test
+    public void testGetRequestsByInvalidDateRange() {
+        
+    }
+    
+    /**
+     * Case 5: Test when dates are invalid(example: 2021-13-34)
+     */
+    @Test
+    public void testGetRequestsByInvalidDate() {
+        
+    }
+    
+    /**
+     * Case 6: Test when dates are in invalid format(example: 10/10/2021)
+     */
+    @Test
+    public void testGetRequestsByInvalidDateFormat() {
+        
+    }
 }
