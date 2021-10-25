@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
+import org.mskcc.cmo.metadb.service.exception.MetadbWebServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -134,35 +134,36 @@ public class RequestController {
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity<Object> fetchRequestsByImportDatePOST(@ApiParam(value =
-            "JSON containg a start date and (optionally) an end date to query requests by", required = true,
-            example = "{\"startDate\": \"YYYY/MM/DD\", \"endDate\": \"YYYY/MM/DD\" [OPTIONAL]}")
-            @RequestBody Map<String, String> dateRange,
-            @ApiParam(value = "Selects level of detail to return", required = true)
-                    @DefaultValue("Request ID list") ReturnTypeDetails returnType) throws Exception {
-        List<List<String>> requestSummaryList = requestService.getRequestsByDate(
-                dateRange.get("startDate"), dateRange.get("endDate"));
+            "JSON with 'startDate' (required) and 'endDate' (optional) to query for.", required = true)
+            @RequestBody DateRange dateRange,  ReturnTypeDetails returnType) throws Exception {
+        // get request summary for given date range
+        List<List<String>> requestSummaryList;
+        try {
+            requestSummaryList = requestService.getRequestsByDate(
+                    dateRange.getStartDate(), dateRange.getEndDate());
+        } catch (Exception e) {
+            throw new MetadbWebServiceException(e.getMessage());
+        }
+        // nothing to do if response is null
+        if (requestSummaryList == null || requestSummaryList.isEmpty()) {
+            requestNotFoundHandler("No requests were imported in provided date range.");
+        }
 
-        // TODO - sanity check the provided dates here instead of at the service layer?
-
-        // definitely would want to know in the response body if the provided date(s) is
-        // invalid similar to how we are returning a 'requestNotFoundHandler()' with an
-        // appropriate HttpStatus like HttpStatus.BAD_REQUEST
-
-        // if there are no requests imported within the provided range then what
-        // does the response body look like? ideally an empty list
-
+        // make list of request ids if specified
         if (returnType.equals(ReturnTypeDetails.REQUEST_ID_LIST)) {
             List<String> requestIds = new ArrayList<>();
             for (List<String> request: requestSummaryList) {
                 requestIds.add(request.get(1));
             }
-            return ResponseEntity.ok()
-                    .headers(responseHeaders())
-                    .body(requestIds);
+            return sendResponse(requestIds);
         }
+        return sendResponse(requestSummaryList);
+    }
+
+    private ResponseEntity<Object> sendResponse(Object toReturn) {
         return ResponseEntity.ok()
                 .headers(responseHeaders())
-                .body(requestSummaryList);
+                .body(toReturn);
     }
 
     private HttpHeaders responseHeaders() {
@@ -175,6 +176,27 @@ public class RequestController {
         Map<String, String> map = new HashMap<>();
         map.put("message", message);
         return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+    }
+
+    public class DateRange {
+        String startDate;
+        String endDate;
+
+        String getStartDate() {
+            return startDate;
+        }
+
+        void setStartDate(String startDate) {
+            this.startDate = startDate;
+        }
+
+        String getEndDate() {
+            return endDate;
+        }
+
+        void setEndDate(String endDate) {
+            this.endDate = endDate;
+        }
     }
 
     public enum ReturnTypeDetails {
