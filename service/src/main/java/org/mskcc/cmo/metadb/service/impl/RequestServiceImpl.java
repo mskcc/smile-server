@@ -27,7 +27,6 @@ import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
 import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
-import org.mskcc.cmo.metadb.service.exception.MetadbWebServiceException;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -247,7 +246,7 @@ public class RequestServiceImpl implements MetadbRequestService {
     @Override
     public List<List<String>> getRequestsByDate(String startDate, String endDate) throws Exception {
         if (Strings.isNullOrEmpty(startDate)) {
-            return null;
+            throw new RuntimeException("Start date " + startDate + " cannot be null or empty");
         }
         if (Strings.isNullOrEmpty(endDate)) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");

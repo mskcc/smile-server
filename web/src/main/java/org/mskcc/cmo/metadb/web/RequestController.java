@@ -178,9 +178,11 @@ public class RequestController {
         return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
     }
 
-    public class DateRange {
+    static class DateRange {
         String startDate;
         String endDate;
+
+        DateRange(){}
 
         String getStartDate() {
             return startDate;
@@ -200,8 +202,8 @@ public class RequestController {
     }
 
     public enum ReturnTypeDetails {
-        REQUEST_ID_LIST("Request ID list"),
-        REQUEST_SUMMARY_LIST("Request Summary list");
+        REQUEST_ID_LIST("REQUEST_ID_LIST"),
+        REQUEST_SUMMARY_LIST("REQUEST_SUMMARY_LIST");
 
         private String value;
 
