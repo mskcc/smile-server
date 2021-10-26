@@ -247,7 +247,7 @@ public class RequestServiceImpl implements MetadbRequestService {
     @Override
     public List<List<String>> getRequestsByDate(String startDate, String endDate) throws Exception {
         if (Strings.isNullOrEmpty(startDate)) {
-            return null;
+            throw new RuntimeException("Start date " + startDate + " cannot be null or empty");
         }
         if (Strings.isNullOrEmpty(endDate)) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");

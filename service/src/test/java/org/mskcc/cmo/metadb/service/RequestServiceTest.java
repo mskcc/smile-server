@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -204,52 +205,92 @@ public class RequestServiceTest {
 
         Assertions.assertThat(existingRequestHistoryList.size()).isEqualTo(1);
     }
+
     /**
+     * Test for getRequestsByDate
      * Case 1: Tests when end date is null
+     * @throws Exception
      */
-    
+
     @Test
-    public void testGetRequestsByNullEndDate() {
-        
+    public void testGetRequestsByNullEndDate() throws Exception {
+        String startDate = "2021-10-25";
+        List<List<String>> requestDataList = requestService.getRequestsByDate(startDate, null);
+        Assertions.assertThat(requestDataList.size()).isEqualTo(3);
     }
-    
+
     /**
-     * Case 2: Test when both start and end date are null, should not throw any exception. Expected to return empty list
+     * Test for getRequestsByDate
+     * Case 2: Test when both start and end date are null,
+     * Expected to throw an exception
+     * @throws Exception
      */
     @Test
-    public void testGetRequestsByNullDates() {
-        
+    public void testGetRequestsByNullDates() throws Exception {
+        Assertions.assertThatExceptionOfType(RuntimeException.class)
+            .isThrownBy(() -> {
+                requestService.getRequestsByDate(null, null);
+            });
     }
-    
+
     /**
-     * Case 3: Test when start date is null and end date isn't. Should return null
+     * Test for getRequestsByDate
+     * Case 3: Test when start date is null and end date isn't,
+     * Expected to throw an exception
+     * @throws Exception
      */
     @Test
-    public void testGetRequestsByNullStartDate() {
-        
+    public void testGetRequestsByNullStartDate() throws Exception {
+        String endDate = "2021-10-25";
+        Assertions.assertThatExceptionOfType(RuntimeException.class)
+            .isThrownBy(() -> {
+                requestService.getRequestsByDate(null, endDate);
+            });
     }
-    
+
     /**
-     * Case 4: Test when end date is less than start date, should return null
+     * Test for getRequestsByDate
+     * Case 4: Test when end date is less than start date,
+     * Expected to throw an exception
+     * @throws Exception
      */
     @Test
-    public void testGetRequestsByInvalidDateRange() {
-        
+    public void testGetRequestsByInvalidDateRange() throws Exception {
+        String endDate = "2021-10-24";
+        String startDate = "2021-10-25";
+        Assertions.assertThatExceptionOfType(RuntimeException.class)
+            .isThrownBy(() -> {
+                requestService.getRequestsByDate(startDate, endDate);
+            });
     }
-    
+
     /**
-     * Case 5: Test when dates are invalid(example: 2021-13-34)
+     * Test for getRequestsByDate
+     * Case 5: Test when dates are invalid(example: 2021-13-34),
+     * Expected to throw an exception
+     * @throws Exception
      */
     @Test
-    public void testGetRequestsByInvalidDate() {
-        
+    public void testGetRequestsByInvalidDate() throws Exception {
+        String startDate = "2021-13-25";
+        Assertions.assertThatExceptionOfType(RuntimeException.class)
+            .isThrownBy(() -> {
+                requestService.getRequestsByDate(startDate, null);
+            });
     }
-    
+
     /**
-     * Case 6: Test when dates are in invalid format(example: 10/10/2021)
+     * Test for getRequestsByDate
+     * Case 6: Test when dates are in invalid format(example: 10/10/2021),
+     * Expected to throw an exception
+     * @throws Exception
      */
     @Test
-    public void testGetRequestsByInvalidDateFormat() {
-        
+    public void testGetRequestsByInvalidDateFormat() throws Exception {
+        String startDate = "25/10/2021";
+        Assertions.assertThatExceptionOfType(RuntimeException.class)
+            .isThrownBy(() -> {
+                requestService.getRequestsByDate(startDate, null);
+            });
     }
 }
