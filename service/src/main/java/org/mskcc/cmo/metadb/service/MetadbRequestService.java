@@ -5,6 +5,7 @@ import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
+import org.mskcc.cmo.metadb.model.web.RequestSummary;
 
 /**
  *
@@ -19,7 +20,7 @@ public interface MetadbRequestService {
     Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
             RequestMetadata requestMetadata) throws Exception;
     List<MetadbSample> getRequestSamplesWithUpdates(MetadbRequest request) throws Exception;
-    List<List<String>> getRequestsByDate(String startDate, String endDate) throws Exception;
+    List<RequestSummary> getRequestsByDate(String startDate, String endDate) throws Exception;
     List<RequestMetadata> getRequestMetadataHistory(String reqId);
     MetadbRequest getRequestBySample(MetadbSample sample) throws Exception;
 }
