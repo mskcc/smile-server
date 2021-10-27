@@ -24,6 +24,7 @@ import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
+import org.mskcc.cmo.metadb.model.web.RequestSummary;
 import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
@@ -244,7 +245,7 @@ public class RequestServiceImpl implements MetadbRequestService {
     }
 
     @Override
-    public List<List<String>> getRequestsByDate(String startDate, String endDate) throws Exception {
+    public List<RequestSummary> getRequestsByDate(String startDate, String endDate) throws Exception {
         if (Strings.isNullOrEmpty(startDate)) {
             throw new RuntimeException("Start date " + startDate + " cannot be null or empty");
         }
@@ -262,15 +263,8 @@ public class RequestServiceImpl implements MetadbRequestService {
             + endDate);
         }
 
-        return requestRepository.findRequestWithinDateRange(startDate, endDate);
-    }
-
-    private Date getFormattedDate(String dateString) {
-        try {
-            return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-        } catch (ParseException e) {
-            throw new RuntimeException("Could not parse date: " + dateString, e);
-        }
+        return transformRequestSummaryResults(
+                requestRepository.findRequestWithinDateRange(startDate, endDate));
     }
 
     @Override
@@ -283,4 +277,19 @@ public class RequestServiceImpl implements MetadbRequestService {
         return requestRepository.findRequestBySample(sample);
     }
 
+    private Date getFormattedDate(String dateString) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+        } catch (ParseException e) {
+            throw new RuntimeException("Could not parse date: " + dateString, e);
+        }
+    }
+
+    private List<RequestSummary> transformRequestSummaryResults(List<List<String>> results) {
+        List<RequestSummary> requestSummaryList = new ArrayList<>();
+        for (List<String> result : results) {
+            requestSummaryList.add(new RequestSummary(result));
+        }
+        return requestSummaryList;
+    }
 }

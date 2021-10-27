@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
+import org.mskcc.cmo.metadb.model.web.RequestSummary;
 import org.mskcc.cmo.metadb.persistence.MetadbPatientRepository;
 import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.persistence.MetadbSampleRepository;
@@ -214,7 +215,7 @@ public class RequestServiceTest {
     @Test
     public void testGetRequestsByNullEndDate() throws Exception {
         String startDate = "2021-10-25";
-        List<List<String>> requestDataList = requestService.getRequestsByDate(startDate, null);
+        List<RequestSummary> requestDataList = requestService.getRequestsByDate(startDate, null);
         Assertions.assertThat(requestDataList.size()).isEqualTo(3);
     }
 

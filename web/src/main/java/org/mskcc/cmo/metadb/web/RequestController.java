@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
+import org.mskcc.cmo.metadb.model.web.RequestSummary;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.exception.MetadbWebServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,7 +138,7 @@ public class RequestController {
             "JSON with 'startDate' (required) and 'endDate' (optional) to query for.", required = true)
             @RequestBody DateRange dateRange,  ReturnTypeDetails returnType) throws Exception {
         // get request summary for given date range
-        List<List<String>> requestSummaryList;
+        List<RequestSummary> requestSummaryList;
         try {
             requestSummaryList = requestService.getRequestsByDate(
                     dateRange.getStartDate(), dateRange.getEndDate());
@@ -152,8 +153,8 @@ public class RequestController {
         // make list of request ids if specified
         if (returnType.equals(ReturnTypeDetails.REQUEST_ID_LIST)) {
             List<String> requestIds = new ArrayList<>();
-            for (List<String> request: requestSummaryList) {
-                requestIds.add(request.get(1));
+            for (RequestSummary request: requestSummaryList) {
+                requestIds.add(request.getRequestId());
             }
             return sendResponse(requestIds);
         }
