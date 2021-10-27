@@ -116,7 +116,12 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-
+	<!-- cmo metadb common -->
+    <dependency>
+      <groupId>${cmo_metadb_common.group}</groupId>
+      <artifactId>cmo-metadb-common</artifactId>
+      <version>${cmo_metadb_common.version}</version>
+    </dependency>
     <!-- Spring data JPA -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -128,14 +133,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <!-- Oracle JDBC driver -->
     <dependency>
       <groupId>com.oracle</groupId>
       <artifactId>ojdbc7</artifactId>
       <version>12.1.0.2</version>
 	</dependency>
-
     <!-- HikariCP connection pool -->
     <dependency>
       <groupId>com.zaxxer</groupId>
