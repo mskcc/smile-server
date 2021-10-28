@@ -25,7 +25,7 @@ import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
 import org.mskcc.cmo.metadb.model.web.RequestSummary;
-import org.mskcc.cmo.metadb.persistence.MetadbRequestRepository;
+import org.mskcc.cmo.metadb.persistence.neo4j.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
