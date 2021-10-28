@@ -27,6 +27,11 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
+    <repository>
+      <id>hand-china-repo</id>
+      <name>HandChinaRepo</name>
+      <url>http://nexus.saas.hand-china.com/content/repositories/rdc/</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -111,11 +116,34 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-    <!-- cmo metadb common -->
+	<!-- cmo metadb common -->
     <dependency>
       <groupId>${cmo_metadb_common.group}</groupId>
       <artifactId>cmo-metadb-common</artifactId>
       <version>${cmo_metadb_common.version}</version>
+    </dependency>
+    <!-- Spring data JPA -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-jdbc</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Oracle JDBC driver -->
+    <dependency>
+      <groupId>com.oracle</groupId>
+      <artifactId>ojdbc7</artifactId>
+      <version>12.1.0.2</version>
+	</dependency>
+    <!-- HikariCP connection pool -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>2.6.0</version>
     </dependency>
   </dependencies>
 
