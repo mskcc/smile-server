@@ -8,13 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CrdbIdRepository extends CrudRepository<CrdbIdMappingModel, Long> {
-
-    @Query(value = "SELECT COUNT(dmp_id)"
-            + "FROM CRDB_CMO_DMP_MAP", nativeQuery = true)
-    Object getCountOfClinicalSamples();
-
-
     @Query(value = "SELECT CMO_ID FROM CRDB_CMO_DMP_MAP WHERE DMP_ID = :dmpId", nativeQuery = true)
     Object getCmoPatientIdbyDmpId(@Param("dmpId") String dmpId);
-
 }
