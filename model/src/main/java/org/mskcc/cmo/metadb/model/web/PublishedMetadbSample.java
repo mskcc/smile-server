@@ -1,26 +1,25 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.web;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.Serializable;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.cmo.metadb.model.Library;
+import org.mskcc.cmo.metadb.model.MetadbSample;
+import org.mskcc.cmo.metadb.model.QcReport;
+import org.mskcc.cmo.metadb.model.SampleAlias;
+import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
 import org.mskcc.cmo.metadb.model.converter.MapStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
+import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class SampleMetadata implements Serializable, Comparable<SampleMetadata> {
-    @Id @GeneratedValue
-    @JsonIgnore
-    private Long id;
+public class PublishedMetadbSample {
+    @Convert(UuidStringConverter.class)
+    private UUID metaDbSampleId;
     private String importDate;
     private String cmoInfoIgoId;
     private String cmoSampleName;
@@ -36,7 +35,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    @JsonAlias("igoId")
+    private UUID metaDbPatientId;
     private String primaryId;
     private String investigatorSampleId;
     private String species;
@@ -59,11 +58,56 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private String requestId;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
+    private List<SampleAlias> sampleAliases;
 
-    public SampleMetadata() {}
+    public PublishedMetadbSample() {}
 
     /**
-     * SampleMetadata constructor
+     * PublishedMetadbSample constructor
+     * @param metaDbSample
+     * @throws ParseException
+     */
+    public PublishedMetadbSample(MetadbSample metaDbSample) throws ParseException {
+        SampleMetadata latestSampleMetadata = metaDbSample.getLatestSampleMetadata();
+        this.metaDbSampleId = metaDbSample.getMetaDbSampleId();
+        this.mrn = latestSampleMetadata.getMrn();
+        this.cmoInfoIgoId = latestSampleMetadata.getCmoInfoIgoId();
+        this.cmoSampleName = latestSampleMetadata.getCmoSampleName();
+        this.sampleName = latestSampleMetadata.getSampleName();
+        this.cmoSampleClass = latestSampleMetadata.getCmoSampleClass();
+        this.cmoPatientId = latestSampleMetadata.getCmoPatientId();
+        this.metaDbPatientId = metaDbSample.getPatient().getMetaDbPatientId();
+        this.primaryId = latestSampleMetadata.getPrimaryId();
+        this.investigatorSampleId = latestSampleMetadata.getInvestigatorSampleId();
+        this.species = latestSampleMetadata.getSpecies();
+        this.sex = latestSampleMetadata.getSex();
+        this.tumorOrNormal = latestSampleMetadata.getTumorOrNormal();
+        this.sampleType = latestSampleMetadata.getSampleType();
+        this.preservation = latestSampleMetadata.getPreservation();
+        this.tumorType = latestSampleMetadata.getTumorType();
+        this.parentTumorType = latestSampleMetadata.getParentTumorType();
+        this.specimenType = latestSampleMetadata.getSpecimenType();
+        this.sampleOrigin = latestSampleMetadata.getSampleOrigin();
+        this.tissueSource = latestSampleMetadata.getTissueSource();
+        this.tissueLocation = latestSampleMetadata.getTissueLocation();
+        this.recipe = latestSampleMetadata.getRecipe();
+        this.baitSet = latestSampleMetadata.getBaitSet();
+        this.principalInvestigator = latestSampleMetadata.getPrincipalInvestigator();
+        this.fastqPath = latestSampleMetadata.getFastqPath();
+        this.ancestorSample = latestSampleMetadata.getAncestorSample();
+        this.sampleStatus = latestSampleMetadata.getSampleStatus();
+        this.importDate = latestSampleMetadata.getImportDate();
+        this.oncoTreeCode = latestSampleMetadata.getOncoTreeCode();
+        this.collectionYear = latestSampleMetadata.getCollectionYear();
+        this.tubeId = latestSampleMetadata.getTubeId();
+        this.cfDNA2dBarcode = latestSampleMetadata.getCfDNA2dBarcode();
+        this.qcReports = latestSampleMetadata.getQcReports();
+        this.libraries = latestSampleMetadata.getLibraries();
+        this.sampleAliases = metaDbSample.getSampleAliases();
+    }
+
+    /**
+     * All args constructor
      * @param primaryId
      * @param cmoInfoIgoId
      * @param cmoSampleName
@@ -96,15 +140,19 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
      * @param ancestorSample
      * @param sampleStatus
      * @param importDate
+     * @param sampleAliases
+     * @param metaDbSampleId
+     * @param metaDbPatientId
      */
-    public SampleMetadata(String primaryId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
-            String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
-            String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
-            String preservation, String collectionYear, String sex, String species, String tubeId,
-            String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
+    public PublishedMetadbSample(String primaryId, String cmoInfoIgoId, String cmoSampleName,
+            String sampleName, String cmoSampleClass, String cmoPatientId, String investigatorSampleId,
+            String oncoTreeCode, String tumorOrNormal, String tissueLocation, String specimenType,
+            String sampleOrigin, String preservation, String collectionYear, String sex, String species,
+            String tubeId, String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
             String mrn, String sampleType, String tumorType, String parentTumorType,
             String tissueSource, String recipe, String baitSet, String fastqPath,
-            String principalInvestigator, String ancestorSample, String sampleStatus, String importDate) {
+            String principalInvestigator, String ancestorSample, String sampleStatus, String importDate,
+            List<SampleAlias> sampleAliases, UUID metaDbSampleId, UUID metaDbPatientId) {
         this.mrn = mrn;
         this.cmoInfoIgoId = cmoInfoIgoId;
         this.cmoSampleName = cmoSampleName;
@@ -137,14 +185,18 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.cfDNA2dBarcode = cfDNA2dBarcode;
         this.qcReports = qcReports;
         this.libraries = libraries;
+        this.sampleAliases = sampleAliases;
+        this.metaDbSampleId = metaDbSampleId;
+        this.metaDbPatientId = metaDbPatientId;
     }
 
-    public Long getId() {
-        return id;
+    public UUID getMetaDbSampleId() {
+        return metaDbSampleId;
+
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setMetaDbSampleId(UUID metaDbSampleId) {
+        this.metaDbSampleId = metaDbSampleId;
     }
 
     public String getImportDate() {
@@ -235,17 +287,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     }
 
     /**
-     * Adds QcReport to list.
-     * @param qcReport
-     */
-    public void addQcReport(QcReport qcReport) {
-        if (getQcReports() == null) {
-            this.qcReports = new ArrayList<>();
-        }
-        qcReports.add(qcReport);
-    }
-
-    /**
      * Returns empty array list if field is null.
      * @return
      */
@@ -258,17 +299,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     public void setLibraries(List<Library> libraries) {
         this.libraries = libraries;
-    }
-
-    /**
-     * Adds Library to list.
-     * @param library
-     */
-    public void addLibrary(Library library) {
-        if (getLibraries() == null) {
-            this.libraries = new ArrayList<>();
-        }
-        libraries.add(library);
     }
 
     public String getMrn() {
@@ -287,12 +317,20 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.cmoPatientId = cmoPatientId;
     }
 
+    public UUID getMetaDbPatientId() {
+        return metaDbPatientId;
+    }
+
+    public void setMetaDbPatientId(UUID metaDbPatientId) {
+        this.metaDbPatientId = metaDbPatientId;
+    }
+
     public String getPrimaryId() {
         return primaryId;
     }
 
-    public void setPrimaryId(String primaryId) {
-        this.primaryId = primaryId;
+    public void setPrimaryId(String igoId) {
+        this.primaryId = igoId;
     }
 
     public String getInvestigatorSampleId() {
@@ -455,12 +493,19 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.cmoSampleIdFields = cmoSampleIdFields;
     }
 
-    @Override
-    public int compareTo(SampleMetadata sampleMetadata) {
-        if (getImportDate() == null || sampleMetadata.getImportDate() == null) {
-            return 0;
+    public void setSampleAliases(List<SampleAlias> sampleAliases) {
+        this.sampleAliases = sampleAliases;
+    }
+
+    /**
+     * Returns empty array list if field is null.
+     * @return
+     */
+    public List<SampleAlias> getSampleAliases() {
+        if (sampleAliases == null) {
+            this.sampleAliases = new ArrayList<>();
         }
-        return getImportDate().compareTo(sampleMetadata.getImportDate());
+        return sampleAliases;
     }
 
     @Override
