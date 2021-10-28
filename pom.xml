@@ -129,29 +129,6 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>${spring.boot.version}</version>
     </dependency>
-    <!-- Spring data JPA -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.tomcat</groupId>
-          <artifactId>tomcat-jdbc</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- Oracle JDBC driver -->
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc7</artifactId>
-      <version>12.1.0.2</version>
-	</dependency>
-    <!-- HikariCP connection pool -->
-    <dependency>
-      <groupId>com.zaxxer</groupId>
-      <artifactId>HikariCP</artifactId>
-      <version>2.6.0</version>
-    </dependency>
   </dependencies>
 
   <build>
