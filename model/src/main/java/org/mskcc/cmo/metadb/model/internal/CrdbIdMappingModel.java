@@ -3,7 +3,7 @@ package org.mskcc.cmo.metadb.model.internal;
 import javax.persistence.*;
 
 @Entity
-public class CRDBIdMappingModel {
+public class CrdbIdMappingModel {
     @Id
     private String DMP_ID;
     private String CMO_ID;

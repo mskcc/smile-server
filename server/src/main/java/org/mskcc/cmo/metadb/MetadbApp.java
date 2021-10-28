@@ -25,8 +25,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EntityScan(basePackages = "org.mskcc.cmo.metadb.model")
-@EnableNeo4jRepositories(basePackages = "org.mskcc.cmo.metadb.persistence")
-@EnableJpaRepositories(basePackages = "org.mskcc.cmo.metadb.persistence.internal")
+@EnableNeo4jRepositories(basePackages = "org.mskcc.cmo.metadb.persistence.neo4j")
+@EnableJpaRepositories(basePackages = "org.mskcc.cmo.metadb.persistence.jpa")
 @SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging",
         "org.mskcc.cmo.common.*", "org.mskcc.cmo.metadb.*"})
 @Controller

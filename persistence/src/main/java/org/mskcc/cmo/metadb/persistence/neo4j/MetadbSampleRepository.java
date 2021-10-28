@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.persistence;
+package org.mskcc.cmo.metadb.persistence.neo4j;
 
 import java.util.List;
 import java.util.UUID;
