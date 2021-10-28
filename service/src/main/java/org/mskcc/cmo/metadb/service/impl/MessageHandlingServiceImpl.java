@@ -440,6 +440,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             s.setRequestId((String) map.get("requestId"));
             MetadbSample sample = new MetadbSample();
             sample.addSampleMetadata(s);
+            sample.setSampleCategory("research");
             requestSamplesList.add(sample);
         }
         return requestSamplesList;
