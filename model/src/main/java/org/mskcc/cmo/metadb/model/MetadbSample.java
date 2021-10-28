@@ -29,6 +29,7 @@ public class MetadbSample implements Serializable {
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     private List<SampleMetadata> sampleMetadataList;
     private String sampleClass;
+    private String sampleCategory;
 
     public MetadbSample() {}
 
@@ -137,6 +138,14 @@ public class MetadbSample implements Serializable {
 
     public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
         addSampleMetadata(sampleMetadata);
+    }
+
+    public String getSampleCategory() {
+        return sampleCategory;
+    }
+
+    public void setSampleCategory(String sampleCategory) {
+        this.sampleCategory = sampleCategory;
     }
 
     @Override

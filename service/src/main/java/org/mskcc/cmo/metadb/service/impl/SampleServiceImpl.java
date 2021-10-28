@@ -11,7 +11,8 @@ import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
-import org.mskcc.cmo.metadb.persistence.MetadbSampleRepository;
+import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
+import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
 import org.mskcc.cmo.metadb.service.MetadbPatientService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
@@ -57,7 +58,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     public MetadbSample fetchAndLoadSampleDetails(MetadbSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         sample.setSampleClass(sampleMetadata.getTumorOrNormal());
-        sample.addSampleAlias(new SampleAlias(sampleMetadata.getIgoId(), "igoId"));
+        sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
         sample.addSampleAlias(
                 new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
@@ -94,11 +95,13 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public MetadbSample getMetadbSample(UUID metadbSampleId) throws Exception {
         MetadbSample sample = sampleRepository.findSampleById(metadbSampleId);
-        sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metadbSampleId));
-        for (SampleMetadata s: sample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patientService.getPatientIdBySample(metadbSampleId));
-            s.setMetaDbSampleId(metadbSampleId);
+        if (sample == null) {
+            return null;
         }
+        sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metadbSampleId));
+        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
+        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+        sample.setPatient(patient);
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(metadbSampleId));
         return sample;
     }
@@ -107,13 +110,15 @@ public class SampleServiceImpl implements MetadbSampleService {
     public MetadbSample getMetadbSampleByRequestAndAlias(String requestId, SampleAlias igoId)
             throws Exception {
         MetadbSample sample = sampleRepository.findSampleByRequestAndIgoId(requestId,
-                igoId.getSampleId());
+                igoId.getValue());
+        if (sample == null) {
+            return null;
+        }
         sample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
-        for (SampleMetadata s : sample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patientService.getPatientIdBySample(sample.getMetaDbSampleId()));
-            s.setMetaDbSampleId(sample.getMetaDbSampleId());
-        }
+        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
+        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+        sample.setPatient(patient);
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
         return sample;
     }
@@ -127,16 +132,10 @@ public class SampleServiceImpl implements MetadbSampleService {
         }
         sample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
-
         String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
-
         MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
         sample.setPatient(patient);
-
-        for (SampleMetadata s : sample.getSampleMetadataList()) {
-            s.setMetaDbPatientId(patient.getMetaDbPatientId());
-            s.setMetaDbSampleId(sample.getMetaDbSampleId());
-        }
+        sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
         return sample;
     }
 
@@ -170,5 +169,30 @@ public class SampleServiceImpl implements MetadbSampleService {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
+    }
+
+    @Override
+    public PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception {
+        MetadbSample sample = getMetadbSample(metadbSampleId);
+        return new PublishedMetadbSample(sample);
+    }
+
+    @Override
+    public List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(
+            String cmoPatientId) throws Exception {
+        List<SampleMetadata> sampleMetadataList = sampleRepository
+                .findSampleMetadataListByCmoPatientId(cmoPatientId);
+        List<PublishedMetadbSample> samples = new ArrayList<>();
+        for (SampleMetadata sample: sampleMetadataList) {
+            // TODO: update method to fill in sample details in a more inclusive
+            // way and not just request and igo id since that is very specific
+            // to research samples only
+            MetadbSample metadbSample = sampleRepository.findSampleByRequestAndIgoId(
+                    sample.getRequestId(), sample.getPrimaryId());
+            PublishedMetadbSample publishedSample = getPublishedMetadbSample(
+                    metadbSample.getMetaDbSampleId());
+            samples.add(publishedSample);
+        }
+        return samples;
     }
 }

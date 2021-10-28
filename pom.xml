@@ -27,6 +27,11 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
+    <repository>
+      <id>hand-china-repo</id>
+      <name>HandChinaRepo</name>
+      <url>http://nexus.saas.hand-china.com/content/repositories/rdc/</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -53,10 +58,17 @@
     <cmo_metadb_common.group>com.github.mskcc</cmo_metadb_common.group>
     <cmo_metadb_common.version>1.1.7.RELEASE</cmo_metadb_common.version>
     <!-- metadb expected schema version -->
-    <metadb.schema_version>v1.1</metadb.schema_version>
+    <metadb.schema_version>v1.2</metadb.schema_version>
   </properties>
 
   <dependencies>
+    <!-- cmo metadb common -->
+    <dependency>
+      <groupId>${cmo_metadb_common.group}</groupId>
+      <artifactId>cmo-metadb-common</artifactId>
+      <version>${cmo_metadb_common.version}</version>
+    </dependency>
+    <!-- cmo messaging lib -->
     <dependency>
       <groupId>${cmo_metadb_messaging_java.group}</groupId>
       <artifactId>cmo-messaging-java</artifactId>
@@ -111,11 +123,11 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-    <!-- cmo metadb common -->
+    <!-- spring data jpa -->
     <dependency>
-      <groupId>${cmo_metadb_common.group}</groupId>
-      <artifactId>cmo-metadb-common</artifactId>
-      <version>${cmo_metadb_common.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <version>${spring.boot.version}</version>
     </dependency>
   </dependencies>
 

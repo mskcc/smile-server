@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.persistence;
+package org.mskcc.cmo.metadb.persistence.neo4j;
 
 import java.util.List;
 import java.util.UUID;
@@ -76,7 +76,7 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     )
     List<SampleMetadata> findSampleMetadataListByCmoPatientId(@Param("cmoPatientId") String cmoPatientId);
 
-    @Query("MATCH (sm: SampleMetadata {igoId: $igoId})"
-            + "RETURN sm")
+    @Query("MATCH (sa :SampleAlias {value: $igoId, namespace: 'igoId'})-[:IS_ALIAS]->(s: Sample)"
+            + "-[:HAS_METADATA]->(sm: SampleMetadata) RETURN sm")
     List<SampleMetadata> findSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
 }

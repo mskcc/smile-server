@@ -218,10 +218,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     SampleMetadata sampleMetadata = sampleUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (sampleMetadata != null) {
                         MetadbSample existingSample = sampleService.getMetadbSampleByRequestAndIgoId(
-                                sampleMetadata.getRequestId(), sampleMetadata.getIgoId());
+                                sampleMetadata.getRequestId(), sampleMetadata.getPrimaryId());
                         if (existingSample == null) {
                             LOG.info("Sample metadata does not already exist - persting to db: "
-                                    + sampleMetadata.getIgoId());
+                                    + sampleMetadata.getPrimaryId());
                             // handle and persist new sample received
                             MetadbSample sample = new MetadbSample();
                             sampleMetadata.setImportDate(
@@ -229,24 +229,24 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             sample.addSampleMetadata(sampleMetadata);
                             sampleService.saveSampleMetadata(sample);
                             LOG.info("Publishing metadata history for new sample: "
-                                    + sampleMetadata.getIgoId());
+                                    + sampleMetadata.getPrimaryId());
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(sample.getSampleMetadataList()));
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(), sampleMetadata)) {
                             LOG.info("Found updates for sample - persisting to database: "
-                                    + sampleMetadata.getIgoId());
+                                    + sampleMetadata.getPrimaryId());
                             // persist sample level updates to database and publish
                             // sample metadata history to CMO_SAMPLE_METADATA_UPDATE
                             existingSample.updateSampleMetadata(sampleMetadata);
                             sampleService.saveSampleMetadata(existingSample);
                             LOG.info("Publishing sample-level metadata history for sample: "
-                                    + sampleMetadata.getIgoId());
+                                    + sampleMetadata.getPrimaryId());
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(existingSample.getSampleMetadataList()));
                         } else {
                             LOG.info("There are no updates to persist for sample: "
-                                    + sampleMetadata.getIgoId());
+                                    + sampleMetadata.getPrimaryId());
                         }
                     }
                     if (interrupted && sampleUpdateQueue.isEmpty()) {
@@ -443,6 +443,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             s.setRequestId((String) map.get("requestId"));
             MetadbSample sample = new MetadbSample();
             sample.addSampleMetadata(s);
+            sample.setSampleCategory("research");
             requestSamplesList.add(sample);
         }
         return requestSamplesList;

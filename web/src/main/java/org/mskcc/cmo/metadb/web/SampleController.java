@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,10 +52,11 @@ public class SampleController {
     @RequestMapping(value = "/samples/{cmoPatientId}",
         method = RequestMethod.GET,
         produces = "application/json")
-    public ResponseEntity<List<SampleMetadata>> fetchSampleMetadataListByCmoPatientIdGET(
+    public ResponseEntity<List<PublishedMetadbSample>> fetchSampleMetadataListByCmoPatientIdGET(
             @ApiParam(value = "CMO Patient ID", required = true)
             @PathVariable String cmoPatientId) throws Exception {
-        List<SampleMetadata> samples = sampleService.getSampleMetadataListByCmoPatientId(cmoPatientId);
+        List<PublishedMetadbSample> samples = sampleService
+                .getPublishedMetadbSampleListByCmoPatientId(cmoPatientId);
         if (samples == null) {
             return requestNotFoundHandler("Samples not found by CMO patient ID: " + cmoPatientId);
         }
