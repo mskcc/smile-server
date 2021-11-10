@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.io.IOException;
@@ -370,6 +371,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     request.setRequestJson(requestJson);
                     request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
                     request.setNamespace("igo");
+                    // creates and inits request metadata
+                    request.addRequestMetadata(extractRequestMetadata(requestJson));
                     LOG.info("Received message on topic: " + IGO_NEW_REQUEST_TOPIC + " and request id: "
                             + request.getRequestId());
                     messageHandlingService.newRequestHandler(request);
@@ -445,4 +448,17 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         return requestSamplesList;
     }
 
+    private RequestMetadata extractRequestMetadata(String requestMetadataJson)
+            throws JsonMappingException, JsonProcessingException {
+        Map<String, Object> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
+        // remove samples if present for request metadata
+        if (requestMetadataMap.containsKey("samples")) {
+            requestMetadataMap.remove("samples");
+        }
+        RequestMetadata requestMetadata = new RequestMetadata(
+                requestMetadataMap.get("requestId").toString(),
+                mapper.writeValueAsString(requestMetadataMap),
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        return requestMetadata;
+    }
 }

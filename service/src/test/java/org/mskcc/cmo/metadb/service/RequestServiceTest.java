@@ -107,6 +107,7 @@ public class RequestServiceTest {
         String requestId = "MOCKREQUEST1_B";
         MetadbRequest existingRequest = requestService.getMetadbRequestById(requestId);
         Assertions.assertThat(existingRequest).isNotNull();
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(existingRequest)).isTrue();
     }
 
     /**
@@ -129,11 +130,13 @@ public class RequestServiceTest {
     public void testRequestWithNoUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         MetadbRequest existingRequest = requestService.getMetadbRequestById(requestId);
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(existingRequest)).isTrue();
         // get the matching request from the mock data utils
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
         MetadbRequest requestFromMockData = mockDataUtils.extractRequestFromJsonData(
                 request1Data.getJsonString());
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(requestFromMockData)).isTrue();
 
         Boolean isUpdated = requestService.requestHasUpdates(existingRequest, requestFromMockData);
         Assertions.assertThat(isUpdated).isEqualTo(Boolean.FALSE);
@@ -149,9 +152,11 @@ public class RequestServiceTest {
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         String requestId = "MOCKREQUEST1_B";
         MetadbRequest origRequest = requestService.getMetadbRequestById(requestId);
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(origRequest)).isTrue();
         // this updated request as a different investigator email than its original
         MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(updatedRequest)).isTrue();
 
         Boolean hasUpdates = requestService.requestHasUpdates(
                 origRequest, updatedRequest);
@@ -170,6 +175,7 @@ public class RequestServiceTest {
                 .get("mockIncomingRequest3JsonDataPooledNormals");
         MetadbRequest requestFromMockData = mockDataUtils.extractRequestFromJsonData(
                 request3Data.getJsonString());
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(requestFromMockData)).isTrue();
 
         List<MetadbSample> samplesWithUpdates =
                 requestService.getRequestSamplesWithUpdates(requestFromMockData);
@@ -186,6 +192,7 @@ public class RequestServiceTest {
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
                 updatedRequestData.getJsonString());
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(updatedRequest)).isTrue();
 
         List<MetadbSample> sampleList = requestService.getRequestSamplesWithUpdates(
                 updatedRequest);
@@ -292,5 +299,12 @@ public class RequestServiceTest {
             .isThrownBy(() -> {
                 requestService.getRequestsByDate(startDate, null);
             });
+    }
+
+    private Boolean requestHasExpectedFieldsPopulated(MetadbRequest request) {
+        return ((request.getRequestMetadataList() != null && !request.getRequestMetadataList().isEmpty())
+                && (request.getMetaDbSampleList() != null && !request.getMetaDbSampleList().isEmpty())
+                && (request.getNamespace() != null && !request.getNamespace().isEmpty())
+                && (request.getRequestJson() != null && !request.getRequestJson().isEmpty()));
     }
 }

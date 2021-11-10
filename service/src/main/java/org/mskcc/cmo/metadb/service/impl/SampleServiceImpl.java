@@ -122,6 +122,9 @@ public class SampleServiceImpl implements MetadbSampleService {
     public MetadbSample getMetadbSampleByRequestAndIgoId(String requestId, String igoId)
             throws Exception {
         MetadbSample sample = sampleRepository.findSampleByRequestAndIgoId(requestId, igoId);
+        if (sample == null) {
+            return null;
+        }
         sample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
 

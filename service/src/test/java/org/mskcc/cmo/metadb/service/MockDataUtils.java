@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
+import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -84,6 +86,7 @@ public final class MockDataUtils {
         request.setRequestJson(requestJson);
         request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
         request.setNamespace("igo");
+        request.addRequestMetadata(extractRequestMetadata(requestJson));
         return request;
     }
 
@@ -110,5 +113,19 @@ public final class MockDataUtils {
             requestSamplesList.add(sample);
         }
         return requestSamplesList;
+    }
+
+    private RequestMetadata extractRequestMetadata(String requestMetadataJson)
+            throws JsonMappingException, JsonProcessingException {
+        Map<String, Object> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
+        // remove samples if present for request metadata
+        if (requestMetadataMap.containsKey("samples")) {
+            requestMetadataMap.remove("samples");
+        }
+        RequestMetadata requestMetadata = new RequestMetadata(
+                requestMetadataMap.get("requestId").toString(),
+                mapper.writeValueAsString(requestMetadataMap),
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        return requestMetadata;
     }
 }
