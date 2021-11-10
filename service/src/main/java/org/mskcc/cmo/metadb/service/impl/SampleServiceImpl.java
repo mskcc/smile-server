@@ -96,10 +96,12 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public MetadbSample getMetadbSample(UUID metadbSampleId) throws Exception {
         MetadbSample sample = sampleRepository.findSampleById(metadbSampleId);
+        if (sample == null) {
+            return null;
+        }
         sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metadbSampleId));
         for (SampleMetadata s: sample.getSampleMetadataList()) {
             s.setMetaDbPatientId(patientService.getPatientIdBySample(metadbSampleId));
-            s.setMetaDbSampleId(metadbSampleId);
         }
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(metadbSampleId));
         return sample;
@@ -110,11 +112,13 @@ public class SampleServiceImpl implements MetadbSampleService {
             throws Exception {
         MetadbSample sample = sampleRepository.findSampleByRequestAndIgoId(requestId,
                 igoId.getValue());
+        if (sample == null) {
+            return null;
+        }
         sample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
         for (SampleMetadata s : sample.getSampleMetadataList()) {
             s.setMetaDbPatientId(patientService.getPatientIdBySample(sample.getMetaDbSampleId()));
-            s.setMetaDbSampleId(sample.getMetaDbSampleId());
         }
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
         return sample;
@@ -137,7 +141,6 @@ public class SampleServiceImpl implements MetadbSampleService {
 
         for (SampleMetadata s : sample.getSampleMetadataList()) {
             s.setMetaDbPatientId(patient.getMetaDbPatientId());
-            s.setMetaDbSampleId(sample.getMetaDbSampleId());
         }
         return sample;
     }

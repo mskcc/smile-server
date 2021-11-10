@@ -20,7 +20,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
-    private UUID metaDbSampleId;
     private String importDate;
     private String cmoInfoIgoId;
     private String cmoSampleName;
@@ -145,15 +144,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public UUID getMetaDbSampleId() {
-        return metaDbSampleId;
-
-    }
-
-    public void setMetaDbSampleId(UUID metaDbSampleId) {
-        this.metaDbSampleId = metaDbSampleId;
     }
 
     public String getImportDate() {
@@ -471,7 +461,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     public void setCmoSampleIdFields(Map<String, String> cmoSampleIdFields) {
         this.cmoSampleIdFields = cmoSampleIdFields;
     }
-    
+
     @Override
     public int compareTo(SampleMetadata sampleMetadata) {
         if (getImportDate() == null || sampleMetadata.getImportDate() == null) {

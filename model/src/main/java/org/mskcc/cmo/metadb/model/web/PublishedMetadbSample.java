@@ -69,6 +69,7 @@ public class PublishedMetadbSample {
      */
     public PublishedMetadbSample(MetadbSample metaDbSample) throws ParseException {
         SampleMetadata latestSampleMetadata = metaDbSample.getLatestSampleMetadata();
+        this.metaDbSampleId = metaDbSample.getMetaDbSampleId();
         this.mrn = latestSampleMetadata.getMrn();
         this.setCmoInfoIgoId(latestSampleMetadata.getCmoInfoIgoId());
         this.cmoSampleName = latestSampleMetadata.getCmoSampleName();
