@@ -104,6 +104,42 @@ public class PublishedMetadbSample {
         this.sampleAliases = metaDbSample.getSampleAliases();
     }
 
+    /**
+     * MetadbSampleWeb constructor
+     * @param igoId
+     * @param cmoInfoIgoId
+     * @param cmoSampleName
+     * @param sampleName
+     * @param cmoSampleClass
+     * @param cmoPatientId
+     * @param investigatorSampleId
+     * @param oncoTreeCode
+     * @param tumorOrNormal
+     * @param tissueLocation
+     * @param specimenType
+     * @param sampleOrigin
+     * @param preservation
+     * @param collectionYear
+     * @param sex
+     * @param species
+     * @param tubeId
+     * @param cfDNA2dBarcode
+     * @param qcReports
+     * @param libraries
+     * @param mrn
+     * @param sampleType
+     * @param tumorType
+     * @param parentTumorType
+     * @param tissueSource
+     * @param recipe
+     * @param baitSet
+     * @param fastqPath
+     * @param principalInvestigator
+     * @param ancestorSample
+     * @param sampleStatus
+     * @param importDate
+     * @param sampleAliases
+     */
     public PublishedMetadbSample(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
             String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
             String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
@@ -111,7 +147,8 @@ public class PublishedMetadbSample {
             String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
             String mrn, String sampleType, String tumorType, String parentTumorType,
             String tissueSource, String recipe, String baitSet, String fastqPath,
-            String principalInvestigator, String ancestorSample, String sampleStatus, String importDate, List<SampleAlias> sampleAliases) {
+            String principalInvestigator, String ancestorSample, String sampleStatus, String importDate,
+            List<SampleAlias> sampleAliases) {
         this.mrn = mrn;
         this.setCmoInfoIgoId(cmoInfoIgoId);
         this.cmoSampleName = cmoSampleName;
@@ -244,17 +281,6 @@ public class PublishedMetadbSample {
     }
 
     /**
-     * Adds QcReport to list.
-     * @param qcReport
-     */
-    public void addQcReport(QcReport qcReport) {
-        if (getQcReports() == null) {
-            this.qcReports = new ArrayList<>();
-        }
-        qcReports.add(qcReport);
-    }
-
-    /**
      * Returns empty array list if field is null.
      * @return
      */
@@ -267,17 +293,6 @@ public class PublishedMetadbSample {
 
     public void setLibraries(List<Library> libraries) {
         this.libraries = libraries;
-    }
-
-    /**
-     * Adds Library to list.
-     * @param library
-     */
-    public void addLibrary(Library library) {
-        if (getLibraries() == null) {
-            this.libraries = new ArrayList<>();
-        }
-        libraries.add(library);
     }
 
     public String getMrn() {

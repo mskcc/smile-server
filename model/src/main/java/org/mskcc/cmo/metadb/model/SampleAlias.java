@@ -26,7 +26,7 @@ public class SampleAlias implements Serializable {
 
     /**
      * Sample constructor.
-     * @param sampleId
+     * @param value
      * @param namespace
      */
     public SampleAlias(String value, String namespace) {
