@@ -64,8 +64,6 @@ public class RequestServiceImpl implements MetadbRequestService {
         project.setProjectId(request.getProjectId());
         project.setNamespace(request.getNamespace());
         request.setMetaDbProject(project);
-        RequestMetadata requestMetadata = extractRequestMetadata(request.getRequestJson());
-        request.addRequestMetadata(requestMetadata);
 
         MetadbRequest savedRequest = requestRepository.findRequestById(request.getRequestId());
         if (savedRequest == null) {
@@ -147,6 +145,10 @@ public class RequestServiceImpl implements MetadbRequestService {
         if (request == null) {
             return null;
         }
+        // get request metadata and sample metadata for request if exists
+        List<RequestMetadata> requestMetadataList =
+                requestRepository.findRequestMetadataHistoryById(requestId);
+        request.setRequestMetadataList(requestMetadataList);
         List<MetadbSample> metadbSampleList = sampleService.getAllSamplesByRequestId(requestId);
         request.setMetaDbSampleList(metadbSampleList);
         return request;
@@ -176,20 +178,6 @@ public class RequestServiceImpl implements MetadbRequestService {
         adjustedReferenceTimestamp.setTime(referenceTimestamp);
         adjustedReferenceTimestamp.add(Calendar.MILLISECOND, TIME_ADJ_24HOURS_MS);
         return newTimestamp.before(adjustedReferenceTimestamp.getTime());
-    }
-
-    private RequestMetadata extractRequestMetadata(String requestMetadataJson)
-            throws JsonMappingException, JsonProcessingException {
-        Map<String, Object> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
-        // remove samples if present for request metadata
-        if (requestMetadataMap.containsKey("samples")) {
-            requestMetadataMap.remove("samples");
-        }
-        RequestMetadata requestMetadata = new RequestMetadata(
-                requestMetadataMap.get("requestId").toString(),
-                mapper.writeValueAsString(requestMetadataMap),
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        return requestMetadata;
     }
 
     @Override
