@@ -24,6 +24,7 @@ import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
+import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 import org.mskcc.cmo.metadb.model.web.RequestSummary;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
@@ -159,9 +160,9 @@ public class RequestServiceImpl implements MetadbRequestService {
         MetadbRequest request = getMetadbRequestById(requestId);
 
         // for each metadb sample get the latest version of its sample metadata
-        List<SampleMetadata> samples = new ArrayList<>();
+        List<PublishedMetadbSample> samples = new ArrayList<>();
         for (MetadbSample sample : request.getMetaDbSampleList()) {
-            samples.add(sample.getLatestSampleMetadata());
+            samples.add(new PublishedMetadbSample(sample));
         }
         return new PublishedMetadbRequest(request, samples);
     }

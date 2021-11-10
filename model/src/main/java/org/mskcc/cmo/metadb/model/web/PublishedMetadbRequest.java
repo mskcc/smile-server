@@ -35,7 +35,7 @@ public class PublishedMetadbRequest {
     private boolean bicAnalysis;
     private String requestJson;
     private List<String> pooledNormals;
-    private List<SampleMetadata> samples;
+    private List<PublishedMetadbSample> samples;
 
     public PublishedMetadbRequest() {}
 
@@ -44,7 +44,7 @@ public class PublishedMetadbRequest {
      * @param metaDbRequest
      * @param samples
      */
-    public PublishedMetadbRequest(MetadbRequest metaDbRequest, List<SampleMetadata> samples) {
+    public PublishedMetadbRequest(MetadbRequest metaDbRequest, List<PublishedMetadbSample> samples) {
         this.metaDbRequestId = metaDbRequest.getMetaDbRequestId();
         this.projectId = metaDbRequest.getRequestId().split("_")[0];
         this.requestId = metaDbRequest.getRequestId();
@@ -100,7 +100,7 @@ public class PublishedMetadbRequest {
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType, Boolean isCmoRequest,
             Boolean bicAnalysis, String requestJson, List<String> pooledNormals,
-            List<SampleMetadata> samples) {
+            List<PublishedMetadbSample> samples) {
         this.metaDbRequestId = metaDbRequestId;
         this.projectId = projectId;
         this.requestId = requestId;
@@ -293,11 +293,11 @@ public class PublishedMetadbRequest {
         this.pooledNormals = pooledNormals;
     }
 
-    public List<SampleMetadata> getSamples() {
+    public List<PublishedMetadbSample> getSamples() {
         return samples;
     }
 
-    public void setSamples(List<SampleMetadata> samples) {
+    public void setSamples(List<PublishedMetadbSample> samples) {
         this.samples = samples;
     }
 

@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
 import org.mskcc.cmo.metadb.service.MetadbPatientService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
@@ -107,7 +109,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     public MetadbSample getMetadbSampleByRequestAndAlias(String requestId, SampleAlias igoId)
             throws Exception {
         MetadbSample sample = sampleRepository.findSampleByRequestAndIgoId(requestId,
-                igoId.getSampleId());
+                igoId.getValue());
         sample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
         for (SampleMetadata s : sample.getSampleMetadataList()) {
@@ -170,5 +172,11 @@ public class SampleServiceImpl implements MetadbSampleService {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
+    }
+
+    @Override
+    public PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws ParseException {
+        MetadbSample sample = sampleRepository.findSampleById(metadbSampleId);
+        return new PublishedMetadbSample(sample);
     }
 }
