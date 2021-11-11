@@ -35,7 +35,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    private UUID metaDbPatientId;
     private String igoId;
     private String investigatorSampleId;
     private String species;
@@ -284,14 +283,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     public void setCmoPatientId(String cmoPatientId) {
         this.cmoPatientId = cmoPatientId;
-    }
-
-    public UUID getMetaDbPatientId() {
-        return metaDbPatientId;
-    }
-
-    public void setMetaDbPatientId(UUID metaDbPatientId) {
-        this.metaDbPatientId = metaDbPatientId;
     }
 
     public String getIgoId() {

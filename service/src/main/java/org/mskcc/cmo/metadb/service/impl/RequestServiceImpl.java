@@ -162,7 +162,7 @@ public class RequestServiceImpl implements MetadbRequestService {
         // for each metadb sample get the latest version of its sample metadata
         List<PublishedMetadbSample> samples = new ArrayList<>();
         for (MetadbSample sample : request.getMetaDbSampleList()) {
-            samples.add(new PublishedMetadbSample(sample));
+            samples.add(sampleService.getPublishedMetadbSample(sample.getMetaDbSampleId()));
         }
         return new PublishedMetadbRequest(request, samples);
     }

@@ -71,7 +71,7 @@ public class PublishedMetadbSample {
         SampleMetadata latestSampleMetadata = metaDbSample.getLatestSampleMetadata();
         this.metaDbSampleId = metaDbSample.getMetaDbSampleId();
         this.mrn = latestSampleMetadata.getMrn();
-        this.setCmoInfoIgoId(latestSampleMetadata.getCmoInfoIgoId());
+        this.cmoInfoIgoId = latestSampleMetadata.getCmoInfoIgoId();
         this.cmoSampleName = latestSampleMetadata.getCmoSampleName();
         this.sampleName = latestSampleMetadata.getSampleName();
         this.cmoSampleClass = latestSampleMetadata.getCmoSampleClass();
@@ -95,7 +95,7 @@ public class PublishedMetadbSample {
         this.fastqPath = latestSampleMetadata.getFastqPath();
         this.ancestorSample = latestSampleMetadata.getAncestorSample();
         this.sampleStatus = latestSampleMetadata.getSampleStatus();
-        this.setImportDate(latestSampleMetadata.getImportDate());
+        this.importDate = latestSampleMetadata.getImportDate();
         this.oncoTreeCode = latestSampleMetadata.getOncoTreeCode();
         this.collectionYear = latestSampleMetadata.getCollectionYear();
         this.tubeId = latestSampleMetadata.getTubeId();
@@ -151,7 +151,7 @@ public class PublishedMetadbSample {
             String principalInvestigator, String ancestorSample, String sampleStatus, String importDate,
             List<SampleAlias> sampleAliases) {
         this.mrn = mrn;
-        this.setCmoInfoIgoId(cmoInfoIgoId);
+        this.cmoInfoIgoId = cmoInfoIgoId;
         this.cmoSampleName = cmoSampleName;
         this.sampleName = sampleName;
         this.cmoSampleClass = cmoSampleClass;
@@ -175,7 +175,7 @@ public class PublishedMetadbSample {
         this.fastqPath = fastqPath;
         this.ancestorSample = ancestorSample;
         this.sampleStatus = sampleStatus;
-        this.setImportDate(importDate);
+        this.importDate = importDate;
         this.oncoTreeCode = oncoTreeCode;
         this.collectionYear = collectionYear;
         this.tubeId = tubeId;
