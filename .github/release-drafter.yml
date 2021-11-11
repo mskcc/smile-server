@@ -1,0 +1,17 @@
+name-template: '$NEXT_PATCH_VERSION'
+tag-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+categories:
+  - title: 🚀 Features
+    label: feature
+  - title: 🐛 Bug Fixes
+    label: fix
+  - title: 🧰 Maintenance
+    label: chore
+template: |
+  ## Changes
+
+  $CHANGES
+
+  ## 🕵️ Full commit logs
+
+  https://github.com/mskcc/cmo-metadb-common/compare/$PREVIOUS_TAG...$NEXT_PATCH_VERSION
