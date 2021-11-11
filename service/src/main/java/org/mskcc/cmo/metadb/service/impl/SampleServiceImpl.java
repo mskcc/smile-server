@@ -1,7 +1,6 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -100,6 +99,9 @@ public class SampleServiceImpl implements MetadbSampleService {
             return null;
         }
         sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metadbSampleId));
+        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
+        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+        sample.setPatient(patient);
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(metadbSampleId));
         return sample;
     }
@@ -114,6 +116,9 @@ public class SampleServiceImpl implements MetadbSampleService {
         }
         sample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
+        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
+        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+        sample.setPatient(patient);
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
         return sample;
     }
@@ -127,11 +132,10 @@ public class SampleServiceImpl implements MetadbSampleService {
         }
         sample.setSampleMetadataList(sampleRepository
                 .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
-
         String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
-
         MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
         sample.setPatient(patient);
+        sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
         return sample;
     }
 
@@ -170,11 +174,6 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception {
         MetadbSample sample = getMetadbSample(metadbSampleId);
-        PublishedMetadbSample publishedSample = new PublishedMetadbSample(sample);
-        publishedSample.setMetaDbSampleId(metadbSampleId);
-        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
-        publishedSample.setMetaDbPatientId(patientService.getPatientByCmoPatientId(
-                cmoPatientId).getMetaDbPatientId());
-        return publishedSample;
+        return new PublishedMetadbSample(sample);
     }
 }

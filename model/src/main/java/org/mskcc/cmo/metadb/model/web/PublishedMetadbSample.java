@@ -76,6 +76,7 @@ public class PublishedMetadbSample {
         this.sampleName = latestSampleMetadata.getSampleName();
         this.cmoSampleClass = latestSampleMetadata.getCmoSampleClass();
         this.cmoPatientId = latestSampleMetadata.getCmoPatientId();
+        this.metaDbPatientId = metaDbSample.getPatient().getMetaDbPatientId();
         this.igoId = latestSampleMetadata.getIgoId();
         this.investigatorSampleId = latestSampleMetadata.getInvestigatorSampleId();
         this.species = latestSampleMetadata.getSpecies();
@@ -149,7 +150,7 @@ public class PublishedMetadbSample {
             String mrn, String sampleType, String tumorType, String parentTumorType,
             String tissueSource, String recipe, String baitSet, String fastqPath,
             String principalInvestigator, String ancestorSample, String sampleStatus, String importDate,
-            List<SampleAlias> sampleAliases) {
+            List<SampleAlias> sampleAliases, UUID metaDbSampleId, UUID metaDbPatientId) {
         this.mrn = mrn;
         this.cmoInfoIgoId = cmoInfoIgoId;
         this.cmoSampleName = cmoSampleName;
@@ -183,6 +184,8 @@ public class PublishedMetadbSample {
         this.qcReports = qcReports;
         this.libraries = libraries;
         this.sampleAliases = sampleAliases;
+        this.metaDbSampleId = metaDbSampleId;
+        this.metaDbPatientId = metaDbPatientId;
     }
 
     public UUID getMetaDbSampleId() {
