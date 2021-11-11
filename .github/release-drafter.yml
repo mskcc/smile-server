@@ -1,4 +1,4 @@
-name-template: '$NEXT_PATCH_VERSION'
+name-template: '$NEXT_PATCH_VERSION.RELEASE'
 tag-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 categories:
   - title: 🚀 Features
