@@ -23,5 +23,6 @@ public interface MetadbSampleService {
     Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata, SampleMetadata sampleMetadata)
             throws Exception;
     PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception;
-    List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(String cmoPatientId) throws Exception;
+    List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(String cmoPatientId)
+            throws Exception;
 }
