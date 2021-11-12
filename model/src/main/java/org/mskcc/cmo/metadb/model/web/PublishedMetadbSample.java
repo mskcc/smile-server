@@ -63,7 +63,7 @@ public class PublishedMetadbSample {
     public PublishedMetadbSample() {}
 
     /**
-     * PublishedMetadbRequest constructor
+     * PublishedMetadbSample constructor
      * @param metaDbSample
      * @throws ParseException
      */

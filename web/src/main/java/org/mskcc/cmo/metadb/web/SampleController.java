@@ -55,7 +55,7 @@ public class SampleController {
     public ResponseEntity<List<PublishedMetadbSample>> fetchSampleMetadataListByCmoPatientIdGET(
             @ApiParam(value = "CMO Patient ID", required = true)
             @PathVariable String cmoPatientId) throws Exception {
-        List<PublishedMetadbSample> samples = sampleService.getPublishedMetadbSampleListByCmoId(cmoPatientId);
+        List<PublishedMetadbSample> samples = sampleService.getPublishedMetadbSampleListByCmoPatientId(cmoPatientId);
         if (samples == null) {
             return requestNotFoundHandler("Samples not found by CMO patient ID: " + cmoPatientId);
         }
