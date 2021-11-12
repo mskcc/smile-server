@@ -172,8 +172,24 @@ public class SampleServiceImpl implements MetadbSampleService {
     }
 
     @Override
-    public PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception {
+    public PublishedMetadbSample getPublishedMetadbSamplebyUUID(UUID metadbSampleId) throws Exception {
         MetadbSample sample = getMetadbSample(metadbSampleId);
         return new PublishedMetadbSample(sample);
+    }
+
+    @Override
+    public List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoId(
+            String cmoPatientId) throws Exception {
+        List<SampleMetadata> sampleMetadataList = sampleRepository.
+                findSampleMetadataListByCmoPatientId(cmoPatientId);
+        List<PublishedMetadbSample> samples = new ArrayList<>();
+        for (SampleMetadata sample: sampleMetadataList) {
+            MetadbSample metadbSample = sampleRepository.findSampleByRequestAndIgoId(
+                    sample.getRequestId(), sample.getIgoId());
+            PublishedMetadbSample publishedSample = getPublishedMetadbSamplebyUUID(
+                    metadbSample.getMetaDbSampleId());
+            samples.add(publishedSample);
+        }
+        return samples;
     }
 }

@@ -63,7 +63,7 @@ public class PublishedMetadbSample {
     public PublishedMetadbSample() {}
 
     /**
-     * MetadbSampleWeb constructor
+     * PublishedMetadbRequest constructor
      * @param metaDbSample
      * @throws ParseException
      */
@@ -107,7 +107,7 @@ public class PublishedMetadbSample {
     }
 
     /**
-     * MetadbSampleWeb constructor
+     * All args constructor
      * @param igoId
      * @param cmoInfoIgoId
      * @param cmoSampleName
@@ -496,6 +496,9 @@ public class PublishedMetadbSample {
     }
 
     public List<SampleAlias> getSampleAliases() {
+        if (sampleAliases == null) {
+            this.sampleAliases = new ArrayList<>();
+        }
         return sampleAliases;
     }
 

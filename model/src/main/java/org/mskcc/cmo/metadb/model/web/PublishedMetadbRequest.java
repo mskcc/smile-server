@@ -40,7 +40,7 @@ public class PublishedMetadbRequest {
     public PublishedMetadbRequest() {}
 
     /**
-     * MetaDbRequestWeb constructor.
+     * PublishedMetadbRequest constructor.
      * @param metaDbRequest
      * @param samples
      */

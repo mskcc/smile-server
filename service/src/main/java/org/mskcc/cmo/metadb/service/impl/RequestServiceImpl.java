@@ -160,7 +160,7 @@ public class RequestServiceImpl implements MetadbRequestService {
         List<PublishedMetadbSample> samples = new ArrayList<>();
         for (MetadbSample sample : request.getMetaDbSampleList()) {
             PublishedMetadbSample publishedSample = sampleService
-                    .getPublishedMetadbSample(sample.getMetaDbSampleId());
+                    .getPublishedMetadbSamplebyUUID(sample.getMetaDbSampleId());
             samples.add(publishedSample);
         }
         return new PublishedMetadbRequest(request, samples);
