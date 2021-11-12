@@ -495,6 +495,10 @@ public class PublishedMetadbSample {
         this.sampleAliases = sampleAliases;
     }
 
+    /**
+     * Returns empty array list if field is null.
+     * @return
+     */
     public List<SampleAlias> getSampleAliases() {
         if (sampleAliases == null) {
             this.sampleAliases = new ArrayList<>();

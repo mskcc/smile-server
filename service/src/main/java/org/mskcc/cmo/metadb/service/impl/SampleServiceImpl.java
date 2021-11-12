@@ -180,8 +180,8 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoId(
             String cmoPatientId) throws Exception {
-        List<SampleMetadata> sampleMetadataList = sampleRepository.
-                findSampleMetadataListByCmoPatientId(cmoPatientId);
+        List<SampleMetadata> sampleMetadataList = sampleRepository
+                .findSampleMetadataListByCmoPatientId(cmoPatientId);
         List<PublishedMetadbSample> samples = new ArrayList<>();
         for (SampleMetadata sample: sampleMetadataList) {
             MetadbSample metadbSample = sampleRepository.findSampleByRequestAndIgoId(
