@@ -1,7 +1,5 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import java.io.IOException;
@@ -22,8 +20,8 @@ import org.mskcc.cmo.metadb.model.MetadbProject;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
-import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbRequest;
+import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 import org.mskcc.cmo.metadb.model.web.RequestSummary;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
@@ -159,9 +157,11 @@ public class RequestServiceImpl implements MetadbRequestService {
         MetadbRequest request = getMetadbRequestById(requestId);
 
         // for each metadb sample get the latest version of its sample metadata
-        List<SampleMetadata> samples = new ArrayList<>();
+        List<PublishedMetadbSample> samples = new ArrayList<>();
         for (MetadbSample sample : request.getMetaDbSampleList()) {
-            samples.add(sample.getLatestSampleMetadata());
+            PublishedMetadbSample publishedSample = sampleService
+                    .getPublishedMetadbSample(sample.getMetaDbSampleId());
+            samples.add(publishedSample);
         }
         return new PublishedMetadbRequest(request, samples);
     }
