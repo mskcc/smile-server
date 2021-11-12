@@ -34,7 +34,8 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    private String igoId;
+    private UUID metaDbPatientId;
+    private String primaryId;
     private String investigatorSampleId;
     private String species;
     private String sex;
@@ -61,7 +62,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     /**
      * SampleMetadata constructor
-     * @param igoId
+     * @param primaryId
      * @param cmoInfoIgoId
      * @param cmoSampleName
      * @param sampleName
@@ -94,7 +95,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
      * @param sampleStatus
      * @param importDate
      */
-    public SampleMetadata(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
+    public SampleMetadata(String primaryId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
             String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
             String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
             String preservation, String collectionYear, String sex, String species, String tubeId,
@@ -108,7 +109,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.sampleName = sampleName;
         this.cmoSampleClass = cmoSampleClass;
         this.cmoPatientId = cmoPatientId;
-        this.igoId = igoId;
+        this.primaryId = primaryId;
         this.investigatorSampleId = investigatorSampleId;
         this.species = species;
         this.sex = sex;
@@ -284,12 +285,20 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.cmoPatientId = cmoPatientId;
     }
 
-    public String getIgoId() {
-        return igoId;
+    public UUID getMetaDbPatientId() {
+        return metaDbPatientId;
     }
 
-    public void setIgoId(String igoId) {
-        this.igoId = igoId;
+    public void setMetaDbPatientId(UUID metaDbPatientId) {
+        this.metaDbPatientId = metaDbPatientId;
+    }
+
+    public String getPrimaryId() {
+        return primaryId;
+    }
+
+    public void setPrimaryId(String primaryId) {
+        this.primaryId = primaryId;
     }
 
     public String getInvestigatorSampleId() {

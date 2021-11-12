@@ -211,7 +211,7 @@ public class RequestServiceImpl implements MetadbRequestService {
         List<MetadbSample> updatedSamples = new ArrayList<>();
         for (MetadbSample sample: request.getMetaDbSampleList()) {
             MetadbSample existingSample = sampleService.getMetadbSampleByRequestAndIgoId(
-                    request.getRequestId(), sample.getLatestSampleMetadata().getIgoId());
+                    request.getRequestId(), sample.getLatestSampleMetadata().getPrimaryId());
             // skip samples that do not already exist since they do not have a sample metadata
             // history to publish to the CMO_SAMPLE_METADATA_UPDATE topic
             if (existingSample == null) {

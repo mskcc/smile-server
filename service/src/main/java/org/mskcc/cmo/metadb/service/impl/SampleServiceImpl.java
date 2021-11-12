@@ -58,7 +58,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     public MetadbSample fetchAndLoadSampleDetails(MetadbSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         sample.setSampleClass(sampleMetadata.getTumorOrNormal());
-        sample.addSampleAlias(new SampleAlias(sampleMetadata.getIgoId(), "igoId"));
+        sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
         sample.addSampleAlias(
                 new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
