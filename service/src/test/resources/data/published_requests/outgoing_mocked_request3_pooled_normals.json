@@ -33,7 +33,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "AGAG-LXX8-33344Z", 
             "collectionYear": "", 
-            "igoId": "33344_Z_1", 
+            "primaryId": "33344_Z_1", 
             "investigatorSampleId": "AGAG-LXX8", 
             "libraries": [
                 {
@@ -89,7 +89,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "LXX8-AGAG-33344Z", 
             "collectionYear": "", 
-            "igoId": "33344_Z_2", 
+            "primaryId": "33344_Z_2", 
             "investigatorSampleId": "LXX8-AGAG", 
             "libraries": [
                 {
@@ -145,7 +145,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "AGAG-33344Z", 
             "collectionYear": "", 
-            "igoId": "33344_Z_3", 
+            "primaryId": "33344_Z_3", 
             "investigatorSampleId": "AGAG", 
             "libraries": [
                 {
@@ -201,7 +201,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "LXX8-33344Z", 
             "collectionYear": "", 
-            "igoId": "33344_Z_4", 
+            "primaryId": "33344_Z_4", 
             "investigatorSampleId": "LXX8", 
             "libraries": [
                 {

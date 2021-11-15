@@ -33,7 +33,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "C-MP789JR-X001-d", 
             "collectionYear": "", 
-            "igoId": "MOCKREQUEST1_B_1", 
+            "primaryId": "MOCKREQUEST1_B_1", 
             "investigatorSampleId": "XXX002_P3_12345_L1", 
             "libraries": [
                 {
@@ -82,7 +82,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-MP789JR-N001-d", 
             "collectionYear": "", 
-            "igoId": "MOCKREQUEST1_B_2", 
+            "primaryId": "MOCKREQUEST1_B_2", 
             "investigatorSampleId": "01-0012345a", 
             "libraries": [
                 {
@@ -131,7 +131,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "C-8DH24X-X001-d", 
             "collectionYear": "", 
-            "igoId": "MOCKREQUEST1_B_3", 
+            "primaryId": "MOCKREQUEST1_B_3", 
             "investigatorSampleId": "XXX002_P1_12348a_R_43", 
             "libraries": [
                 {
@@ -180,7 +180,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-8DH24X-N001-d", 
             "collectionYear": "", 
-            "igoId": "MOCKREQUEST1_B_4", 
+            "primaryId": "MOCKREQUEST1_B_4", 
             "investigatorSampleId": "01-XXXXXXXa", 
             "libraries": [
                 {

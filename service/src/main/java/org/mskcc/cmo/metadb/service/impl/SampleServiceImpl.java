@@ -185,7 +185,7 @@ public class SampleServiceImpl implements MetadbSampleService {
         List<PublishedMetadbSample> samples = new ArrayList<>();
         for (SampleMetadata sample: sampleMetadataList) {
             MetadbSample metadbSample = sampleRepository.findSampleByRequestAndIgoId(
-                    sample.getRequestId(), sample.getIgoId());
+                    sample.getRequestId(), sample.getPrimaryId());
             PublishedMetadbSample publishedSample = getPublishedMetadbSample(
                     metadbSample.getMetaDbSampleId());
             samples.add(publishedSample);

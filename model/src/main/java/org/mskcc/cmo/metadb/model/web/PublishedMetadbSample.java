@@ -36,7 +36,7 @@ public class PublishedMetadbSample {
     private String mrn;
     private String cmoPatientId;
     private UUID metaDbPatientId;
-    private String igoId;
+    private String primaryId;
     private String investigatorSampleId;
     private String species;
     private String sex;
@@ -77,7 +77,7 @@ public class PublishedMetadbSample {
         this.cmoSampleClass = latestSampleMetadata.getCmoSampleClass();
         this.cmoPatientId = latestSampleMetadata.getCmoPatientId();
         this.metaDbPatientId = metaDbSample.getPatient().getMetaDbPatientId();
-        this.igoId = latestSampleMetadata.getIgoId();
+        this.primaryId = latestSampleMetadata.getPrimaryId();
         this.investigatorSampleId = latestSampleMetadata.getInvestigatorSampleId();
         this.species = latestSampleMetadata.getSpecies();
         this.sex = latestSampleMetadata.getSex();
@@ -108,7 +108,7 @@ public class PublishedMetadbSample {
 
     /**
      * All args constructor
-     * @param igoId
+     * @param primaryId
      * @param cmoInfoIgoId
      * @param cmoSampleName
      * @param sampleName
@@ -141,12 +141,14 @@ public class PublishedMetadbSample {
      * @param sampleStatus
      * @param importDate
      * @param sampleAliases
+     * @param metaDbSampleId
+     * @param metaDbPatientId
      */
-    public PublishedMetadbSample(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
-            String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
-            String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
-            String preservation, String collectionYear, String sex, String species, String tubeId,
-            String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
+    public PublishedMetadbSample(String primaryId, String cmoInfoIgoId, String cmoSampleName,
+            String sampleName, String cmoSampleClass, String cmoPatientId, String investigatorSampleId,
+            String oncoTreeCode, String tumorOrNormal, String tissueLocation, String specimenType,
+            String sampleOrigin, String preservation, String collectionYear, String sex, String species,
+            String tubeId, String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
             String mrn, String sampleType, String tumorType, String parentTumorType,
             String tissueSource, String recipe, String baitSet, String fastqPath,
             String principalInvestigator, String ancestorSample, String sampleStatus, String importDate,
@@ -157,7 +159,7 @@ public class PublishedMetadbSample {
         this.sampleName = sampleName;
         this.cmoSampleClass = cmoSampleClass;
         this.cmoPatientId = cmoPatientId;
-        this.igoId = igoId;
+        this.primaryId = primaryId;
         this.investigatorSampleId = investigatorSampleId;
         this.species = species;
         this.sex = sex;
@@ -323,12 +325,12 @@ public class PublishedMetadbSample {
         this.metaDbPatientId = metaDbPatientId;
     }
 
-    public String getIgoId() {
-        return igoId;
+    public String getPrimaryId() {
+        return primaryId;
     }
 
-    public void setIgoId(String igoId) {
-        this.igoId = igoId;
+    public void setPrimaryId(String igoId) {
+        this.primaryId = igoId;
     }
 
     public String getInvestigatorSampleId() {

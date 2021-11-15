@@ -27,7 +27,7 @@
   "projectId": "MOCKREQUEST1",
   "samples": [
     {
-      "igoId": "MOCKREQUEST1_B_1",
+      "primaryId": "MOCKREQUEST1_B_1",
       "cmoSampleName": "C-MP789JR-X001-d",
       "sampleName": "XXX002_P3_12345_L1",
       "cmoSampleClass": "",
@@ -74,7 +74,7 @@
       ]
     },
     {
-      "igoId": "MOCKREQUEST1_B_2",
+      "primaryId": "MOCKREQUEST1_B_2",
       "cmoSampleName": "C-MP789JR-N001-d",
       "sampleName": "01-0012345a",
       "cmoSampleClass": "Normal",
@@ -121,7 +121,7 @@
       ]
     },
     {
-      "igoId": "MOCKREQUEST1_B_3",
+      "primaryId": "MOCKREQUEST1_B_3",
       "cmoSampleName": "C-8DH24X-X001-d",
       "sampleName": "XXX002_P1_12348a_R_43",
       "cmoSampleClass": "Primary",
@@ -168,7 +168,7 @@
       ]
     },
     {
-      "igoId": "MOCKREQUEST1_B_4",
+      "primaryId": "MOCKREQUEST1_B_4",
       "cmoSampleName": "C-8DH24X-N001-d",
       "sampleName": "01-XXXXXXXa",
       "cmoSampleClass": "Normal",

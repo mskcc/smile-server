@@ -1,7 +1,9 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,8 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    private UUID metaDbPatientId;
+    @JsonProperty("primaryId")
+    @JsonAlias("igoId")
     private String primaryId;
     private String investigatorSampleId;
     private String species;
@@ -283,14 +286,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     public void setCmoPatientId(String cmoPatientId) {
         this.cmoPatientId = cmoPatientId;
-    }
-
-    public UUID getMetaDbPatientId() {
-        return metaDbPatientId;
-    }
-
-    public void setMetaDbPatientId(UUID metaDbPatientId) {
-        this.metaDbPatientId = metaDbPatientId;
     }
 
     public String getPrimaryId() {
