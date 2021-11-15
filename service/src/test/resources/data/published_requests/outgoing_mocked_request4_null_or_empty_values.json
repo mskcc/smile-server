@@ -44,6 +44,16 @@
       "tubeId": "",
       "baitSet": "GENESET101_BAITS",
       "qcReports": [],
+      "sampleAliases": [
+        {
+          "namespace": "igoId",
+          "value": "MOCKREQUEST1_B_1"
+        },
+        {
+          "namespace": "investigatorId",
+          "value": "XXX002_P3_12345_L1"
+        }
+      ],
       "libraries": [
         {
           "barcodeId": "IDT29",
@@ -91,6 +101,16 @@
       "tubeId": "",
       "baitSet": "GENESET101_BAITS",
       "qcReports": null,
+      "sampleAliases": [
+        {
+          "namespace": "igoId",
+          "value": "MOCKREQUEST1_B_2"
+        },
+        {
+          "namespace": "investigatorId",
+          "value": "01-0012345a"
+        }
+      ],
       "libraries": [
         {
           "barcodeId": "TNG41",
@@ -138,6 +158,16 @@
       "tubeId": "",
       "baitSet": "GENESET101_BAITS",
       "qcReports": [],
+      "sampleAliases": [
+        {
+          "namespace": "igoId",
+          "value": "MOCKREQUEST1_B_3"
+        },
+        {
+          "namespace": "investigatorId",
+          "value": "XXX002_P1_12348a_R_43"
+        }
+      ],
       "libraries": [
         {
           "barcodeId": "TNG53",
@@ -185,6 +215,16 @@
       "tubeId": "",
       "baitSet": "GENESET101_BAITS",
       "qcReports": [],
+      "sampleAliases": [
+        {
+          "namespace": "igoId",
+          "value": "MOCKREQUEST1_B_4"
+        },
+        {
+          "namespace": "investigatorId",
+          "value": "01-XXXXXXXa"
+        }
+      ],
       "libraries": [
         {
           "barcodeId": "",
