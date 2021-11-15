@@ -36,7 +36,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    @JsonProperty("primaryId")
     @JsonAlias("igoId")
     private String primaryId;
     private String investigatorSampleId;
