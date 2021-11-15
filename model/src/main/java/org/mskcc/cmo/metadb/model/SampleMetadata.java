@@ -1,7 +1,9 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,8 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    private String igoId;
+    @JsonAlias("igoId")
+    private String primaryId;
     private String investigatorSampleId;
     private String species;
     private String sex;
@@ -61,7 +64,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     /**
      * SampleMetadata constructor
-     * @param igoId
+     * @param primaryId
      * @param cmoInfoIgoId
      * @param cmoSampleName
      * @param sampleName
@@ -94,7 +97,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
      * @param sampleStatus
      * @param importDate
      */
-    public SampleMetadata(String igoId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
+    public SampleMetadata(String primaryId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
             String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
             String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
             String preservation, String collectionYear, String sex, String species, String tubeId,
@@ -108,7 +111,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.sampleName = sampleName;
         this.cmoSampleClass = cmoSampleClass;
         this.cmoPatientId = cmoPatientId;
-        this.igoId = igoId;
+        this.primaryId = primaryId;
         this.investigatorSampleId = investigatorSampleId;
         this.species = species;
         this.sex = sex;
@@ -284,12 +287,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.cmoPatientId = cmoPatientId;
     }
 
-    public String getIgoId() {
-        return igoId;
+    public String getPrimaryId() {
+        return primaryId;
     }
 
-    public void setIgoId(String igoId) {
-        this.igoId = igoId;
+    public void setPrimaryId(String primaryId) {
+        this.primaryId = primaryId;
     }
 
     public String getInvestigatorSampleId() {

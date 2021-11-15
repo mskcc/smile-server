@@ -58,7 +58,7 @@
     <cmo_metadb_common.group>com.github.mskcc</cmo_metadb_common.group>
     <cmo_metadb_common.version>1.1.7.RELEASE</cmo_metadb_common.version>
     <!-- metadb expected schema version -->
-    <metadb.schema_version>v1.1</metadb.schema_version>
+    <metadb.schema_version>v1.2</metadb.schema_version>
   </properties>
 
   <dependencies>

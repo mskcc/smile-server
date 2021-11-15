@@ -58,7 +58,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     public MetadbSample fetchAndLoadSampleDetails(MetadbSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         sample.setSampleClass(sampleMetadata.getTumorOrNormal());
-        sample.addSampleAlias(new SampleAlias(sampleMetadata.getIgoId(), "igoId"));
+        sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
         sample.addSampleAlias(
                 new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
@@ -184,8 +184,11 @@ public class SampleServiceImpl implements MetadbSampleService {
                 .findSampleMetadataListByCmoPatientId(cmoPatientId);
         List<PublishedMetadbSample> samples = new ArrayList<>();
         for (SampleMetadata sample: sampleMetadataList) {
+            // TODO: update method to fill in sample details in a more inclusive
+            // way and not just request and igo id since that is very specific
+            // to research samples only
             MetadbSample metadbSample = sampleRepository.findSampleByRequestAndIgoId(
-                    sample.getRequestId(), sample.getIgoId());
+                    sample.getRequestId(), sample.getPrimaryId());
             PublishedMetadbSample publishedSample = getPublishedMetadbSample(
                     metadbSample.getMetaDbSampleId());
             samples.add(publishedSample);

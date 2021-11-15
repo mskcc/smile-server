@@ -27,7 +27,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-TX6DNG-N001-d", 
             "collectionYear": "", 
-            "igoId": "22022_CC_3", 
+            "primaryId": "22022_CC_3", 
             "investigatorSampleId": "LMNO_4396_N", 
             "libraries": [
                 {
@@ -85,7 +85,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-DPCXX1-N001-d", 
             "collectionYear": "2018", 
-            "igoId": "22022_BZ_19", 
+            "primaryId": "22022_BZ_19", 
             "investigatorSampleId": "LMNO_3443_N", 
             "libraries": [
                 {
@@ -146,7 +146,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "C-KXXL3J-P001-d", 
             "collectionYear": "2018", 
-            "igoId": "22022_BZ_15", 
+            "primaryId": "22022_BZ_15", 
             "investigatorSampleId": "LMNO_0034_T_DNA", 
             "libraries": [
                 {
@@ -207,7 +207,7 @@
             "cmoSampleClass": "Metastasis", 
             "cmoSampleName": "C-XXX711-M001-d", 
             "collectionYear": "2017", 
-            "igoId": "22022_BZ_17", 
+            "primaryId": "22022_BZ_17", 
             "investigatorSampleId": "LMNO_9999_T", 
             "libraries": [
                 {
@@ -267,7 +267,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-PPPXX2-N001-d", 
             "collectionYear": "", 
-            "igoId": "22022_BZ_4", 
+            "primaryId": "22022_BZ_4", 
             "investigatorSampleId": "LMNO_8080_N", 
             "libraries": [], 
             "metaDbPatientId": "6cca3d19-875a-11eb-92e8-acde48001122", 
@@ -295,7 +295,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-KXXL3J-N001-d", 
             "collectionYear": "2019", 
-            "igoId": "22022_BZ_3", 
+            "primaryId": "22022_BZ_3", 
             "investigatorSampleId": "LMNO_0034_N2", 
             "libraries": [
                 {
@@ -356,7 +356,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-X09281-N001-d", 
             "collectionYear": "2018", 
-            "igoId": "22022_BZ_2", 
+            "primaryId": "22022_BZ_2", 
             "investigatorSampleId": "LMNO_7787_N2", 
             "libraries": [
                 {
@@ -417,7 +417,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "C-XXA40X-P001-d", 
             "collectionYear": "2019", 
-            "igoId": "22022_BZ_1", 
+            "primaryId": "22022_BZ_1", 
             "investigatorSampleId": "LMNO_2020_DNA", 
             "libraries": [
                 {
@@ -478,7 +478,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-YXX89J-N001-d", 
             "collectionYear": "2019", 
-            "igoId": "22022_BZ_9", 
+            "primaryId": "22022_BZ_9", 
             "investigatorSampleId": "LMNO_3030_N", 
             "libraries": [
                 {
@@ -539,7 +539,7 @@
             "cmoSampleClass": "Metastasis", 
             "cmoSampleName": "C-DPCXX1-M001-d", 
             "collectionYear": "2019", 
-            "igoId": "22022_BZ_8", 
+            "primaryId": "22022_BZ_8", 
             "investigatorSampleId": "LMNO_3443_T_DNA", 
             "libraries": [
                 {
@@ -600,7 +600,7 @@
             "cmoSampleClass": "Metastasis", 
             "cmoSampleName": "C-999XX-M001-d", 
             "collectionYear": "2018", 
-            "igoId": "22022_BZ_16", 
+            "primaryId": "22022_BZ_16", 
             "investigatorSampleId": "LMNO_6565_T2_DNA", 
             "libraries": [
                 {
@@ -661,7 +661,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "C-9XX8808-P001-d", 
             "collectionYear": "2018", 
-            "igoId": "22022_BZ_13", 
+            "primaryId": "22022_BZ_13", 
             "investigatorSampleId": "LMNO_0011_T", 
             "libraries": [
                 {
@@ -722,7 +722,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-999XX-N002-d", 
             "collectionYear": "2019", 
-            "igoId": "22022_BZ_21", 
+            "primaryId": "22022_BZ_21", 
             "investigatorSampleId": "LMNO_6565_N2", 
             "libraries": [
                 {
@@ -783,7 +783,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-FFX222-N001-d", 
             "collectionYear": "2017", 
-            "igoId": "22022_BZ_10", 
+            "primaryId": "22022_BZ_10", 
             "investigatorSampleId": "LMNO_2299_N", 
             "libraries": [
                 {
@@ -844,7 +844,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "C-PPPXX2-P001-d", 
             "collectionYear": "", 
-            "igoId": "22022_BZ_5", 
+            "primaryId": "22022_BZ_5", 
             "investigatorSampleId": "LMNO_8080_T_DNA", 
             "libraries": [
                 {
@@ -905,7 +905,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "C-YXX89J-P001-d", 
             "collectionYear": "2019", 
-            "igoId": "22022_BZ_11", 
+            "primaryId": "22022_BZ_11", 
             "investigatorSampleId": "LMNO_3030_T_DNA", 
             "libraries": [
                 {
@@ -966,7 +966,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-XXX711-N001-d", 
             "collectionYear": "2017", 
-            "igoId": "22022_BZ_12", 
+            "primaryId": "22022_BZ_12", 
             "investigatorSampleId": "WT_PXX_bc", 
             "libraries": [
                 {
@@ -1027,7 +1027,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-9XX8808-N001-d", 
             "collectionYear": "2018", 
-            "igoId": "22022_BZ_18", 
+            "primaryId": "22022_BZ_18", 
             "investigatorSampleId": "LMNO_0011_N", 
             "libraries": [
                 {
@@ -1088,7 +1088,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-XXC4XX-N001-d", 
             "collectionYear": "", 
-            "igoId": "22022_BZ_6", 
+            "primaryId": "22022_BZ_6", 
             "investigatorSampleId": "LMNO_8895_N", 
             "libraries": [
                 {
@@ -1149,7 +1149,7 @@
             "cmoSampleClass": "Normal", 
             "cmoSampleName": "C-XXA40X-N001-d", 
             "collectionYear": "2019", 
-            "igoId": "22022_BZ_20", 
+            "primaryId": "22022_BZ_20", 
             "investigatorSampleId": "LMNO_2020_N", 
             "libraries": [
                 {
@@ -1210,7 +1210,7 @@
             "cmoSampleClass": "Metastasis", 
             "cmoSampleName": "C-X09281-M001-d", 
             "collectionYear": "2018", 
-            "igoId": "22022_BZ_14", 
+            "primaryId": "22022_BZ_14", 
             "investigatorSampleId": "LMNO_7787_T", 
             "libraries": [
                 {
@@ -1271,7 +1271,7 @@
             "cmoSampleClass": "Primary", 
             "cmoSampleName": "C-FFX222-P001-d", 
             "collectionYear": "2019", 
-            "igoId": "22022_BZ_7", 
+            "primaryId": "22022_BZ_7", 
             "investigatorSampleId": "LMNO_2299_T_DNA", 
             "libraries": [
                 {
