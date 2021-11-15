@@ -184,6 +184,9 @@ public class SampleServiceImpl implements MetadbSampleService {
                 .findSampleMetadataListByCmoPatientId(cmoPatientId);
         List<PublishedMetadbSample> samples = new ArrayList<>();
         for (SampleMetadata sample: sampleMetadataList) {
+            // TODO: update method to fill in sample details in a more inclusive
+            // way and not just request and igo id since that is very specific
+            // to research samples only
             MetadbSample metadbSample = sampleRepository.findSampleByRequestAndIgoId(
                     sample.getRequestId(), sample.getPrimaryId());
             PublishedMetadbSample publishedSample = getPublishedMetadbSample(
