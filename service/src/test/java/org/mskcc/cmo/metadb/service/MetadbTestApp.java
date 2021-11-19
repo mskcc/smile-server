@@ -2,7 +2,11 @@ package org.mskcc.cmo.metadb.service;
 
 import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.common.impl.MetadbJsonComparatorImpl;
+import org.mskcc.cmo.messaging.Gateway;
+import org.mskcc.cmo.messaging.utils.SSLUtils;
+import org.mskcc.cmo.metadb.service.impl.MessageHandlingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.PatientServiceImpl;
+import org.mskcc.cmo.metadb.service.impl.RequestReplyHandlingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.RequestServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.SampleServiceImpl;
 import org.mskcc.cmo.metadb.service.util.RequestStatusLogger;
@@ -43,4 +47,16 @@ public class MetadbTestApp {
 
     @MockBean
     public RequestStatusLogger requestStatusLogger;
+
+    @MockBean
+    public Gateway messagingGateway;
+
+    @MockBean
+    public SSLUtils sslUtils;
+
+    @MockBean
+    public MessageHandlingServiceImpl messageHandlingService;
+
+    @MockBean
+    public RequestReplyHandlingServiceImpl requestReplyHandlingService;
 }
