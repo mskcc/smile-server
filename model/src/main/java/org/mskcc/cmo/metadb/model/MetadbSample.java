@@ -95,10 +95,6 @@ public class MetadbSample implements Serializable {
         sampleMetadataList.add(sampleMetadata);
     }
 
-    public void setPatientUuid(UUID uuid) {
-        this.patient.setMetaDbPatientId(uuid);
-    }
-
     /**
      *
      * @return SampleIgoId
