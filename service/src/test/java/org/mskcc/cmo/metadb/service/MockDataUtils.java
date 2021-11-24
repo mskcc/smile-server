@@ -30,9 +30,77 @@ import org.springframework.stereotype.Component;
 public final class MockDataUtils {
     private final ObjectMapper mapper = new ObjectMapper();
     private final String MOCKED_REQUEST_DATA_DETAILS_FILEPATH = "data/mocked_request_data_details.txt";
+    private final String MOCKED_DMP_PATIENT_MAPPING_FILEPATH
+            = "data/dmp_clinical/mocked_dmp_patient_mappings.txt";
+    private final String MOCKED_DMP_SAMPLE_MAPPING_FILEPATH
+            = "data/dmp_clinical/mocked_dmp_sample_mappings.txt";
     private final String MOCKED_JSON_DATA_DIR = "data";
     private final ClassPathResource mockJsonTestDataResource = new ClassPathResource(MOCKED_JSON_DATA_DIR);
     public Map<String, MockJsonTestData> mockedRequestJsonDataMap;
+    public Map<String, String> mockedDmpPatientMapping;
+    public Map<String, String> mockedDmpSampleMapping;
+
+    /**
+     * Inits the mocked dmp patient id mappings.
+     * @throws IOException
+     */
+    @Autowired
+    public void mockedDmpPatientMapping() throws IOException {
+        this.mockedDmpPatientMapping = new HashMap<>();
+        ClassPathResource jsonDataDetailsResource =
+                new ClassPathResource(MOCKED_DMP_PATIENT_MAPPING_FILEPATH);
+        BufferedReader reader = new BufferedReader(new FileReader(jsonDataDetailsResource.getFile()));
+        List<String> columns = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split("\t");
+            if (columns.isEmpty()) {
+                columns = Arrays.asList(data);
+                continue;
+            }
+            String cmoPatientId = data[columns.indexOf("CMO_PATIENT_ID")];
+            // not every cmo patient will have a matching dmp id
+            String dmpPatientId = null;
+            try {
+                dmpPatientId = data[columns.indexOf("DMP_ID")];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // do nothing
+            }
+            mockedDmpPatientMapping.put(cmoPatientId, dmpPatientId);
+        }
+        reader.close();
+    }
+
+    /**
+     * Inits the mocked dmp sample id mappings.
+     * @throws IOException
+     */
+    @Autowired
+    public void mockedDmpSampleMapping() throws IOException {
+        this.mockedDmpSampleMapping = new HashMap<>();
+        ClassPathResource jsonDataDetailsResource =
+                new ClassPathResource(MOCKED_DMP_SAMPLE_MAPPING_FILEPATH);
+        BufferedReader reader = new BufferedReader(new FileReader(jsonDataDetailsResource.getFile()));
+        List<String> columns = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split("\t");
+            if (columns.isEmpty()) {
+                columns = Arrays.asList(data);
+                continue;
+            }
+            String igoSampleId = data[columns.indexOf("IGO_SAMPLE_ID")];
+            // not every igo sample will have a matching dmp id
+            String dmpSampleId = null;
+            try {
+                dmpSampleId = data[columns.indexOf("DMP_ID")];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // do nothing
+            }
+            mockedDmpSampleMapping.put(igoSampleId, dmpSampleId);
+        }
+        reader.close();
+    }
 
     /**
      * Inits the mocked request json data map.
