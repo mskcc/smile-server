@@ -38,6 +38,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public MetadbSample saveSampleMetadata(MetadbSample
             sample) throws Exception {
+        System.out.println(sample.toString());
         fetchAndLoadSampleDetails(sample);
 
         MetadbSample existingSample =
@@ -56,10 +57,6 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public MetadbSample fetchAndLoadSampleDetails(MetadbSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
-        sample.setSampleClass(sampleMetadata.getTumorOrNormal());
-        sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
-        sample.addSampleAlias(
-                new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
 
         // find or save new patient for sample
         MetadbPatient patient = new MetadbPatient();
@@ -75,7 +72,6 @@ public class SampleServiceImpl implements MetadbSampleService {
             sample.setPatient(existingPatient);
             sample.setPatientUuid(existingPatient.getMetaDbPatientId());
         }
-
         return sample;
     }
 

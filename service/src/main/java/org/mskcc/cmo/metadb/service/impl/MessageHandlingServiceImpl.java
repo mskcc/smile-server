@@ -25,6 +25,7 @@ import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
+import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
@@ -444,6 +445,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             MetadbSample sample = new MetadbSample();
             sample.addSampleMetadata(s);
             sample.setSampleCategory("research");
+            sample.setSampleClass(s.getTumorOrNormal());
+            sample.addSampleAlias(new SampleAlias(s.getPrimaryId(), "igoId"));
+            sample.addSampleAlias(
+                    new SampleAlias(s.getInvestigatorSampleId(), "investigatorId"));
             requestSamplesList.add(sample);
         }
         return requestSamplesList;
