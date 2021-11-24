@@ -17,6 +17,7 @@ import java.util.Map;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
+import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -179,6 +180,9 @@ public final class MockDataUtils {
             MetadbSample sample = new MetadbSample();
             sample.addSampleMetadata(s);
             sample.setSampleCategory("research");
+            sample.setSampleClass(s.getTumorOrNormal());
+            sample.addSampleAlias(new SampleAlias(s.getPrimaryId(), "igoId"));
+            sample.addSampleAlias(new SampleAlias(s.getInvestigatorSampleId(), "investigatorId"));
             requestSamplesList.add(sample);
         }
         return requestSamplesList;

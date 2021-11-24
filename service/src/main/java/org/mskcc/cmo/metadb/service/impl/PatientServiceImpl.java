@@ -16,9 +16,10 @@ public class PatientServiceImpl implements MetadbPatientService {
     private MetadbPatientRepository patientRepository;
 
     @Override
-    public UUID savePatientMetadata(MetadbPatient patient) {
+    public MetadbPatient savePatientMetadata(MetadbPatient patient) {
         MetadbPatient result = patientRepository.save(patient);
-        return result.getMetaDbPatientId();
+        patient.setMetaDbPatientId(result.getMetaDbPatientId());
+        return patient;
     }
 
     @Override
