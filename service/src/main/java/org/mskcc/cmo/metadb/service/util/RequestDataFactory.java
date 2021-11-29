@@ -27,7 +27,7 @@ public class RequestDataFactory {
      * @return MetadbRequest
      * @throws JsonProcessingException
      */
-    public static MetadbRequest buildNewLimsRequest(String requestJson)
+    public static MetadbRequest buildNewLimsRequestFromJson(String requestJson)
             throws JsonProcessingException {
         MetadbRequest request = mapper.readValue(requestJson,
                 MetadbRequest.class);
@@ -35,7 +35,7 @@ public class RequestDataFactory {
         request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
         request.setNamespace("igo");
         // creates and inits request metadata
-        request.addRequestMetadata(extractRequestMetadata(requestJson));
+        request.addRequestMetadata(extractRequestMetadataFromJson(requestJson));
         return request;
     }
 
@@ -60,9 +60,9 @@ public class RequestDataFactory {
      * @return RequestMetadata
      * @throws JsonProcessingException
      */
-    public static RequestMetadata buildNewRequestMetadata(String requestMetadataJson)
+    public static RequestMetadata buildNewRequestMetadataFromMetadata(String requestMetadataJson)
             throws JsonProcessingException {
-        return extractRequestMetadata(requestMetadataJson);
+        return extractRequestMetadataFromJson(requestMetadataJson);
     }
 
     private static List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
@@ -74,13 +74,13 @@ public class RequestDataFactory {
 
         List<MetadbSample> requestSamplesList = new ArrayList<>();
         for (SampleMetadata s: samples) {
-            MetadbSample sample = SampleDataFactory.buildNewResearchSample(requestId, s);
+            MetadbSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(requestId, s);
             requestSamplesList.add(sample);
         }
         return requestSamplesList;
     }
 
-    private static RequestMetadata extractRequestMetadata(String requestMetadataJson)
+    private static RequestMetadata extractRequestMetadataFromJson(String requestMetadataJson)
             throws JsonMappingException, JsonProcessingException {
         Map<String, Object> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
         // remove samples if present for request metadata

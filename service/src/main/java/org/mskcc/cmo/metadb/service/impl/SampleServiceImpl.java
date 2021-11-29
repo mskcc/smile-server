@@ -41,7 +41,6 @@ public class SampleServiceImpl implements MetadbSampleService {
     public MetadbSample saveSampleMetadata(MetadbSample
             sample) throws Exception {
         fetchAndLoadSampleDetails(sample);
-        //MetadbSample sample = dataFactory.setMetadbSamplePatientNode(metadbSample);
 
         MetadbSample existingSample =
                 sampleRepository.findSampleByIgoId(sample.getSampleIgoId());
@@ -104,7 +103,6 @@ public class SampleServiceImpl implements MetadbSampleService {
             return null;
         }
         return getAllMetadbSampleFields(sample);
-
     }
 
     @Override
@@ -115,7 +113,6 @@ public class SampleServiceImpl implements MetadbSampleService {
             return null;
         }
         return getAllMetadbSampleFields(sample);
-
     }
 
     @Override

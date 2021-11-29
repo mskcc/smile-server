@@ -19,8 +19,8 @@ public class SampleDataFactory {
      * @param sampleMetadata
      * @return MetadbSample
      */
-    public static MetadbSample buildNewResearchSample(SampleMetadata sampleMetadata) {
-        return buildNewResearchSample(sampleMetadata.getRequestId(), sampleMetadata);
+    public static MetadbSample buildNewResearchSampleFromMetadata(SampleMetadata sampleMetadata) {
+        return buildNewResearchSampleFromMetadata(sampleMetadata.getRequestId(), sampleMetadata);
     }
 
     /**
@@ -29,7 +29,8 @@ public class SampleDataFactory {
      * @param sampleMetadata
      * @return MetadbSample
      */
-    public static MetadbSample buildNewResearchSample(String requestId, SampleMetadata sampleMetadata) {
+    public static MetadbSample buildNewResearchSampleFromMetadata(String requestId,
+            SampleMetadata sampleMetadata) {
         sampleMetadata.setRequestId(requestId);
         sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
@@ -53,7 +54,7 @@ public class SampleDataFactory {
      * @param sampleMetadata
      * @return MetadbSample
      */
-    public static MetadbSample buildNewClinicalSample(SampleMetadata sampleMetadata) {
+    public static MetadbSample buildNewClinicalSampleFromMetadata(SampleMetadata sampleMetadata) {
         sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         MetadbSample sample = new MetadbSample();
@@ -77,7 +78,7 @@ public class SampleDataFactory {
      * @return SampleMetadata
      * @throws com.fasterxml.jackson.core.JsonProcessingException
      */
-    public static SampleMetadata buildNewSampleMetadata(String sampleMetadataJson)
+    public static SampleMetadata buildNewSampleMetadatafromJson(String sampleMetadataJson)
             throws JsonProcessingException {
         SampleMetadata sampleMetadata =
                 mapper.readValue(sampleMetadataJson, SampleMetadata.class);

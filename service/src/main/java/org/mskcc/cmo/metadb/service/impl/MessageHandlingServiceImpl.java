@@ -227,7 +227,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             LOG.info("Sample metadata does not already exist - persisting to db: "
                                     + sampleMetadata.getPrimaryId());
                             // handle and persist new sample received
-                            MetadbSample sample = SampleDataFactory.buildNewResearchSample(sampleMetadata);
+                            MetadbSample sample = SampleDataFactory
+                                    .buildNewResearchSampleFromMetadata(sampleMetadata);
                             sampleService.saveSampleMetadata(sample);
                             LOG.info("Publishing metadata history for new sample: "
                                     + sampleMetadata.getPrimaryId());
@@ -367,7 +368,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     String requestJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8),
                             String.class);
-                    MetadbRequest request = RequestDataFactory.buildNewLimsRequest(requestJson);
+                    MetadbRequest request = RequestDataFactory.buildNewLimsRequestFromJson(requestJson);
                     LOG.info("Received message on topic: " + IGO_NEW_REQUEST_TOPIC + " and request id: "
                             + request.getRequestId());
                     messageHandlingService.newRequestHandler(request);
@@ -387,7 +388,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     String requestMetadataJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     RequestMetadata requestMetadata =
-                            RequestDataFactory.buildNewRequestMetadata(requestMetadataJson);
+                            RequestDataFactory.buildNewRequestMetadataFromMetadata(requestMetadataJson);
                     LOG.info("Received message on topic: "  + IGO_REQUEST_UPDATE_TOPIC + " and request id: "
                             + requestMetadata.getRequestId());
                     messageHandlingService.requestUpdateHandler(requestMetadata);
@@ -409,7 +410,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     String sampleMetadataJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     SampleMetadata sampleMetadata =
-                            SampleDataFactory.buildNewSampleMetadata(sampleMetadataJson);
+                            SampleDataFactory.buildNewSampleMetadatafromJson(sampleMetadataJson);
                     messageHandlingService.sampleUpdateHandler(sampleMetadata);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of request update on topic: "
