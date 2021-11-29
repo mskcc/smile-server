@@ -443,8 +443,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             // update import date here since we are parsing from json
             s.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
             s.setRequestId((String) map.get("requestId"));
-            SampleDataFactory dataFactory = new SampleDataFactory();
-            MetadbSample sample = dataFactory.setResearchMetadbSampleFields(s);
+            MetadbSample sample = new SampleDataFactory().buildResearchSample(s);
             requestSamplesList.add(sample);
         }
         return requestSamplesList;

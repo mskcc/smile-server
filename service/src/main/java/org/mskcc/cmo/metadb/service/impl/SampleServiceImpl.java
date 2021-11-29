@@ -1,7 +1,6 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,6 @@ import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
 import org.mskcc.cmo.metadb.service.MetadbPatientService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
-import org.mskcc.cmo.metadb.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,15 +36,13 @@ public class SampleServiceImpl implements MetadbSampleService {
     private MetadbPatientService patientService;
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private final SampleDataFactory dataFactory = new SampleDataFactory();
-
 
     @Override
     public MetadbSample saveSampleMetadata(MetadbSample
             sample) throws Exception {
         fetchAndLoadSampleDetails(sample);
         //MetadbSample sample = dataFactory.setMetadbSamplePatientNode(metadbSample);
-        
+
         MetadbSample existingSample =
                 sampleRepository.findSampleByIgoId(sample.getSampleIgoId());
         if (existingSample == null) {
@@ -63,10 +59,10 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public MetadbSample fetchAndLoadSampleDetails(MetadbSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
-
-        // find or save new patient for sample
         MetadbPatient patient = new MetadbPatient();
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
+
+        // find or save new patient for sample
         MetadbPatient existingPatient = patientService.getPatientByCmoPatientId(
                 sampleMetadata.getCmoPatientId());
         if (existingPatient == null) {
@@ -179,9 +175,11 @@ public class SampleServiceImpl implements MetadbSampleService {
         }
         return samples;
     }
-    
+
+    @Override
     public MetadbSample getAllMetadbSampleFields(MetadbSample sample) throws ParseException {
-        sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
+        sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(
+                sample.getMetaDbSampleId()));
         String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
         MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
         sample.setPatient(patient);

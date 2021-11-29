@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.service;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetadbSample;
@@ -25,4 +26,5 @@ public interface MetadbSampleService {
     PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception;
     List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(String cmoPatientId)
             throws Exception;
+    MetadbSample getAllMetadbSampleFields(MetadbSample sample) throws ParseException;
 }
