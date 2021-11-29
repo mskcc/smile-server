@@ -1,60 +1,88 @@
 package org.mskcc.cmo.metadb.service.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbSample;
+import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 
 public class SampleDataFactory {
-
-    private MetadbSample metadbSample;
-
-    public SampleDataFactory() {}
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * SampleDataFactory contructor
+     * Method factory returns an instance of MetadbSample with sampleCategory "research"
+     * from an instance of SampleMetadata.
      * @param sampleMetadata
-     * @param sampleCategory
-     * @throws Exception
+     * @return MetadbSample
      */
-    public SampleDataFactory(SampleMetadata sampleMetadata, String sampleCategory) throws Exception {
-        if (sampleCategory.equals("research")) {
-            setResearchMetadbSampleFields(sampleMetadata);
-        } else if (sampleCategory.equals("clinical")) {
-            setClinicalMetadbSampleFields(sampleMetadata);
-        }
+    public static MetadbSample buildNewResearchSample(SampleMetadata sampleMetadata) {
+        return buildNewResearchSample(sampleMetadata.getRequestId(), sampleMetadata);
     }
 
-    public MetadbSample getMetadbSample() {
-        return metadbSample;
-    }
+    /**
+     * Method factory returns an instance of MetadbSample with sampleCategory "research"
+     * from an instance of SampleMetadata and the provided request id.
+     * @param sampleMetadata
+     * @return MetadbSample
+     */
+    public static MetadbSample buildNewResearchSample(String requestId, SampleMetadata sampleMetadata) {
+        sampleMetadata.setRequestId(requestId);
+        sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
-    public MetadbSample buildResearchSample(SampleMetadata sampleMetadata) throws Exception {
-        setResearchMetadbSampleFields(sampleMetadata);
-        return getMetadbSample();
-    }
-
-    public MetadbSample buildClinicalSample(SampleMetadata sampleMetadata) throws Exception {
-        setClinicalMetadbSampleFields(sampleMetadata);
-        return getMetadbSample();
-    }
-
-    private MetadbSample setResearchMetadbSampleFields(SampleMetadata sampleMetadata) throws Exception {
-        getMetadbSample().addSampleMetadata(sampleMetadata);
-        getMetadbSample().setSampleCategory("research");
-        getMetadbSample().setSampleClass(sampleMetadata.getTumorOrNormal());
-        getMetadbSample().addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
-        getMetadbSample().addSampleAlias(new SampleAlias(
+        MetadbSample sample = new MetadbSample();
+        sample.addSampleMetadata(sampleMetadata);
+        sample.setSampleCategory("research");
+        sample.setSampleClass(sampleMetadata.getTumorOrNormal());
+        sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
+        sample.addSampleAlias(new SampleAlias(
                 sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
-        return getMetadbSample();
+
+        MetadbPatient patient = new MetadbPatient();
+        patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
+        sample.setPatient(patient);
+        return sample;
     }
 
-    private MetadbSample setClinicalMetadbSampleFields(SampleMetadata sampleMetadata) throws Exception {
-        getMetadbSample().addSampleMetadata(sampleMetadata);
-        getMetadbSample().setSampleCategory("clinical");
-        getMetadbSample().setSampleClass(sampleMetadata.getTumorOrNormal());
-        getMetadbSample().addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "dmpId"));
-        getMetadbSample().addSampleAlias(new SampleAlias(
+    /**
+     * Method factory returns an instance of MetadbSample with sampleCategory "clinical"
+     * from an instance of SampleMetadata.
+     * @param sampleMetadata
+     * @return MetadbSample
+     */
+    public static MetadbSample buildNewClinicalSample(SampleMetadata sampleMetadata) {
+        sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        MetadbSample sample = new MetadbSample();
+        sample.addSampleMetadata(sampleMetadata);
+        sample.setSampleCategory("clinical");
+        sample.setSampleClass(sampleMetadata.getTumorOrNormal());
+        sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "dmpId"));
+        // 'investigatorId' isn't applicable for clinical dmp samples but we will deal with it later
+        sample.addSampleAlias(new SampleAlias(
                 sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
-        return getMetadbSample();
+
+        MetadbPatient patient = new MetadbPatient();
+        patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
+        sample.setPatient(patient);
+        return sample;
+    }
+
+    /**
+     * Method factory returns an instance of SampleMetadata from a sample metadata JSON.
+     * @param sampleMetadataJson
+     * @return SampleMetadata
+     * @throws com.fasterxml.jackson.core.JsonProcessingException
+     */
+    public static SampleMetadata buildNewSampleMetadata(String sampleMetadataJson)
+            throws JsonProcessingException {
+        SampleMetadata sampleMetadata =
+                mapper.readValue(sampleMetadataJson, SampleMetadata.class);
+        sampleMetadata.setImportDate(
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        return sampleMetadata;
     }
 }

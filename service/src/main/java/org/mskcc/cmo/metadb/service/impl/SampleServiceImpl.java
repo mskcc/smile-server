@@ -59,8 +59,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public MetadbSample fetchAndLoadSampleDetails(MetadbSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
-        MetadbPatient patient = new MetadbPatient();
-        patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
+        MetadbPatient patient = sample.getPatient();
 
         // find or save new patient for sample
         MetadbPatient existingPatient = patientService.getPatientByCmoPatientId(

@@ -1,24 +1,15 @@
 package org.mskcc.cmo.metadb.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.mskcc.cmo.metadb.model.MetadbRequest;
-import org.mskcc.cmo.metadb.model.MetadbSample;
-import org.mskcc.cmo.metadb.model.RequestMetadata;
-import org.mskcc.cmo.metadb.model.SampleAlias;
-import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -143,62 +134,4 @@ public final class MockDataUtils {
         return mapper.writeValueAsString(filedata);
     }
 
-    /**
-     * Returns an instance of MetadbRequest from a request json string.
-     * @param requestJson
-     * @return MetadbRequest
-     * @throws Exception
-     */
-    public MetadbRequest extractRequestFromJsonData(String requestJson) throws Exception {
-        MetadbRequest request = mapper.readValue(requestJson,
-                MetadbRequest.class);
-        request.setRequestJson(requestJson);
-        request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
-        request.setNamespace("igo");
-        request.addRequestMetadata(extractRequestMetadata(requestJson));
-        return request;
-    }
-
-    /**
-     * Extracts a List of MetadbSample's given a request json string
-     * @param message
-     * @return List
-     * @throws JsonProcessingException
-     * @throws IOException
-     */
-    public List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
-            throws JsonProcessingException, IOException {
-        Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        SampleMetadata[] samples = mapper.convertValue(map.get("samples"),
-                SampleMetadata[].class);
-
-        List<MetadbSample> requestSamplesList = new ArrayList<>();
-        for (SampleMetadata s: samples) {
-            // update import date here since we are parsing from json
-            s.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-            s.setRequestId((String) map.get("requestId"));
-            MetadbSample sample = new MetadbSample();
-            sample.addSampleMetadata(s);
-            sample.setSampleCategory("research");
-            sample.setSampleClass(s.getTumorOrNormal());
-            sample.addSampleAlias(new SampleAlias(s.getPrimaryId(), "igoId"));
-            sample.addSampleAlias(new SampleAlias(s.getInvestigatorSampleId(), "investigatorId"));
-            requestSamplesList.add(sample);
-        }
-        return requestSamplesList;
-    }
-
-    private RequestMetadata extractRequestMetadata(String requestMetadataJson)
-            throws JsonMappingException, JsonProcessingException {
-        Map<String, Object> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
-        // remove samples if present for request metadata
-        if (requestMetadataMap.containsKey("samples")) {
-            requestMetadataMap.remove("samples");
-        }
-        RequestMetadata requestMetadata = new RequestMetadata(
-                requestMetadataMap.get("requestId").toString(),
-                mapper.writeValueAsString(requestMetadataMap),
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        return requestMetadata;
-    }
 }
