@@ -1,6 +1,8 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +18,7 @@ import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
 import org.mskcc.cmo.metadb.service.MetadbPatientService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
+import org.mskcc.cmo.metadb.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,12 +38,15 @@ public class SampleServiceImpl implements MetadbSampleService {
     private MetadbPatientService patientService;
 
     private final ObjectMapper mapper = new ObjectMapper();
+    private final SampleDataFactory dataFactory = new SampleDataFactory();
+
 
     @Override
     public MetadbSample saveSampleMetadata(MetadbSample
             sample) throws Exception {
         fetchAndLoadSampleDetails(sample);
-
+        //MetadbSample sample = dataFactory.setMetadbSamplePatientNode(metadbSample);
+        
         MetadbSample existingSample =
                 sampleRepository.findSampleByIgoId(sample.getSampleIgoId());
         if (existingSample == null) {
@@ -91,12 +97,7 @@ public class SampleServiceImpl implements MetadbSampleService {
         if (sample == null) {
             return null;
         }
-        sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(metadbSampleId));
-        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
-        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
-        sample.setPatient(patient);
-        sample.setSampleAliases(sampleRepository.findAllSampleAliases(metadbSampleId));
-        return sample;
+        return getAllMetadbSampleFields(sample);
     }
 
     @Override
@@ -107,13 +108,8 @@ public class SampleServiceImpl implements MetadbSampleService {
         if (sample == null) {
             return null;
         }
-        sample.setSampleMetadataList(sampleRepository
-                .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
-        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
-        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
-        sample.setPatient(patient);
-        sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
-        return sample;
+        return getAllMetadbSampleFields(sample);
+
     }
 
     @Override
@@ -123,13 +119,8 @@ public class SampleServiceImpl implements MetadbSampleService {
         if (sample == null) {
             return null;
         }
-        sample.setSampleMetadataList(sampleRepository
-                .findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
-        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
-        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
-        sample.setPatient(patient);
-        sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
-        return sample;
+        return getAllMetadbSampleFields(sample);
+
     }
 
     @Override
@@ -188,4 +179,14 @@ public class SampleServiceImpl implements MetadbSampleService {
         }
         return samples;
     }
+    
+    public MetadbSample getAllMetadbSampleFields(MetadbSample sample) throws ParseException {
+        sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(sample.getMetaDbSampleId()));
+        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
+        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+        sample.setPatient(patient);
+        sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
+        return sample;
+    }
+
 }

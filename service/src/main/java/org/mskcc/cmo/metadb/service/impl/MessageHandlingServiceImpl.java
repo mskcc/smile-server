@@ -30,6 +30,7 @@ import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
+import org.mskcc.cmo.metadb.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -432,7 +433,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     }
 
     private List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
-            throws JsonProcessingException, IOException {
+            throws Exception {
         Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
         SampleMetadata[] samples = mapper.convertValue(map.get("samples"),
                 SampleMetadata[].class);
@@ -442,13 +443,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             // update import date here since we are parsing from json
             s.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
             s.setRequestId((String) map.get("requestId"));
-            MetadbSample sample = new MetadbSample();
-            sample.addSampleMetadata(s);
-            sample.setSampleCategory("research");
-            sample.setSampleClass(s.getTumorOrNormal());
-            // add igo sample aliases
-            sample.addSampleAlias(new SampleAlias(s.getPrimaryId(), "igoId"));
-            sample.addSampleAlias(new SampleAlias(s.getInvestigatorSampleId(), "investigatorId"));
+            SampleDataFactory dataFactory = new SampleDataFactory();
+            MetadbSample sample = dataFactory.setResearchMetadbSampleFields(s);
             requestSamplesList.add(sample);
         }
         return requestSamplesList;
