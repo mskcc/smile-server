@@ -81,19 +81,19 @@ public class PatientServiceTest {
         // mock request id: MOCKREQUEST1_B
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        MetadbRequest request1 = RequestDataFactory.buildNewLimsRequest(request1Data.getJsonString());
+        MetadbRequest request1 = RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
         requestService.saveRequest(request1);
 
         // mock request id: 33344_Z
         MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest3JsonDataPooledNormals");
-        MetadbRequest request3 = RequestDataFactory.buildNewLimsRequest(request3Data.getJsonString());
+        MetadbRequest request3 = RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
         requestService.saveRequest(request3);
 
         // mock request id: 145145_IM
         MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest5JsonPtMultiSamples");
-        MetadbRequest request5 = RequestDataFactory.buildNewLimsRequest(request5Data.getJsonString());
+        MetadbRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
         requestService.saveRequest(request5);
     }
 
