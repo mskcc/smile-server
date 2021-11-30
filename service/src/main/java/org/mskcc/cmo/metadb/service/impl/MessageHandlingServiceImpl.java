@@ -30,6 +30,8 @@ import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
+import org.mskcc.cmo.metadb.service.util.RequestDataFactory;
+import org.mskcc.cmo.metadb.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -158,8 +160,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             LOG.info("Request does not already exist - saving to database: "
                                     + requestMetadata.getRequestId());
                             // persist and handle new request
-                            MetadbRequest request = new MetadbRequest();
-                            request.updateRequestMetadata(requestMetadata);
+                            MetadbRequest request =
+                                    RequestDataFactory.buildNewRequestFromMetadata(requestMetadata);
+
                             LOG.info("Publishing new request metadata to " + CMO_REQUEST_UPDATE_TOPIC);
                             requestService.saveRequest(request);
                             messagingGateway.publish(request.getRequestId(),
@@ -171,7 +174,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             // persist request-level metadata updates to database
                             LOG.info("Found updates in request metadata: " + requestMetadata.getRequestId()
                                     + " - persisting to database");
-                            existingRequest.updateRequestMetadata(requestMetadata);
+                            existingRequest.updateRequestMetadataByMetadata(requestMetadata);
                             if (requestService.saveRequestMetadata(existingRequest)) {
                                 LOG.info("Publishing Request-level Metadata updates "
                                         + "to " + CMO_REQUEST_UPDATE_TOPIC);
@@ -221,13 +224,11 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         MetadbSample existingSample = sampleService.getMetadbSampleByRequestAndIgoId(
                                 sampleMetadata.getRequestId(), sampleMetadata.getPrimaryId());
                         if (existingSample == null) {
-                            LOG.info("Sample metadata does not already exist - persting to db: "
+                            LOG.info("Sample metadata does not already exist - persisting to db: "
                                     + sampleMetadata.getPrimaryId());
                             // handle and persist new sample received
-                            MetadbSample sample = new MetadbSample();
-                            sampleMetadata.setImportDate(
-                                    LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                            sample.addSampleMetadata(sampleMetadata);
+                            MetadbSample sample = SampleDataFactory
+                                    .buildNewResearchSampleFromMetadata(sampleMetadata);
                             sampleService.saveSampleMetadata(sample);
                             LOG.info("Publishing metadata history for new sample: "
                                     + sampleMetadata.getPrimaryId());
@@ -367,13 +368,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     String requestJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8),
                             String.class);
-                    MetadbRequest request = mapper.readValue(requestJson,
-                            MetadbRequest.class);
-                    request.setRequestJson(requestJson);
-                    request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
-                    request.setNamespace("igo");
-                    // creates and inits request metadata
-                    request.addRequestMetadata(extractRequestMetadata(requestJson));
+                    MetadbRequest request = RequestDataFactory.buildNewLimsRequestFromJson(requestJson);
                     LOG.info("Received message on topic: " + IGO_NEW_REQUEST_TOPIC + " and request id: "
                             + request.getRequestId());
                     messageHandlingService.newRequestHandler(request);
@@ -392,12 +387,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     String requestMetadataJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
-                    Map<String, String> requestMetadataMap =
-                            mapper.readValue(requestMetadataJson, Map.class);
-                    RequestMetadata requestMetadata = new RequestMetadata(
-                            requestMetadataMap.get("requestId"),
-                            requestMetadataJson,
-                            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                    RequestMetadata requestMetadata =
+                            RequestDataFactory.buildNewRequestMetadataFromMetadata(requestMetadataJson);
                     LOG.info("Received message on topic: "  + IGO_REQUEST_UPDATE_TOPIC + " and request id: "
                             + requestMetadata.getRequestId());
                     messageHandlingService.requestUpdateHandler(requestMetadata);
@@ -419,9 +410,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     String sampleMetadataJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     SampleMetadata sampleMetadata =
-                            mapper.readValue(sampleMetadataJson, SampleMetadata.class);
-                    sampleMetadata.setImportDate(
-                            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                            SampleDataFactory.buildNewSampleMetadatafromJson(sampleMetadataJson);
                     messageHandlingService.sampleUpdateHandler(sampleMetadata);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of request update on topic: "
@@ -429,42 +418,5 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 }
             }
         });
-    }
-
-    private List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
-            throws JsonProcessingException, IOException {
-        Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        SampleMetadata[] samples = mapper.convertValue(map.get("samples"),
-                SampleMetadata[].class);
-
-        List<MetadbSample> requestSamplesList = new ArrayList<>();
-        for (SampleMetadata s: samples) {
-            // update import date here since we are parsing from json
-            s.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-            s.setRequestId((String) map.get("requestId"));
-            MetadbSample sample = new MetadbSample();
-            sample.addSampleMetadata(s);
-            sample.setSampleCategory("research");
-            sample.setSampleClass(s.getTumorOrNormal());
-            // add igo sample aliases
-            sample.addSampleAlias(new SampleAlias(s.getPrimaryId(), "igoId"));
-            sample.addSampleAlias(new SampleAlias(s.getInvestigatorSampleId(), "investigatorId"));
-            requestSamplesList.add(sample);
-        }
-        return requestSamplesList;
-    }
-
-    private RequestMetadata extractRequestMetadata(String requestMetadataJson)
-            throws JsonMappingException, JsonProcessingException {
-        Map<String, Object> requestMetadataMap = mapper.readValue(requestMetadataJson, Map.class);
-        // remove samples if present for request metadata
-        if (requestMetadataMap.containsKey("samples")) {
-            requestMetadataMap.remove("samples");
-        }
-        RequestMetadata requestMetadata = new RequestMetadata(
-                requestMetadataMap.get("requestId").toString(),
-                mapper.writeValueAsString(requestMetadataMap),
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        return requestMetadata;
     }
 }

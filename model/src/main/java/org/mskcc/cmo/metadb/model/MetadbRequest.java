@@ -352,7 +352,7 @@ public class MetadbRequest implements Serializable {
      * Updates the RequestMetadata with provided request.
      * @param updatedRequest
      */
-    public void updateRequestMetadata(MetadbRequest updatedRequest) {
+    public void updateRequestMetadataByRequest(MetadbRequest updatedRequest) {
         this.requestId = updatedRequest.getRequestId();
         this.recipe = updatedRequest.getRecipe();
         this.projectManagerName = updatedRequest.getProjectManagerName();
@@ -378,7 +378,7 @@ public class MetadbRequest implements Serializable {
      * @param requestMetadata
      * @throws com.fasterxml.jackson.core.JsonProcessingException
      */
-    public void updateRequestMetadata(RequestMetadata requestMetadata)
+    public void updateRequestMetadataByMetadata(RequestMetadata requestMetadata)
             throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> metadataMap =

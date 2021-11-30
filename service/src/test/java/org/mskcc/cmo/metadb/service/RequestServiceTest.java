@@ -10,6 +10,7 @@ import org.mskcc.cmo.metadb.model.web.RequestSummary;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbPatientRepository;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
+import org.mskcc.cmo.metadb.service.util.RequestDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -81,19 +82,19 @@ public class RequestServiceTest {
         // mock request id: MOCKREQUEST1_B
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        MetadbRequest request1 = mockDataUtils.extractRequestFromJsonData(request1Data.getJsonString());
+        MetadbRequest request1 = RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
         requestService.saveRequest(request1);
 
         // mock request id: 33344_Z
         MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest3JsonDataPooledNormals");
-        MetadbRequest request3 = mockDataUtils.extractRequestFromJsonData(request3Data.getJsonString());
+        MetadbRequest request3 = RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
         requestService.saveRequest(request3);
 
         // mock request id: 145145_IM
         MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest5JsonPtMultiSamples");
-        MetadbRequest request5 = mockDataUtils.extractRequestFromJsonData(request5Data.getJsonString());
+        MetadbRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
         requestService.saveRequest(request5);
     }
 
@@ -134,7 +135,7 @@ public class RequestServiceTest {
         // get the matching request from the mock data utils
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        MetadbRequest requestFromMockData = mockDataUtils.extractRequestFromJsonData(
+        MetadbRequest requestFromMockData = RequestDataFactory.buildNewLimsRequestFromJson(
                 request1Data.getJsonString());
         Assertions.assertThat(requestHasExpectedFieldsPopulated(requestFromMockData)).isTrue();
 
@@ -154,7 +155,7 @@ public class RequestServiceTest {
         MetadbRequest origRequest = requestService.getMetadbRequestById(requestId);
         Assertions.assertThat(requestHasExpectedFieldsPopulated(origRequest)).isTrue();
         // this updated request as a different investigator email than its original
-        MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+        MetadbRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
                 updatedRequestData.getJsonString());
         Assertions.assertThat(requestHasExpectedFieldsPopulated(updatedRequest)).isTrue();
 
@@ -173,7 +174,7 @@ public class RequestServiceTest {
         // get request from the mock data utils to compare against request in db
         MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest3JsonDataPooledNormals");
-        MetadbRequest requestFromMockData = mockDataUtils.extractRequestFromJsonData(
+        MetadbRequest requestFromMockData = RequestDataFactory.buildNewLimsRequestFromJson(
                 request3Data.getJsonString());
         Assertions.assertThat(requestHasExpectedFieldsPopulated(requestFromMockData)).isTrue();
 
@@ -190,7 +191,7 @@ public class RequestServiceTest {
     public void testRequestSamplesWithUpdates() throws Exception {
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
-        MetadbRequest updatedRequest = mockDataUtils.extractRequestFromJsonData(
+        MetadbRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
                 updatedRequestData.getJsonString());
         Assertions.assertThat(requestHasExpectedFieldsPopulated(updatedRequest)).isTrue();
 
