@@ -262,7 +262,7 @@ public class RequestServiceImpl implements MetadbRequestService {
 
     @Override
     public MetadbRequest getRequestBySample(MetadbSample sample) throws Exception {
-        return requestRepository.findRequestBySample(sample);
+        return requestRepository.findRequestByResearchSample(sample);
     }
 
     private Date getFormattedDate(String dateString) {

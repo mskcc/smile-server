@@ -15,11 +15,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface MetadbPatientRepository extends Neo4jRepository<MetadbPatient, Long> {
-    @Query("MATCH (pm: Patient)<-[:IS_ALIAS]-(pa:PatientAlias "
-            + "{value: $patientId}) RETURN pm")
-    MetadbPatient findPatientByPatientAlias(
-            @Param("patientId") String patientId);
-
     @Query("MATCH (pa: PatientAlias)-[:IS_ALIAS]->(p: Patient {metaDbPatientId: $patient.metaDbPatientId}) "
             + "RETURN pa")
     List<PatientAlias> findPatientAliasesByPatient(@Param("patient") MetadbPatient patient);
@@ -28,11 +23,6 @@ public interface MetadbPatientRepository extends Neo4jRepository<MetadbPatient, 
             + " RETURN p")
     MetadbPatient findPatientByCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId);
-
-    @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
-            + "MATCH (sm)<-[:HAS_SAMPLE]-(p: Patient)"
-            + "RETURN p;")
-    MetadbPatient findPatientBySampleId(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSampleId}) "
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "

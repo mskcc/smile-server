@@ -1,7 +1,6 @@
 package org.mskcc.cmo.metadb.persistence.neo4j;
 
 import java.util.List;
-import org.mskcc.cmo.metadb.model.MetadbProject;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
@@ -19,20 +18,10 @@ public interface MetadbRequestRepository extends Neo4jRepository<MetadbRequest, 
     @Query("MATCH (r: Request {requestId: $reqId}) RETURN r;")
     MetadbRequest findRequestById(@Param("reqId") String reqId);
 
-    @Query("MATCH (r: Request {requestId: $reqId}) "
-            + "MATCH (r)<-[:HAS_REQUEST]-(p: Project) "
-            + "RETURN p")
-    MetadbProject findProjectByRequest(@Param("reqId") String reqId);
-
     @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSample.metaDbSampleId}) "
             + "MATCH (s)<-[:HAS_SAMPLE]-(r: Request) "
             + "RETURN r")
-    MetadbRequest findRequestBySample(@Param("metaDbSample") MetadbSample metaDbSample);
-
-    @Query("MATCH (r: Request)-[:HAS_SAMPLE]->(s: Sample)"
-            + "<-[:HAS_SAMPLE]-(p: Patient)"
-            + "<-[:IS_ALIAS]-(pa: PatientAlias {value: $patientAliasId}) RETURN r")
-    MetadbRequest findRequestByPatientAlias(@Param("patientAliasId") String patientAliasId);
+    MetadbRequest findRequestByResearchSample(@Param("metaDbSample") MetadbSample metaDbSample);
 
     @Query("MATCH (r: Request {requestId: $reqId}) "
             + "MATCH (r)-[:HAS_METADATA]->(rm: RequestMetadata) "

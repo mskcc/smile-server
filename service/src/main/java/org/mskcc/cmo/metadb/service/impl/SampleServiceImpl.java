@@ -43,7 +43,7 @@ public class SampleServiceImpl implements MetadbSampleService {
         fetchAndLoadSampleDetails(sample);
 
         MetadbSample existingSample =
-                sampleRepository.findSampleByIgoId(sample.getSampleIgoId());
+                sampleRepository.findResearchSampleByIgoId(sample.getSampleIgoId());
         if (existingSample == null) {
             UUID newSampleId = sampleRepository.save(sample).getMetaDbSampleId();
             sample.setMetaDbSampleId(newSampleId);
@@ -87,7 +87,7 @@ public class SampleServiceImpl implements MetadbSampleService {
 
     @Override
     public MetadbSample getMetadbSample(UUID metadbSampleId) throws Exception {
-        MetadbSample sample = sampleRepository.findSampleById(metadbSampleId);
+        MetadbSample sample = sampleRepository.findAllSamplesById(metadbSampleId);
         if (sample == null) {
             return null;
         }
@@ -97,7 +97,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public MetadbSample getMetadbSampleByRequestAndAlias(String requestId, SampleAlias igoId)
             throws Exception {
-        MetadbSample sample = sampleRepository.findSampleByRequestAndIgoId(requestId,
+        MetadbSample sample = sampleRepository.findResearchSampleByRequestAndIgoId(requestId,
                 igoId.getValue());
         if (sample == null) {
             return null;
@@ -108,7 +108,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public MetadbSample getMetadbSampleByRequestAndIgoId(String requestId, String igoId)
             throws Exception {
-        MetadbSample sample = sampleRepository.findSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleRepository.findResearchSampleByRequestAndIgoId(requestId, igoId);
         if (sample == null) {
             return null;
         }
@@ -117,13 +117,13 @@ public class SampleServiceImpl implements MetadbSampleService {
 
     @Override
     public List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception {
-        return sampleRepository.findSampleMetadataListByCmoPatientId(cmoPatientId);
+        return sampleRepository.findAllSampleMetadataListByCmoPatientId(cmoPatientId);
     }
 
     @Override
     public List<MetadbSample> getAllSamplesByRequestId(String requestId) throws Exception {
         List<MetadbSample> requestSamples = new ArrayList<>();
-        for (MetadbSample s : sampleRepository.findAllSamplesByRequest(requestId)) {
+        for (MetadbSample s : sampleRepository.findResearchSamplesByRequest(requestId)) {
             requestSamples.add(getMetadbSample(s.getMetaDbSampleId()));
         }
         return requestSamples;
@@ -131,7 +131,7 @@ public class SampleServiceImpl implements MetadbSampleService {
 
     @Override
     public List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoId) throws Exception {
-        return sampleRepository.findSampleMetadataHistoryByIgoId(igoId);
+        return sampleRepository.findResearchSampleMetadataHistoryByIgoId(igoId);
     }
 
     @Override
@@ -157,13 +157,13 @@ public class SampleServiceImpl implements MetadbSampleService {
     public List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(
             String cmoPatientId) throws Exception {
         List<SampleMetadata> sampleMetadataList = sampleRepository
-                .findSampleMetadataListByCmoPatientId(cmoPatientId);
+                .findAllSampleMetadataListByCmoPatientId(cmoPatientId);
         List<PublishedMetadbSample> samples = new ArrayList<>();
         for (SampleMetadata sample: sampleMetadataList) {
             // TODO: update method to fill in sample details in a more inclusive
             // way and not just request and igo id since that is very specific
             // to research samples only
-            MetadbSample metadbSample = sampleRepository.findSampleByRequestAndIgoId(
+            MetadbSample metadbSample = sampleRepository.findResearchSampleByRequestAndIgoId(
                     sample.getRequestId(), sample.getPrimaryId());
             PublishedMetadbSample publishedSample = getPublishedMetadbSample(
                     metadbSample.getMetaDbSampleId());
@@ -174,7 +174,7 @@ public class SampleServiceImpl implements MetadbSampleService {
 
     @Override
     public MetadbSample getAllMetadbSampleFields(MetadbSample sample) throws ParseException {
-        sample.setSampleMetadataList(sampleRepository.findSampleMetadataListBySampleId(
+        sample.setSampleMetadataList(sampleRepository.findAllSampleMetadataListBySampleId(
                 sample.getMetaDbSampleId()));
         String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
         MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
