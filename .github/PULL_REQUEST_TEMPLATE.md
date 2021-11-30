@@ -1,4 +1,4 @@
-# Fix # (see https://help.github.com/en/articles/closing-issues-using-keywords)
+Fix # (see https://help.github.com/en/articles/closing-issues-using-keywords)
 
 Briefly describe changes proposed in this pull request:
 - a
@@ -34,6 +34,8 @@ Please follow these checklists to help prevent any unexpected issues from being 
 
 ### Web service and data model checklist
 
+Please follow these checks if any changes were made to any classes in the web, service, or persistence layers.
+- [ ] Have the endpoints been tested to ensure they have not broken from the changes introduced?
 - [ ] Have screenshots been uploaded to demonstrate changes made to the response body JSON schema and/or swagger page?
 - [ ] Were updates made to the mocked incoming request data and/or mocked published request data?
   - [ ] [cmo-metadb test data](https://github.com/mskcc/cmo-metadb/tree/master/service/src/test/resources/data)
