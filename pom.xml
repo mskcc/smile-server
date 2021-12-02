@@ -48,7 +48,7 @@
     <testcontainers.version>1.16.0</testcontainers.version>
     <!-- metadb messaging and shared entities dependency versions -->
     <cmo_metadb_messaging_java.group>com.github.mskcc</cmo_metadb_messaging_java.group>
-    <cmo_metadb_messaging_java.version>e01088f714e7f77e2187e1ed5943789a2cacb415</cmo_metadb_messaging_java.version>
+    <cmo_metadb_messaging_java.version>1.1.6.RELEASE</cmo_metadb_messaging_java.version>
     <!-- metadb common centralized config properties -->
     <cmo_metadb_common.group>com.github.mskcc</cmo_metadb_common.group>
     <cmo_metadb_common.version>1.1.7.RELEASE</cmo_metadb_common.version>
