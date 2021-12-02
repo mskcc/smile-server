@@ -8,6 +8,8 @@ import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 /**
  *
  * @author ochoaa
@@ -15,9 +17,9 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 public class PublishedMetadbRequest {
     @Convert(UuidStringConverter.class)
     private UUID metaDbRequestId;
-    private String projectId;
-    private String requestId;
-    private String recipe;
+    private String igoProjectId;
+    private String igoRequestId;
+    private String genePanel;
     private String projectManagerName;
     private String piEmail;
     private String labHeadName;
@@ -46,9 +48,9 @@ public class PublishedMetadbRequest {
      */
     public PublishedMetadbRequest(MetadbRequest metaDbRequest, List<PublishedMetadbSample> samples) {
         this.metaDbRequestId = metaDbRequest.getMetaDbRequestId();
-        this.projectId = metaDbRequest.getRequestId().split("_")[0];
-        this.requestId = metaDbRequest.getRequestId();
-        this.recipe = metaDbRequest.getRecipe();
+        this.igoProjectId = metaDbRequest.getIgoRequestId().split("_")[0];
+        this.igoRequestId = metaDbRequest.getIgoRequestId();
+        this.genePanel = metaDbRequest.getGenePanel();
         this.projectManagerName = metaDbRequest.getProjectManagerName();
         this.piEmail = metaDbRequest.getPiEmail();
         this.labHeadName = metaDbRequest.getLabHeadName();
@@ -72,9 +74,9 @@ public class PublishedMetadbRequest {
     /**
      * All args constructor.
      * @param metaDbRequestId
-     * @param projectId
-     * @param requestId
-     * @param recipe
+     * @param igoProjectId
+     * @param igoRequestId
+     * @param genePanel
      * @param projectManagerName
      * @param piEmail
      * @param labHeadName
@@ -94,17 +96,17 @@ public class PublishedMetadbRequest {
      * @param pooledNormals
      * @param samples
      */
-    public PublishedMetadbRequest(UUID metaDbRequestId, String projectId, String requestId,
-            String recipe, String projectManagerName, String piEmail, String labHeadName,
+    public PublishedMetadbRequest(UUID metaDbRequestId, String igoProjectId, String igoRequestId,
+            String genePanel, String projectManagerName, String piEmail, String labHeadName,
             String labHeadEmail, String investigatorName, String investigatorEmail, String dataAnalystName,
             String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
             String qcAccessEmails, String strand, String libraryType, Boolean isCmoRequest,
             Boolean bicAnalysis, String requestJson, List<String> pooledNormals,
             List<PublishedMetadbSample> samples) {
         this.metaDbRequestId = metaDbRequestId;
-        this.projectId = projectId;
-        this.requestId = requestId;
-        this.recipe = recipe;
+        this.igoProjectId = igoProjectId;
+        this.igoRequestId = igoRequestId;
+        this.genePanel = genePanel;
         this.projectManagerName = projectManagerName;
         this.piEmail = piEmail;
         this.labHeadName = labHeadName;
@@ -133,28 +135,28 @@ public class PublishedMetadbRequest {
         this.metaDbRequestId = metaDbRequestId;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public String getIgoProjectId() {
+        return igoProjectId;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setIgoProjectId(String igoProjectId) {
+        this.igoProjectId = igoProjectId;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public String getIgoRequestId() {
+        return igoRequestId;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setIgoRequestId(String igoRequestId) {
+        this.igoRequestId = igoRequestId;
     }
 
-    public String getRecipe() {
-        return recipe;
+    public String getGenePanel() {
+        return genePanel;
     }
 
-    public void setRecipe(String recipe) {
-        this.recipe = recipe;
+    public void setGenePanel(String genePanel) {
+        this.genePanel = genePanel;
     }
 
     public String getProjectManagerName() {

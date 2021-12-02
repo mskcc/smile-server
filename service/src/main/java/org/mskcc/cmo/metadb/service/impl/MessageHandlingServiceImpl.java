@@ -100,17 +100,17 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     MetadbRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
                         MetadbRequest existingRequest =
-                                requestService.getMetadbRequestById(request.getRequestId());
+                                requestService.getMetadbRequestById(request.getIgoRequestId());
 
                         // persist new request to database
                         if (existingRequest == null) {
-                            LOG.info("Received new request with id: " + request.getRequestId());
+                            LOG.info("Received new request with id: " + request.getIgoRequestId());
                             requestService.saveRequest(request);
-                            messagingGateway.publish(request.getRequestId(),
+                            messagingGateway.publish(request.getIgoRequestId(),
                                     CONSISTENCY_CHECK_NEW_REQUEST,
                                     mapper.writeValueAsString(
                                             requestService.getPublishedMetadbRequestById(
-                                                    request.getRequestId())));
+                                                    request.getIgoRequestId())));
                         } else if (requestService.requestHasUpdates(existingRequest, request)) {
                             // make call to update the requestJson member of existingRequest in the
                             // database to reflect the latest version of the raw json string that we got
@@ -123,7 +123,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             }
                         } else {
                             LOG.warn("Request already in database - it will not be saved: "
-                                    + request.getRequestId());
+                                    + request.getIgoRequestId());
                         }
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
@@ -155,41 +155,41 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     RequestMetadata requestMetadata = requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (requestMetadata != null) {
                         MetadbRequest existingRequest =
-                                requestService.getMetadbRequestById(requestMetadata.getRequestId());
+                                requestService.getMetadbRequestById(requestMetadata.getIgoRequestId());
                         if (existingRequest == null) {
                             LOG.info("Request does not already exist - saving to database: "
-                                    + requestMetadata.getRequestId());
+                                    + requestMetadata.getIgoRequestId());
                             // persist and handle new request
                             MetadbRequest request =
                                     RequestDataFactory.buildNewRequestFromMetadata(requestMetadata);
 
                             LOG.info("Publishing new request metadata to " + CMO_REQUEST_UPDATE_TOPIC);
                             requestService.saveRequest(request);
-                            messagingGateway.publish(request.getRequestId(),
+                            messagingGateway.publish(request.getIgoRequestId(),
                                     CMO_REQUEST_UPDATE_TOPIC,
                                     mapper.writeValueAsString(
                                           request.getRequestMetadataList()));
                         } else if (requestService.requestHasMetadataUpdates(
                                 existingRequest.getLatestRequestMetadata(), requestMetadata)) {
                             // persist request-level metadata updates to database
-                            LOG.info("Found updates in request metadata: " + requestMetadata.getRequestId()
+                            LOG.info("Found updates in request metadata: " + requestMetadata.getIgoRequestId()
                                     + " - persisting to database");
                             existingRequest.updateRequestMetadataByMetadata(requestMetadata);
                             if (requestService.saveRequestMetadata(existingRequest)) {
                                 LOG.info("Publishing Request-level Metadata updates "
                                         + "to " + CMO_REQUEST_UPDATE_TOPIC);
                                 // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC
-                                messagingGateway.publish(existingRequest.getRequestId(),
+                                messagingGateway.publish(existingRequest.getIgoRequestId(),
                                         CMO_REQUEST_UPDATE_TOPIC,
                                         mapper.writeValueAsString(
                                               existingRequest.getRequestMetadataList()));
                             } else {
                                 LOG.error("Failed to update the request metadata for request: "
-                                        + existingRequest.getRequestId());
+                                        + existingRequest.getIgoRequestId());
                             }
                         } else {
                             LOG.warn("There are no request-level metadata updates to persist: "
-                                    + requestMetadata.getRequestId());
+                                    + requestMetadata.getIgoRequestId());
                         }
                     }
                     if (interrupted && requestUpdateQueue.isEmpty()) {
@@ -222,7 +222,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     SampleMetadata sampleMetadata = sampleUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (sampleMetadata != null) {
                         MetadbSample existingSample = sampleService.getMetadbSampleByRequestAndIgoId(
-                                sampleMetadata.getRequestId(), sampleMetadata.getPrimaryId());
+                                sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
                         if (existingSample == null) {
                             LOG.info("Sample metadata does not already exist - persisting to db: "
                                     + sampleMetadata.getPrimaryId());
@@ -370,7 +370,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             String.class);
                     MetadbRequest request = RequestDataFactory.buildNewLimsRequestFromJson(requestJson);
                     LOG.info("Received message on topic: " + IGO_NEW_REQUEST_TOPIC + " and request id: "
-                            + request.getRequestId());
+                            + request.getIgoRequestId());
                     messageHandlingService.newRequestHandler(request);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of request on topic: " + IGO_NEW_REQUEST_TOPIC, e);
@@ -390,7 +390,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     RequestMetadata requestMetadata =
                             RequestDataFactory.buildNewRequestMetadataFromMetadata(requestMetadataJson);
                     LOG.info("Received message on topic: "  + IGO_REQUEST_UPDATE_TOPIC + " and request id: "
-                            + requestMetadata.getRequestId());
+                            + requestMetadata.getIgoRequestId());
                     messageHandlingService.requestUpdateHandler(requestMetadata);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of request update on topic: "

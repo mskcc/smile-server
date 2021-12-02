@@ -20,11 +20,11 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId}) "
             + "RETURN sm")
     MetadbSample findAllSamplesById(@Param("metaDbSampleId") UUID metaDbSampleId);
-    
+
     @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, namespace: 'igoId'}) "
         + "MATCH (s)<-[:IS_ALIAS]-(sm: Sample) "
         + "RETURN sm")
-    MetadbSample findResearchSampleByIgoId(@Param("igoId") SampleAlias igoId); 
+    MetadbSample findResearchSampleByIgoId(@Param("igoId") SampleAlias igoId);
 
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
@@ -44,12 +44,12 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     List<MetadbSample> findMatchedNormalsBySample(
             @Param("metaDbSample") MetadbSample metaDbSample);
 
-    @Query("Match (r: Request {requestId: $reqId})-[:HAS_SAMPLE]->"
+    @Query("Match (r: Request {igoRequestId: $reqId})-[:HAS_SAMPLE]->"
             + "(s: Sample) "
             + "RETURN s;")
     List<MetadbSample> findResearchSamplesByRequest(@Param("reqId") String reqId);
 
-    @Query("MATCH (r: Request {requestId: $reqId}) "
+    @Query("MATCH (r: Request {igoRequestId: $reqId}) "
         + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
         + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId}) "
         + "RETURN sm")
@@ -58,7 +58,7 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
 
     @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
             + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata) "
-            + "MATCH (r: Request)-[:HAS_SAMPLE]->(s) SET sm.requestId = r.requestId "
+            + "MATCH (r: Request)-[:HAS_SAMPLE]->(s) SET sm.igoRequestId = r.igoRequestId "
             + "RETURN sm"
     )
     List<SampleMetadata> findAllSampleMetadataListByCmoPatientId(@Param("cmoPatientId") String cmoPatientId);

@@ -164,7 +164,7 @@ public class SampleServiceImpl implements MetadbSampleService {
             // way and not just request and igo id since that is very specific
             // to research samples only
             MetadbSample metadbSample = sampleRepository.findResearchSampleByRequestAndIgoId(
-                    sample.getRequestId(), sample.getPrimaryId());
+                    sample.getIgoRequestId(), sample.getPrimaryId());
             PublishedMetadbSample publishedSample = getPublishedMetadbSample(
                     metadbSample.getMetaDbSampleId());
             samples.add(publishedSample);
