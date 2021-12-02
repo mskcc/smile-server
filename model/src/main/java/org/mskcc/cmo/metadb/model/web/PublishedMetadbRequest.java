@@ -4,11 +4,8 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
-import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
-
-import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
  *

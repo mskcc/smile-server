@@ -1,11 +1,10 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
-
-import com.fasterxml.jackson.annotation.JsonAlias;
 
 public class RequestMetadata implements Serializable, Comparable<RequestMetadata> {
     @Id @GeneratedValue

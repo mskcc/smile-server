@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +8,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
-
-import com.fasterxml.jackson.annotation.JsonAlias;
 
 @NodeEntity(label = "Project")
 public class MetadbProject implements Serializable {
