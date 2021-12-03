@@ -1,10 +1,12 @@
 package org.mskcc.cmo.metadb.service;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 
 public interface MetadbSampleService {
     MetadbSample saveSampleMetadata(MetadbSample metaDbSample) throws Exception;
@@ -21,4 +23,8 @@ public interface MetadbSampleService {
     List<SampleMetadata> getSampleMetadataHistoryByIgoId(String igoId) throws Exception;
     Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata, SampleMetadata sampleMetadata)
             throws Exception;
+    PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception;
+    List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(String cmoPatientId)
+            throws Exception;
+    MetadbSample getDetailedMetadbSample(MetadbSample sample) throws ParseException;
 }

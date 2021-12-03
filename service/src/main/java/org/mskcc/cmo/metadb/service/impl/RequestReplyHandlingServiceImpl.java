@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.service.CrdbMappingService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.mskcc.cmo.metadb.service.RequestReplyHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,10 @@ import org.springframework.stereotype.Component;
 public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingService {
 
     @Value("${request_reply.patient_samples_topic}")
-    private String REQUEST_REPLY_TOPIC;
+    private String PATIENT_SAMPLES_REQREPLY_TOPIC;
+
+    @Value("${request_reply.crdb_mapping_topic}")
+    private String CRDB_MAPPING_REQREPLY_TOPIC;
 
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
@@ -33,17 +37,22 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
     @Autowired
     private MetadbSampleService sampleService;
 
+    @Autowired
+    private CrdbMappingService crdbMappingService;
+
     private final ObjectMapper mapper = new ObjectMapper();
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
     private static final ExecutorService exec = Executors.newCachedThreadPool();
-    private static final BlockingQueue<ReplyInfo> newRequestReplyQueue =
+    private static final BlockingQueue<ReplyInfo> patientSamplesReqReplyQueue =
         new LinkedBlockingQueue<ReplyInfo>();
-    private static CountDownLatch newRequestHandlerShutdownLatch;
+    private static final BlockingQueue<ReplyInfo> crdbMappingReqReplyQueue =
+        new LinkedBlockingQueue<ReplyInfo>();
+    private static CountDownLatch patientSamplesHandlerShutdownLatch;
+    private static CountDownLatch crdbMappingHandlerShutdownLatch;
     private static Gateway messagingGateway;
 
     private static final Log LOG = LogFactory.getLog(RequestReplyHandlingServiceImpl.class);
-
 
     private class ReplyInfo {
         String requestMessage;
@@ -63,12 +72,12 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
     }
 
-    private class NewRequestReplyHandler implements Runnable {
+    private class PatientSamplesReqReplyHandler implements Runnable {
 
         final Phaser phaser;
         boolean interrupted = false;
 
-        NewRequestReplyHandler(Phaser phaser) {
+        PatientSamplesReqReplyHandler(Phaser phaser) {
             this.phaser = phaser;
         }
 
@@ -77,7 +86,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             phaser.arrive();
             while (true) {
                 try {
-                    ReplyInfo replyInfo = newRequestReplyQueue.poll(100, TimeUnit.MILLISECONDS);
+                    ReplyInfo replyInfo = patientSamplesReqReplyQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (replyInfo != null) {
                         List<SampleMetadata> sampleList =
                                 sampleService.getSampleMetadataListByCmoPatientId(
@@ -85,7 +94,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
                         messagingGateway.replyPublish(replyInfo.getReplyTo(),
                                 mapper.writeValueAsString(sampleList));
                     }
-                    if (interrupted && newRequestReplyQueue.isEmpty()) {
+                    if (interrupted && patientSamplesReqReplyQueue.isEmpty()) {
                         break;
                     }
                 } catch (InterruptedException e) {
@@ -94,7 +103,46 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
                     LOG.error("Error during request handling", e);
                 }
             }
-            newRequestHandlerShutdownLatch.countDown();
+            patientSamplesHandlerShutdownLatch.countDown();
+        }
+    }
+
+    private class CrdbMappingReqReplyHandler implements Runnable {
+
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        CrdbMappingReqReplyHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    ReplyInfo replyInfo = crdbMappingReqReplyQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (replyInfo != null) {
+                        try {
+                            String cmoPatientId =
+                                    crdbMappingService.getCmoPatientIdbyDmpId(replyInfo.getRequestMessage());
+                            messagingGateway.replyPublish(replyInfo.getReplyTo(),
+                                    cmoPatientId);
+                        } catch (NullPointerException e) {
+                            LOG.error("CRDB service returned null for dmp id: "
+                                    + replyInfo.getRequestMessage());
+                        }
+                    }
+                    if (interrupted && crdbMappingReqReplyQueue.isEmpty()) {
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during request handling", e);
+                }
+            }
+            crdbMappingHandlerShutdownLatch.countDown();
         }
     }
 
@@ -103,7 +151,8 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         if (!initialized) {
             messagingGateway = gateway;
             setupPatientSamplesHandler(messagingGateway, this);
-            initializePatientSamplesHandlers();
+            setupCrdbMappingHandler(messagingGateway, this);
+            initializeRequestReplyHandlers();
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring patientId.\n");
@@ -111,18 +160,29 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
     }
 
     @Override
-    public void newPatientSamplesHandler(String patientId, String replyTo) throws Exception {
+    public void patientSamplesHandler(String patientId, String replyTo) throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         if (!shutdownInitiated) {
-            newRequestReplyQueue.put(new ReplyInfo(patientId, replyTo));
-
+            patientSamplesReqReplyQueue.put(new ReplyInfo(patientId, replyTo));
         } else {
             LOG.error("Shutdown initiated, not accepting PatientIds: " + patientId);
             throw new IllegalStateException("Shutdown initiated, not handling any more patientIds");
         }
+    }
 
+    @Override
+    public void crdbMappingHandler(String inputId, String replyTo) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            crdbMappingReqReplyQueue.put(new ReplyInfo(inputId, replyTo));
+        } else {
+            LOG.error("Shutdown initiated, not accepting CRDB Mapping Service request");
+            throw new IllegalStateException("Shutdown initiated, not handling any more patientIds");
+        }
     }
 
     @Override
@@ -131,19 +191,20 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         exec.shutdownNow();
-        newRequestHandlerShutdownLatch.await();
+        patientSamplesHandlerShutdownLatch.await();
+        crdbMappingHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
     private void setupPatientSamplesHandler(Gateway gateway,
             RequestReplyHandlingServiceImpl requestReplyHandlingServiceImpl)
             throws Exception {
-        gateway.replySub(REQUEST_REPLY_TOPIC, new MessageConsumer() {
+        gateway.replySub(PATIENT_SAMPLES_REQREPLY_TOPIC, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
-                LOG.info("Received message on topic: " + REQUEST_REPLY_TOPIC);
+                LOG.info("Received message on topic: " + PATIENT_SAMPLES_REQREPLY_TOPIC);
                 try {
-                    requestReplyHandlingServiceImpl.newPatientSamplesHandler(
+                    requestReplyHandlingServiceImpl.patientSamplesHandler(
                             new String(msg.getData()), msg.getReplyTo());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -152,15 +213,41 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         });
     }
 
-    private void initializePatientSamplesHandlers() throws Exception {
-        newRequestHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
-        final Phaser newSamplePhaser = new Phaser();
-        newSamplePhaser.register();
+    private void setupCrdbMappingHandler(Gateway gateway,
+            RequestReplyHandlingServiceImpl requestReplyHandlingServiceImpl)
+            throws Exception {
+        gateway.replySub(CRDB_MAPPING_REQREPLY_TOPIC, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                LOG.info("Received message on topic: " + CRDB_MAPPING_REQREPLY_TOPIC);
+                try {
+                    requestReplyHandlingServiceImpl.crdbMappingHandler(
+                            new String(msg.getData()), msg.getReplyTo());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void initializeRequestReplyHandlers() throws Exception {
+        patientSamplesHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
+        final Phaser patientSamplesPhaser = new Phaser();
+        patientSamplesPhaser.register();
         for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
-            newSamplePhaser.register();
-            exec.execute(new NewRequestReplyHandler(newSamplePhaser));
+            patientSamplesPhaser.register();
+            exec.execute(new PatientSamplesReqReplyHandler(patientSamplesPhaser));
         }
-        newSamplePhaser.arriveAndAwaitAdvance();
+        patientSamplesPhaser.arriveAndAwaitAdvance();
+
+        crdbMappingHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
+        final Phaser crdbMappingPhaser = new Phaser();
+        crdbMappingPhaser.register();
+        for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
+            crdbMappingPhaser.register();
+            exec.execute(new CrdbMappingReqReplyHandler(crdbMappingPhaser));
+        }
+        crdbMappingPhaser.arriveAndAwaitAdvance();
     }
 
 }

@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.persistence;
+package org.mskcc.cmo.metadb.persistence.neo4j;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,25 +19,12 @@ import org.springframework.stereotype.Repository;
 public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UUID> {
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId}) "
             + "RETURN sm")
-    MetadbSample findSampleById(@Param("metaDbSampleId") UUID metaDbSampleId);
-
-    @Query("MATCH (s: SampleAlias {value: $igoId}) RETURN s")
-    SampleAlias findSampleAliasByIgoId(@Param("igoId") String igoId);
-
+    MetadbSample findAllSamplesById(@Param("metaDbSampleId") UUID metaDbSampleId);
+    
     @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, namespace: 'igoId'}) "
         + "MATCH (s)<-[:IS_ALIAS]-(sm: Sample) "
         + "RETURN sm")
-    MetadbSample findSampleByIgoId(@Param("igoId") SampleAlias igoId);
-
-    @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
-            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
-            + "WHERE toLower(s.namespace) = 'igoid' RETURN s;")
-    SampleAlias findSampleIgoId(@Param("metaDbSampleId") UUID metaDbSampleId);
-
-    @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
-            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
-            + "WHERE s.namespace = 'investigatorId' RETURN s;")
-    SampleAlias findSampleInvestigatorId(@Param("metaDbSampleId") UUID metaDbSampleId);
+    MetadbSample findResearchSampleByIgoId(@Param("igoId") SampleAlias igoId); 
 
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
@@ -47,7 +34,7 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)-[:HAS_METADATA]->(s: SampleMetadata)"
             + "RETURN s;")
-    List<SampleMetadata> findSampleMetadataListBySampleId(@Param("metaDbSampleId") UUID metaDbSampleId);
+    List<SampleMetadata> findAllSampleMetadataListBySampleId(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSample.metaDbSampleId})"
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient)"
@@ -60,13 +47,13 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     @Query("Match (r: Request {requestId: $reqId})-[:HAS_SAMPLE]->"
             + "(s: Sample) "
             + "RETURN s;")
-    List<MetadbSample> findAllSamplesByRequest(@Param("reqId") String reqId);
+    List<MetadbSample> findResearchSamplesByRequest(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request {requestId: $reqId}) "
         + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
         + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId}) "
         + "RETURN sm")
-    MetadbSample findSampleByRequestAndIgoId(@Param("reqId") String reqId,
+    MetadbSample findResearchSampleByRequestAndIgoId(@Param("reqId") String reqId,
             @Param("igoId") String igoId);
 
     @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
@@ -74,9 +61,9 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
             + "MATCH (r: Request)-[:HAS_SAMPLE]->(s) SET sm.requestId = r.requestId "
             + "RETURN sm"
     )
-    List<SampleMetadata> findSampleMetadataListByCmoPatientId(@Param("cmoPatientId") String cmoPatientId);
+    List<SampleMetadata> findAllSampleMetadataListByCmoPatientId(@Param("cmoPatientId") String cmoPatientId);
 
-    @Query("MATCH (sm: SampleMetadata {igoId: $igoId})"
-            + "RETURN sm")
-    List<SampleMetadata> findSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
+    @Query("MATCH (sa :SampleAlias {value: $igoId, namespace: 'igoId'})-[:IS_ALIAS]->(s: Sample)"
+            + "-[:HAS_METADATA]->(sm: SampleMetadata) RETURN sm")
+    List<SampleMetadata> findResearchSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
 }
