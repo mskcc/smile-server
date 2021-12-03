@@ -14,11 +14,11 @@
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC/FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC_S22_R1_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC/FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC_S22_R2_001.fastq.gz"
   ],
-  "projectId": "22022",
+  "igoProjectId": "22022",
   "projectManagerName": "",
   "qcAccessEmails": "",
-  "recipe": "GENESET101",
-  "requestId": "22022_BZ",
+  "genePanel": "GENESET101",
+  "igoRequestId": "22022_BZ",
   "metaDbRequestId": "6cca6166-875a-11eb-ae9e-acde48001122",
   "isCmoRequest": true,
   "bicAnalysis": false,
@@ -26,7 +26,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-TX6DNG",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-TX6DNG-N001-d",
       "collectionYear": "",
       "primaryId": "22022_CC_3",
@@ -86,7 +86,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Blood",
+      "sampleClass": "Blood",
       "tissueLocation": "Blood",
       "tubeId": "4157451784",
       "tumorOrNormal": "Normal"
@@ -94,7 +94,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-DPCXX1",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-DPCXX1-N001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_19",
@@ -157,7 +157,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "M",
       "species": "Human",
-      "specimenType": "other",
+      "sampleClass": "other",
       "tissueLocation": "",
       "tubeId": "",
       "tumorOrNormal": "Normal"
@@ -165,7 +165,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-KXXL3J",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "C-KXXL3J-P001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_15",
@@ -228,7 +228,7 @@
       "sampleOrigin": "Tissue",
       "sex": "M",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "Left Kidney",
       "tubeId": "TS-189768.2.T",
       "tumorOrNormal": "Tumor"
@@ -236,7 +236,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-XXX711",
-      "cmoSampleClass": "Metastasis",
+      "sampleType": "Metastasis",
       "cmoSampleName": "C-XXX711-M001-d",
       "collectionYear": "2017",
       "primaryId": "22022_BZ_17",
@@ -299,14 +299,14 @@
       "sampleOrigin": "",
       "sex": "M",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "",
       "tubeId": "181446.13.T",
       "tumorOrNormal": ""
     },
     {
       "cmoPatientId": "C-PPPXX2",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-PPPXX2-N001-d",
       "collectionYear": "",
       "primaryId": "22022_BZ_4",
@@ -336,7 +336,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Blood",
+      "sampleClass": "Blood",
       "tissueLocation": "Blood",
       "tubeId": "8027185112",
       "tumorOrNormal": "Normal"
@@ -344,7 +344,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-KXXL3J",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-KXXL3J-N001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_3",
@@ -407,7 +407,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "M",
       "species": "Human",
-      "specimenType": "Blood",
+      "sampleClass": "Blood",
       "tissueLocation": "",
       "tubeId": "BLD-12345",
       "tumorOrNormal": "Normal"
@@ -415,7 +415,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-X09281",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-X09281-N001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_2",
@@ -478,7 +478,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "M",
       "species": "Human",
-      "specimenType": "Blood",
+      "sampleClass": "Blood",
       "tissueLocation": "Blood",
       "tubeId": "",
       "tumorOrNormal": "Normal"
@@ -486,7 +486,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-XXA40X",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "C-XXA40X-P001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_1",
@@ -549,7 +549,7 @@
       "sampleOrigin": "Tissue",
       "sex": "M",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "Right Distal Femur",
       "tubeId": "TS-193394.2.T",
       "tumorOrNormal": "Tumor"
@@ -557,7 +557,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-YXX89J",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-YXX89J-N001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_9",
@@ -620,7 +620,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "F",
       "species": "Human",
-      "specimenType": "other",
+      "sampleClass": "other",
       "tissueLocation": "",
       "tubeId": "BLD-33777",
       "tumorOrNormal": "Normal"
@@ -628,7 +628,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-DPCXX1",
-      "cmoSampleClass": "Metastasis",
+      "sampleType": "Metastasis",
       "cmoSampleName": "C-DPCXX1-M001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_8",
@@ -691,7 +691,7 @@
       "sampleOrigin": "Tissue",
       "sex": "M",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "Lung/Middle Lobe",
       "tubeId": "TS-019273.5.T",
       "tumorOrNormal": "Tumor"
@@ -699,7 +699,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-999XX",
-      "cmoSampleClass": "Metastasis",
+      "sampleType": "Metastasis",
       "cmoSampleName": "C-999XX-M001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_16",
@@ -762,7 +762,7 @@
       "sampleOrigin": "Tissue",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "Bladder Peritoneum",
       "tubeId": "TS-191305.1.T",
       "tumorOrNormal": "Tumor"
@@ -770,7 +770,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-9XX8808",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "C-9XX8808-P001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_13",
@@ -833,7 +833,7 @@
       "sampleOrigin": "Tissue",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "Right Femur 4",
       "tubeId": "TS-54321.9.T",
       "tumorOrNormal": "Tumor"
@@ -841,7 +841,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-999XX",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-999XX-N002-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_21",
@@ -904,7 +904,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "F",
       "species": "Human",
-      "specimenType": "other",
+      "sampleClass": "other",
       "tissueLocation": "",
       "tubeId": "BLD-99111 BC",
       "tumorOrNormal": "Normal"
@@ -912,7 +912,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-FFX222",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-FFX222-N001-d",
       "collectionYear": "2017",
       "primaryId": "22022_BZ_10",
@@ -975,7 +975,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "F",
       "species": "Human",
-      "specimenType": "other",
+      "sampleClass": "other",
       "tissueLocation": "",
       "tubeId": "BLD-98765 BC",
       "tumorOrNormal": "Normal"
@@ -983,7 +983,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-PPPXX2",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "C-PPPXX2-P001-d",
       "collectionYear": "",
       "primaryId": "22022_BZ_5",
@@ -1046,7 +1046,7 @@
       "sampleOrigin": "Tissue",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "Liver/Right lobe",
       "tubeId": "TS.928838.4.T",
       "tumorOrNormal": "Tumor"
@@ -1054,7 +1054,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-YXX89J",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "C-YXX89J-P001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_11",
@@ -1117,7 +1117,7 @@
       "sampleOrigin": "Tissue",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "left retroperitoneum",
       "tubeId": "TS-223344.0.T",
       "tumorOrNormal": "Tumor"
@@ -1125,7 +1125,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-XXX711",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-XXX711-N001-d",
       "collectionYear": "2017",
       "primaryId": "22022_BZ_12",
@@ -1188,7 +1188,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "M",
       "species": "Human",
-      "specimenType": "Blood",
+      "sampleClass": "Blood",
       "tissueLocation": "",
       "tubeId": "88354511236",
       "tumorOrNormal": ""
@@ -1196,7 +1196,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-9XX8808",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-9XX8808-N001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_18",
@@ -1259,7 +1259,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Blood",
+      "sampleClass": "Blood",
       "tissueLocation": "",
       "tubeId": "BLD-98765",
       "tumorOrNormal": "Normal"
@@ -1267,7 +1267,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-XXC4XX",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-XXC4XX-N001-d",
       "collectionYear": "",
       "primaryId": "22022_BZ_6",
@@ -1330,7 +1330,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Blood",
+      "sampleClass": "Blood",
       "tissueLocation": "",
       "tubeId": "",
       "tumorOrNormal": "Normal"
@@ -1338,7 +1338,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-XXA40X",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-XXA40X-N001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_20",
@@ -1401,7 +1401,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "M",
       "species": "Human",
-      "specimenType": "other",
+      "sampleClass": "other",
       "tissueLocation": "Buffy Coat",
       "tubeId": "BLD-98981 BC",
       "tumorOrNormal": "Normal"
@@ -1409,7 +1409,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-X09281",
-      "cmoSampleClass": "Metastasis",
+      "sampleType": "Metastasis",
       "cmoSampleName": "C-X09281-M001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_14",
@@ -1472,7 +1472,7 @@
       "sampleOrigin": "Tissue",
       "sex": "M",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "Left Kidney Hilar Lymph Node",
       "tubeId": "TS-828282",
       "tumorOrNormal": "Tumor"
@@ -1480,7 +1480,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-FFX222",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "C-FFX222-P001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_7",
@@ -1543,7 +1543,7 @@
       "sampleOrigin": "Tissue",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Resection",
+      "sampleClass": "Resection",
       "tissueLocation": "Abdomen",
       "tubeId": "TS-888999.1.T",
       "tumorOrNormal": "Tumor"
