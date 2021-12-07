@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
 import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
@@ -80,10 +82,17 @@ public class SampleDataFactory {
      */
     public static SampleMetadata buildNewSampleMetadatafromJson(String sampleMetadataJson)
             throws JsonProcessingException {
-        SampleMetadata sampleMetadata =
-                mapper.readValue(sampleMetadataJson, SampleMetadata.class);
+        DataTransformer dataTransformer = new DataTransformer();
+        String processedSampleJson = dataTransformer.transformResearchSampleMetadata(sampleMetadataJson);
+        SampleMetadata sampleMetadata = mapper.readValue(processedSampleJson, SampleMetadata.class);
         sampleMetadata.setImportDate(
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return sampleMetadata;
     }
+    
+//  sampleMetadata.setSampleType(sampleJsonMap.get("cmoSampleClass"));
+//  sampleMetadata.setSampleClass(sampleJsonMap.get("specimenType"));
+//  sampleMetadata.setOncotreeCode(sampleJsonMap.get("oncoTreeCode"));
+//  sampleMetadata.setGenePanel(sampleJsonMap.get("recipe"));
+//  sampleMetadata.setIgoRequestId(sampleJsonMap.get("requestId"));
 }

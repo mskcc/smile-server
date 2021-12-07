@@ -3,11 +3,16 @@ package org.mskcc.cmo.metadb.service.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONObject;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
@@ -67,14 +72,21 @@ public class RequestDataFactory {
 
     private static List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
             throws JsonProcessingException {
-        Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        SampleMetadata[] samples = mapper.convertValue(map.get("samples"),
-                SampleMetadata[].class);
+        Map<String, String> map = mapper.readValue(message.toString(), Map.class);
+        String[] samples = mapper.convertValue(map.get("samples"),
+                String[].class);
         String requestId = (String) map.get("requestId");
 
         List<MetadbSample> requestSamplesList = new ArrayList<>();
-        for (SampleMetadata s: samples) {
-            MetadbSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(requestId, s);
+        for (String s: samples) {
+            //String jsonString = new JSONObject(s).toString();
+            //String sampleMetadataJson = new ObjectMapper().writeValueAsString(s);
+            
+            DataTransformer dataTransformer = new DataTransformer();
+            String processedSampleMetadataJson = dataTransformer.transformResearchSampleMetadata(s);
+            
+            SampleMetadata sampleMetadata = mapper.convertValue(processedSampleMetadataJson, SampleMetadata.class);
+            MetadbSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(requestId, sampleMetadata);
             requestSamplesList.add(sample);
         }
         return requestSamplesList;

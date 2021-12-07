@@ -1,6 +1,5 @@
 package org.mskcc.cmo.metadb.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
@@ -24,7 +23,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private String cmoInfoIgoId;
     private String cmoSampleName;
     private String sampleName;
-    @JsonAlias("oncoTreeCode")
     private String oncotreeCode;
     private String collectionYear;
     private String tubeId;
@@ -35,30 +33,25 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    @JsonAlias("igoId")
     private String primaryId;
     private String investigatorSampleId;
     private String species;
     private String sex;
     private String tumorOrNormal;
-    @JsonAlias("cmoSampleClass")
     private String sampleType;
     private String preservation;
     private String tumorType;
     private String parentTumorType;
-    @JsonAlias("specimenType")
     private String sampleClass;
     private String sampleOrigin;
     private String tissueSource;
     private String tissueLocation;
-    @JsonAlias("recipe")
     private String genePanel;
     private String baitSet;
     private String fastqPath;
     private String principalInvestigator;
     private String ancestorSample;
     private String sampleStatus;
-    @JsonAlias("requestId")
     private String igoRequestId;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
