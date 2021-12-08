@@ -1,142 +1,182 @@
 package org.mskcc.cmo.metadb.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
 import org.mskcc.cmo.metadb.model.converter.MapStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
+import org.mskcc.cmo.metadb.model.dmp.DmpSampleMetadata;
+import org.mskcc.cmo.metadb.model.igo.IgoLibrary;
+import org.mskcc.cmo.metadb.model.igo.IgoQcReport;
+import org.mskcc.cmo.metadb.model.igo.IgoSampleManifest;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SampleMetadata implements Serializable, Comparable<SampleMetadata> {
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
-    private String importDate;
-    private String cmoInfoIgoId;
+    private String primaryId;
+    private String cmoPatientId;
     private String cmoSampleName;
     private String sampleName;
+    private String importDate;
+    private String cmoInfoIgoId;
     private String cmoSampleClass;
     private String oncoTreeCode;
     private String collectionYear;
     private String tubeId;
     private String cfDNA2dBarcode;
-    @Convert(QcReportsStringConverter.class)
-    private List<QcReport> qcReports;
-    @Convert(LibrariesStringConverter.class)
-    private List<Library> libraries;
+    // TODO: REMOVE (not using but part of IGO LIMS sample metadata, not manifest)
     private String mrn;
-    private String cmoPatientId;
-    @JsonAlias("igoId")
-    private String primaryId;
     private String investigatorSampleId;
     private String species;
     private String sex;
     private String tumorOrNormal;
+    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
+    // need this field for generating CMO sample labels)
     private String sampleType;
     private String preservation;
     private String tumorType;
+    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
+    // need this field for generating CMO sample labels)
     private String parentTumorType;
     private String specimenType;
     private String sampleOrigin;
+    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
+    // need this field for generating CMO sample labels)
     private String tissueSource;
     private String tissueLocation;
+    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
+    // need this field for generating CMO sample labels)
     private String recipe;
     private String baitSet;
+    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
+    // need this field for generating CMO sample labels)
     private String fastqPath;
+    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
+    // need this field for generating CMO sample labels)
     private String principalInvestigator;
+    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
+    // need this field for generating CMO sample labels)
     private String ancestorSample;
+    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
+    // need this field for generating CMO sample labels)
     private String sampleStatus;
     private String requestId;
+    @Convert(QcReportsStringConverter.class)
+    private List<QcReport> qcReports;
+    @Convert(LibrariesStringConverter.class)
+    private List<Library> libraries;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
+    @Convert(MapStringConverter.class)
+    private Map<String, Object> additionalProperties  = new HashMap<String, Object>();
 
     public SampleMetadata() {}
 
     /**
-     * SampleMetadata constructor
-     * @param primaryId
-     * @param cmoInfoIgoId
-     * @param cmoSampleName
-     * @param sampleName
-     * @param cmoSampleClass
-     * @param cmoPatientId
-     * @param investigatorSampleId
-     * @param oncoTreeCode
-     * @param tumorOrNormal
-     * @param tissueLocation
-     * @param specimenType
-     * @param sampleOrigin
-     * @param preservation
-     * @param collectionYear
-     * @param sex
-     * @param species
-     * @param tubeId
-     * @param cfDNA2dBarcode
-     * @param qcReports
-     * @param libraries
-     * @param mrn
-     * @param sampleType
-     * @param tumorType
-     * @param parentTumorType
-     * @param tissueSource
-     * @param recipe
-     * @param baitSet
-     * @param fastqPath
-     * @param principalInvestigator
-     * @param ancestorSample
-     * @param sampleStatus
-     * @param importDate
+     * SampleMetadata constrcutor from igoSampleManifest.
+     *
+     * <p>There are quite a few fields that we had taken from IGO LIMS SampleMetadata instead
+     * of SampleManifest. `get-sample-manifests` returns SampleManifest type which does
+     * not have all of the same data available but migrating towards using this datatype
+     * instead might be something worth considering.
+     *
+     * <p>Most notably however we definitely need recipe in the SampleManifest and sample type.
+     *
+     * <p>Other thing to consider is whether to change the types of `qcReports`, `libraries`,
+     * and `cmoSampleIdFields` to strings instead since that's how we are storing them
+     * in the database anyway.
+     * @param igoSampleManifest
+     * @throws JsonProcessingException
      */
-    public SampleMetadata(String primaryId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
-            String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
-            String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
-            String preservation, String collectionYear, String sex, String species, String tubeId,
-            String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
-            String mrn, String sampleType, String tumorType, String parentTumorType,
-            String tissueSource, String recipe, String baitSet, String fastqPath,
-            String principalInvestigator, String ancestorSample, String sampleStatus, String importDate) {
-        this.mrn = mrn;
-        this.cmoInfoIgoId = cmoInfoIgoId;
-        this.cmoSampleName = cmoSampleName;
-        this.sampleName = sampleName;
-        this.cmoSampleClass = cmoSampleClass;
-        this.cmoPatientId = cmoPatientId;
-        this.primaryId = primaryId;
-        this.investigatorSampleId = investigatorSampleId;
-        this.species = species;
-        this.sex = sex;
-        this.tumorOrNormal = tumorOrNormal;
-        this.sampleType = sampleType;
-        this.preservation = preservation;
-        this.tumorType = tumorType;
-        this.parentTumorType = parentTumorType;
-        this.specimenType = specimenType;
-        this.sampleOrigin = sampleOrigin;
-        this.tissueSource = tissueSource;
-        this.tissueLocation = tissueLocation;
-        this.recipe = recipe;
-        this.baitSet = baitSet;
-        this.principalInvestigator = principalInvestigator;
-        this.fastqPath = fastqPath;
-        this.ancestorSample = ancestorSample;
-        this.sampleStatus = sampleStatus;
-        this.importDate = importDate;
-        this.oncoTreeCode = oncoTreeCode;
-        this.collectionYear = collectionYear;
-        this.tubeId = tubeId;
-        this.cfDNA2dBarcode = cfDNA2dBarcode;
-        this.qcReports = qcReports;
-        this.libraries = libraries;
+    public SampleMetadata(IgoSampleManifest igoSampleManifest) throws JsonProcessingException {
+        this.primaryId = igoSampleManifest.getIgoId();
+        this.cmoPatientId = igoSampleManifest.getCmoPatientId();
+        this.cmoSampleName = igoSampleManifest.getCmoSampleName();
+        this.sampleName = igoSampleManifest.getSampleName();
+        this.cmoInfoIgoId = igoSampleManifest.getCmoInfoIgoId();
+        this.cmoSampleClass = igoSampleManifest.getCmoSampleClass();
+        this.oncoTreeCode = igoSampleManifest.getOncoTreeCode();
+        this.collectionYear = igoSampleManifest.getCollectionYear();
+        this.tubeId = igoSampleManifest.getTubeId();
+        this.cfDNA2dBarcode = igoSampleManifest.getCfDNA2dBarcode();
+        this.investigatorSampleId = igoSampleManifest.getInvestigatorSampleId();
+        this.species = igoSampleManifest.getSpecies();
+        this.sex = igoSampleManifest.getSex();
+        this.tumorOrNormal = igoSampleManifest.getTumorOrNormal();
+        //this.sampleType = igoSampleManifest.getSampleType();
+        this.preservation = igoSampleManifest.getPreservation();
+        this.tumorType = igoSampleManifest.getTumorOrNormal();
+        //this.parentTumorType = igoSampleManifest.getParentTumorType();
+        this.specimenType = igoSampleManifest.getSpecimenType();
+        this.sampleOrigin = igoSampleManifest.getSampleOrigin();
+        //this.tissueSource = igoSampleManifest.getTissueSource();
+        this.tissueLocation = igoSampleManifest.getTissueLocation();
+        //this.recipe = igoSampleManifest.getRecipe();
+        this.baitSet = igoSampleManifest.getBaitSet();
+        //this.fastqPath = igoSampleManifest.getFastqPath();
+        //this.principalInvestigator = igoSampleManifest.getPrincipalInvestigator();
+        //this.ancestorSample = igoSampleManifest.getAncestorSample();
+        //this.sampleStatus = igoSampleManifest.getSampleStatus();
+
+        // TODO: Leaving these lists here for now but might replace type of 'qcReports'
+        // and 'libraries' and 'cmoSampleIdFields' to String
+        this.qcReports = new ArrayList<>();
+        for (IgoQcReport r : igoSampleManifest.getQcReports()) {
+            qcReports.add(new QcReport(r));
+        }
+        this.libraries = new ArrayList<>();
+        for (IgoLibrary l : igoSampleManifest.getLibraries()) {
+            libraries.add(new Library(l));
+        }
+        this.cmoSampleIdFields = igoSampleManifest.getCmoSampleIdFields();
+    }
+
+    /**
+     * SampleMetadata constructor from dmpSampleMetadata.
+     * @param dmpSampleMetadata
+     */
+    public SampleMetadata(DmpSampleMetadata dmpSampleMetadata) {
+        this.primaryId = dmpSampleMetadata.getDmpSampleId();
+        // cmo patient id is resolved by crdb mapping table
+        // this.cmoPatientId = dmpSampleMetadata.getCmoPatientId();
+        this.sampleType = resolveSampleType(dmpSampleMetadata.getIsMetastasis());
+        this.recipe = dmpSampleMetadata.getGenePanel();
+        this.baitSet = dmpSampleMetadata.getGenePanel();
+        this.oncoTreeCode = dmpSampleMetadata.getTumorTypeCode();
+        // specimen type will be renamed to sample class
+        this.specimenType = dmpSampleMetadata.getDmpSampleId().matches("[ACCESS REGEX PATTERN]")
+                ? "cfDNA" : "Tumor";
+        this.sex = (dmpSampleMetadata.getGender().equals(0)) ? "Male" : "Female";
+        this.tissueLocation = dmpSampleMetadata.getPrimarySite();
+        this.tumorOrNormal = dmpSampleMetadata.getDmpSampleId().matches("[NORMAL ID SAMPLE PATTERN]")
+                ? "Normal" : "Tumor";
+        additionalProperties.put("msi-comment", dmpSampleMetadata.getMsiComment());
+        additionalProperties.put("msi-score", dmpSampleMetadata.getMsiScore());
+        additionalProperties.put("msi-type", dmpSampleMetadata.getMsiType());
+        additionalProperties.put("date_tumor_sequencing", dmpSampleMetadata.getDateTumorSequencing());
+        additionalProperties.put("metstasis_site", dmpSampleMetadata.getMetastasisSite());
+        additionalProperties.put("outside_institute", dmpSampleMetadata.getOutsideInstitute());
+        additionalProperties.put("sample_coverage", dmpSampleMetadata.getSampleCoverage());
+        additionalProperties.put("somatic_status", dmpSampleMetadata.getSomaticStatus());
+        additionalProperties.put("tumor_purity", dmpSampleMetadata.getTumorPurity());
+        additionalProperties.put("consent-parta", dmpSampleMetadata.getConsentParta());
+        additionalProperties.put("consent-partc", dmpSampleMetadata.getConsentPartc());
+        additionalProperties.put("tumor_type_name", dmpSampleMetadata.getTumorTypeName());
     }
 
     public Long getId() {
@@ -219,14 +259,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.cfDNA2dBarcode = cfDNA2dBarcode;
     }
 
-    /**
-     * Returns empty array list if field is null.
-     * @return
-     */
     public List<QcReport> getQcReports() {
-        if (qcReports == null) {
-            this.qcReports = new ArrayList<>();
-        }
         return qcReports;
     }
 
@@ -234,41 +267,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.qcReports = qcReports;
     }
 
-    /**
-     * Adds QcReport to list.
-     * @param qcReport
-     */
-    public void addQcReport(QcReport qcReport) {
-        if (getQcReports() == null) {
-            this.qcReports = new ArrayList<>();
-        }
-        qcReports.add(qcReport);
-    }
-
-    /**
-     * Returns empty array list if field is null.
-     * @return
-     */
     public List<Library> getLibraries() {
-        if (libraries == null) {
-            this.libraries = new ArrayList<>();
-        }
         return libraries;
     }
 
     public void setLibraries(List<Library> libraries) {
         this.libraries = libraries;
-    }
-
-    /**
-     * Adds Library to list.
-     * @param library
-     */
-    public void addLibrary(Library library) {
-        if (getLibraries() == null) {
-            this.libraries = new ArrayList<>();
-        }
-        libraries.add(library);
     }
 
     public String getMrn() {
@@ -461,6 +465,36 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
             return 0;
         }
         return getImportDate().compareTo(sampleMetadata.getImportDate());
+    }
+
+    /**
+     * Resolves the sample type given a dmp metastasis code.
+     * @param isMetastasis
+     * @return String
+     */
+    public String resolveSampleType(Integer isMetastasis) {
+        if (isMetastasis != null) {
+            switch (isMetastasis) {
+                case 0:
+                    return "Primary";
+                case 1:
+                    return "Metastasis";
+                case 2:
+                    return "Local Recurrence";
+                case 127:
+                    return "Unknown";
+                default:
+                    return "";
+            }
+        }
+        return "";
+    }
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
     }
 
     @Override

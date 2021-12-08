@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.cmo.metadb.model.igo.IgoRequest;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -28,6 +29,8 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 @JsonIgnoreProperties({"samples"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MetadbRequest implements Serializable {
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID metaDbRequestId;
@@ -38,12 +41,9 @@ public class MetadbRequest implements Serializable {
     @JsonIgnore
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     private List<RequestMetadata> requestMetadataList;
-    @JsonIgnore
-    private String namespace;
+    private String requestId;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
     private String projectId;
-    private String requestJson;
-    private String requestId;
     private String recipe;
     private String projectManagerName;
     private String piEmail;
@@ -61,58 +61,39 @@ public class MetadbRequest implements Serializable {
     private List<String> pooledNormals;
     private boolean isCmoRequest;
     private boolean bicAnalysis;
+    @JsonIgnore
+    private String namespace;
+    private String requestJson;
 
     public MetadbRequest() {}
 
     /**
-     * MetaDbRequest constructor
-     * @param requestId
-     * @param recipe
-     * @param projectManagerName
-     * @param piEmail
-     * @param labHeadName
-     * @param labHeadEmail
-     * @param investigatorName
-     * @param investigatorEmail
-     * @param dataAnalystName
-     * @param dataAnalystEmail
-     * @param otherContactEmails
-     * @param dataAccessEmails
-     * @param qcAccessEmails
-     * @param strand
-     * @param libraryType
-     * @param metaDbSampleList
-     * @param requestJson
-     * @param bicAnalysis
-     * @param isCmoRequest
+     * MetadbRequest constructor.
+     * @param igoRequest
+     * @throws JsonProcessingException
      */
-    public MetadbRequest(String requestId, String recipe, String projectManagerName,
-            String piEmail, String labHeadName, String labHeadEmail,
-            String investigatorName, String investigatorEmail, String dataAnalystName,
-            String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
-            String qcAccessEmails, String strand, String libraryType,
-            List<MetadbSample> metaDbSampleList, String requestJson,
-            boolean bicAnalysis, boolean isCmoRequest) {
-        this.requestId = requestId;
-        this.recipe = recipe;
-        this.projectManagerName = projectManagerName;
-        this.piEmail = piEmail;
-        this.labHeadName = labHeadName;
-        this.labHeadEmail = labHeadEmail;
-        this.investigatorName = investigatorName;
-        this.investigatorEmail = investigatorEmail;
-        this.dataAnalystName = dataAnalystName;
-        this.dataAnalystEmail = dataAnalystEmail;
-        this.otherContactEmails = otherContactEmails;
-        this.dataAccessEmails = dataAccessEmails;
-        this.qcAccessEmails = qcAccessEmails;
-        this.strand = strand;
-        this.libraryType = libraryType;
-        this.metaDbSampleList = metaDbSampleList;
-        this.metaDbProject = new MetadbProject(requestId.split("_")[0]);
-        this.requestJson = requestJson;
-        this.bicAnalysis = bicAnalysis;
-        this.isCmoRequest = isCmoRequest;
+    public MetadbRequest(IgoRequest igoRequest) throws JsonProcessingException {
+        this.requestId = igoRequest.getRequestId();
+        this.projectId = igoRequest.getProjectId();
+        this.dataAccessEmails = igoRequest.getDataAccessEmails();
+        this.dataAnalystEmail = igoRequest.getDataAnalystEmail();
+        this.dataAnalystName = igoRequest.getDataAnalystName();
+        this.investigatorEmail = igoRequest.getInvestigatorEmail();
+        this.investigatorName = igoRequest.getInvestigatorName();
+        this.labHeadEmail = igoRequest.getLabHeadEmail();
+        this.labHeadName = igoRequest.getLabHeadName();
+        this.libraryType = igoRequest.getLibraryType();
+        this.otherContactEmails = igoRequest.getOtherContactEmails();
+        this.piEmail = igoRequest.getPiEmail();
+        this.projectManagerName = igoRequest.getProjectManagerName();
+        this.qcAccessEmails = igoRequest.getQcAccessEmails();
+        this.recipe = igoRequest.getRecipe();
+        this.strand = igoRequest.getStrand();
+        this.pooledNormals = igoRequest.getPooledNormals();
+        this.bicAnalysis = igoRequest.getBicAnalysis();
+        this.isCmoRequest = igoRequest.getIsCmoRequest();
+        this.namespace = "igo";
+        this.requestJson = mapper.writeValueAsString(igoRequest);
     }
 
     public UUID getMetaDbRequestId() {
@@ -380,7 +361,6 @@ public class MetadbRequest implements Serializable {
      */
     public void updateRequestMetadataByMetadata(RequestMetadata requestMetadata)
             throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> metadataMap =
                 mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
 

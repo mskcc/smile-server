@@ -1,22 +1,15 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.igo;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.mskcc.cmo.metadb.model.igo.IgoRun;
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
 
 /**
  *
  * @author ochoaa
  */
-
-public class Run implements Serializable {
-    @Id @GeneratedValue
-    private Long id;
+public class IgoRun {
     private String runMode;
     private String runId;
     private String flowCellId;
@@ -25,63 +18,7 @@ public class Run implements Serializable {
     private List<Integer> flowCellLanes;
     private List<String> fastqs;
 
-    public Run() {}
-
-    /**
-     * Run constructor.
-     * TODO: Decide whether to keep or just
-     * make the List of 'Run'  a string for
-     * SampleMetadata.libraries.runs since we are
-     * storing in the graph db as a string anyway.
-     * Replacing 'Run' with string will allow us to remove
-     * the RunStringConverter
-     * @param igoRun
-     */
-    public Run(IgoRun igoRun) {
-        this.runMode = igoRun.getRunMode();
-        this.runId = igoRun.getRunId();
-        this.flowCellId = igoRun.getFlowCellId();
-        this.readLength = igoRun.getReadLength();
-        this.runDate = igoRun.getRunDate();
-        this.flowCellLanes = igoRun.getFlowCellLanes();
-        this.fastqs = igoRun.getFastqs();
-    }
-
-    /**
-     * Run constructor.
-     * @param runId
-     * @param flowCellId
-     * @param runDate
-     */
-    public Run(String runId, String flowCellId, String runDate) {
-        this.runId = runId;
-        this.flowCellId = flowCellId;
-        this.runDate = runDate;
-    }
-
-    /**
-     * Run constructor.
-     * @param runMode
-     * @param runId
-     * @param flowCellId
-     * @param readLength
-     * @param runDate
-     */
-    public Run(String runMode, String runId, String flowCellId, String readLength, String runDate) {
-        this.runMode = runMode;
-        this.runId = runId;
-        this.flowCellId = flowCellId;
-        this.readLength = readLength;
-        this.runDate = runDate;
-    }
-
-    /**
-     * Run constructor.
-     * @param fastqs
-     */
-    public Run(List<String> fastqs) {
-        this.fastqs = fastqs;
-    }
+    public IgoRun() {}
 
     public String getRunMode() {
         return runMode;
@@ -124,8 +61,8 @@ public class Run implements Serializable {
     }
 
     /**
-     * Returns empty array list if field is null.
-     * @return
+     * Returns flow cell lanes or empty array list if null.
+     * @return List
      */
     public List<Integer> getFlowCellLanes() {
         if (flowCellLanes ==  null) {
@@ -142,7 +79,7 @@ public class Run implements Serializable {
      * Adds lane to flow cell lanes and sorts.
      * @param lane
      */
-    public void addLane(Integer lane) {
+    public void addFlowCellLane(Integer lane) {
         if (flowCellLanes == null) {
             this.flowCellLanes = new ArrayList<>();
         }

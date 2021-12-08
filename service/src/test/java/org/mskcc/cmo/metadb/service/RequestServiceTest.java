@@ -62,6 +62,7 @@ public class RequestServiceTest {
      * @param patientRepository
      * @param requestService
      * @param sampleService
+     * @param patientService
      */
     @Autowired
     public RequestServiceTest(MetadbRequestRepository requestRepository,

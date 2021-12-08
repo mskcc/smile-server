@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.RunStringConverter;
+import org.mskcc.cmo.metadb.model.igo.IgoLibrary;
+import org.mskcc.cmo.metadb.model.igo.IgoRun;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
@@ -30,7 +32,33 @@ public class Library implements Serializable {
     @Convert(RunStringConverter.class)
     private List<Run> runs;
 
-    public Library(){}
+    public Library() {}
+
+    /**
+     * Library constructor.
+     * TODO: Decide whether to keep or just
+     * make the List of 'Library' a string for
+     * SampleMetadata.libraries since we are
+     * storing in the graph db as a string anyway.
+     * Replacing 'Library' with string will allow us to remove
+     * the LibrariesStringConverter
+     * @param igoLibrary
+     */
+    public Library(IgoLibrary igoLibrary) {
+        this.barcodeId = igoLibrary.getBarcodeId();
+        this.barcodeIndex = igoLibrary.getBarcodeIndex();
+        this.libraryIgoId = igoLibrary.getLibraryIgoId();
+        this.libraryVolume = igoLibrary.getLibraryVolume();
+        this.libraryConcentrationNgul = igoLibrary.getLibraryConcentrationNgul();
+        this.dnaInputNg = igoLibrary.getDnaInputNg();
+        this.captureConcentrationNm = igoLibrary.getCaptureConcentrationNm();
+        this.captureInputNg = igoLibrary.getCaptureInputNg();
+        this.captureName = igoLibrary.getCaptureName();
+        this.runs = new ArrayList<>();
+        for (IgoRun r : igoLibrary.getRuns()) {
+            runs.add(new Run(r));
+        }
+    }
 
     /**
      * Library constructor.
