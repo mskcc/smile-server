@@ -1,9 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +23,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private String cmoInfoIgoId;
     private String cmoSampleName;
     private String sampleName;
-    private String cmoSampleClass;
-    private String oncoTreeCode;
+    private String oncotreeCode;
     private String collectionYear;
     private String tubeId;
     private String cfDNA2dBarcode;
@@ -36,7 +33,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private List<Library> libraries;
     private String mrn;
     private String cmoPatientId;
-    @JsonAlias("igoId")
     private String primaryId;
     private String investigatorSampleId;
     private String species;
@@ -46,17 +42,17 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private String preservation;
     private String tumorType;
     private String parentTumorType;
-    private String specimenType;
+    private String sampleClass;
     private String sampleOrigin;
     private String tissueSource;
     private String tissueLocation;
-    private String recipe;
+    private String genePanel;
     private String baitSet;
     private String fastqPath;
     private String principalInvestigator;
     private String ancestorSample;
     private String sampleStatus;
-    private String requestId;
+    private String igoRequestId;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
 
@@ -68,13 +64,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
      * @param cmoInfoIgoId
      * @param cmoSampleName
      * @param sampleName
-     * @param cmoSampleClass
      * @param cmoPatientId
      * @param investigatorSampleId
-     * @param oncoTreeCode
+     * @param oncotreeCode
      * @param tumorOrNormal
      * @param tissueLocation
-     * @param specimenType
+     * @param sampleClass
      * @param sampleOrigin
      * @param preservation
      * @param collectionYear
@@ -89,7 +84,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
      * @param tumorType
      * @param parentTumorType
      * @param tissueSource
-     * @param recipe
+     * @param genePanel
      * @param baitSet
      * @param fastqPath
      * @param principalInvestigator
@@ -98,18 +93,17 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
      * @param importDate
      */
     public SampleMetadata(String primaryId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
-            String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
-            String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
+            String cmoPatientId, String investigatorSampleId, String oncotreeCode,
+            String tumorOrNormal, String tissueLocation, String sampleClass, String sampleOrigin,
             String preservation, String collectionYear, String sex, String species, String tubeId,
             String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
             String mrn, String sampleType, String tumorType, String parentTumorType,
-            String tissueSource, String recipe, String baitSet, String fastqPath,
+            String tissueSource, String genePanel, String baitSet, String fastqPath,
             String principalInvestigator, String ancestorSample, String sampleStatus, String importDate) {
         this.mrn = mrn;
         this.cmoInfoIgoId = cmoInfoIgoId;
         this.cmoSampleName = cmoSampleName;
         this.sampleName = sampleName;
-        this.cmoSampleClass = cmoSampleClass;
         this.cmoPatientId = cmoPatientId;
         this.primaryId = primaryId;
         this.investigatorSampleId = investigatorSampleId;
@@ -120,18 +114,18 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.preservation = preservation;
         this.tumorType = tumorType;
         this.parentTumorType = parentTumorType;
-        this.specimenType = specimenType;
+        this.sampleClass = sampleClass;
         this.sampleOrigin = sampleOrigin;
         this.tissueSource = tissueSource;
         this.tissueLocation = tissueLocation;
-        this.recipe = recipe;
+        this.genePanel = genePanel;
         this.baitSet = baitSet;
         this.principalInvestigator = principalInvestigator;
         this.fastqPath = fastqPath;
         this.ancestorSample = ancestorSample;
         this.sampleStatus = sampleStatus;
         this.importDate = importDate;
-        this.oncoTreeCode = oncoTreeCode;
+        this.oncotreeCode = oncotreeCode;
         this.collectionYear = collectionYear;
         this.tubeId = tubeId;
         this.cfDNA2dBarcode = cfDNA2dBarcode;
@@ -179,20 +173,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.sampleName = sampleName;
     }
 
-    public String getCmoSampleClass() {
-        return cmoSampleClass;
+    public String getOncotreeCode() {
+        return oncotreeCode;
     }
 
-    public void setCmoSampleClass(String cmoSampleClass) {
-        this.cmoSampleClass = cmoSampleClass;
-    }
-
-    public String getOncoTreeCode() {
-        return oncoTreeCode;
-    }
-
-    public void setOncoTreeCode(String oncoTreeCode) {
-        this.oncoTreeCode = oncoTreeCode;
+    public void setOncotreeCode(String oncotreeCode) {
+        this.oncotreeCode = oncotreeCode;
     }
 
     public String getCollectionYear() {
@@ -359,12 +345,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.parentTumorType = parentTumorType;
     }
 
-    public String getSpecimenType() {
-        return specimenType;
+    public String getSampleClass() {
+        return sampleClass;
     }
 
-    public void setSpecimenType(String specimenType) {
-        this.specimenType = specimenType;
+    public void setSampleClass(String sampleClass) {
+        this.sampleClass = sampleClass;
     }
 
     public String getSampleOrigin() {
@@ -391,12 +377,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.tissueLocation = tissueLocation;
     }
 
-    public String getRecipe() {
-        return recipe;
+    public String getGenePanel() {
+        return genePanel;
     }
 
-    public void setRecipe(String recipe) {
-        this.recipe = recipe;
+    public void setGenePanel(String genePanel) {
+        this.genePanel = genePanel;
     }
 
     public String getBaitSet() {
@@ -439,12 +425,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.sampleStatus = sampleStatus;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public String getIgoRequestId() {
+        return igoRequestId;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setIgoRequestId(String igoRequestId) {
+        this.igoRequestId = igoRequestId;
     }
 
     public Map<String, String> getCmoSampleIdFields() {

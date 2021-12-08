@@ -19,6 +19,8 @@ import org.mskcc.cmo.metadb.model.SampleMetadata;
  */
 public class RequestDataFactory {
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final DataTransformer dataTransformer = new DataTransformer();
+
 
     /**
      * Method factory returns an instance of MetadbRequest built from
@@ -29,7 +31,8 @@ public class RequestDataFactory {
      */
     public static MetadbRequest buildNewLimsRequestFromJson(String requestJson)
             throws JsonProcessingException {
-        MetadbRequest request = mapper.readValue(requestJson,
+        String tranformedRequestJson = dataTransformer.transformRequestMetadata(requestJson);
+        MetadbRequest request = mapper.readValue(tranformedRequestJson,
                 MetadbRequest.class);
         request.setRequestJson(requestJson);
         request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
@@ -65,17 +68,21 @@ public class RequestDataFactory {
         return extractRequestMetadataFromJson(requestMetadataJson);
     }
 
-    private static List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
+    private static List<MetadbSample> extractMetadbSamplesFromIgoResponse(String samplesListJson)
             throws JsonProcessingException {
-        Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        SampleMetadata[] samples = mapper.convertValue(map.get("samples"),
-                SampleMetadata[].class);
+        Map<String, Object> map = mapper.readValue(samplesListJson, Map.class);
+        Object[] samples = mapper.convertValue(map.get("samples"),
+                Object[].class);
         String requestId = (String) map.get("requestId");
 
         List<MetadbSample> requestSamplesList = new ArrayList<>();
-        for (SampleMetadata s: samples) {
-            MetadbSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(requestId, s);
-            requestSamplesList.add(sample);
+        for (Object s: samples) {
+            String transformedSampleJson = dataTransformer
+                    .transformResearchSampleMetadata(mapper.writeValueAsString(s));
+            SampleMetadata sampleMetadata = mapper.readValue(transformedSampleJson, SampleMetadata.class);
+            MetadbSample metadbSample = SampleDataFactory
+                    .buildNewResearchSampleFromMetadata(requestId, sampleMetadata);
+            requestSamplesList.add(metadbSample);
         }
         return requestSamplesList;
     }

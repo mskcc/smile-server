@@ -20,7 +20,7 @@ public class SampleDataFactory {
      * @return MetadbSample
      */
     public static MetadbSample buildNewResearchSampleFromMetadata(SampleMetadata sampleMetadata) {
-        return buildNewResearchSampleFromMetadata(sampleMetadata.getRequestId(), sampleMetadata);
+        return buildNewResearchSampleFromMetadata(sampleMetadata.getIgoRequestId(), sampleMetadata);
     }
 
     /**
@@ -31,7 +31,7 @@ public class SampleDataFactory {
      */
     public static MetadbSample buildNewResearchSampleFromMetadata(String requestId,
             SampleMetadata sampleMetadata) {
-        sampleMetadata.setRequestId(requestId);
+        sampleMetadata.setIgoRequestId(requestId);
         sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         MetadbSample sample = new MetadbSample();

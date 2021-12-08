@@ -59,11 +59,11 @@ public class RequestServiceImpl implements MetadbRequestService {
     @Transactional(rollbackFor = {Exception.class})
     public Boolean saveRequest(MetadbRequest request) throws Exception {
         MetadbProject project = new MetadbProject();
-        project.setProjectId(request.getProjectId());
+        project.setIgoProjectId(request.getIgoProjectId());
         project.setNamespace(request.getNamespace());
         request.setMetaDbProject(project);
 
-        MetadbRequest savedRequest = requestRepository.findRequestById(request.getRequestId());
+        MetadbRequest savedRequest = requestRepository.findRequestById(request.getIgoRequestId());
         if (savedRequest == null) {
             if (request.getMetaDbSampleList() != null) {
                 List<MetadbSample> updatedSamples = new ArrayList<>();
@@ -89,14 +89,14 @@ public class RequestServiceImpl implements MetadbRequestService {
         // is compare the size of the current request metadata history and
         // compare the size after the update?
         List<RequestMetadata> currentMetadataList = requestRepository
-                .findRequestMetadataHistoryById(request.getRequestId());
+                .findRequestMetadataHistoryById(request.getIgoRequestId());
         requestRepository.save(request);
         List<RequestMetadata> updatedMetadataList = requestRepository
-                .findRequestMetadataHistoryById(request.getRequestId());
+                .findRequestMetadataHistoryById(request.getIgoRequestId());
         if (updatedMetadataList.size() != (currentMetadataList.size() + 1)) {
             StringBuilder builder = new StringBuilder();
             builder.append("Failed to update the Request-level metadata for request id: ")
-                    .append(request.getRequestId())
+                    .append(request.getIgoRequestId())
                     .append("\n\tTotal versions of request metadata -->\n\t\t - before save: ")
                     .append(currentMetadataList.size())
                     .append("\n\t\t - after save: ")
@@ -118,16 +118,16 @@ public class RequestServiceImpl implements MetadbRequestService {
         // the same request was seen. If it does not then save request to logger file
         Date newTimestamp = new Date();
         Boolean logRequest = Boolean.FALSE;
-        if (!loggedExistingRequests.containsKey(request.getRequestId())) {
-            loggedExistingRequests.put(request.getRequestId(), newTimestamp);
+        if (!loggedExistingRequests.containsKey(request.getIgoRequestId())) {
+            loggedExistingRequests.put(request.getIgoRequestId(), newTimestamp);
             logRequest = Boolean.TRUE;
         } else {
             // check if new timestamp occurs within 24 hours of the reference timestamp
             // if check does not pass then log the request to the logger file
-            Date referenceTimestamp = loggedExistingRequests.get(request.getRequestId());
+            Date referenceTimestamp = loggedExistingRequests.get(request.getIgoRequestId());
             if (!timestampWithin24Hours(referenceTimestamp, newTimestamp)) {
                 logRequest = Boolean.TRUE;
-                loggedExistingRequests.put(request.getRequestId(), newTimestamp);
+                loggedExistingRequests.put(request.getIgoRequestId(), newTimestamp);
             }
         }
 
@@ -211,7 +211,7 @@ public class RequestServiceImpl implements MetadbRequestService {
         List<MetadbSample> updatedSamples = new ArrayList<>();
         for (MetadbSample sample: request.getMetaDbSampleList()) {
             MetadbSample existingSample = sampleService.getMetadbSampleByRequestAndIgoId(
-                    request.getRequestId(), sample.getLatestSampleMetadata().getPrimaryId());
+                    request.getIgoRequestId(), sample.getLatestSampleMetadata().getPrimaryId());
             // skip samples that do not already exist since they do not have a sample metadata
             // history to publish to the CMO_SAMPLE_METADATA_UPDATE topic
             if (existingSample == null) {
