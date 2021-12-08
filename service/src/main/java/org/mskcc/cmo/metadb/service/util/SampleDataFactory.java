@@ -25,7 +25,7 @@ public class SampleDataFactory {
      */
     public static MetadbSample buildNewResearchSampleFromManifest(String requestId,
             SampleMetadata sampleMetadata) throws JsonProcessingException {
-        sampleMetadata.setRequestId(requestId);
+        sampleMetadata.setIgoRequestId(requestId);
         if (sampleMetadata.getImportDate() == null) {
             sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         }
@@ -55,7 +55,7 @@ public class SampleDataFactory {
     public static MetadbSample buildNewResearchSampleFromManifest(String requestId,
             IgoSampleManifest igoSampleManifest) throws JsonProcessingException {
         SampleMetadata sampleMetadata = new SampleMetadata(igoSampleManifest);
-        sampleMetadata.setRequestId(requestId);
+        sampleMetadata.setIgoRequestId(requestId);
         if (sampleMetadata.getImportDate() == null) {
             sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         }

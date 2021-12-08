@@ -3,9 +3,7 @@ package org.mskcc.cmo.metadb.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,17 +12,15 @@ import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
 import org.mskcc.cmo.metadb.model.converter.MapStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
 import org.mskcc.cmo.metadb.model.dmp.DmpSampleMetadata;
-import org.mskcc.cmo.metadb.model.igo.IgoLibrary;
-import org.mskcc.cmo.metadb.model.igo.IgoQcReport;
 import org.mskcc.cmo.metadb.model.igo.IgoSampleManifest;
+import org.mskcc.cmo.metadb.model.igo.Library;
+import org.mskcc.cmo.metadb.model.igo.QcReport;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SampleMetadata implements Serializable, Comparable<SampleMetadata> {
-    private final ObjectMapper mapper = new ObjectMapper();
-
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
@@ -34,48 +30,28 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private String sampleName;
     private String importDate;
     private String cmoInfoIgoId;
-    private String cmoSampleClass;
-    private String oncoTreeCode;
+    private String sampleType;
+    private String oncotreeCode;
     private String collectionYear;
     private String tubeId;
     private String cfDNA2dBarcode;
-    // TODO: REMOVE (not using but part of IGO LIMS sample metadata, not manifest)
-    private String mrn;
     private String investigatorSampleId;
     private String species;
     private String sex;
     private String tumorOrNormal;
-    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
-    // need this field for generating CMO sample labels)
-    private String sampleType;
     private String preservation;
     private String tumorType;
-    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
-    // need this field for generating CMO sample labels)
-    private String parentTumorType;
-    private String specimenType;
+    private String sampleClass;
     private String sampleOrigin;
-    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
-    // need this field for generating CMO sample labels)
-    private String tissueSource;
     private String tissueLocation;
-    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
-    // need this field for generating CMO sample labels)
-    private String recipe;
+    // incl in igo sample metadata, not igo sample manifest
+    // recipe --> genePanel for universal schema
+    private String genePanel;
     private String baitSet;
-    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
-    // need this field for generating CMO sample labels)
     private String fastqPath;
-    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
-    // need this field for generating CMO sample labels)
+    // incl in igo sample metadata but not igo sample manifest
     private String principalInvestigator;
-    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
-    // need this field for generating CMO sample labels)
-    private String ancestorSample;
-    // TODO: RESOLVE (only part of IGO LIMS sample metadata, not manifest but we
-    // need this field for generating CMO sample labels)
-    private String sampleStatus;
-    private String requestId;
+    private String igoRequestId;
     @Convert(QcReportsStringConverter.class)
     private List<QcReport> qcReports;
     @Convert(LibrariesStringConverter.class)
@@ -88,7 +64,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     public SampleMetadata() {}
 
     /**
-     * SampleMetadata constrcutor from igoSampleManifest.
+     * SampleMetadata constructor from igoSampleManifest.
      *
      * <p>There are quite a few fields that we had taken from IGO LIMS SampleMetadata instead
      * of SampleManifest. `get-sample-manifests` returns SampleManifest type which does
@@ -109,8 +85,8 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.cmoSampleName = igoSampleManifest.getCmoSampleName();
         this.sampleName = igoSampleManifest.getSampleName();
         this.cmoInfoIgoId = igoSampleManifest.getCmoInfoIgoId();
-        this.cmoSampleClass = igoSampleManifest.getCmoSampleClass();
-        this.oncoTreeCode = igoSampleManifest.getOncoTreeCode();
+        this.sampleType = igoSampleManifest.getCmoSampleClass();
+        this.oncotreeCode = igoSampleManifest.getOncoTreeCode();
         this.collectionYear = igoSampleManifest.getCollectionYear();
         this.tubeId = igoSampleManifest.getTubeId();
         this.cfDNA2dBarcode = igoSampleManifest.getCfDNA2dBarcode();
@@ -118,31 +94,21 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.species = igoSampleManifest.getSpecies();
         this.sex = igoSampleManifest.getSex();
         this.tumorOrNormal = igoSampleManifest.getTumorOrNormal();
-        //this.sampleType = igoSampleManifest.getSampleType();
         this.preservation = igoSampleManifest.getPreservation();
         this.tumorType = igoSampleManifest.getTumorOrNormal();
-        //this.parentTumorType = igoSampleManifest.getParentTumorType();
-        this.specimenType = igoSampleManifest.getSpecimenType();
+        this.sampleClass = igoSampleManifest.getSpecimenType();
         this.sampleOrigin = igoSampleManifest.getSampleOrigin();
-        //this.tissueSource = igoSampleManifest.getTissueSource();
         this.tissueLocation = igoSampleManifest.getTissueLocation();
-        //this.recipe = igoSampleManifest.getRecipe();
+        // TODO need to add recipe to igo sample manifest as well
+        // since baitSet != recipe (sometimes)
+        //this.genePanel = igoSampleManifest.getRecipe();
         this.baitSet = igoSampleManifest.getBaitSet();
+        // TODO need to add fastq path to igo sample manifest as well
+        // it is only incl as part of igo sample metadata
         //this.fastqPath = igoSampleManifest.getFastqPath();
-        //this.principalInvestigator = igoSampleManifest.getPrincipalInvestigator();
-        //this.ancestorSample = igoSampleManifest.getAncestorSample();
-        //this.sampleStatus = igoSampleManifest.getSampleStatus();
 
-        // TODO: Leaving these lists here for now but might replace type of 'qcReports'
-        // and 'libraries' and 'cmoSampleIdFields' to String
-        this.qcReports = new ArrayList<>();
-        for (IgoQcReport r : igoSampleManifest.getQcReports()) {
-            qcReports.add(new QcReport(r));
-        }
-        this.libraries = new ArrayList<>();
-        for (IgoLibrary l : igoSampleManifest.getLibraries()) {
-            libraries.add(new Library(l));
-        }
+        this.qcReports =  igoSampleManifest.getQcReports();
+        this.libraries = igoSampleManifest.getLibraries();
         this.cmoSampleIdFields = igoSampleManifest.getCmoSampleIdFields();
     }
 
@@ -155,11 +121,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         // cmo patient id is resolved by crdb mapping table
         // this.cmoPatientId = dmpSampleMetadata.getCmoPatientId();
         this.sampleType = resolveSampleType(dmpSampleMetadata.getIsMetastasis());
-        this.recipe = dmpSampleMetadata.getGenePanel();
+        this.genePanel = dmpSampleMetadata.getGenePanel();
         this.baitSet = dmpSampleMetadata.getGenePanel();
-        this.oncoTreeCode = dmpSampleMetadata.getTumorTypeCode();
+        this.oncotreeCode = dmpSampleMetadata.getTumorTypeCode();
         // specimen type will be renamed to sample class
-        this.specimenType = dmpSampleMetadata.getDmpSampleId().matches("[ACCESS REGEX PATTERN]")
+        //P-\d+-(T|N)\d+-(IH|TB|TS|AH|AS|IM|XS)\d+
+        this.sampleClass = dmpSampleMetadata.getDmpSampleId().matches("[ACCESS REGEX PATTERN]")
                 ? "cfDNA" : "Tumor";
         this.sex = (dmpSampleMetadata.getGender().equals(0)) ? "Male" : "Female";
         this.tissueLocation = dmpSampleMetadata.getPrimarySite();
@@ -169,7 +136,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         additionalProperties.put("msi-score", dmpSampleMetadata.getMsiScore());
         additionalProperties.put("msi-type", dmpSampleMetadata.getMsiType());
         additionalProperties.put("date_tumor_sequencing", dmpSampleMetadata.getDateTumorSequencing());
-        additionalProperties.put("metstasis_site", dmpSampleMetadata.getMetastasisSite());
+        additionalProperties.put("metastasis_site", dmpSampleMetadata.getMetastasisSite());
         additionalProperties.put("outside_institute", dmpSampleMetadata.getOutsideInstitute());
         additionalProperties.put("sample_coverage", dmpSampleMetadata.getSampleCoverage());
         additionalProperties.put("somatic_status", dmpSampleMetadata.getSomaticStatus());
@@ -219,20 +186,20 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.sampleName = sampleName;
     }
 
-    public String getCmoSampleClass() {
-        return cmoSampleClass;
+    public String getSampleType() {
+        return sampleType;
     }
 
-    public void setCmoSampleClass(String cmoSampleClass) {
-        this.cmoSampleClass = cmoSampleClass;
+    public void setSampleType(String sampleType) {
+        this.sampleType = sampleType;
     }
 
-    public String getOncoTreeCode() {
-        return oncoTreeCode;
+    public String getOncotreeCode() {
+        return oncotreeCode;
     }
 
-    public void setOncoTreeCode(String oncoTreeCode) {
-        this.oncoTreeCode = oncoTreeCode;
+    public void setOncotreeCode(String oncoTreeCode) {
+        this.oncotreeCode = oncoTreeCode;
     }
 
     public String getCollectionYear() {
@@ -273,14 +240,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     public void setLibraries(List<Library> libraries) {
         this.libraries = libraries;
-    }
-
-    public String getMrn() {
-        return mrn;
-    }
-
-    public void setMrn(String mrn) {
-        this.mrn = mrn;
     }
 
     public String getCmoPatientId() {
@@ -331,14 +290,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.tumorOrNormal = tumorOrNormal;
     }
 
-    public String getSampleType() {
-        return sampleType;
-    }
-
-    public void setSampleType(String sampleType) {
-        this.sampleType = sampleType;
-    }
-
     public String getPreservation() {
         return preservation;
     }
@@ -355,20 +306,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.tumorType = tumorType;
     }
 
-    public String getParentTumorType() {
-        return parentTumorType;
+    public String getSampleClass() {
+        return sampleClass;
     }
 
-    public void setParentTumorType(String parentTumorType) {
-        this.parentTumorType = parentTumorType;
-    }
-
-    public String getSpecimenType() {
-        return specimenType;
-    }
-
-    public void setSpecimenType(String specimenType) {
-        this.specimenType = specimenType;
+    public void setSampleClass(String sampleClass) {
+        this.sampleClass = sampleClass;
     }
 
     public String getSampleOrigin() {
@@ -379,14 +322,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.sampleOrigin = sampleOrigin;
     }
 
-    public String getTissueSource() {
-        return tissueSource;
-    }
-
-    public void setTissueSource(String tissueSource) {
-        this.tissueSource = tissueSource;
-    }
-
     public String getTissueLocation() {
         return tissueLocation;
     }
@@ -395,12 +330,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.tissueLocation = tissueLocation;
     }
 
-    public String getRecipe() {
-        return recipe;
+    public String getGenePanel() {
+        return genePanel;
     }
 
-    public void setRecipe(String recipe) {
-        this.recipe = recipe;
+    public void setGenePanel(String genePanel) {
+        this.genePanel = genePanel;
     }
 
     public String getBaitSet() {
@@ -427,28 +362,12 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.principalInvestigator = principalInvestigator;
     }
 
-    public String getAncestorSample() {
-        return ancestorSample;
+    public String getIgoRequestId() {
+        return igoRequestId;
     }
 
-    public void setAncestorSample(String ancestorSample) {
-        this.ancestorSample = ancestorSample;
-    }
-
-    public String getSampleStatus() {
-        return sampleStatus;
-    }
-
-    public void setSampleStatus(String sampleStatus) {
-        this.sampleStatus = sampleStatus;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setIgoRequestId(String igoRequestId) {
+        this.igoRequestId = igoRequestId;
     }
 
     public Map<String, String> getCmoSampleIdFields() {

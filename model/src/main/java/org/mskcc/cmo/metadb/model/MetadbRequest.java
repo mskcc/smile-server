@@ -41,9 +41,9 @@ public class MetadbRequest implements Serializable {
     @JsonIgnore
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     private List<RequestMetadata> requestMetadataList;
-    private String requestId;
+    private String igoRequestId;
     // need this field to deserialize message from IGO_NEW_REQUEST properly
-    private String projectId;
+    private String igoProjectId;
     private String recipe;
     private String projectManagerName;
     private String piEmail;
@@ -73,8 +73,8 @@ public class MetadbRequest implements Serializable {
      * @throws JsonProcessingException
      */
     public MetadbRequest(IgoRequest igoRequest) throws JsonProcessingException {
-        this.requestId = igoRequest.getRequestId();
-        this.projectId = igoRequest.getProjectId();
+        this.igoRequestId = igoRequest.getRequestId();
+        this.igoProjectId = igoRequest.getProjectId();
         this.dataAccessEmails = igoRequest.getDataAccessEmails();
         this.dataAnalystEmail = igoRequest.getDataAnalystEmail();
         this.dataAnalystName = igoRequest.getDataAnalystName();
@@ -157,12 +157,12 @@ public class MetadbRequest implements Serializable {
         this.namespace = namespace;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public String getIgoProjectId() {
+        return igoProjectId;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setIgoProjectId(String igoProjectId) {
+        this.igoProjectId = igoProjectId;
     }
 
     public String getRequestJson() {
@@ -185,12 +185,12 @@ public class MetadbRequest implements Serializable {
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public String getRequestId() {
-        return requestId;
+    public String getIgoRequestId() {
+        return igoRequestId;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setIgoRequestId(String igoRequestId) {
+        this.igoRequestId = igoRequestId;
     }
 
     public String getRecipe() {
@@ -334,7 +334,7 @@ public class MetadbRequest implements Serializable {
      * @param updatedRequest
      */
     public void updateRequestMetadataByRequest(MetadbRequest updatedRequest) {
-        this.requestId = updatedRequest.getRequestId();
+        this.igoRequestId = updatedRequest.getIgoRequestId();
         this.recipe = updatedRequest.getRecipe();
         this.projectManagerName = updatedRequest.getProjectManagerName();
         this.piEmail = updatedRequest.getPiEmail();
@@ -364,7 +364,7 @@ public class MetadbRequest implements Serializable {
         Map<String, Object> metadataMap =
                 mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
 
-        this.requestId = String.valueOf(metadataMap.get("requestId"));
+        this.igoRequestId = String.valueOf(metadataMap.get("requestId"));
         this.recipe = String.valueOf(metadataMap.get("recipe"));
         this.projectManagerName = String.valueOf(metadataMap.get("projectManagerName"));
         this.piEmail = String.valueOf(metadataMap.get("piEmail"));
@@ -380,7 +380,7 @@ public class MetadbRequest implements Serializable {
         this.libraryType = String.valueOf(metadataMap.get("libraryType"));
         this.bicAnalysis = Boolean.parseBoolean(String.valueOf(metadataMap.get("bicAnalysis")));
         this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
-        this.metaDbProject = new MetadbProject(requestId.split("_")[0]);
+        this.metaDbProject = new MetadbProject(igoRequestId.split("_")[0]);
         addRequestMetadata(requestMetadata);
     }
 

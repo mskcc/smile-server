@@ -32,7 +32,8 @@ public class RequestDataFactory {
             throws JsonProcessingException {
         IgoRequest igoRequest = mapper.readValue(requestJson, IgoRequest.class);
         MetadbRequest request = new MetadbRequest(igoRequest);
-        request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(request.getRequestId(), requestJson));
+        request.setMetaDbSampleList(
+                extractMetadbSamplesFromIgoResponse(request.getIgoRequestId(), requestJson));
         // creates and inits request metadata
         request.addRequestMetadata(extractRequestMetadataFromJson(requestJson));
         return request;

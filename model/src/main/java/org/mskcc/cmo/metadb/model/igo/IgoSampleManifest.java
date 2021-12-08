@@ -28,8 +28,8 @@ public class IgoSampleManifest {
     private String tissueLocation;
     private String tubeId;
     private String tumorOrNormal;
-    private List<IgoQcReport> qcReports;
-    private List<IgoLibrary> libraries;
+    private List<QcReport> qcReports;
+    private List<Library> libraries;
     private Map<String, String> cmoSampleIdFields;
 
     public IgoSampleManifest() {}
@@ -186,19 +186,19 @@ public class IgoSampleManifest {
         this.tumorOrNormal = tumorOrNormal;
     }
 
-    public List<IgoQcReport> getQcReports() {
+    public List<QcReport> getQcReports() {
         return qcReports;
     }
 
-    public void setQcReports(List<IgoQcReport> qcReports) {
+    public void setQcReports(List<QcReport> qcReports) {
         this.qcReports = qcReports;
     }
 
-    public List<IgoLibrary> getLibraries() {
+    public List<Library> getLibraries() {
         return libraries;
     }
 
-    public void setLibraries(List<IgoLibrary> libraries) {
+    public void setLibraries(List<Library> libraries) {
         this.libraries = libraries;
     }
 

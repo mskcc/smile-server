@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mskcc.cmo.metadb.model.Run;
+import org.mskcc.cmo.metadb.model.igo.Run;
 import org.neo4j.ogm.typeconversion.AttributeConverter;
 
 public class RunStringConverter implements AttributeConverter<List<Run>, String> {

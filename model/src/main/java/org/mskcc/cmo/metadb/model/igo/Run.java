@@ -1,15 +1,21 @@
 package org.mskcc.cmo.metadb.model.igo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.neo4j.ogm.annotation.GeneratedValue;
+import org.neo4j.ogm.annotation.Id;
 
 /**
  *
  * @author ochoaa
  */
-public class IgoRun {
+
+public class Run implements Serializable {
+    @Id @GeneratedValue
+    private Long id;
     private String runMode;
     private String runId;
     private String flowCellId;
@@ -18,7 +24,15 @@ public class IgoRun {
     private List<Integer> flowCellLanes;
     private List<String> fastqs;
 
-    public IgoRun() {}
+    public Run() {}
+
+    /**
+     * Run constructor.
+     * @param fastqs
+     */
+    public Run(List<String> fastqs) {
+        this.fastqs = fastqs;
+    }
 
     public String getRunMode() {
         return runMode;
@@ -61,8 +75,8 @@ public class IgoRun {
     }
 
     /**
-     * Returns flow cell lanes or empty array list if null.
-     * @return List
+     * Returns empty array list if field is null.
+     * @return
      */
     public List<Integer> getFlowCellLanes() {
         if (flowCellLanes ==  null) {
@@ -79,7 +93,7 @@ public class IgoRun {
      * Adds lane to flow cell lanes and sorts.
      * @param lane
      */
-    public void addFlowCellLane(Integer lane) {
+    public void addLane(Integer lane) {
         if (flowCellLanes == null) {
             this.flowCellLanes = new ArrayList<>();
         }

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
-import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
@@ -15,8 +14,8 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 public class PublishedMetadbRequest {
     @Convert(UuidStringConverter.class)
     private UUID metaDbRequestId;
-    private String projectId;
-    private String requestId;
+    private String igoProjectId;
+    private String igoRequestId;
     private String recipe;
     private String projectManagerName;
     private String piEmail;
@@ -46,8 +45,8 @@ public class PublishedMetadbRequest {
      */
     public PublishedMetadbRequest(MetadbRequest metaDbRequest, List<PublishedMetadbSample> samples) {
         this.metaDbRequestId = metaDbRequest.getMetaDbRequestId();
-        this.projectId = metaDbRequest.getRequestId().split("_")[0];
-        this.requestId = metaDbRequest.getRequestId();
+        this.igoProjectId = metaDbRequest.getIgoRequestId().split("_")[0];
+        this.igoRequestId = metaDbRequest.getIgoRequestId();
         this.recipe = metaDbRequest.getRecipe();
         this.projectManagerName = metaDbRequest.getProjectManagerName();
         this.piEmail = metaDbRequest.getPiEmail();
@@ -102,8 +101,8 @@ public class PublishedMetadbRequest {
             Boolean bicAnalysis, String requestJson, List<String> pooledNormals,
             List<PublishedMetadbSample> samples) {
         this.metaDbRequestId = metaDbRequestId;
-        this.projectId = projectId;
-        this.requestId = requestId;
+        this.igoProjectId = projectId;
+        this.igoRequestId = requestId;
         this.recipe = recipe;
         this.projectManagerName = projectManagerName;
         this.piEmail = piEmail;
@@ -133,20 +132,20 @@ public class PublishedMetadbRequest {
         this.metaDbRequestId = metaDbRequestId;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public String getIgoProjectId() {
+        return igoProjectId;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setIgoProjectId(String projectId) {
+        this.igoProjectId = projectId;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public String getIgoRequestId() {
+        return igoRequestId;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setIgoRequestId(String requestId) {
+        this.igoRequestId = requestId;
     }
 
     public String getRecipe() {
