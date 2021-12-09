@@ -9,19 +9,10 @@ import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.model.igo.IgoSampleManifest;
 
 public class SampleDataFactory {
     private static final ObjectMapper mapper = new ObjectMapper();
-
-    /**
-     * Method factory returns an instance of MetadbSample with sampleCategory "research"
-     * from an instance of SampleMetadata.
-     * @param sampleMetadata
-     * @return MetadbSample
-     */
-    public static MetadbSample buildNewResearchSampleFromMetadata(SampleMetadata sampleMetadata) {
-        return buildNewResearchSampleFromMetadata(sampleMetadata.getRequestId(), sampleMetadata);
-    }
 
     /**
      * Method factory returns an instance of MetadbSample with sampleCategory "research"
@@ -46,6 +37,20 @@ public class SampleDataFactory {
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
         sample.setPatient(patient);
         return sample;
+    }
+
+    /**
+     * Method factory returns an instance of MetadbSample with sampleCategory "research"
+     * from an instance of SampleMetadata and the provided request id.
+     * @param requestId
+     * @param igoSampleManifest
+     * @return MetadbSample
+     * @throws JsonProcessingException
+     */
+    public static MetadbSample buildNewResearchSampleFromMetadata(String requestId,
+            IgoSampleManifest igoSampleManifest) throws JsonProcessingException {
+        SampleMetadata sampleMetadata = new SampleMetadata(igoSampleManifest);
+        return buildNewResearchSampleFromMetadata(requestId, sampleMetadata);
     }
 
     /**
@@ -76,7 +81,7 @@ public class SampleDataFactory {
      * Method factory returns an instance of SampleMetadata from a sample metadata JSON.
      * @param sampleMetadataJson
      * @return SampleMetadata
-     * @throws com.fasterxml.jackson.core.JsonProcessingException
+     * @throws JsonProcessingException
      */
     public static SampleMetadata buildNewSampleMetadatafromJson(String sampleMetadataJson)
             throws JsonProcessingException {

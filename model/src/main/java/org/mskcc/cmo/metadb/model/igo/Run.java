@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.igo;
 
 import java.io.Serializable;
 import java.util.ArrayList;

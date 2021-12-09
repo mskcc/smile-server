@@ -228,7 +228,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                                     + sampleMetadata.getPrimaryId());
                             // handle and persist new sample received
                             MetadbSample sample = SampleDataFactory
-                                    .buildNewResearchSampleFromMetadata(sampleMetadata);
+                                    .buildNewResearchSampleFromMetadata(sampleMetadata.getRequestId(),
+                                            sampleMetadata);
                             sampleService.saveSampleMetadata(sample);
                             LOG.info("Publishing metadata history for new sample: "
                                     + sampleMetadata.getPrimaryId());

@@ -1,4 +1,4 @@
-package org.mskcc.cmo.metadb.model;
+package org.mskcc.cmo.metadb.model.igo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;

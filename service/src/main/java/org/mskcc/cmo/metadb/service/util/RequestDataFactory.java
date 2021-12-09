@@ -12,6 +12,8 @@ import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.model.igo.IgoRequest;
+import org.mskcc.cmo.metadb.model.igo.IgoSampleManifest;
 
 /**
  *
@@ -29,11 +31,9 @@ public class RequestDataFactory {
      */
     public static MetadbRequest buildNewLimsRequestFromJson(String requestJson)
             throws JsonProcessingException {
-        MetadbRequest request = mapper.readValue(requestJson,
-                MetadbRequest.class);
-        request.setRequestJson(requestJson);
+        IgoRequest igoRequest = mapper.readValue(requestJson, IgoRequest.class);
+        MetadbRequest request = new MetadbRequest(igoRequest);
         request.setMetaDbSampleList(extractMetadbSamplesFromIgoResponse(requestJson));
-        request.setNamespace("igo");
         // creates and inits request metadata
         request.addRequestMetadata(extractRequestMetadataFromJson(requestJson));
         return request;
@@ -68,12 +68,12 @@ public class RequestDataFactory {
     private static List<MetadbSample> extractMetadbSamplesFromIgoResponse(Object message)
             throws JsonProcessingException {
         Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        SampleMetadata[] samples = mapper.convertValue(map.get("samples"),
-                SampleMetadata[].class);
+        IgoSampleManifest[] samples = mapper.convertValue(map.get("samples"),
+                IgoSampleManifest[].class);
         String requestId = (String) map.get("requestId");
 
         List<MetadbSample> requestSamplesList = new ArrayList<>();
-        for (SampleMetadata s: samples) {
+        for (IgoSampleManifest s: samples) {
             MetadbSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(requestId, s);
             requestSamplesList.add(sample);
         }
