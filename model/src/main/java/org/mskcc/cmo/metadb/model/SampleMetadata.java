@@ -1,9 +1,8 @@
 package org.mskcc.cmo.metadb.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
 import org.mskcc.cmo.metadb.model.converter.MapStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
+import org.mskcc.cmo.metadb.model.igo.IgoSampleManifest;
+import org.mskcc.cmo.metadb.model.igo.Library;
+import org.mskcc.cmo.metadb.model.igo.QcReport;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
@@ -21,122 +23,68 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
-    private String importDate;
-    private String cmoInfoIgoId;
+    private String primaryId;
+    private String cmoPatientId;
+    private String investigatorSampleId;
     private String cmoSampleName;
     private String sampleName;
+    private String requestId;
+    private String importDate;
+    private String cmoInfoIgoId;
     private String cmoSampleClass;
     private String oncoTreeCode;
     private String collectionYear;
     private String tubeId;
     private String cfDNA2dBarcode;
-    @Convert(QcReportsStringConverter.class)
-    private List<QcReport> qcReports;
-    @Convert(LibrariesStringConverter.class)
-    private List<Library> libraries;
-    private String mrn;
-    private String cmoPatientId;
-    @JsonAlias("igoId")
-    private String primaryId;
-    private String investigatorSampleId;
     private String species;
     private String sex;
     private String tumorOrNormal;
     private String sampleType;
     private String preservation;
-    private String tumorType;
-    private String parentTumorType;
     private String specimenType;
     private String sampleOrigin;
-    private String tissueSource;
     private String tissueLocation;
     private String recipe;
     private String baitSet;
-    private String fastqPath;
-    private String principalInvestigator;
-    private String ancestorSample;
-    private String sampleStatus;
-    private String requestId;
+    @Convert(QcReportsStringConverter.class)
+    private List<QcReport> qcReports;
+    @Convert(LibrariesStringConverter.class)
+    private List<Library> libraries;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
 
     public SampleMetadata() {}
 
     /**
-     * SampleMetadata constructor
-     * @param primaryId
-     * @param cmoInfoIgoId
-     * @param cmoSampleName
-     * @param sampleName
-     * @param cmoSampleClass
-     * @param cmoPatientId
-     * @param investigatorSampleId
-     * @param oncoTreeCode
-     * @param tumorOrNormal
-     * @param tissueLocation
-     * @param specimenType
-     * @param sampleOrigin
-     * @param preservation
-     * @param collectionYear
-     * @param sex
-     * @param species
-     * @param tubeId
-     * @param cfDNA2dBarcode
-     * @param qcReports
-     * @param libraries
-     * @param mrn
-     * @param sampleType
-     * @param tumorType
-     * @param parentTumorType
-     * @param tissueSource
-     * @param recipe
-     * @param baitSet
-     * @param fastqPath
-     * @param principalInvestigator
-     * @param ancestorSample
-     * @param sampleStatus
-     * @param importDate
+     * SampleMetadata constructor from igoSampleManifest.
+     * @param igoSampleManifest
+     * @throws JsonProcessingException
      */
-    public SampleMetadata(String primaryId, String cmoInfoIgoId, String cmoSampleName, String sampleName,
-            String cmoSampleClass, String cmoPatientId, String investigatorSampleId, String oncoTreeCode,
-            String tumorOrNormal, String tissueLocation, String specimenType, String sampleOrigin,
-            String preservation, String collectionYear, String sex, String species, String tubeId,
-            String cfDNA2dBarcode, List<QcReport> qcReports, List<Library> libraries,
-            String mrn, String sampleType, String tumorType, String parentTumorType,
-            String tissueSource, String recipe, String baitSet, String fastqPath,
-            String principalInvestigator, String ancestorSample, String sampleStatus, String importDate) {
-        this.mrn = mrn;
-        this.cmoInfoIgoId = cmoInfoIgoId;
-        this.cmoSampleName = cmoSampleName;
-        this.sampleName = sampleName;
-        this.cmoSampleClass = cmoSampleClass;
-        this.cmoPatientId = cmoPatientId;
-        this.primaryId = primaryId;
-        this.investigatorSampleId = investigatorSampleId;
-        this.species = species;
-        this.sex = sex;
-        this.tumorOrNormal = tumorOrNormal;
-        this.sampleType = sampleType;
-        this.preservation = preservation;
-        this.tumorType = tumorType;
-        this.parentTumorType = parentTumorType;
-        this.specimenType = specimenType;
-        this.sampleOrigin = sampleOrigin;
-        this.tissueSource = tissueSource;
-        this.tissueLocation = tissueLocation;
-        this.recipe = recipe;
-        this.baitSet = baitSet;
-        this.principalInvestigator = principalInvestigator;
-        this.fastqPath = fastqPath;
-        this.ancestorSample = ancestorSample;
-        this.sampleStatus = sampleStatus;
-        this.importDate = importDate;
-        this.oncoTreeCode = oncoTreeCode;
-        this.collectionYear = collectionYear;
-        this.tubeId = tubeId;
-        this.cfDNA2dBarcode = cfDNA2dBarcode;
-        this.qcReports = qcReports;
-        this.libraries = libraries;
+    public SampleMetadata(IgoSampleManifest igoSampleManifest) throws JsonProcessingException {
+        this.primaryId = igoSampleManifest.getIgoId();
+        this.cmoPatientId = igoSampleManifest.getCmoPatientId();
+        this.investigatorSampleId = igoSampleManifest.getInvestigatorSampleId();
+        this.cmoSampleName = igoSampleManifest.getCmoSampleName();
+        this.sampleName = igoSampleManifest.getSampleName();
+        this.cmoInfoIgoId = igoSampleManifest.getCmoInfoIgoId();
+        this.cmoSampleClass = igoSampleManifest.getCmoSampleClass();
+        this.oncoTreeCode = igoSampleManifest.getOncoTreeCode();
+        this.collectionYear = igoSampleManifest.getCollectionYear();
+        this.tubeId = igoSampleManifest.getTubeId();
+        this.cfDNA2dBarcode = igoSampleManifest.getCfDNA2dBarcode();
+        this.species = igoSampleManifest.getSpecies();
+        this.sex = igoSampleManifest.getSex();
+        this.tumorOrNormal = igoSampleManifest.getTumorOrNormal();
+        this.sampleType = igoSampleManifest.getCmoSampleIdFieldValue("sampleType");
+        this.preservation = igoSampleManifest.getPreservation();
+        this.specimenType = igoSampleManifest.getSpecimenType();
+        this.sampleOrigin = igoSampleManifest.getSampleOrigin();
+        this.tissueLocation = igoSampleManifest.getTissueLocation();
+        this.recipe = igoSampleManifest.getCmoSampleIdFieldValue("recipe");
+        this.baitSet = igoSampleManifest.getBaitSet();
+        this.qcReports =  igoSampleManifest.getQcReports();
+        this.libraries = igoSampleManifest.getLibraries();
+        this.cmoSampleIdFields = igoSampleManifest.getCmoSampleIdFields();
     }
 
     public Long getId() {
@@ -271,14 +219,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         libraries.add(library);
     }
 
-    public String getMrn() {
-        return mrn;
-    }
-
-    public void setMrn(String mrn) {
-        this.mrn = mrn;
-    }
-
     public String getCmoPatientId() {
         return cmoPatientId;
     }
@@ -343,22 +283,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.preservation = preservation;
     }
 
-    public String getTumorType() {
-        return tumorType;
-    }
-
-    public void setTumorType(String tumorType) {
-        this.tumorType = tumorType;
-    }
-
-    public String getParentTumorType() {
-        return parentTumorType;
-    }
-
-    public void setParentTumorType(String parentTumorType) {
-        this.parentTumorType = parentTumorType;
-    }
-
     public String getSpecimenType() {
         return specimenType;
     }
@@ -373,14 +297,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     public void setSampleOrigin(String sampleOrigin) {
         this.sampleOrigin = sampleOrigin;
-    }
-
-    public String getTissueSource() {
-        return tissueSource;
-    }
-
-    public void setTissueSource(String tissueSource) {
-        this.tissueSource = tissueSource;
     }
 
     public String getTissueLocation() {
@@ -405,38 +321,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     public void setBaitSet(String baitSet) {
         this.baitSet = baitSet;
-    }
-
-    public String getFastqPath() {
-        return fastqPath;
-    }
-
-    public void setFastqPath(String fastqPath) {
-        this.fastqPath = fastqPath;
-    }
-
-    public String getPrincipalInvestigator() {
-        return principalInvestigator;
-    }
-
-    public void setPrincipalInvestigator(String principalInvestigator) {
-        this.principalInvestigator = principalInvestigator;
-    }
-
-    public String getAncestorSample() {
-        return ancestorSample;
-    }
-
-    public void setAncestorSample(String ancestorSample) {
-        this.ancestorSample = ancestorSample;
-    }
-
-    public String getSampleStatus() {
-        return sampleStatus;
-    }
-
-    public void setSampleStatus(String sampleStatus) {
-        this.sampleStatus = sampleStatus;
     }
 
     public String getRequestId() {

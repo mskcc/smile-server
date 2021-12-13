@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mskcc.cmo.metadb.model.Library;
+import org.mskcc.cmo.metadb.model.igo.Library;
 import org.neo4j.ogm.typeconversion.AttributeConverter;
 
 public class LibrariesStringConverter implements AttributeConverter<List<Library>, String> {
