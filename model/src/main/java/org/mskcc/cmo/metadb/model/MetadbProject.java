@@ -18,8 +18,8 @@ public class MetadbProject implements Serializable {
 
     public MetadbProject() {}
 
-    public MetadbProject(String projectId) {
-        this.igoProjectId = projectId;
+    public MetadbProject(String igoProjectId) {
+        this.igoProjectId = igoProjectId;
     }
 
     /**

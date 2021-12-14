@@ -20,11 +20,11 @@
     "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG/MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG_S101_R1_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG/MOUSEPOOLEDNORMAL_IGO_M-IMPACT_v1_AAAAACTG_S101_R2_001.fastq.gz"
   ],
-  "projectId": "33344",
+  "igoProjectId": "33344",
   "projectManagerName": "",
   "qcAccessEmails": "",
-  "recipe": "IMPACT468",
-  "requestId": "33344_Z",
+  "genePanel": "IMPACT468",
+  "igoRequestId": "33344_Z",
   "metaDbRequestId": "6ccad40a-875a-11eb-ba0a-acde48001122",
   "isCmoRequest": true,
   "bicAnalysis": false,
@@ -32,7 +32,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-PXXXD9",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "AGAG-LXX8-33344Z",
       "collectionYear": "",
       "primaryId": "33344_Z_1",
@@ -90,7 +90,7 @@
       "sampleOrigin": "Sorted Cells",
       "sex": "F",
       "species": "Human",
-      "specimenType": "CellLine",
+      "sampleClass": "CellLine",
       "tissueLocation": "",
       "tubeId": "",
       "tumorOrNormal": "Tumor"
@@ -98,7 +98,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-PXXXD9",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "LXX8-AGAG-33344Z",
       "collectionYear": "",
       "primaryId": "33344_Z_2",
@@ -156,7 +156,7 @@
       "sampleOrigin": "Sorted Cells",
       "sex": "F",
       "species": "Human",
-      "specimenType": "CellLine",
+      "sampleClass": "CellLine",
       "tissueLocation": "",
       "tubeId": "",
       "tumorOrNormal": "Tumor"
@@ -164,7 +164,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-HXXX3X",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "AGAG-33344Z",
       "collectionYear": "",
       "primaryId": "33344_Z_3",
@@ -222,7 +222,7 @@
       "sampleOrigin": "Sorted Cells",
       "sex": "F",
       "species": "Human",
-      "specimenType": "CellLine",
+      "sampleClass": "CellLine",
       "tissueLocation": "",
       "tubeId": "",
       "tumorOrNormal": "Tumor"
@@ -230,7 +230,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-MXX99F",
-      "cmoSampleClass": "Primary",
+      "sampleType": "Primary",
       "cmoSampleName": "LXX8-33344Z",
       "collectionYear": "",
       "primaryId": "33344_Z_4",
@@ -288,7 +288,7 @@
       "sampleOrigin": "Sorted Cells",
       "sex": "F",
       "species": "Human",
-      "specimenType": "CellLine",
+      "sampleClass": "CellLine",
       "tissueLocation": "",
       "tubeId": "",
       "tumorOrNormal": "Tumor"
