@@ -18,8 +18,8 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
      * @param requestMetadataJson
      * @param importDate
      */
-    public RequestMetadata(String requestId, String requestMetadataJson, String importDate) {
-        this.igoRequestId = requestId;
+    public RequestMetadata(String igoRequestId, String requestMetadataJson, String importDate) {
+        this.igoRequestId = igoRequestId;
         this.requestMetadataJson = requestMetadataJson;
         this.importDate = importDate;
     }
