@@ -69,6 +69,7 @@
       "preservation": "Frozen",
       "qcReports": [],
       "metaDbSampleId": "afe750e6-8756-11eb-81b0-acde48001122",
+      "genePanel": "GENESET101",
       "sampleName": "XXX002_P3_12345_L1",
       "sampleOrigin": "Tissue",
       "sex": "F",
@@ -96,6 +97,7 @@
       "collectionYear": "",
       "primaryId": "MOCKREQUEST1_B_2",
       "investigatorSampleId": "01-0012345a",
+      "genePanel": "GENESET101",
       "libraries": [
         {
           "barcodeId": "TNG41",
@@ -155,6 +157,7 @@
       "collectionYear": "",
       "primaryId": "MOCKREQUEST1_B_3",
       "investigatorSampleId": "XXX002_P1_12348a_R_43",
+      "genePanel": "GENESET101",
       "libraries": [
         {
           "barcodeId": "TNG53",
@@ -214,6 +217,7 @@
       "collectionYear": "",
       "primaryId": "MOCKREQUEST1_B_4",
       "investigatorSampleId": "01-XXXXXXXa",
+      "genePanel": "GENESET101",
       "libraries": [
         {
           "barcodeId": "TNG65",

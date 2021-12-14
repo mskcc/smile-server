@@ -31,6 +31,7 @@
       "collectionYear": "",
       "primaryId": "22022_CC_3",
       "investigatorSampleId": "LMNO_4396_N",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -99,6 +100,7 @@
       "collectionYear": "2018",
       "primaryId": "22022_BZ_19",
       "investigatorSampleId": "LMNO_3443_N",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -170,6 +172,7 @@
       "collectionYear": "2018",
       "primaryId": "22022_BZ_15",
       "investigatorSampleId": "LMNO_0034_T_DNA",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -241,6 +244,7 @@
       "collectionYear": "2017",
       "primaryId": "22022_BZ_17",
       "investigatorSampleId": "LMNO_9999_T",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -311,6 +315,7 @@
       "collectionYear": "",
       "primaryId": "22022_BZ_4",
       "investigatorSampleId": "LMNO_8080_N",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -349,6 +354,7 @@
       "collectionYear": "2019",
       "primaryId": "22022_BZ_3",
       "investigatorSampleId": "LMNO_0034_N2",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -420,6 +426,7 @@
       "collectionYear": "2018",
       "primaryId": "22022_BZ_2",
       "investigatorSampleId": "LMNO_7787_N2",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -491,6 +498,7 @@
       "collectionYear": "2019",
       "primaryId": "22022_BZ_1",
       "investigatorSampleId": "LMNO_2020_DNA",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -562,6 +570,7 @@
       "collectionYear": "2019",
       "primaryId": "22022_BZ_9",
       "investigatorSampleId": "LMNO_3030_N",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -633,6 +642,7 @@
       "collectionYear": "2019",
       "primaryId": "22022_BZ_8",
       "investigatorSampleId": "LMNO_3443_T_DNA",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -704,6 +714,7 @@
       "collectionYear": "2018",
       "primaryId": "22022_BZ_16",
       "investigatorSampleId": "LMNO_6565_T2_DNA",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -775,6 +786,7 @@
       "collectionYear": "2018",
       "primaryId": "22022_BZ_13",
       "investigatorSampleId": "LMNO_0011_T",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -846,6 +858,7 @@
       "collectionYear": "2019",
       "primaryId": "22022_BZ_21",
       "investigatorSampleId": "LMNO_6565_N2",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -917,6 +930,7 @@
       "collectionYear": "2017",
       "primaryId": "22022_BZ_10",
       "investigatorSampleId": "LMNO_2299_N",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -988,6 +1002,7 @@
       "collectionYear": "",
       "primaryId": "22022_BZ_5",
       "investigatorSampleId": "LMNO_8080_T_DNA",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1059,6 +1074,7 @@
       "collectionYear": "2019",
       "primaryId": "22022_BZ_11",
       "investigatorSampleId": "LMNO_3030_T_DNA",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1130,6 +1146,7 @@
       "collectionYear": "2017",
       "primaryId": "22022_BZ_12",
       "investigatorSampleId": "WT_PXX_bc",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1201,6 +1218,7 @@
       "collectionYear": "2018",
       "primaryId": "22022_BZ_18",
       "investigatorSampleId": "LMNO_0011_N",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1272,6 +1290,7 @@
       "collectionYear": "",
       "primaryId": "22022_BZ_6",
       "investigatorSampleId": "LMNO_8895_N",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1343,6 +1362,7 @@
       "collectionYear": "2019",
       "primaryId": "22022_BZ_20",
       "investigatorSampleId": "LMNO_2020_N",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1414,6 +1434,7 @@
       "collectionYear": "2018",
       "primaryId": "22022_BZ_14",
       "investigatorSampleId": "LMNO_7787_T",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1485,6 +1506,7 @@
       "collectionYear": "2019",
       "primaryId": "22022_BZ_7",
       "investigatorSampleId": "LMNO_2299_T_DNA",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",

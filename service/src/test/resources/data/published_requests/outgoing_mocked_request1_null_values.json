@@ -37,6 +37,7 @@
       "collectionYear": "",
       "primaryId": "MOCKREQUEST1_B_1",
       "investigatorSampleId": "XXX002_P3_12345_L1",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -96,6 +97,7 @@
       "collectionYear": "",
       "primaryId": "MOCKREQUEST1_B_2",
       "investigatorSampleId": "01-0012345a",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -155,6 +157,7 @@
       "collectionYear": "",
       "primaryId": "MOCKREQUEST1_B_3",
       "investigatorSampleId": "XXX002_P1_12348a_R_43",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -214,6 +217,7 @@
       "collectionYear": "",
       "primaryId": "MOCKREQUEST1_B_4",
       "investigatorSampleId": "01-XXXXXXXa",
+      "genePanel": "GENESET101",
       "sampleAliases": [
         {
           "namespace": "igoId",

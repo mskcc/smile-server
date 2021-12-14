@@ -37,6 +37,7 @@
       "collectionYear": "",
       "primaryId": "33344_Z_1",
       "investigatorSampleId": "AGAG-LXX8",
+      "genePanel": "IMPACT468",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -103,6 +104,7 @@
       "collectionYear": "",
       "primaryId": "33344_Z_2",
       "investigatorSampleId": "LXX8-AGAG",
+      "genePanel": "IMPACT468",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -169,6 +171,7 @@
       "collectionYear": "",
       "primaryId": "33344_Z_3",
       "investigatorSampleId": "AGAG",
+      "genePanel": "IMPACT468",
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -235,6 +238,7 @@
       "collectionYear": "",
       "primaryId": "33344_Z_4",
       "investigatorSampleId": "LXX8",
+      "genePanel": "IMPACT468",
       "sampleAliases": [
         {
           "namespace": "igoId",
