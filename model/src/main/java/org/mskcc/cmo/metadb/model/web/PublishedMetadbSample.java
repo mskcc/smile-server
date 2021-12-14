@@ -77,6 +77,7 @@ public class PublishedMetadbSample {
         this.tissueLocation = latestSampleMetadata.getTissueLocation();
         this.genePanel = latestSampleMetadata.getGenePanel();
         this.baitSet = latestSampleMetadata.getBaitSet();
+        this.igoRequestId = latestSampleMetadata.getIgoRequestId();
         this.importDate = latestSampleMetadata.getImportDate();
         this.oncotreeCode = latestSampleMetadata.getOncotreeCode();
         this.collectionYear = latestSampleMetadata.getCollectionYear();
@@ -302,7 +303,6 @@ public class PublishedMetadbSample {
     public void setBaitSet(String baitSet) {
         this.baitSet = baitSet;
     }
-
     public Map<String, String> getCmoSampleIdFields() {
         return cmoSampleIdFields;
     }
