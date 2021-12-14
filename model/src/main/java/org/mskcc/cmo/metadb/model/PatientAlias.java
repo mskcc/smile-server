@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -17,25 +18,25 @@ import org.neo4j.ogm.annotation.Relationship;
 public class PatientAlias implements Serializable {
     @Id @GeneratedValue
     private Long id;
-    @Property(name = "value")
-    private String patientId;
+    private String value;
     private String namespace;
+    @JsonIgnore
     @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
     private MetadbPatient metaDbPatient;
 
     public PatientAlias() {}
 
-    public PatientAlias(String patientId, String namespace) {
-        this.patientId = patientId;
+    public PatientAlias(String value, String namespace) {
+        this.value = value;
         this.namespace = namespace;
     }
 
-    public String getPatientId() {
-        return patientId;
+    public String getValue() {
+        return value;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public String getNamespace() {
@@ -46,11 +47,11 @@ public class PatientAlias implements Serializable {
         this.namespace = namespace;
     }
 
-    public MetadbPatient getPatientMetadata() {
+    public MetadbPatient getMetaDbPatient() {
         return metaDbPatient;
     }
 
-    public void setPatientMetadata(MetadbPatient metaDbPatient) {
+    public void setMetaDbPatient(MetadbPatient metaDbPatient) {
         this.metaDbPatient = metaDbPatient;
     }
     

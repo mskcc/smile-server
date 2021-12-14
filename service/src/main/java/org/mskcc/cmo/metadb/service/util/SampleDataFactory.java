@@ -22,7 +22,7 @@ public class SampleDataFactory {
      */
     public static MetadbSample buildNewResearchSampleFromMetadata(String requestId,
             SampleMetadata sampleMetadata) {
-        sampleMetadata.setRequestId(requestId);
+        sampleMetadata.setIgoRequestId(requestId);
         sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         MetadbSample sample = new MetadbSample();
@@ -32,6 +32,7 @@ public class SampleDataFactory {
         sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
         sample.addSampleAlias(new SampleAlias(
                 sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
+        sample.setDatasource("igo");
 
         MetadbPatient patient = new MetadbPatient();
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
