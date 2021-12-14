@@ -33,6 +33,14 @@
       "cmoSampleName": "C-MP789JR-X001-d",
       "sampleName": "XXX002_P3_12345_L1",
       "sampleType": "",
+      "oncotreeCode": "CLL",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-MP789JR",
+          "namespace": "cmo"
+        }
+      ],
       "cmoPatientId": "C-MP789JR",
       "investigatorSampleId": "XXX002_P3_12345_L1",
       "tumorOrNormal": "Tumor",
@@ -92,6 +100,14 @@
       "sampleName": "01-0012345a",
       "sampleType": "Normal",
       "cmoPatientId": "C-MP789JR",
+      "oncotreeCode": "CLL",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-MP789JR",
+          "namespace": "cmo"
+        }
+      ],
       "investigatorSampleId": "01-0012345a",
       "tumorOrNormal": "Normal",
       "tissueLocation": null,
@@ -150,6 +166,14 @@
       "sampleName": "XXX002_P1_12348a_R_43",
       "sampleType": "Primary",
       "cmoPatientId": "C-8DH24X",
+      "oncotreeCode": "COAD",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-8DH24X",
+          "namespace": "cmo"
+        }
+      ],
       "investigatorSampleId": "XXX002_P1_12348a_R_43",
       "tumorOrNormal": "Tumor",
       "tissueLocation": "",
@@ -208,6 +232,14 @@
       "sampleName": "01-XXXXXXXa",
       "sampleType": "Normal",
       "cmoPatientId": "C-8DH24X",
+      "oncotreeCode": "COAD",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-8DH24X",
+          "namespace": "cmo"
+        }
+      ],
       "investigatorSampleId": "01-XXXXXXXa",
       "tumorOrNormal": "Normal",
       "tissueLocation": "",

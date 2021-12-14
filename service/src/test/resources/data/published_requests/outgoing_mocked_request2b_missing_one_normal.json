@@ -30,8 +30,16 @@
       "cmoSampleName": "C-DPCXX1-N001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_19",
+      "oncotreeCode": "MPNWP",
       "investigatorSampleId": "LMNO_3443_N",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-DPCXX1",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -102,8 +110,16 @@
       "cmoSampleName": "C-KXXL3J-P001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_15",
+      "oncotreeCode": "SARCNOS",
       "investigatorSampleId": "LMNO_0034_T_DNA",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-KXXL3J",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -174,8 +190,16 @@
       "cmoSampleName": "C-XXX711-M001-d",
       "collectionYear": "2017",
       "primaryId": "22022_BZ_17",
+      "oncotreeCode": "PAAD",
       "investigatorSampleId": "LMNO_9999_T",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-XXX711",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -245,8 +269,16 @@
       "cmoSampleName": "C-PPPXX2-N001-d",
       "collectionYear": "",
       "primaryId": "22022_BZ_4",
+      "oncotreeCode": "COAD",
       "investigatorSampleId": "LMNO_8080_N",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-PPPXX2",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -284,8 +316,16 @@
       "cmoSampleName": "C-KXXL3J-N001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_3",
+      "oncotreeCode": "TPLL",
       "investigatorSampleId": "LMNO_0034_N2",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-KXXL3J",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -356,8 +396,16 @@
       "cmoSampleName": "C-X09281-N001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_2",
+      "oncotreeCode": "MACR",
       "investigatorSampleId": "LMNO_7787_N2",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-X09281",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -428,8 +476,16 @@
       "cmoSampleName": "C-XXA40X-P001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_1",
+      "oncotreeCode": "CHOS",
       "investigatorSampleId": "LMNO_2020_DNA",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-XXA40X",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -500,8 +556,16 @@
       "cmoSampleName": "C-YXX89J-N001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_9",
+      "oncotreeCode": "TAML",
       "investigatorSampleId": "LMNO_3030_N",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-YXX89J",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -572,8 +636,16 @@
       "cmoSampleName": "C-DPCXX1-M001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_8",
+      "oncotreeCode": "MPNWP",
       "investigatorSampleId": "LMNO_3443_T_DNA",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-DPCXX1",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -644,8 +716,16 @@
       "cmoSampleName": "C-999XX-M001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_16",
+      "oncotreeCode": "MPNWP",
       "investigatorSampleId": "LMNO_6565_T2_DNA",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-999XX",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -716,8 +796,16 @@
       "cmoSampleName": "C-9XX8808-P001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_13",
+      "oncotreeCode": "GBC",
       "investigatorSampleId": "LMNO_0011_T",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-9XX8808",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -788,8 +876,16 @@
       "cmoSampleName": "C-999XX-N002-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_21",
+      "oncotreeCode": "MPNWP",
       "investigatorSampleId": "LMNO_6565_N2",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-999XX",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -860,8 +956,16 @@
       "cmoSampleName": "C-FFX222-N001-d",
       "collectionYear": "2017",
       "primaryId": "22022_BZ_10",
+      "oncotreeCode": "MACR",
       "investigatorSampleId": "LMNO_2299_N",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-FFX222",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -932,8 +1036,16 @@
       "cmoSampleName": "C-PPPXX2-P001-d",
       "collectionYear": "",
       "primaryId": "22022_BZ_5",
+      "oncotreeCode": "COAD",
       "investigatorSampleId": "LMNO_8080_T_DNA",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-PPPXX2",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1004,8 +1116,16 @@
       "cmoSampleName": "C-YXX89J-P001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_11",
+      "oncotreeCode": "TAML",
       "investigatorSampleId": "LMNO_3030_T_DNA",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-YXX89J",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1076,8 +1196,16 @@
       "cmoSampleName": "C-XXX711-N001-d",
       "collectionYear": "2017",
       "primaryId": "22022_BZ_12",
+      "oncotreeCode": "PAAD",
       "investigatorSampleId": "WT_PXX_bc",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-XXX711",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1148,8 +1276,16 @@
       "cmoSampleName": "C-9XX8808-N001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_18",
+      "oncotreeCode": "GBC",
       "investigatorSampleId": "LMNO_0011_N",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-9XX8808",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1220,8 +1356,16 @@
       "cmoSampleName": "C-XXC4XX-N001-d",
       "collectionYear": "",
       "primaryId": "22022_BZ_6",
+      "oncotreeCode": "GBC",
       "investigatorSampleId": "LMNO_8895_N",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-XXC4XX",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1292,8 +1436,16 @@
       "cmoSampleName": "C-XXA40X-N001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_20",
+      "oncotreeCode": "CHOS",
       "investigatorSampleId": "LMNO_2020_N",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-XXA40X",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1364,8 +1516,16 @@
       "cmoSampleName": "C-X09281-M001-d",
       "collectionYear": "2018",
       "primaryId": "22022_BZ_14",
+      "oncotreeCode": "MACR",
       "investigatorSampleId": "LMNO_7787_T",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-X09281",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -1436,8 +1596,16 @@
       "cmoSampleName": "C-FFX222-P001-d",
       "collectionYear": "2019",
       "primaryId": "22022_BZ_7",
+      "oncotreeCode": "MACR",
       "investigatorSampleId": "LMNO_2299_T_DNA",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-FFX222",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
