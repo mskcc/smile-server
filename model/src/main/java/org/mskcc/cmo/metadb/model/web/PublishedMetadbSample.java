@@ -28,8 +28,8 @@ public class PublishedMetadbSample {
     private String cmoInfoIgoId;
     private String investigatorSampleId;
     private String importDate;
-    private String cmoSampleClass;
-    private String oncoTreeCode;
+    private String sampleType;
+    private String oncotreeCode;
     private String collectionYear;
     private String tubeId;
     private String cfDNA2dBarcode;
@@ -37,12 +37,11 @@ public class PublishedMetadbSample {
     private String sex;
     private String tumorOrNormal;
     private String preservation;
-    private String specimenType;
+    private String sampleClass;
     private String sampleOrigin;
     private String tissueLocation;
-    private String recipe;
+    private String genePanel;
     private String baitSet;
-    private String requestId;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
     @Convert(QcReportsStringConverter.class)
@@ -64,7 +63,7 @@ public class PublishedMetadbSample {
         this.cmoInfoIgoId = latestSampleMetadata.getCmoInfoIgoId();
         this.cmoSampleName = latestSampleMetadata.getCmoSampleName();
         this.sampleName = latestSampleMetadata.getSampleName();
-        this.cmoSampleClass = latestSampleMetadata.getCmoSampleClass();
+        this.sampleType = latestSampleMetadata.getSampleType();
         this.cmoPatientId = latestSampleMetadata.getCmoPatientId();
         this.metaDbPatientId = metaDbSample.getPatient().getMetaDbPatientId();
         this.primaryId = latestSampleMetadata.getPrimaryId();
@@ -73,13 +72,13 @@ public class PublishedMetadbSample {
         this.sex = latestSampleMetadata.getSex();
         this.tumorOrNormal = latestSampleMetadata.getTumorOrNormal();
         this.preservation = latestSampleMetadata.getPreservation();
-        this.specimenType = latestSampleMetadata.getSpecimenType();
+        this.sampleClass = latestSampleMetadata.getSampleClass();
         this.sampleOrigin = latestSampleMetadata.getSampleOrigin();
         this.tissueLocation = latestSampleMetadata.getTissueLocation();
-        this.recipe = latestSampleMetadata.getRecipe();
+        this.genePanel = latestSampleMetadata.getGenePanel();
         this.baitSet = latestSampleMetadata.getBaitSet();
         this.importDate = latestSampleMetadata.getImportDate();
-        this.oncoTreeCode = latestSampleMetadata.getOncoTreeCode();
+        this.oncotreeCode = latestSampleMetadata.getOncotreeCode();
         this.collectionYear = latestSampleMetadata.getCollectionYear();
         this.tubeId = latestSampleMetadata.getTubeId();
         this.cfDNA2dBarcode = latestSampleMetadata.getCfDNA2dBarcode();
@@ -130,20 +129,20 @@ public class PublishedMetadbSample {
         this.sampleName = sampleName;
     }
 
-    public String getCmoSampleClass() {
-        return cmoSampleClass;
+    public String getSampleType() {
+        return sampleType;
     }
 
-    public void setCmoSampleClass(String cmoSampleClass) {
-        this.cmoSampleClass = cmoSampleClass;
+    public void setSampleType(String sampleType) {
+        this.sampleType = sampleType;
     }
 
-    public String getOncoTreeCode() {
-        return oncoTreeCode;
+    public String getOncotreeCode() {
+        return oncotreeCode;
     }
 
-    public void setOncoTreeCode(String oncoTreeCode) {
-        this.oncoTreeCode = oncoTreeCode;
+    public void setOncotreeCode(String oncotreeCode) {
+        this.oncotreeCode = oncotreeCode;
     }
 
     public String getCollectionYear() {
@@ -264,12 +263,12 @@ public class PublishedMetadbSample {
         this.preservation = preservation;
     }
 
-    public String getSpecimenType() {
-        return specimenType;
+    public String getSampleClass() {
+        return sampleClass;
     }
 
-    public void setSpecimenType(String specimenType) {
-        this.specimenType = specimenType;
+    public void setSampleClass(String sampleClass) {
+        this.sampleClass = sampleClass;
     }
 
     public String getSampleOrigin() {
@@ -288,12 +287,12 @@ public class PublishedMetadbSample {
         this.tissueLocation = tissueLocation;
     }
 
-    public String getRecipe() {
-        return recipe;
+    public String getGenePanel() {
+        return genePanel;
     }
 
-    public void setRecipe(String recipe) {
-        this.recipe = recipe;
+    public void setGenePanel(String genePanel) {
+        this.genePanel = genePanel;
     }
 
     public String getBaitSet() {
@@ -302,14 +301,6 @@ public class PublishedMetadbSample {
 
     public void setBaitSet(String baitSet) {
         this.baitSet = baitSet;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
     }
 
     public Map<String, String> getCmoSampleIdFields() {

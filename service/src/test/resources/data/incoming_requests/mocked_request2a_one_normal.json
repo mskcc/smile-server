@@ -1,6 +1,6 @@
 {
   "requestId": "22022_CC",
-  "recipe": "GENESET101",
+  "recipe": "GENESET101_BAITS",
   "projectManagerName": "",
   "piEmail": "",
   "labHeadName": "James Holt",
@@ -11,34 +11,17 @@
   "dataAnalystEmail": "",
   "otherContactEmails": "preclinical_group_shared@mskcc.org",
   "dataAccessEmails": "",
-  "isCmoRequest":true,
-  "bicAnalysis": false,
   "qcAccessEmails": "",
-  "pooledNormals": [
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
-  ],
-  "projectId": "22022",
+  "isCmoRequest": true,
+  "bicAnalysis": false,
   "samples": [
     {
-      "igoId": "22022_CC_3",
       "cmoSampleName": "C-TX6DNG-N001-d",
       "sampleName": "LMNO_4396_N",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-TX6DNG",
-      "investigatorSampleId": "LMNO_4396_N",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "Blood",
-      "specimenType": "Blood",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "TPLL",
       "collectionYear": "",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "4157451784",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -76,7 +59,30 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-TX6DNG",
+      "igoId": "22022_CC_3",
+      "investigatorSampleId": "LMNO_4396_N",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "Blood",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "Blood",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     }
-  ]
+  ],
+  "pooledNormals": [
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
+  ],
+  "projectId": "22022"
 }
