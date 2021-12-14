@@ -14,11 +14,11 @@
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R1_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
   ],
-  "projectId": "22022",
+  "igoProjectId": "22022",
   "projectManagerName": "",
   "qcAccessEmails": "",
-  "recipe": "GENESET101",
-  "requestId": "22022_CC",
+  "genePanel": "GENESET101",
+  "igoRequestId": "22022_CC",
   "metaDbRequestId": "6cc9c81e-875a-11eb-87f8-acde48001122",
   "isCmoRequest": true,
   "bicAnalysis": false,
@@ -26,7 +26,7 @@
     {
       "baitSet": "GENESET101_BAITS",
       "cmoPatientId": "C-TX6DNG",
-      "cmoSampleClass": "Normal",
+      "sampleType": "Normal",
       "cmoSampleName": "C-TX6DNG-N001-d",
       "collectionYear": "",
       "primaryId": "22022_CC_3",
@@ -86,7 +86,7 @@
       "sampleOrigin": "Buffy Coat",
       "sex": "F",
       "species": "Human",
-      "specimenType": "Blood",
+      "sampleClass": "Blood",
       "tissueLocation": "Blood",
       "tubeId": "4157451784",
       "tumorOrNormal": "Normal"
