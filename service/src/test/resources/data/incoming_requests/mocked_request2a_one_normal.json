@@ -25,6 +25,7 @@
     {
       "igoId": "22022_CC_3",
       "cmoSampleName": "C-TX6DNG-N001-d",
+      "oncoTreeCode": "TPLL",
       "sampleName": "LMNO_4396_N",
       "cmoSampleClass": "Normal",
       "cmoPatientId": "C-TX6DNG",

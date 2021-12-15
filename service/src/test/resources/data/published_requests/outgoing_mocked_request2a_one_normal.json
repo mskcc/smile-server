@@ -30,8 +30,16 @@
       "cmoSampleName": "C-TX6DNG-N001-d",
       "collectionYear": "",
       "primaryId": "22022_CC_3",
+      "oncotreeCode": "TPLL",
       "investigatorSampleId": "LMNO_4396_N",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-TX6DNG",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",

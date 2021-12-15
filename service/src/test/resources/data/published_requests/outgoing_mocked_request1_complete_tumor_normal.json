@@ -31,6 +31,7 @@
   "samples": [
     {
       "baitSet": "GENESET101_BAITS",
+      "oncotreeCode": "CLL",
       "cmoPatientId": "C-MP789JR",
       "sampleType": "Primary",
       "cmoSampleName": "C-MP789JR-X001-d",
@@ -78,6 +79,13 @@
       "tissueLocation": "",
       "tubeId": "",
       "tumorOrNormal": "Tumor",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-MP789JR",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "value": "XXX002_P3_12345_L1",
@@ -91,6 +99,7 @@
     },
     {
       "baitSet": "GENESET101_BAITS",
+      "oncotreeCode": "CLL",
       "cmoPatientId": "C-MP789JR",
       "sampleType": "Normal",
       "cmoSampleName": "C-MP789JR-N001-d",
@@ -98,6 +107,13 @@
       "primaryId": "MOCKREQUEST1_B_2",
       "investigatorSampleId": "01-0012345a",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-MP789JR",
+          "namespace": "cmo"
+        }
+      ],
       "libraries": [
         {
           "barcodeId": "TNG41",
@@ -151,11 +167,19 @@
     },
     {
       "baitSet": "GENESET101_BAITS",
+      "oncotreeCode": "COAD",
       "cmoPatientId": "C-8DH24X",
       "sampleType": "Primary",
       "cmoSampleName": "C-8DH24X-X001-d",
       "collectionYear": "",
       "primaryId": "MOCKREQUEST1_B_3",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-8DH24X",
+          "namespace": "cmo"
+        }
+      ],
       "investigatorSampleId": "XXX002_P1_12348a_R_43",
       "genePanel": "GENESET101",
       "libraries": [
@@ -211,6 +235,7 @@
     },
     {
       "baitSet": "GENESET101_BAITS",
+      "oncotreeCode": "COAD",
       "cmoPatientId": "C-8DH24X",
       "sampleType": "Normal",
       "cmoSampleName": "C-8DH24X-N001-d",
@@ -218,6 +243,13 @@
       "primaryId": "MOCKREQUEST1_B_4",
       "investigatorSampleId": "01-XXXXXXXa",
       "genePanel": "GENESET101",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-8DH24X",
+          "namespace": "cmo"
+        }
+      ],
       "libraries": [
         {
           "barcodeId": "TNG65",

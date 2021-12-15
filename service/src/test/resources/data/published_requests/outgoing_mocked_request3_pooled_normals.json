@@ -34,10 +34,18 @@
       "cmoPatientId": "C-PXXXD9",
       "sampleType": "Primary",
       "cmoSampleName": "AGAG-LXX8-33344Z",
+      "oncotreeCode": "LUAD",
       "collectionYear": "",
       "primaryId": "33344_Z_1",
       "investigatorSampleId": "AGAG-LXX8",
       "genePanel": "IMPACT468",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-PXXXD9",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -103,8 +111,16 @@
       "cmoSampleName": "LXX8-AGAG-33344Z",
       "collectionYear": "",
       "primaryId": "33344_Z_2",
+      "oncotreeCode": "LUAD",
       "investigatorSampleId": "LXX8-AGAG",
       "genePanel": "IMPACT468",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-PXXXD9",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -170,8 +186,16 @@
       "cmoSampleName": "AGAG-33344Z",
       "collectionYear": "",
       "primaryId": "33344_Z_3",
+      "oncotreeCode": "LUAD",
       "investigatorSampleId": "AGAG",
       "genePanel": "IMPACT468",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-HXXX3X",
+          "namespace": "cmo"
+        }
+      ],
       "sampleAliases": [
         {
           "namespace": "igoId",
@@ -237,7 +261,15 @@
       "cmoSampleName": "LXX8-33344Z",
       "collectionYear": "",
       "primaryId": "33344_Z_4",
+      "oncotreeCode": "LUAD",
       "investigatorSampleId": "LXX8",
+      "datasource": "igo",
+      "patientAliases": [
+        {
+          "value": "C-MXX99F",
+          "namespace": "cmo"
+        }
+      ],
       "genePanel": "IMPACT468",
       "sampleAliases": [
         {
