@@ -65,7 +65,8 @@
       "baitSet": "null",
       "cmoSampleIdFields": {
         "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED"
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "null"
       }
     },
     {
@@ -116,7 +117,8 @@
       "baitSet": "null",
       "cmoSampleIdFields": {
         "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED"
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "null"
       }
     },
     {
@@ -167,7 +169,8 @@
       "baitSet": "null",
       "cmoSampleIdFields": {
         "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED"
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "null"
       }
     },
     {
@@ -218,7 +221,8 @@
       "baitSet": "null",
       "cmoSampleIdFields": {
         "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED"
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "null"
       }
     },
     {
@@ -269,7 +273,8 @@
       "baitSet": "null",
       "cmoSampleIdFields": {
         "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED"
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "null"
       }
     },
     {
@@ -320,7 +325,8 @@
       "baitSet": "null",
       "cmoSampleIdFields": {
         "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED"
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "null"
       }
     }
   ],
