@@ -44,7 +44,6 @@ public class PublishedMetadbSample {
     private String genePanel;
     private String baitSet;
     private String datasource;
-    private String igoRequestId;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
     @Convert(QcReportsStringConverter.class)
@@ -82,7 +81,6 @@ public class PublishedMetadbSample {
         this.genePanel = latestSampleMetadata.getGenePanel();
         this.baitSet = latestSampleMetadata.getBaitSet();
         this.datasource = metaDbSample.getDatasource();
-        this.igoRequestId = latestSampleMetadata.getIgoRequestId();
         this.importDate = latestSampleMetadata.getImportDate();
         this.oncotreeCode = latestSampleMetadata.getOncotreeCode();
         this.collectionYear = latestSampleMetadata.getCollectionYear();
@@ -316,14 +314,6 @@ public class PublishedMetadbSample {
 
     public void setDatasource(String datasource) {
         this.datasource = datasource;
-    }
-
-    public String getIgoRequestId() {
-        return igoRequestId;
-    }
-
-    public void setIgoRequestId(String igoRequestId) {
-        this.igoRequestId = igoRequestId;
     }
 
     public Map<String, String> getCmoSampleIdFields() {
