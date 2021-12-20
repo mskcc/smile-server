@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbSample;
+import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
@@ -51,7 +52,7 @@ public class PublishedMetadbSample {
     @Convert(LibrariesStringConverter.class)
     private List<Library> libraries;
     private List<SampleAlias> sampleAliases;
-    private MetadbPatient patient;
+    private List<PatientAlias> patientAliases;
 
     public PublishedMetadbSample() {}
 
@@ -90,7 +91,7 @@ public class PublishedMetadbSample {
         this.libraries = latestSampleMetadata.getLibraries();
         this.sampleAliases = metaDbSample.getSampleAliases();
         this.cmoSampleIdFields = latestSampleMetadata.getCmoSampleIdFields();
-        this.patient = metaDbSample.getPatient();
+        this.patientAliases = metaDbSample.getPatient().getPatientAliases();
     }
 
     public UUID getMetaDbSampleId() {
@@ -339,12 +340,12 @@ public class PublishedMetadbSample {
         return sampleAliases;
     }
 
-    public MetadbPatient getPatient() {
-        return patient;
+    public List<PatientAlias> getPatientAliases() {
+        return patientAliases;
     }
 
-    public void setPatient(MetadbPatient patient) {
-        this.patient = patient;
+    public void setPatientAliases(List<PatientAlias> patientAliases) {
+        this.patientAliases = patientAliases;
     }
 
     @Override
