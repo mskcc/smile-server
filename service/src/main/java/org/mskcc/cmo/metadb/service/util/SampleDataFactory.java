@@ -32,6 +32,7 @@ public class SampleDataFactory {
         sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
         sample.addSampleAlias(new SampleAlias(
                 sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
+        sample.setDatasource("research");
 
         MetadbPatient patient = new MetadbPatient();
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));

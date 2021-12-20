@@ -30,6 +30,7 @@ public class MetadbSample implements Serializable {
     private List<SampleMetadata> sampleMetadataList;
     private String sampleClass;
     private String sampleCategory;
+    private String datasource;
 
     public MetadbSample() {}
 
@@ -142,6 +143,14 @@ public class MetadbSample implements Serializable {
 
     public void setSampleCategory(String sampleCategory) {
         this.sampleCategory = sampleCategory;
+    }
+
+    public String getDatasource() {
+        return datasource;
+    }
+
+    public void setDatasource(String datasource) {
+        this.datasource = datasource;
     }
 
     @Override

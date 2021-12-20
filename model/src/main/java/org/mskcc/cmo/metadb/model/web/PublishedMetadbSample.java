@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
@@ -42,6 +43,8 @@ public class PublishedMetadbSample {
     private String tissueLocation;
     private String genePanel;
     private String baitSet;
+    private String datasource;
+    private String igoRequestId;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
     @Convert(QcReportsStringConverter.class)
@@ -49,6 +52,7 @@ public class PublishedMetadbSample {
     @Convert(LibrariesStringConverter.class)
     private List<Library> libraries;
     private List<SampleAlias> sampleAliases;
+    private MetadbPatient patient;
 
     public PublishedMetadbSample() {}
 
@@ -77,6 +81,7 @@ public class PublishedMetadbSample {
         this.tissueLocation = latestSampleMetadata.getTissueLocation();
         this.genePanel = latestSampleMetadata.getGenePanel();
         this.baitSet = latestSampleMetadata.getBaitSet();
+        this.datasource = metaDbSample.getDatasource();
         this.igoRequestId = latestSampleMetadata.getIgoRequestId();
         this.importDate = latestSampleMetadata.getImportDate();
         this.oncotreeCode = latestSampleMetadata.getOncotreeCode();
@@ -87,6 +92,7 @@ public class PublishedMetadbSample {
         this.libraries = latestSampleMetadata.getLibraries();
         this.sampleAliases = metaDbSample.getSampleAliases();
         this.cmoSampleIdFields = latestSampleMetadata.getCmoSampleIdFields();
+        this.patient = metaDbSample.getPatient();
     }
 
     public UUID getMetaDbSampleId() {
@@ -303,6 +309,23 @@ public class PublishedMetadbSample {
     public void setBaitSet(String baitSet) {
         this.baitSet = baitSet;
     }
+
+    public String getDatasource() {
+        return datasource;
+    }
+
+    public void setDatasource(String datasource) {
+        this.datasource = datasource;
+    }
+
+    public String getIgoRequestId() {
+        return igoRequestId;
+    }
+
+    public void setIgoRequestId(String igoRequestId) {
+        this.igoRequestId = igoRequestId;
+    }
+
     public Map<String, String> getCmoSampleIdFields() {
         return cmoSampleIdFields;
     }
@@ -324,6 +347,14 @@ public class PublishedMetadbSample {
             this.sampleAliases = new ArrayList<>();
         }
         return sampleAliases;
+    }
+
+    public MetadbPatient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(MetadbPatient patient) {
+        this.patient = patient;
     }
 
     @Override
