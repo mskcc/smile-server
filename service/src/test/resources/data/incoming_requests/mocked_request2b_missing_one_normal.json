@@ -1,6 +1,6 @@
 {
   "requestId": "22022_BZ",
-  "recipe": "GENESET101",
+  "recipe": "GENESET101_BAITS",
   "projectManagerName": "",
   "piEmail": "",
   "labHeadName": "James Holt",
@@ -11,34 +11,17 @@
   "dataAnalystEmail": "",
   "otherContactEmails": "preclinical_group_shared@mskcc.org",
   "dataAccessEmails": "",
-  "isCmoRequest":true,
-  "bicAnalysis": false,  
   "qcAccessEmails": "",
-  "pooledNormals": [
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT/FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT_S118_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT/FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT_S118_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC/FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC_S22_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC/FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC_S22_R2_001.fastq.gz"
-  ],
-  "projectId": "22022",
+  "isCmoRequest": true,
+  "bicAnalysis": false,
   "samples": [
     {
-      "igoId": "22022_BZ_19",
       "cmoSampleName": "C-DPCXX1-N001-d",
       "sampleName": "LMNO_3443_N",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-DPCXX1",
-      "investigatorSampleId": "LMNO_3443_N",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "other",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "MPNWP",
       "collectionYear": "2018",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -79,25 +62,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-DPCXX1",
+      "igoId": "22022_BZ_19",
+      "investigatorSampleId": "LMNO_3443_N",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "other",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_15",
       "cmoSampleName": "C-KXXL3J-P001-d",
       "sampleName": "LMNO_0034_T_DNA",
       "cmoSampleClass": "Primary",
-      "cmoPatientId": "C-KXXL3J",
-      "investigatorSampleId": "LMNO_0034_T_DNA",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "Left Kidney",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "SARCNOS",
       "collectionYear": "2018",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "TS-189768.2.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -138,25 +127,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-KXXL3J",
+      "igoId": "22022_BZ_15",
+      "investigatorSampleId": "LMNO_0034_T_DNA",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "Left Kidney",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_17",
       "cmoSampleName": "C-XXX711-M001-d",
       "sampleName": "LMNO_9999_T",
       "cmoSampleClass": "Metastasis",
-      "cmoPatientId": "C-XXX711",
-      "investigatorSampleId": "LMNO_9999_T",
-      "tumorOrNormal": "",
-      "tissueLocation": "",
-      "specimenType": "Resection",
-      "sampleOrigin": "",
-      "preservation": "OCT",
+      "oncoTreeCode": "PAAD",
       "collectionYear": "2017",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "181446.13.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -197,23 +192,30 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-XXX711",
+      "igoId": "22022_BZ_17",
+      "investigatorSampleId": "LMNO_9999_T",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_4",
       "cmoSampleName": "C-PPPXX2-N001-d",
       "sampleName": "LMNO_8080_N",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-PPPXX2",
-      "investigatorSampleId": "LMNO_8080_N",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "Blood",
-      "specimenType": "Blood",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "COAD",
       "collectionYear": "",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "8027185112",
       "qcReports": [
         {
@@ -222,25 +224,31 @@
           "investigatorDecision": "Continue processing"
         }
       ],
-      "libraries": []
+      "libraries": [],
+      "cmoPatientId": "C-PPPXX2",
+      "igoId": "22022_BZ_4",
+      "investigatorSampleId": "LMNO_8080_N",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "Blood",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "Blood",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_3",
       "cmoSampleName": "C-KXXL3J-N001-d",
       "sampleName": "LMNO_0034_N2",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-KXXL3J",
-      "investigatorSampleId": "LMNO_0034_N2",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "Blood",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "SARCNOS",
       "collectionYear": "2019",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "BLD-12345",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -281,25 +289,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-KXXL3J",
+      "igoId": "22022_BZ_3",
+      "investigatorSampleId": "LMNO_0034_N2",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "Blood",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_2",
       "cmoSampleName": "C-X09281-N001-d",
       "sampleName": "LMNO_7787_N2",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-X09281",
-      "investigatorSampleId": "LMNO_7787_N2",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "Blood",
-      "specimenType": "Blood",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "MACR",
       "collectionYear": "2018",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -340,25 +354,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-X09281",
+      "igoId": "22022_BZ_2",
+      "investigatorSampleId": "LMNO_7787_N2",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "Blood",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "Blood",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_1",
       "cmoSampleName": "C-XXA40X-P001-d",
       "sampleName": "LMNO_2020_DNA",
       "cmoSampleClass": "Primary",
-      "cmoPatientId": "C-XXA40X",
-      "investigatorSampleId": "LMNO_2020_DNA",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "Right Distal Femur",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "CHOS",
       "collectionYear": "2019",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "TS-193394.2.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -399,25 +419,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-XXA40X",
+      "igoId": "22022_BZ_1",
+      "investigatorSampleId": "LMNO_2020_DNA",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "Right Distal Femur",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_9",
       "cmoSampleName": "C-YXX89J-N001-d",
       "sampleName": "LMNO_3030_N",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-YXX89J",
-      "investigatorSampleId": "LMNO_3030_N",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "other",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "TAML",
       "collectionYear": "2019",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "BLD-33777",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -458,25 +484,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-YXX89J",
+      "igoId": "22022_BZ_9",
+      "investigatorSampleId": "LMNO_3030_N",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "other",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_8",
       "cmoSampleName": "C-DPCXX1-M001-d",
       "sampleName": "LMNO_3443_T_DNA",
       "cmoSampleClass": "Metastasis",
-      "cmoPatientId": "C-DPCXX1",
-      "investigatorSampleId": "LMNO_3443_T_DNA",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "Lung/Middle Lobe",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "MPNWP",
       "collectionYear": "2019",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "TS-019273.5.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -517,25 +549,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-DPCXX1",
+      "igoId": "22022_BZ_8",
+      "investigatorSampleId": "LMNO_3443_T_DNA",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "Lung/Middle Lobe",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_16",
       "cmoSampleName": "C-999XX-M001-d",
       "sampleName": "LMNO_6565_T2_DNA",
       "cmoSampleClass": "Metastasis",
-      "cmoPatientId": "C-999XX",
-      "investigatorSampleId": "LMNO_6565_T2_DNA",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "Bladder Peritoneum",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "MPNWP",
       "collectionYear": "2018",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "TS-191305.1.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -576,25 +614,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-999XX",
+      "igoId": "22022_BZ_16",
+      "investigatorSampleId": "LMNO_6565_T2_DNA",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "Bladder Peritoneum",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_13",
       "cmoSampleName": "C-9XX8808-P001-d",
       "sampleName": "LMNO_0011_T",
       "cmoSampleClass": "Primary",
-      "cmoPatientId": "C-9XX8808",
-      "investigatorSampleId": "LMNO_0011_T",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "Right Femur 4",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "GBC",
       "collectionYear": "2018",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "TS-54321.9.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -635,25 +679,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-9XX8808",
+      "igoId": "22022_BZ_13",
+      "investigatorSampleId": "LMNO_0011_T",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "Right Femur 4",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_21",
       "cmoSampleName": "C-999XX-N002-d",
       "sampleName": "LMNO_6565_N2",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-999XX",
-      "investigatorSampleId": "LMNO_6565_N2",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "other",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "MPNWP",
       "collectionYear": "2019",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "BLD-99111 BC",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -694,25 +744,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-999XX",
+      "igoId": "22022_BZ_21",
+      "investigatorSampleId": "LMNO_6565_N2",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "other",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_10",
       "cmoSampleName": "C-FFX222-N001-d",
       "sampleName": "LMNO_2299_N",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-FFX222",
-      "investigatorSampleId": "LMNO_2299_N",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "other",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "MACR",
       "collectionYear": "2017",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "BLD-98765 BC",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -753,25 +809,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-FFX222",
+      "igoId": "22022_BZ_10",
+      "investigatorSampleId": "LMNO_2299_N",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "other",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_5",
       "cmoSampleName": "C-PPPXX2-P001-d",
       "sampleName": "LMNO_8080_T_DNA",
       "cmoSampleClass": "Primary",
-      "cmoPatientId": "C-PPPXX2",
-      "investigatorSampleId": "LMNO_8080_T_DNA",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "Liver/Right lobe",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "COAD",
       "collectionYear": "",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "TS.928838.4.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -812,25 +874,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-PPPXX2",
+      "igoId": "22022_BZ_5",
+      "investigatorSampleId": "LMNO_8080_T_DNA",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "Liver/Right lobe",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_11",
       "cmoSampleName": "C-YXX89J-P001-d",
       "sampleName": "LMNO_3030_T_DNA",
       "cmoSampleClass": "Primary",
-      "cmoPatientId": "C-YXX89J",
-      "investigatorSampleId": "LMNO_3030_T_DNA",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "left retroperitoneum",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "TAML",
       "collectionYear": "2019",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "TS-223344.0.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -871,25 +939,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-YXX89J",
+      "igoId": "22022_BZ_11",
+      "investigatorSampleId": "LMNO_3030_T_DNA",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "left retroperitoneum",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_12",
       "cmoSampleName": "C-XXX711-N001-d",
       "sampleName": "WT_PXX_bc",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-XXX711",
-      "investigatorSampleId": "WT_PXX_bc",
-      "tumorOrNormal": "",
-      "tissueLocation": "",
-      "specimenType": "Blood",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "PAAD",
       "collectionYear": "2017",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "88354511236",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -930,25 +1004,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-XXX711",
+      "igoId": "22022_BZ_12",
+      "investigatorSampleId": "WT_PXX_bc",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "",
+      "preservation": "EDTA-Streck",
+      "specimenType": "Blood",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_18",
       "cmoSampleName": "C-9XX8808-N001-d",
       "sampleName": "LMNO_0011_N",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-9XX8808",
-      "investigatorSampleId": "LMNO_0011_N",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "Blood",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "GBC",
       "collectionYear": "2018",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "BLD-98765",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -989,25 +1069,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-9XX8808",
+      "igoId": "22022_BZ_18",
+      "investigatorSampleId": "LMNO_0011_N",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "Blood",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_6",
       "cmoSampleName": "C-XXC4XX-N001-d",
       "sampleName": "LMNO_8895_N",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-XXC4XX",
-      "investigatorSampleId": "LMNO_8895_N",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "Blood",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "GBC",
       "collectionYear": "",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -1048,25 +1134,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-XXC4XX",
+      "igoId": "22022_BZ_6",
+      "investigatorSampleId": "LMNO_8895_N",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "Blood",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_20",
       "cmoSampleName": "C-XXA40X-N001-d",
       "sampleName": "LMNO_2020_N",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-XXA40X",
-      "investigatorSampleId": "LMNO_2020_N",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "Buffy Coat",
-      "specimenType": "other",
-      "sampleOrigin": "Buffy Coat",
-      "preservation": "EDTA-Streck",
+      "oncoTreeCode": "CHOS",
       "collectionYear": "2019",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "BLD-98981 BC",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -1107,25 +1199,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-XXA40X",
+      "igoId": "22022_BZ_20",
+      "investigatorSampleId": "LMNO_2020_N",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Normal",
+      "preservation": "EDTA-Streck",
+      "specimenType": "other",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "Buffy Coat",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_14",
       "cmoSampleName": "C-X09281-M001-d",
       "sampleName": "LMNO_7787_T",
       "cmoSampleClass": "Metastasis",
-      "cmoPatientId": "C-X09281",
-      "investigatorSampleId": "LMNO_7787_T",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "Left Kidney Hilar Lymph Node",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "MACR",
       "collectionYear": "2018",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "TS-828282",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -1166,25 +1264,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-X09281",
+      "igoId": "22022_BZ_14",
+      "investigatorSampleId": "LMNO_7787_T",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "Left Kidney Hilar Lymph Node",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "22022_BZ_7",
       "cmoSampleName": "C-FFX222-P001-d",
       "sampleName": "LMNO_2299_T_DNA",
       "cmoSampleClass": "Primary",
-      "cmoPatientId": "C-FFX222",
-      "investigatorSampleId": "LMNO_2299_T_DNA",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "Abdomen",
-      "specimenType": "Resection",
-      "sampleOrigin": "Tissue",
-      "preservation": "OCT",
+      "oncoTreeCode": "MACR",
       "collectionYear": "2019",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "TS-888999.1.T",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [
         {
           "qcReportType": "LIBRARY",
@@ -1225,7 +1329,30 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-FFX222",
+      "igoId": "22022_BZ_7",
+      "investigatorSampleId": "LMNO_2299_T_DNA",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "OCT",
+      "specimenType": "Resection",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "Abdomen",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     }
-  ]
+  ],
+  "pooledNormals": [
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT/FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT_S118_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT/FFPEPOOLEDNORMAL_IGO_GENESET101_ACCGTCCT_S118_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC/FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC_S22_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC/FROZENPOOLEDNORMAL_IGO_GENESET101_TGTCTAAC_S22_R2_001.fastq.gz"
+  ],
+  "projectId": "22022"
 }

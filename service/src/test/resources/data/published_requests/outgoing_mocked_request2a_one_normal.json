@@ -1,60 +1,51 @@
 {
-  "dataAccessEmails": "",
-  "dataAnalystEmail": "",
-  "dataAnalystName": "",
-  "investigatorEmail": "hallj@mskcc.org",
-  "investigatorName": "Jessie Hall",
-  "labHeadEmail": "holtj@mskcc.org",
-  "labHeadName": "James Holt",
-  "otherContactEmails": "preclinical_group_shared@mskcc.org",
-  "piEmail": "",
-  "pooledNormals": [
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
-  ],
-  "projectId": "22022",
-  "projectManagerName": "",
-  "qcAccessEmails": "",
-  "recipe": "GENESET101",
-  "requestId": "22022_CC",
   "metaDbRequestId": "6cc9c81e-875a-11eb-87f8-acde48001122",
+  "igoRequestId": "22022_CC",
+  "genePanel": "GENESET101_BAITS",
+  "projectManagerName": "",
+  "piEmail": "",
+  "labHeadName": "James Holt",
+  "labHeadEmail": "holtj@mskcc.org",
+  "investigatorName": "Jessie Hall",
+  "investigatorEmail": "hallj@mskcc.org",
+  "dataAnalystName": "",
+  "dataAnalystEmail": "",
+  "otherContactEmails": "preclinical_group_shared@mskcc.org",
+  "dataAccessEmails": "",
+  "qcAccessEmails": "",
   "isCmoRequest": true,
   "bicAnalysis": false,
   "samples": [
     {
-      "baitSet": "GENESET101_BAITS",
-      "cmoPatientId": "C-TX6DNG",
-      "cmoSampleClass": "Normal",
+      "metaDbSampleId": "afe74fba-8756-11eb-9b45-acde48001122",
+      "metaDbPatientId": "6cc7394f-875a-11eb-91ec-acde48001122",
       "cmoSampleName": "C-TX6DNG-N001-d",
+      "sampleName": "LMNO_4396_N",
+      "sampleType": "Normal",
+      "oncotreeCode": "TPLL",
       "collectionYear": "",
-      "primaryId": "22022_CC_3",
-      "investigatorSampleId": "LMNO_4396_N",
-      "sampleAliases": [
+      "tubeId": "4157451784",
+      "qcReports": [
         {
-          "namespace": "igoId",
-          "value": "22022_CC_3"
-        },
-        {
-          "namespace": "investigatorId",
-          "value": "LMNO_4396_N"
+          "qcReportType": "LIBRARY",
+          "comments": "",
+          "investigatorDecision": "Continue processing"
         }
       ],
       "libraries": [
         {
+          "libraryIgoId": "22022_CC_3_1",
+          "libraryConcentrationNgul": 34.2,
           "captureConcentrationNm": "1.461988304093567",
           "captureInputNg": "50.0",
           "captureName": "Pool-22022_BZ-22022_CC-Tube7_1",
-          "libraryConcentrationNgul": 34.2,
-          "libraryIgoId": "22022_CC_3_1",
           "runs": [
             {
-              "fastqs": [
-                "/FASTQ/Project_22022_CC/Sample_LMNO_4396_N_IGO_22022_CC_3/LMNO_4396_N_IGO_22022_CC_3_S144_R1_001.fastq.gz",
-                "/FASTQ/Project_22022_CC/Sample_LMNO_4396_N_IGO_22022_CC_3/LMNO_4396_N_IGO_22022_CC_3_S144_R2_001.fastq.gz"
-              ],
+              "runMode": "HiSeq High Output",
+              "runId": "CRX_7395",
               "flowCellId": "HGJMLBBXY",
+              "readLength": "101/8/8/101",
+              "runDate": "2020-05-20",
               "flowCellLanes": [
                 1,
                 2,
@@ -64,32 +55,50 @@
                 6,
                 7
               ],
-              "readLength": "101/8/8/101",
-              "runDate": "2020-05-20",
-              "runId": "CRX_7395",
-              "runMode": "HiSeq High Output"
+              "fastqs": [
+                "/FASTQ/Project_22022_CC/Sample_LMNO_4396_N_IGO_22022_CC_3/LMNO_4396_N_IGO_22022_CC_3_S144_R1_001.fastq.gz",
+                "/FASTQ/Project_22022_CC/Sample_LMNO_4396_N_IGO_22022_CC_3/LMNO_4396_N_IGO_22022_CC_3_S144_R2_001.fastq.gz"
+              ]
             }
           ]
         }
       ],
-      "metaDbPatientId": "6cc7394f-875a-11eb-91ec-acde48001122",
+      "cmoPatientId": "C-TX6DNG",
+      "primaryId": "22022_CC_3",
+      "investigatorSampleId": "LMNO_4396_N",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
       "preservation": "EDTA-Streck",
-      "qcReports": [
+      "sampleClass": "Blood",
+      "sampleOrigin": "Buffy Coat",
+      "tissueLocation": "Blood",
+      "baitSet": "GENESET101_BAITS",
+      "genePanel": "GENESET101_BAITS",
+      "datasource": "igo",
+      "patientAliases": [
         {
-          "comments": "",
-          "investigatorDecision": "Continue processing",
-          "qcReportType": "LIBRARY"
+          "namespace": "cmo",
+          "value": "C-TX6DNG"
         }
       ],
-      "metaDbSampleId": "afe74fba-8756-11eb-9b45-acde48001122",
-      "sampleName": "LMNO_4396_N",
-      "sampleOrigin": "Buffy Coat",
-      "sex": "F",
-      "species": "Human",
-      "specimenType": "Blood",
-      "tissueLocation": "Blood",
-      "tubeId": "4157451784",
-      "tumorOrNormal": "Normal"
+      "sampleAliases": [
+        {
+          "namespace": "igoId",
+          "value": "22022_CC_3"
+        },
+        {
+          "namespace": "investigatorId",
+          "value": "LMNO_4396_N"
+        }
+      ]
     }
-  ]
+  ],
+  "pooledNormals": [
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
+  ],
+  "igoProjectId": "22022"
 }

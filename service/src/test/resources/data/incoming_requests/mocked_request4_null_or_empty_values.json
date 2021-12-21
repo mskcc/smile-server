@@ -10,41 +10,18 @@
   "dataAnalystName": "Poin Dexter",
   "dataAnalystEmail": "dexterp@mskcc.org",
   "otherContactEmails": "dexterp@mskcc.org",
-  "isCmoRequest":true,
-  "bicAnalysis": false,  
   "dataAccessEmails": "",
   "qcAccessEmails": "",
-  "pooledNormals": [
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA/FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA_S23_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA/FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA_S23_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG_S86_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG_S86_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG_S147_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG_S147_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG_S196_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG_S196_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT/MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT_S61_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT/MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT_S61_R2_001.fastq.gz"
-  ],
-  "projectId": "MOCKREQUEST1",
+  "isCmoRequest": true,
+  "bicAnalysis": false,
   "samples": [
     {
-      "igoId": "MOCKREQUEST1_B_1",
       "cmoSampleName": "C-MP789JR-X001-d",
       "sampleName": "XXX002_P3_12345_L1",
       "cmoSampleClass": null,
-      "cmoPatientId": "C-MP789JR",
-      "investigatorSampleId": "XXX002_P3_12345_L1",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "",
-      "specimenType": "PDX",
-      "sampleOrigin": "Tissue",
-      "preservation": "Frozen",
+      "oncoTreeCode": "CLL",
       "collectionYear": "",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [],
       "libraries": [
         {
@@ -73,25 +50,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-MP789JR",
+      "igoId": "MOCKREQUEST1_B_1",
+      "investigatorSampleId": "XXX002_P3_12345_L1",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Tumor",
+      "preservation": "Frozen",
+      "specimenType": "PDX",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "MOCKREQUEST1_B_2",
       "cmoSampleName": "C-MP789JR-N001-d",
       "sampleName": "01-0012345a",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-MP789JR",
-      "investigatorSampleId": "01-0012345a",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "Blood",
-      "sampleOrigin": "Whole Blood",
-      "preservation": "Frozen",
+      "oncoTreeCode": "CLL",
       "collectionYear": "",
-      "sex": "F",
-      "species": "Human",
       "tubeId": "",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [],
       "libraries": [
         {
@@ -120,25 +103,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-MP789JR",
+      "igoId": "MOCKREQUEST1_B_2",
+      "investigatorSampleId": "01-0012345a",
+      "species": "Human",
+      "sex": "F",
+      "tumorOrNormal": "Normal",
+      "preservation": "Frozen",
+      "specimenType": "Blood",
+      "sampleOrigin": "Whole Blood",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "MOCKREQUEST1_B_3",
       "cmoSampleName": "C-8DH24X-X001-d",
       "sampleName": "XXX002_P1_12348a_R_43",
       "cmoSampleClass": "Primary",
-      "cmoPatientId": "C-8DH24X",
-      "investigatorSampleId": "XXX002_P1_12348a_R_43",
-      "tumorOrNormal": "Tumor",
-      "tissueLocation": "",
-      "specimenType": "PDX",
-      "sampleOrigin": "Tissue",
-      "preservation": "Frozen",
+      "oncoTreeCode": "COAD",
       "collectionYear": "",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [],
       "libraries": [
         {
@@ -167,25 +156,31 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-8DH24X",
+      "igoId": "MOCKREQUEST1_B_3",
+      "investigatorSampleId": "XXX002_P1_12348a_R_43",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Tumor",
+      "preservation": "Frozen",
+      "specimenType": "PDX",
+      "sampleOrigin": "Tissue",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
-      "igoId": "MOCKREQUEST1_B_4",
       "cmoSampleName": "C-8DH24X-N001-d",
       "sampleName": "01-XXXXXXXa",
       "cmoSampleClass": "Normal",
-      "cmoPatientId": "C-8DH24X",
-      "investigatorSampleId": "01-XXXXXXXa",
-      "tumorOrNormal": "Normal",
-      "tissueLocation": "",
-      "specimenType": "Blood",
-      "sampleOrigin": "Whole Blood",
-      "preservation": "Frozen",
+      "oncoTreeCode": "COAD",
       "collectionYear": "",
-      "sex": "M",
-      "species": "Human",
       "tubeId": "",
-      "baitSet": "GENESET101_BAITS",
       "qcReports": [],
       "libraries": [
         {
@@ -214,7 +209,36 @@
             }
           ]
         }
-      ]
+      ],
+      "cmoPatientId": "C-8DH24X",
+      "igoId": "MOCKREQUEST1_B_4",
+      "investigatorSampleId": "01-XXXXXXXa",
+      "species": "Human",
+      "sex": "M",
+      "tumorOrNormal": "Normal",
+      "preservation": "Frozen",
+      "specimenType": "Blood",
+      "sampleOrigin": "Whole Blood",
+      "tissueLocation": "",
+      "baitSet": "GENESET101_BAITS",
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     }
-  ]
+  ],
+  "pooledNormals": [
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA/FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA_S23_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA/FFPEPOOLEDNORMAL_IGO_GENESET101_TAGCTTGA_S23_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG_S86_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG_S86_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG_S147_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG_S147_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG_S196_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG_S196_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT/MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT_S61_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT/MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT_S61_R2_001.fastq.gz"
+  ],
+  "projectId": "MOCKREQUEST1"
 }
