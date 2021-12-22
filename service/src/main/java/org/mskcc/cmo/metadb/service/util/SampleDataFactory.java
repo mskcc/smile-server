@@ -69,9 +69,11 @@ public class SampleDataFactory {
         sample.setSampleClass(sampleMetadata.getTumorOrNormal());
         sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "dmpId"));
         // 'investigatorId' isn't applicable for clinical dmp samples but we will deal with it later
+        //should we remove this alias?
         sample.addSampleAlias(new SampleAlias(
                 sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
-
+        //need to add datasource, would it be dmp?
+        sample.setDatasource("dmp");
         MetadbPatient patient = new MetadbPatient();
         patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
         sample.setPatient(patient);

@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.cmo.metadb.model.converter.LibrariesStringConverter;
 import org.mskcc.cmo.metadb.model.converter.MapStringConverter;
 import org.mskcc.cmo.metadb.model.converter.QcReportsStringConverter;
+import org.mskcc.cmo.metadb.model.dmp.DmpSampleMetadata;
 import org.mskcc.cmo.metadb.model.igo.IgoSampleManifest;
 import org.mskcc.cmo.metadb.model.igo.Library;
 import org.mskcc.cmo.metadb.model.igo.QcReport;
@@ -83,6 +85,67 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.qcReports =  igoSampleManifest.getQcReports();
         this.libraries = igoSampleManifest.getLibraries();
         this.cmoSampleIdFields = igoSampleManifest.getCmoSampleIdFields();
+    }
+    
+    /**
+     * SampleMetadata constructor from dmpSampleMetadata.
+     * @param dmpSampleMetadata
+     */
+    public SampleMetadata(DmpSampleMetadata dmpSampleMetadata) {
+        this.primaryId = dmpSampleMetadata.getDmpSampleId();
+        this.cmoPatientId = dmpSampleMetadata.getDmpPatientId();
+        this.oncotreeCode = dmpSampleMetadata.getTumorTypeCode();
+        this.collectionYear = dmpSampleMetadata.getDateTumorSequencing();
+        this.sex = dmpSampleMetadata.getGender().toString().equals("0") ? "Male" : "Female";
+        this.tumorOrNormal = dmpSampleMetadata.getDmpSampleId()
+                .matches("DMP NORMAL SAMPLE SUFFIX PATTERN") ? "Normal" : "Tumor";
+        this.sampleClass = dmpSampleMetadata.getDmpSampleId()
+        .matches("[ACCESS REGEX PATTERN]") ? "cfDNA" : "Tumor";
+        this.tissueLocation = dmpSampleMetadata.getPrimarySite();
+        this.genePanel = dmpSampleMetadata.getGenePanel();
+        
+        //couldn't find baiset in the universal schema column in the excel sheet
+        this.baitSet = dmpSampleMetadata.getGenePanel();
+              
+        //storing the additional fields in cmoSampleIdFields, not sure if i should an additional fields map
+        this.cmoSampleIdFields.put("msi-comment", dmpSampleMetadata.getMsiComment());
+        this.cmoSampleIdFields.put("msi-score", dmpSampleMetadata.getMsiScore());
+        this.cmoSampleIdFields.put("msi-type", dmpSampleMetadata.getMsiType());
+        
+        //populated the metastasisMap below, outside the constructor
+        this.sampleType = setUpMetastasisValueMapping().get(dmpSampleMetadata.getIsMetastasis());
+
+        //in this excel form, cmoSampleName in lims is associated with primaryId
+        //this.cmoSampleName = dmpSampleMetadata
+        
+        //didn't find tubeId on the excel sheet
+        //this.tubeId = dmpSampleMetadata
+        
+        //missing from excel sheet
+        //this.species = dmpSampleMetadata
+        
+        //couldn't find the fields below in dmpSampleMetadata
+        
+        //this.sampleName = dmpSampleMetadata
+        //this.cmoInfoIgoId = dmpSampleMetadata
+        //this.investigatorSampleId = dmpSampleMetadata
+        //this.cfDNA2dBarcode = dmpSampleMetadata
+        //this.preservation = dmpSampleMetadata
+        //this.sampleOrigin = dmpSampleMetadata
+        //this.qcReports =  dmpSampleMetadata
+        //this.libraries = dmpSampleMetadata
+        //this.cmoSampleIdFields = dmpSampleMetadata.getAdditionalProperties(); //convert to <String,String>
+
+
+    }
+    
+    Map<String, String> setUpMetastasisValueMapping() {
+        Map<String, String> metastasisValueMapping = new HashMap<>();
+        metastasisValueMapping.put("0", "Primary");
+        metastasisValueMapping.put("1", "Metastasis");
+        metastasisValueMapping.put("2", "Local Recurrence");
+        metastasisValueMapping.put("127", "Unknown");
+        return metastasisValueMapping;
     }
 
     public Long getId() {
