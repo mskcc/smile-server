@@ -1,0 +1,27 @@
+identifier	filepath	description
+P0000001N01IM3	dmp_clinical/mocked_dmp_P0000001N01IM3.json	Patient: P-0000001; Sample: P-0000001-N01-IM3
+P0000001T01IM3	dmp_clinical/mocked_dmp_P0000001T01IM3.json	Patient: P-0000001; Sample: P-0000001-T01-IM3
+P0000002N01IM3	dmp_clinical/mocked_dmp_P0000002N01IM3.json	Patient: P-0000002; Sample: P-0000002-N01-IM3
+P0000002T01IM3	dmp_clinical/mocked_dmp_P0000002T01IM3.json	Patient: P-0000002; Sample: P-0000002-T01-IM3
+P0000222N01IM3	dmp_clinical/mocked_dmp_P0000222N01IM3.json	Patient: P-0000222; Sample: P-0000222-N01-IM3
+P0000222T01IM3	dmp_clinical/mocked_dmp_P0000222T01IM3.json	Patient: P-0000222; Sample: P-0000222-T01-IM3
+P0000333N01IM3	dmp_clinical/mocked_dmp_P0000333N01IM3.json	Patient: P-0000333; Sample: P-0000333-N01-IM3
+P0000333T01IM3	dmp_clinical/mocked_dmp_P0000333T01IM3.json	Patient: P-0000333; Sample: P-0000333-T01-IM3
+P0004000N01IM3	dmp_clinical/mocked_dmp_P0004000N01IM3.json	Patient: P-0004000; Sample: P-0004000-N01-IM3
+P0004000T01IM3	dmp_clinical/mocked_dmp_P0004000T01IM3.json	Patient: P-0004000; Sample: P-0004000-T01-IM3
+P0004444N01IM3	dmp_clinical/mocked_dmp_P0004444N01IM3.json	Patient: P-0004444; Sample: P-0004444-N01-IM3
+P0007111N01IM3	dmp_clinical/mocked_dmp_P0007111N01IM3.json	Patient: P-0007111; Sample: P-0007111-N01-IM3
+P0007111T01IM3	dmp_clinical/mocked_dmp_P0007111T01IM3.json	Patient: P-0007111; Sample: P-0007111-T01-IM3
+P0008999N01IM3	dmp_clinical/mocked_dmp_P0008999N01IM3.json	Patient: P-0008999; Sample: P-0008999-N01-IM3
+P0008999T01IM3	dmp_clinical/mocked_dmp_P0008999T01IM3.json	Patient: P-0008999; Sample: P-0008999-T01-IM3
+P6660000N01IM3	dmp_clinical/mocked_dmp_P6660000N01IM3.json	Patient: P-6660000; Sample: P-6660000-N01-IM3
+P7778999N01IM3	dmp_clinical/mocked_dmp_P7778999N01IM3.json	Patient: P-7778999; Sample: P-7778999-N01-IM3
+P7778999T01IM3	dmp_clinical/mocked_dmp_P7778999T01IM3.json	Patient: P-7778999; Sample: P-7778999-T01-IM3
+P8882444N01IM3	dmp_clinical/mocked_dmp_P8882444N01IM3.json	Patient: P-8882444; Sample: P-8882444-N01-IM3
+P8882444T01IM3	dmp_clinical/mocked_dmp_P8882444T01IM3.json	Patient: P-8882444; Sample: P-8882444-T01-IM3
+P9990000N01IM3	dmp_clinical/mocked_dmp_P9990000N01IM3.json	Patient: P-9990000; Sample: P-9990000-N01-IM3
+P9990000T01IM3	dmp_clinical/mocked_dmp_P9990000T01IM3.json	Patient: P-9990000; Sample: P-9990000-T01-IM3
+P9992811N01IM3	dmp_clinical/mocked_dmp_P9992811N01IM3.json	Patient: P-9992811; Sample: P-9992811-N01-IM3
+P9992811T01IM3	dmp_clinical/mocked_dmp_P9992811T01IM3.json	Patient: P-9992811; Sample: P-9992811-T01-IM3
+P9998808N01IM3	dmp_clinical/mocked_dmp_P9998808N01IM3.json	Patient: P-9998808; Sample: P-9998808-N01-IM3
+P9998808T01IM3	dmp_clinical/mocked_dmp_P9998808T01IM3.json	Patient: P-9998808; Sample: P-9998808-T01-IM3
