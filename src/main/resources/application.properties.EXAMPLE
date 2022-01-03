@@ -32,6 +32,7 @@ metadb.cmo_sample_update_topic=
 # request-reply topics
 request_reply.patient_samples_topic=
 request_reply.crdb_mapping_topic=
+metadb.dmp_new_sample_topic=
 
 # cmo patient id correction topics
 metadb.correct_cmoptid_topic=

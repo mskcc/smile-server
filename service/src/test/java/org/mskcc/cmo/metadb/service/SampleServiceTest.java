@@ -1,15 +1,18 @@
 package org.mskcc.cmo.metadb.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.model.dmp.DmpSampleMetadata;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbPatientRepository;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbRequestRepository;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
 import org.mskcc.cmo.metadb.service.util.RequestDataFactory;
+import org.mskcc.cmo.metadb.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -38,7 +41,7 @@ public class SampleServiceTest {
 
     @Autowired
     private MetadbPatientService patientService;
-
+    
     @Container
     private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
@@ -99,6 +102,17 @@ public class SampleServiceTest {
                 .get("mockIncomingRequest5JsonPtMultiSamples");
         MetadbRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
         requestService.saveRequest(request5);
+        
+        //persist mock clinical data
+        MockJsonTestData clinicalSample = mockDataUtils.mockedDmpMetadataMap
+                .get("P0000001N01IM3");
+        final ObjectMapper mapper = new ObjectMapper();
+        DmpSampleMetadata dmpSample = mapper.readValue(clinicalSample.getJsonString(),
+                DmpSampleMetadata.class);
+        MetadbSample clinicalSample1 = SampleDataFactory.buildNewClinicalSampleFromMetadata(
+                dmpSample.getDmpPatientId(), dmpSample);
+        sampleService.saveSampleMetadata(clinicalSample1);
+        
     }
 
 
@@ -121,7 +135,7 @@ public class SampleServiceTest {
     public void testFindMatchedNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(sample);
         Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
     }
@@ -134,7 +148,7 @@ public class SampleServiceTest {
     public void testFindPooledNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
-        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<String> pooledNormalList = sampleService.getPooledNormalsBySample(sample);
         Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
@@ -162,7 +176,7 @@ public class SampleServiceTest {
     @Test
     public void testGetAllMetadbSamplesByRequestId() throws Exception {
         String requestId = "33344_Z";
-        List<MetadbSample> requestSamplesList = sampleService.getAllSamplesByRequestId(requestId);
+        List<MetadbSample> requestSamplesList = sampleService.getResearchSamplesByRequestId(requestId);
         Assertions.assertThat(requestSamplesList.size()).isEqualTo(4);
     }
 
@@ -175,7 +189,8 @@ public class SampleServiceTest {
     @Test
     public void testGetSampleMetadataHistoryByIgoId() throws Exception {
         String igoId = "MOCKREQUEST1_B_1";
-        List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(1);
     }
 
@@ -187,7 +202,7 @@ public class SampleServiceTest {
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
 
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
@@ -216,9 +231,10 @@ public class SampleServiceTest {
         MetadbRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
                 updatedRequestData.getJsonString());
         MetadbSample updatedSample = updatedRequest.getMetaDbSampleList().get(1);
-        sampleService.saveSampleMetadata(updatedSample);
+        sampleService.saveMetadbSample(updatedSample);
 
-        List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
 
     }
@@ -230,8 +246,21 @@ public class SampleServiceTest {
     @Test
     public void testSampleHistoryListIsAscendingByImportDate() throws Exception {
         String igoId = "MOCKREQUEST1_B_4";
-        List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory).isSorted();
     }
-
+    
+    /**
+     * Test if the persisted clinical sample is accurately mapped
+     * @throws Exception 
+     */
+    
+    @Test
+    public void testPersistClinicalSample() throws Exception {
+        String cmoPatientId = "P-0000001";
+        List<SampleMetadata> sampleMetadataList = sampleService
+                .getSampleMetadataListByCmoPatientId(cmoPatientId);
+        Assertions.assertThat(sampleMetadataList.size()).isEqualTo(2);
+    }
 }
