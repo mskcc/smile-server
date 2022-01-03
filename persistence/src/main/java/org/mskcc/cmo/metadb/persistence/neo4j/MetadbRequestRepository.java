@@ -28,7 +28,7 @@ public interface MetadbRequestRepository extends Neo4jRepository<MetadbRequest, 
             + "RETURN rm")
     List<RequestMetadata> findRequestMetadataHistoryById(@Param("reqId") String reqId);
 
-    @Query("MATCH (r:Request)-[:HAS_METADATA]->(rm:RequestMetadata) "
+    @Query("MATCH (r: Request)-[:HAS_METADATA]->(rm: RequestMetadata) "
             + "WHERE $dateRangeStart <= [rm][0].importDate <= $dateRangeEnd "
             + "RETURN [r.metaDbRequestId, r.igoProjectId, r.igoRequestId, [rm][0].importDate]")
     List<List<String>> findRequestWithinDateRange(@Param("dateRangeStart") String startDate,
