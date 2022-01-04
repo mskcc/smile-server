@@ -9,7 +9,6 @@ import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
-import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
@@ -76,7 +75,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public List<MetadbSample> getMatchedNormalsBySample(
             MetadbSample sample) throws Exception {
-        return sampleRepository.findMatchedNormalsBySample(sample);
+        return sampleRepository.findResearchMatchedNormalsBySample(sample);
     }
 
     @Override
@@ -117,7 +116,7 @@ public class SampleServiceImpl implements MetadbSampleService {
 
     @Override
     public List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception {
-        return sampleRepository.findAllSampleMetadataListByCmoPatientId(cmoPatientId);
+        return sampleRepository.findAllResearchSampleMetadataByCmoPatientId(cmoPatientId);
     }
 
     @Override
@@ -157,7 +156,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     public List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(
             String cmoPatientId) throws Exception {
         List<SampleMetadata> sampleMetadataList = sampleRepository
-                .findAllSampleMetadataListByCmoPatientId(cmoPatientId);
+                .findAllResearchSampleMetadataByCmoPatientId(cmoPatientId);
         List<PublishedMetadbSample> samples = new ArrayList<>();
         for (SampleMetadata sample: sampleMetadataList) {
             // TODO: update method to fill in sample details in a more inclusive
