@@ -28,4 +28,14 @@ public interface MetadbPatientRepository extends Neo4jRepository<MetadbPatient, 
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "
             + "RETURN p.metaDbPatientId")
     UUID findPatientIdBySample(@Param("metaDbSampleId") UUID metaDbSampleId);
+
+    @Query("MATCH (s: Sample)< -[:IS_ALIAS]-(sa: SampleAlias{value: $dmpId, namespace: 'dmpId'}) "
+            + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "
+            + "RETURN p")
+    MetadbPatient findPatientByClinicalSample(@Param("dmpId") String dmpId);
+
+    @Query("MATCH (s: Sample)< -[:IS_ALIAS]-(sa: SampleAlias{value: $igoId, namespace: 'igoId'}) "
+            + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "
+            + "RETURN p")
+    MetadbPatient findPatientByResearchSample(@Param("igoId") String igoId);
 }
