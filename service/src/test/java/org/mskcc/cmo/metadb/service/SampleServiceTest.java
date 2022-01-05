@@ -121,7 +121,7 @@ public class SampleServiceTest {
     public void testFindMatchedNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample sample = sampleService.getResearchMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(sample);
         Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
     }
@@ -134,7 +134,7 @@ public class SampleServiceTest {
     public void testFindPooledNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
-        MetadbSample sample = sampleService.getResearchMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<String> pooledNormalList = sampleService.getPooledNormalsBySample(sample);
         Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
@@ -149,7 +149,7 @@ public class SampleServiceTest {
     public void testGetSampleMetadataListByCmoPatientId() throws Exception {
         String cmoPatientId = "C-PXXXD9";
         List<SampleMetadata> savedSampleMetadataList = sampleService
-                .getAllSampleMetadataByCmoPatientId(cmoPatientId);
+                .getSampleMetadataListByCmoPatientId(cmoPatientId);
         Assertions.assertThat(savedSampleMetadataList.size()).isEqualTo(2);
     }
 
@@ -162,7 +162,7 @@ public class SampleServiceTest {
     @Test
     public void testGetAllMetadbSamplesByRequestId() throws Exception {
         String requestId = "33344_Z";
-        List<MetadbSample> requestSamplesList = sampleService.getAllResearchSamplesByRequestId(requestId);
+        List<MetadbSample> requestSamplesList = sampleService.getResearchSamplesByRequestId(requestId);
         Assertions.assertThat(requestSamplesList.size()).isEqualTo(4);
     }
 
@@ -188,7 +188,7 @@ public class SampleServiceTest {
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample sample = sampleService.getResearchMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
 
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");

@@ -99,18 +99,17 @@ public class MetadbSample implements Serializable {
     /**
      *
      * @return SamplePrimaryId
+     * @throws ParseException 
      */
-    public String getSamplePrimaryId() {
+    public String getPrimarySampleAlias() throws ParseException {
         if (sampleAliases == null) {
             sampleAliases = new ArrayList<>();
         }
+        SampleMetadata latestMetadata = getLatestSampleMetadata();
         for (SampleAlias s: sampleAliases) {
-            if (s.getNamespace().equalsIgnoreCase("igoId")) {
-                return s.getValue();
-            }
-            if (s.getNamespace().equalsIgnoreCase("dmpId")) {
-                return s.getValue();
-            }
+          if (s.getValue().equalsIgnoreCase(latestMetadata.getPrimaryId())) {
+            return s.getValue();
+          }
         }
         return null;
     }

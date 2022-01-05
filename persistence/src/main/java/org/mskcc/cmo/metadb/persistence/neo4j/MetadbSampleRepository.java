@@ -25,17 +25,6 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
             + "RETURN s")
     MetadbSample findSampleByPrimaryId(@Param("primaryId") String primaryId);
 
-    @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, namespace: 'igoId'}) "
-        + "MATCH (s)<-[:IS_ALIAS]-(sm: Sample) "
-        + "RETURN sm")
-    MetadbSample findResearchSampleByIgoId(@Param("igoId") SampleAlias igoId);
-
-    //needs to be tested with clinical samples
-    @Query("MATCH (s: SampleAlias {value: $dmpId.sampleId, namespace: 'dmpId'}) "
-            + "MATCH (s)<-[:IS_ALIAS]-(sm: Sample) "
-            + "RETURN sm")
-    MetadbSample findClinicalSampleByDmpId(@Param("dmpId") SampleAlias dmpId);
-
     @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
             + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
             + "RETURN s;")
@@ -51,7 +40,7 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
             + "MATCH (n: Sample)<-[:HAS_SAMPLE]-(p) "
             + "WHERE toLower(n.sampleClass) = 'normal'"
             + "RETURN n")
-    List<MetadbSample> findResearchMatchedNormalsBySample(
+    List<MetadbSample> findMatchedNormalsByResearchSample(
             @Param("metaDbSample") MetadbSample metaDbSample);
 
     @Query("Match (r: Request {igoRequestId: $reqId})-[:HAS_SAMPLE]->"
@@ -72,14 +61,10 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     List<SampleMetadata> findAllSampleMetadataByCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId);
 
-    @Query("MATCH (sa :SampleAlias {value:$igoId, namespace: 'igoId'})"
+    @Query("MATCH (sa :SampleAlias {value:$value, namespace: $namespace})"
             + "-[:IS_ALIAS]->(s: Sample)"
             + "-[:HAS_METADATA]->(sm: SampleMetadata)"
             + "RETURN sm")
-    List<SampleMetadata> findResearchSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
-
-    //needs to be tested with clinical samples
-    @Query("MATCH (sa :SampleAlias {value: $dmpId, namespace: 'dmpId'})-[:IS_ALIAS]->(s: Sample)"
-            + "-[:HAS_METADATA]->(sm: SampleMetadata) RETURN sm")
-    List<SampleMetadata> findClinicalSampleMetadataHistoryByDmpId(@Param("dmpId") String dmpId);
+    List<SampleMetadata> findSampleMetadataHistoryByNamespaceValue(
+            @Param("namespace") String namespace, @Param("value") String value);
 }
