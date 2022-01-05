@@ -107,9 +107,9 @@ public class MetadbSample implements Serializable {
         }
         SampleMetadata latestMetadata = getLatestSampleMetadata();
         for (SampleAlias s: sampleAliases) {
-          if (s.getValue().equalsIgnoreCase(latestMetadata.getPrimaryId())) {
-            return s.getValue();
-          }
+            if (s.getValue().equalsIgnoreCase(latestMetadata.getPrimaryId())) {
+                return s.getValue();
+            }
         }
         return null;
     }
