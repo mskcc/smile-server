@@ -21,16 +21,48 @@ import org.springframework.stereotype.Component;
 @Component
 public final class MockDataUtils {
     private final ObjectMapper mapper = new ObjectMapper();
+    // mocked data filepaths and resources
     private final String MOCKED_REQUEST_DATA_DETAILS_FILEPATH = "data/mocked_request_data_details.txt";
+    private final String MOCKED_DMP_METADATA_DETAILS_FILEPATH
+            = "data/dmp_clinical/mocked_dmp_data_details.txt";
     private final String MOCKED_DMP_PATIENT_MAPPING_FILEPATH
             = "data/dmp_clinical/mocked_dmp_patient_mappings.txt";
     private final String MOCKED_DMP_SAMPLE_MAPPING_FILEPATH
             = "data/dmp_clinical/mocked_dmp_sample_mappings.txt";
     private final String MOCKED_JSON_DATA_DIR = "data";
     private final ClassPathResource mockJsonTestDataResource = new ClassPathResource(MOCKED_JSON_DATA_DIR);
+    // mocked data maps
     public Map<String, MockJsonTestData> mockedRequestJsonDataMap;
+    public Map<String, MockJsonTestData> mockedDmpMetadataMap;
     public Map<String, String> mockedDmpPatientMapping;
     public Map<String, String> mockedDmpSampleMapping;
+
+    /**
+     * Inits the mocked dmp metadata map.
+     * @throws IOException
+     */
+    @Autowired
+    public void mockedDmpMetadataMap() throws IOException {
+        this.mockedDmpMetadataMap = new HashMap<>();
+        ClassPathResource jsonDataDetailsResource =
+                new ClassPathResource(MOCKED_DMP_METADATA_DETAILS_FILEPATH);
+        BufferedReader reader = new BufferedReader(new FileReader(jsonDataDetailsResource.getFile()));
+        List<String> columns = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split("\t");
+            if (columns.isEmpty()) {
+                columns = Arrays.asList(data);
+                continue;
+            }
+            String identifier = data[columns.indexOf("identifier")];
+            String filepath = data[columns.indexOf("filepath")];
+            String description = data[columns.indexOf("description")];
+            mockedDmpMetadataMap.put(identifier,
+                    createMockJsonTestData(identifier, filepath, description));
+        }
+        reader.close();
+    }
 
     /**
      * Inits the mocked dmp patient id mappings.
@@ -58,7 +90,7 @@ public final class MockDataUtils {
             } catch (ArrayIndexOutOfBoundsException e) {
                 // do nothing
             }
-            mockedDmpPatientMapping.put(cmoPatientId, dmpPatientId);
+            mockedDmpPatientMapping.put(dmpPatientId, cmoPatientId);
         }
         reader.close();
     }
