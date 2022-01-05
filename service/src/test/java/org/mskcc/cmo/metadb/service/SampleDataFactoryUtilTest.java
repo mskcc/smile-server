@@ -2,6 +2,7 @@ package org.mskcc.cmo.metadb.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
+import junit.framework.Assert;
 import org.junit.jupiter.api.Test;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
@@ -52,6 +53,11 @@ public class SampleDataFactoryUtilTest {
             String cmoPatientId = mockDataUtils.mockedDmpPatientMapping.get(dmpSample.getDmpPatientId());
             SampleMetadata sampleMetadata =
                     SampleDataFactory.buildNewSampleMetadataFromDmpSample(cmoPatientId, dmpSample);
+            // verify that collection year was resolved correctly
+            String paddedCollectionYear = " " + sampleMetadata.getCollectionYear() + " ";
+            Assert.assertTrue(dmpSample.getDateTumorSequencing().contains(paddedCollectionYear));
+            //TODO add tests to verify other specific values were resolved correctly
+            // such as sampleClass, sampleType, sex, and tumorOrNormal
         }
     }
 }
