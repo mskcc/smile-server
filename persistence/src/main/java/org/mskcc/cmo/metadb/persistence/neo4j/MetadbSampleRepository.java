@@ -21,6 +21,10 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
             + "RETURN sm")
     MetadbSample findAllSamplesById(@Param("metaDbSampleId") UUID metaDbSampleId);
 
+    @Query("MATCH (s:Sample)-[:HAS_METADATA]->(s: SampleMetadata {primaryId: $primaryId})"
+            + "RETURN s")
+    MetadbSample findSampleByPrimaryId(@Param("primaryId") String primaryId);
+
     @Query("MATCH (s: SampleAlias {value: $igoId.sampleId, namespace: 'igoId'}) "
         + "MATCH (s)<-[:IS_ALIAS]-(sm: Sample) "
         + "RETURN sm")
@@ -62,27 +66,16 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     MetadbSample findResearchSampleByRequestAndIgoId(@Param("reqId") String reqId,
             @Param("igoId") String igoId);
 
-    //needs to be tested with clinical samples
-    @Query("MATCH (pa: PatientAlias"
-            + "{namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
-            + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample {datasource: 'dmp'})"
-            + "-[:HAS_METADATA]->(sm: SampleMetadata)"
-            + "RETURN sm"
-    )
-    List<SampleMetadata> findAllClinicalSampleMetadataByCmoPatientId(
-            @Param("cmoPatientId") String cmoPatientId);
-
     @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
-            + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample {datasource: 'igo'})"
-            + "-[:HAS_METADATA]->(sm: SampleMetadata) "
-            + "MATCH (r: Request)-[:HAS_SAMPLE]->(s) SET sm.igoRequestId = r.igoRequestId "
-            + "RETURN sm"
-    )
-    List<SampleMetadata> findAllResearchSampleMetadataByCmoPatientId(
+            + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata) "
+            + "RETURN sm")
+    List<SampleMetadata> findAllSampleMetadataByCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId);
 
-    @Query("MATCH (sa :SampleAlias {value: $igoId, namespace: 'igoId'})-[:IS_ALIAS]->(s: Sample)"
-            + "-[:HAS_METADATA]->(sm: SampleMetadata) RETURN sm")
+    @Query("MATCH (sa :SampleAlias {value:$igoId, namespace: 'igoId'})"
+            + "-[:IS_ALIAS]->(s: Sample)"
+            + "-[:HAS_METADATA]->(sm: SampleMetadata)"
+            + "RETURN sm")
     List<SampleMetadata> findResearchSampleMetadataHistoryByIgoId(@Param("igoId") String igoId);
 
     //needs to be tested with clinical samples

@@ -89,7 +89,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
                     ReplyInfo replyInfo = patientSamplesReqReplyQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (replyInfo != null) {
                         List<SampleMetadata> sampleList =
-                                sampleService.getSampleMetadataListByCmoPatientId(
+                                sampleService.getAllSampleMetadataByCmoPatientId(
                                         replyInfo.getRequestMessage());
                         messagingGateway.replyPublish(replyInfo.getReplyTo(),
                                 mapper.writeValueAsString(sampleList));

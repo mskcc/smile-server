@@ -98,15 +98,18 @@ public class MetadbSample implements Serializable {
 
     /**
      *
-     * @return SampleIgoId
+     * @return SamplePrimaryId
      */
-    public SampleAlias getSampleIgoId() {
+    public String getSamplePrimaryId() {
         if (sampleAliases == null) {
             sampleAliases = new ArrayList<>();
         }
         for (SampleAlias s: sampleAliases) {
             if (s.getNamespace().equalsIgnoreCase("igoId")) {
-                return s;
+                return s.getValue();
+            }
+            if (s.getNamespace().equalsIgnoreCase("dmpId")) {
+                return s.getValue();
             }
         }
         return null;
