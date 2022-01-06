@@ -221,7 +221,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     SampleMetadata sampleMetadata = sampleUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (sampleMetadata != null) {
-                        MetadbSample existingSample = sampleService.getMetadbSampleByRequestAndIgoId(
+                        MetadbSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
                                 sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
                         if (existingSample == null) {
                             LOG.info("Sample metadata does not already exist - persisting to db: "

@@ -147,7 +147,7 @@ public class RequestServiceImpl implements MetadbRequestService {
         List<RequestMetadata> requestMetadataList =
                 requestRepository.findRequestMetadataHistoryById(requestId);
         request.setRequestMetadataList(requestMetadataList);
-        List<MetadbSample> metadbSampleList = sampleService.getAllSamplesByRequestId(requestId);
+        List<MetadbSample> metadbSampleList = sampleService.getResearchSamplesByRequestId(requestId);
         request.setMetaDbSampleList(metadbSampleList);
         return request;
     }
@@ -210,7 +210,7 @@ public class RequestServiceImpl implements MetadbRequestService {
     public List<MetadbSample> getRequestSamplesWithUpdates(MetadbRequest request) throws Exception {
         List<MetadbSample> updatedSamples = new ArrayList<>();
         for (MetadbSample sample: request.getMetaDbSampleList()) {
-            MetadbSample existingSample = sampleService.getMetadbSampleByRequestAndIgoId(
+            MetadbSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
                     request.getIgoRequestId(), sample.getLatestSampleMetadata().getPrimaryId());
             // skip samples that do not already exist since they do not have a sample metadata
             // history to publish to the CMO_SAMPLE_METADATA_UPDATE topic

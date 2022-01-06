@@ -121,7 +121,7 @@ public class SampleServiceTest {
     public void testFindMatchedNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(sample);
         Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
     }
@@ -134,7 +134,7 @@ public class SampleServiceTest {
     public void testFindPooledNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
-        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<String> pooledNormalList = sampleService.getPooledNormalsBySample(sample);
         Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
     }
@@ -162,7 +162,7 @@ public class SampleServiceTest {
     @Test
     public void testGetAllMetadbSamplesByRequestId() throws Exception {
         String requestId = "33344_Z";
-        List<MetadbSample> requestSamplesList = sampleService.getAllSamplesByRequestId(requestId);
+        List<MetadbSample> requestSamplesList = sampleService.getResearchSamplesByRequestId(requestId);
         Assertions.assertThat(requestSamplesList.size()).isEqualTo(4);
     }
 
@@ -175,7 +175,8 @@ public class SampleServiceTest {
     @Test
     public void testGetSampleMetadataHistoryByIgoId() throws Exception {
         String igoId = "MOCKREQUEST1_B_1";
-        List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(1);
     }
 
@@ -187,7 +188,7 @@ public class SampleServiceTest {
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
-        MetadbSample sample = sampleService.getMetadbSampleByRequestAndIgoId(requestId, igoId);
+        MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
 
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
@@ -218,7 +219,8 @@ public class SampleServiceTest {
         MetadbSample updatedSample = updatedRequest.getMetaDbSampleList().get(1);
         sampleService.saveSampleMetadata(updatedSample);
 
-        List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
 
     }
@@ -230,7 +232,8 @@ public class SampleServiceTest {
     @Test
     public void testSampleHistoryListIsAscendingByImportDate() throws Exception {
         String igoId = "MOCKREQUEST1_B_4";
-        List<SampleMetadata> sampleMetadataHistory = sampleService.getSampleMetadataHistoryByIgoId(igoId);
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory).isSorted();
     }
 
