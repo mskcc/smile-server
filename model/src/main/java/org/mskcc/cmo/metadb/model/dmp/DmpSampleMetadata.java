@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.model.dmp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import java.util.Map;
  *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties({"dt_alys_end_time", "dt_dms_start_time",
+    "mrev_comments", "mrev_status_name", "tmb_cohort", "tmb_tt_cohort"})
 public class DmpSampleMetadata {
     @JsonProperty("alys2sample_id")
     private Integer alys2sampleId;

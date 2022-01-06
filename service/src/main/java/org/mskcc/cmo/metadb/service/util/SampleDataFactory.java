@@ -170,8 +170,15 @@ public class SampleDataFactory {
     }
 
     private static String resolveDmpSampleClass(String dmpSampleId) {
-        Matcher matcher = DMP_ACCESS_REGEX.matcher(dmpSampleId);
-        return matcher.matches() ? "cfDNA" : "Tumor";
+        Matcher cfDnaMatcher = DMP_ACCESS_REGEX.matcher(dmpSampleId);
+        if (cfDnaMatcher.matches()) {
+            return "cfDNA";
+        }
+        Matcher normalMatcher = DMP_NORMAL_REGEX.matcher(dmpSampleId);
+        if (normalMatcher.matches()) {
+            return "Normal";
+        }
+        return "Tumor";
     }
 
     private static String resolveDmpTumorOrNormal(String dmpSampleId) {
