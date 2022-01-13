@@ -10,7 +10,7 @@ public interface MessageHandlingService {
     void initialize(Gateway gateway) throws Exception;
     void newRequestHandler(MetadbRequest request) throws Exception;
     void requestUpdateHandler(RequestMetadata requestMetadata) throws Exception;
-    void sampleUpdateHandler(SampleMetadata sampleMetadata) throws Exception;
+    void researchSampleUpdateHandler(SampleMetadata sampleMetadata) throws Exception;
     void newSampleHandler(MetadbSample metadbSample) throws Exception;
     void shutdown() throws Exception;
 }
