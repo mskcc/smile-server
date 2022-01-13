@@ -70,7 +70,7 @@ public class RequestServiceImpl implements MetadbRequestService {
                 for (MetadbSample s: request.getMetaDbSampleList()) {
                     // considering adding the patientService.savePatient() stuff here
                     // and remove from the sample service.
-                    updatedSamples.add(sampleService.saveSampleMetadata(s));
+                    updatedSamples.add(sampleService.saveMetadbSample(s));
                 }
                 request.setMetaDbSampleList(updatedSamples);
             }

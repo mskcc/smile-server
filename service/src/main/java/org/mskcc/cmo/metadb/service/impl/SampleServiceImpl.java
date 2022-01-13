@@ -9,7 +9,6 @@ import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
-import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
@@ -18,6 +17,7 @@ import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
@@ -37,10 +37,10 @@ public class SampleServiceImpl implements MetadbSampleService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public MetadbSample saveSampleMetadata(MetadbSample
+    @Transactional(rollbackFor = {Exception.class})
+    public MetadbSample saveMetadbSample(MetadbSample
             sample) throws Exception {
         fetchAndLoadSampleDetails(sample);
-
         MetadbSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
         if (existingSample == null) {
@@ -165,6 +165,15 @@ public class SampleServiceImpl implements MetadbSampleService {
         sample.setPatient(patient);
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getMetaDbSampleId()));
         return sample;
+    }
+
+    @Override
+    public MetadbSample getClinicalSampleByDmpId(String dmpId) throws Exception {
+        MetadbSample metadbSample = sampleRepository.findSampleByPrimaryId(dmpId);
+        if (metadbSample != null) {
+            return getDetailedMetadbSample(metadbSample);
+        }
+        return metadbSample;
     }
 
 }

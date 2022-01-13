@@ -28,6 +28,9 @@ public class QcReportsStringConverter implements AttributeConverter<List<QcRepor
     public List<QcReport> toEntityAttribute(String value) {
         List<QcReport> toReturn = null;
         try {
+            if (mapper.readValue(value, QcReport[].class) == null) {
+                return null;
+            }
             toReturn = Arrays.asList(mapper.readValue(value, QcReport[].class));
         } catch (Exception ex) {
             LOG.error(ex);

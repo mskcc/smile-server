@@ -8,7 +8,7 @@ import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 
 public interface MetadbSampleService {
-    MetadbSample saveSampleMetadata(MetadbSample metaDbSample) throws Exception;
+    MetadbSample saveMetadbSample(MetadbSample metaDbSample) throws Exception;
     MetadbSample fetchAndLoadSampleDetails(MetadbSample metaDbSample) throws Exception;
     List<MetadbSample> getMatchedNormalsBySample(MetadbSample metaDbSample)
             throws Exception;
@@ -24,4 +24,6 @@ public interface MetadbSampleService {
     List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(String cmoPatientId)
             throws Exception;
     MetadbSample getDetailedMetadbSample(MetadbSample sample) throws ParseException;
+    MetadbSample getClinicalSampleByDmpId(String dmpId) throws Exception;
+
 }

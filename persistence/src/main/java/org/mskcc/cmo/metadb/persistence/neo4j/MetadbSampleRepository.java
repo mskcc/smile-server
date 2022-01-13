@@ -17,22 +17,22 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UUID> {
-    @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId}) "
-            + "RETURN sm")
+    @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSampleId}) "
+            + "RETURN s")
     MetadbSample findAllSamplesById(@Param("metaDbSampleId") UUID metaDbSampleId);
 
-    @Query("MATCH (s:Sample)-[:HAS_METADATA]->(s: SampleMetadata {primaryId: $primaryId})"
+    @Query("MATCH (s:Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId})"
             + "RETURN s")
     MetadbSample findSampleByPrimaryId(@Param("primaryId") String primaryId);
 
-    @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
-            + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias)"
-            + "RETURN s;")
+    @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSampleId})"
+            + "MATCH (s)<-[:IS_ALIAS]-(sa: SampleAlias)"
+            + "RETURN sa;")
     List<SampleAlias> findAllSampleAliases(@Param("metaDbSampleId") UUID metaDbSampleId);
 
-    @Query("MATCH (sm: Sample {metaDbSampleId: $metaDbSampleId})"
-            + "MATCH (sm)-[:HAS_METADATA]->(s: SampleMetadata)"
-            + "RETURN s;")
+    @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSampleId})"
+            + "MATCH (s)-[:HAS_METADATA]->(sm: SampleMetadata)"
+            + "RETURN sm;")
     List<SampleMetadata> findAllSampleMetadataListBySampleId(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSample.metaDbSampleId})"
@@ -49,9 +49,9 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     List<MetadbSample> findResearchSamplesByRequest(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request {igoRequestId: $reqId}) "
-        + "MATCH(r)-[:HAS_SAMPLE]->(sm: Sample) "
-        + "MATCH (sm)<-[:IS_ALIAS]-(s: SampleAlias {namespace: 'igoId', value: $igoId}) "
-        + "RETURN sm")
+        + "MATCH(r)-[:HAS_SAMPLE]->(s: Sample) "
+        + "MATCH (s)<-[:IS_ALIAS]-(sa: SampleAlias {namespace: 'igoId', value: $igoId}) "
+        + "RETURN s")
     MetadbSample findResearchSampleByRequestAndIgoId(@Param("reqId") String reqId,
             @Param("igoId") String igoId);
 

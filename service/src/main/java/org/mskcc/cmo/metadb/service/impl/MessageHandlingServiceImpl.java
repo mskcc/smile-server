@@ -18,6 +18,8 @@ import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.model.dmp.DmpSampleMetadata;
+import org.mskcc.cmo.metadb.service.CrdbMappingService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
@@ -41,6 +43,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Value("${metadb.igo_sample_update_topic}")
     private String IGO_SAMPLE_UPDATE_TOPIC;
 
+    @Value("${metadb.dmp.new-sample}")
+    private String NEW_DMP_SAMPLE_TOPIC;
+
     @Value("${metadb.cmo_request_update_topic}")
     private String CMO_REQUEST_UPDATE_TOPIC;
 
@@ -56,12 +61,17 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Autowired
     private MetadbSampleService sampleService;
 
+    @Autowired
+    private CrdbMappingService crdbMappingService;
+
     private final ObjectMapper mapper = new ObjectMapper();
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
     private static final ExecutorService exec = Executors.newCachedThreadPool();
     private static final BlockingQueue<MetadbRequest> newRequestQueue =
         new LinkedBlockingQueue<MetadbRequest>();
+    private static final BlockingQueue<MetadbSample> newClinicalSampleQueue =
+            new LinkedBlockingQueue<MetadbSample>();
     private static final BlockingQueue<RequestMetadata> requestUpdateQueue =
             new LinkedBlockingQueue<RequestMetadata>();
     private static final BlockingQueue<SampleMetadata> sampleUpdateQueue =
@@ -69,7 +79,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
 
     private static CountDownLatch newRequestHandlerShutdownLatch;
     private static CountDownLatch requestUpdateHandlerShutdownLatch;
-    private static CountDownLatch sampleUpdateHandlerShutdownLatch;
+    private static CountDownLatch researchSampleUpdateHandlerShutdownLatch;
+    private static CountDownLatch newClinicalSampleHandlerShutdownLatch;
+
     private static Gateway messagingGateway;
 
     private static final Log LOG = LogFactory.getLog(MessageHandlingServiceImpl.class);
@@ -221,7 +233,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             MetadbSample sample = SampleDataFactory
                                     .buildNewResearchSampleFromMetadata(sampleMetadata.getIgoRequestId(),
                                             sampleMetadata);
-                            sampleService.saveSampleMetadata(sample);
+                            sampleService.saveMetadbSample(sample);
                             LOG.info("Publishing metadata history for new sample: "
                                     + sampleMetadata.getPrimaryId());
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
@@ -233,7 +245,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             // persist sample level updates to database and publish
                             // sample metadata history to CMO_SAMPLE_METADATA_UPDATE
                             existingSample.updateSampleMetadata(sampleMetadata);
-                            sampleService.saveSampleMetadata(existingSample);
+                            sampleService.saveMetadbSample(existingSample);
                             LOG.info("Publishing sample-level metadata history for sample: "
                                     + sampleMetadata.getPrimaryId());
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
@@ -252,7 +264,60 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     LOG.error("Error during handling of sample metadata update", e);
                 }
             }
-            sampleUpdateHandlerShutdownLatch.countDown();
+            researchSampleUpdateHandlerShutdownLatch.countDown();
+        }
+    }
+
+
+    private class NewClinicalSampleMetadataHandler implements Runnable {
+
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        NewClinicalSampleMetadataHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    MetadbSample metadbSample = newClinicalSampleQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (metadbSample != null) {
+                        MetadbSample existingSample = sampleService.getClinicalSampleByDmpId(
+                                metadbSample.getPrimarySampleAlias());
+                        if (existingSample == null) {
+                            LOG.info("Sample metadata does not already exist - persisting to db: "
+                                    + metadbSample.getPrimarySampleAlias());
+
+                            sampleService.saveMetadbSample(metadbSample);
+                            LOG.info("Publishing metadata history for new sample: "
+                                    + metadbSample.getPrimarySampleAlias());
+                            //publish here if needed
+                        } else if (sampleService.sampleHasMetadataUpdates(
+                                existingSample.getLatestSampleMetadata(),
+                                metadbSample.getLatestSampleMetadata())) {
+                            LOG.info("Found updates for sample - persisting to database: "
+                                    + metadbSample.getPrimarySampleAlias());
+                            existingSample.updateSampleMetadata(metadbSample.getLatestSampleMetadata());
+                            sampleService.saveMetadbSample(existingSample);
+                            //publish here if needed
+                        } else {
+                            LOG.info("There are no updates to persist for clincial sample: "
+                                    + metadbSample.getPrimarySampleAlias());
+                        }
+                    }
+                    if (interrupted && newClinicalSampleQueue.isEmpty()) {
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of clinical sample metadata update", e);
+                }
+            }
+            newClinicalSampleHandlerShutdownLatch.countDown();
         }
     }
 
@@ -262,7 +327,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             messagingGateway = gateway;
             setupIgoNewRequestHandler(messagingGateway, this);
             setupRequestUpdateHandler(messagingGateway, this);
-            setupSampleUpdateHandler(messagingGateway, this);
+            setupResearchSampleUpdateHandler(messagingGateway, this);
+            setupNewClinicalSampleHandler(messagingGateway, this);
             initializeNewRequestHandlers();
             initialized = true;
         } else {
@@ -282,6 +348,20 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             throw new IllegalStateException("Shutdown initiated, not handling any more requests");
         }
     }
+
+    @Override
+    public void newSampleHandler(MetadbSample metadbSample) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            newClinicalSampleQueue.put(metadbSample);
+        } else {
+            LOG.error("Shutdown initiated, not accepting clinical samples: " + metadbSample);
+            throw new IllegalStateException("Shutdown initiated, not handling any more clinical samples");
+        }
+    }
+
 
     @Override
     public void requestUpdateHandler(RequestMetadata requestMetadata) throws Exception {
@@ -317,7 +397,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         exec.shutdownNow();
         newRequestHandlerShutdownLatch.await();
         requestUpdateHandlerShutdownLatch.await();
-        sampleUpdateHandlerShutdownLatch.await();
+        researchSampleUpdateHandlerShutdownLatch.await();
+        newClinicalSampleHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -341,15 +422,27 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         }
         requestUpdatePhaser.arriveAndAwaitAdvance();
 
-        // sample update handler
-        sampleUpdateHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
-        final Phaser sampleUpdatePhaser = new Phaser();
-        sampleUpdatePhaser.register();
+        // research sample update handler
+        researchSampleUpdateHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
+        final Phaser researchSampleUpdatePhaser = new Phaser();
+        researchSampleUpdatePhaser.register();
         for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
-            sampleUpdatePhaser.register();
-            exec.execute(new SampleMetadataUpdateHandler(sampleUpdatePhaser));
+            researchSampleUpdatePhaser.register();
+            exec.execute(new SampleMetadataUpdateHandler(researchSampleUpdatePhaser));
         }
-        sampleUpdatePhaser.arriveAndAwaitAdvance();
+        researchSampleUpdatePhaser.arriveAndAwaitAdvance();
+
+        // new clinical sample handler
+        newClinicalSampleHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
+        final Phaser newClinicalsamplePhaser = new Phaser();
+        newClinicalsamplePhaser.register();
+        for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
+            newClinicalsamplePhaser.register();
+            exec.execute(new NewClinicalSampleMetadataHandler(newClinicalsamplePhaser));
+        }
+        newClinicalsamplePhaser.arriveAndAwaitAdvance();
+
+
     }
 
     private void setupIgoNewRequestHandler(Gateway gateway, MessageHandlingService messageHandlingService)
@@ -392,7 +485,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         });
     }
 
-    private void setupSampleUpdateHandler(Gateway gateway, MessageHandlingService messageHandlingService)
+    private void setupResearchSampleUpdateHandler(Gateway gateway,
+            MessageHandlingService messageHandlingService)
             throws Exception {
         gateway.subscribe(IGO_SAMPLE_UPDATE_TOPIC, Object.class, new MessageConsumer() {
             @Override
@@ -407,6 +501,32 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 } catch (Exception e) {
                     LOG.error("Exception during processing of request update on topic: "
                             + IGO_REQUEST_UPDATE_TOPIC, e);
+                }
+            }
+        });
+    }
+
+
+    private void setupNewClinicalSampleHandler(Gateway gateway, MessageHandlingService messageHandlingService)
+            throws Exception {
+        LOG.info("connected with topic: " + NEW_DMP_SAMPLE_TOPIC);
+        gateway.subscribe(NEW_DMP_SAMPLE_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                LOG.info("Received message on topic: " + NEW_DMP_SAMPLE_TOPIC);
+                try {
+                    String clinicalSampleJson = mapper.readValue(
+                            new String(msg.getData(), StandardCharsets.UTF_8), String.class);
+                    DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
+                            DmpSampleMetadata.class);
+                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
+                            dmpSample.getDmpPatientId());
+                    MetadbSample sampleMetadata = SampleDataFactory.buildNewClinicalSampleFromMetadata(
+                            cmoPatientId, dmpSample);
+                    messageHandlingService.newSampleHandler(sampleMetadata);
+                } catch (Exception e) {
+                    LOG.error("Exception during processing of new clinical sample on topic: "
+                            + NEW_DMP_SAMPLE_TOPIC, e);
                 }
             }
         });

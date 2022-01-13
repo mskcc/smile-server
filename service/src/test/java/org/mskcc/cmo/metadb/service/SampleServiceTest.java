@@ -217,7 +217,7 @@ public class SampleServiceTest {
         MetadbRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
                 updatedRequestData.getJsonString());
         MetadbSample updatedSample = updatedRequest.getMetaDbSampleList().get(1);
-        sampleService.saveSampleMetadata(updatedSample);
+        sampleService.saveMetadbSample(updatedSample);
 
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
