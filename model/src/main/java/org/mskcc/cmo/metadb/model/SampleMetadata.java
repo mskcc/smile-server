@@ -21,7 +21,7 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
-@NodeEntity(label = "SampleMetadata")
+@NodeEntity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SampleMetadata implements Serializable, Comparable<SampleMetadata> {
     @Id @GeneratedValue

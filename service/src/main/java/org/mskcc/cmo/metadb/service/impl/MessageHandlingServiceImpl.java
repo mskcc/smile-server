@@ -43,7 +43,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Value("${metadb.igo_sample_update_topic}")
     private String IGO_SAMPLE_UPDATE_TOPIC;
 
-    @Value("${metadb.dmp.new-sample}")
+    @Value("${metadb.dmp_new_sample_topic}")
     private String NEW_DMP_SAMPLE_TOPIC;
 
     @Value("${metadb.cmo_request_update_topic}")
