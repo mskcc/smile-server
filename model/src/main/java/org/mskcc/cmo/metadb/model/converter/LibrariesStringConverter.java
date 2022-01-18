@@ -28,9 +28,6 @@ public class LibrariesStringConverter implements AttributeConverter<List<Library
     public List<Library> toEntityAttribute(String value) {
         List<Library> toReturn = null;
         try {
-            if (mapper.readValue(value, Library[].class) == null) {
-                return null;
-            }
             toReturn = Arrays.asList(mapper.readValue(value, Library[].class));
         } catch (Exception ex) {
             LOG.error(ex);
