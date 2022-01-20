@@ -1,14 +1,10 @@
 package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -22,12 +18,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
-import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
+import org.mskcc.cmo.metadb.service.CrdbMappingService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
+import org.mskcc.cmo.metadb.service.MetadbPatientService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
 import org.mskcc.cmo.metadb.service.util.RequestDataFactory;
@@ -56,8 +54,17 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Value("${metadb.cmo_sample_update_topic}")
     private String CMO_SAMPLE_UPDATE_TOPIC;
 
+    @Value("${metadb.correct_cmoptid_topic}")
+    private String CORRECT_CMOPTID_TOPIC;
+
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
+
+    @Autowired
+    private CrdbMappingService crdbMappingService;
+
+    @Autowired
+    private MetadbPatientService patientService;
 
     @Autowired
     private MetadbRequestService requestService;
@@ -75,13 +82,74 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             new LinkedBlockingQueue<RequestMetadata>();
     private static final BlockingQueue<SampleMetadata> sampleUpdateQueue =
             new LinkedBlockingQueue<SampleMetadata>();
+    private static final BlockingQueue<Map<String, String>> correctCmoPatientIdQueue =
+            new LinkedBlockingQueue<Map<String, String>>();
 
     private static CountDownLatch newRequestHandlerShutdownLatch;
     private static CountDownLatch requestUpdateHandlerShutdownLatch;
     private static CountDownLatch sampleUpdateHandlerShutdownLatch;
+    private static CountDownLatch correctCmoPatientIdShutdownLatch;
     private static Gateway messagingGateway;
 
     private static final Log LOG = LogFactory.getLog(MessageHandlingServiceImpl.class);
+
+    private class CorrectCmoPatientIdHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        CorrectCmoPatientIdHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    Map<String, String> idCorrectionMap =
+                            correctCmoPatientIdQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (idCorrectionMap != null) {
+                        String oldCmoPatientId = idCorrectionMap.get("oldId");
+                        String newCmoPatientId = idCorrectionMap.get("newId");
+
+                        // get samples by old cmo patient id before updating the
+                        // cmo patient id for the given patient alias/patient node
+                        List<MetadbSample> samples =
+                                sampleService.getMetadbSampleListByCmoPatientId(oldCmoPatientId);
+                        MetadbPatient updatedPatient = patientService.updateCmoPatientId(
+                                oldCmoPatientId, newCmoPatientId);
+
+                        for (MetadbSample sample: samples) {
+                            // TODO: add support for clinical sample updates
+                            if (sample.getSampleCategory().equals("research")) {
+                                SampleMetadata latestMetadata = sample.getLatestSampleMetadata();
+                                latestMetadata.setCmoPatientId(newCmoPatientId);
+                                String newCmoSampleLabel = latestMetadata.getCmoSampleName()
+                                        .replaceAll(oldCmoPatientId, newCmoPatientId);
+
+                                LOG.info("Updating patient ID prefix embedded in CMO sample label "
+                                        + "for research sample: " + latestMetadata.getPrimaryId());
+                                latestMetadata.setCmoSampleName(newCmoSampleLabel);
+                                sample.updateSampleMetadata(latestMetadata);
+                            } else if (sample.getSampleCategory().equals("clinical")) {
+                                LOG.info("CLINICAL SAMPLE UPDATES NOT SUPPORTED YET");
+                            }
+                            LOG.info("Persisting update for sample to database");
+                            sampleService.saveSampleMetadata(sample);
+                        }
+                    }
+                    if (interrupted && correctCmoPatientIdQueue.isEmpty()) {
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during request handling", e);
+                }
+            }
+            correctCmoPatientIdShutdownLatch.countDown();
+        }
+    }
 
     private class NewIgoRequestHandler implements Runnable {
 
@@ -272,10 +340,24 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             setupIgoNewRequestHandler(messagingGateway, this);
             setupRequestUpdateHandler(messagingGateway, this);
             setupSampleUpdateHandler(messagingGateway, this);
+            setupCorrectCmoPatientIdHandler(messagingGateway, this);
             initializeNewRequestHandlers();
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring request.\n");
+        }
+    }
+
+    @Override
+    public void correctCmoPatientIdHandler(Map<String, String> idCorrectionMap) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            correctCmoPatientIdQueue.put(idCorrectionMap);
+        } else {
+            throw new IllegalStateException("Shutdown intiated, not accepting "
+                    + "new CMO patient ID correction messages");
         }
     }
 
@@ -327,6 +409,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         newRequestHandlerShutdownLatch.await();
         requestUpdateHandlerShutdownLatch.await();
         sampleUpdateHandlerShutdownLatch.await();
+        correctCmoPatientIdShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -359,6 +442,15 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             exec.execute(new SampleMetadataUpdateHandler(sampleUpdatePhaser));
         }
         sampleUpdatePhaser.arriveAndAwaitAdvance();
+
+        correctCmoPatientIdShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
+        final Phaser correctCmoPtIdPhaser = new Phaser();
+        correctCmoPtIdPhaser.register();
+        for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
+            correctCmoPtIdPhaser.register();
+            exec.execute(new CorrectCmoPatientIdHandler(correctCmoPtIdPhaser));
+        }
+        correctCmoPtIdPhaser.arriveAndAwaitAdvance();
     }
 
     private void setupIgoNewRequestHandler(Gateway gateway, MessageHandlingService messageHandlingService)
@@ -416,6 +508,61 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 } catch (Exception e) {
                     LOG.error("Exception during processing of request update on topic: "
                             + IGO_REQUEST_UPDATE_TOPIC, e);
+                }
+            }
+        });
+    }
+
+    private void setupCorrectCmoPatientIdHandler(Gateway gateway,
+            MessageHandlingService messageHandlingService) throws Exception {
+        gateway.subscribe(CORRECT_CMOPTID_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                LOG.info("Received message on topic: " + CORRECT_CMOPTID_TOPIC);
+                Map<String, String> incomingDataMap = new HashMap<>();
+                try {
+                    // do not log contents of incoming message
+                    String incomingDataString = mapper.readValue(
+                            new String(msg.getData(), StandardCharsets.UTF_8),
+                            String.class);
+                    incomingDataMap = mapper.readValue(incomingDataString, Map.class);
+                } catch (JsonProcessingException e) {
+                    LOG.error("Error processing the incoming data map. "
+                            + "Refer to NATS logs for more details.");
+                }
+                if (incomingDataMap.isEmpty()) {
+                    LOG.error("Was not able to deserialize incoming message as instance of Map.class - "
+                            + "please confirm manually that the expected message contents were published");
+                } else {
+                    String oldCmoPatientId = crdbMappingService.getCmoPatientIdByInputId(
+                            incomingDataMap.get("oldId"));
+                    String newCmoPatientId = crdbMappingService.getCmoPatientIdByInputId(
+                            incomingDataMap.get("newId"));
+                    Boolean crdbMappingStatus = Boolean.TRUE;
+
+                    // verify that old and new ids resolve to a valid cmo patient id in crdb service
+                    if (oldCmoPatientId == null || oldCmoPatientId.isEmpty()) {
+                        LOG.error("Could not resolve 'old' provided patient ID to a CMO patient ID - "
+                                + "please manually check the incoming message contents to verify contents");
+                        crdbMappingStatus = Boolean.FALSE;
+                    }
+                    if (newCmoPatientId == null || newCmoPatientId.isEmpty()) {
+                        LOG.error("Could not resolve 'new' provided patient ID to a CMO patient ID - "
+                                + "please manually check the incoming message contents to verify contents");
+                        crdbMappingStatus = Boolean.FALSE;
+                    }
+                    if (crdbMappingStatus) {
+                        // if crdb mapping succeeded then update the incoming data map and
+                        // proceed to process message by message handler
+                        incomingDataMap.put("oldId", oldCmoPatientId);
+                        incomingDataMap.put("newId", newCmoPatientId);
+                        try {
+                            messageHandlingService.correctCmoPatientIdHandler(incomingDataMap);
+                        } catch (Exception e) {
+                            LOG.error("Error occurred while adding the CMO Patient ID "
+                                    + "correction data to message handler queue");
+                        }
+                    }
                 }
             }
         });

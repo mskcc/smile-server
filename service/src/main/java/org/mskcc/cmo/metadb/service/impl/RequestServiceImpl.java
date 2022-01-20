@@ -3,6 +3,7 @@ package org.mskcc.cmo.metadb.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -49,6 +50,7 @@ public class RequestServiceImpl implements MetadbRequestService {
     @Autowired
     private RequestStatusLogger requestStatusLogger;
 
+    private final DateFormat IMPORT_DATE_FORMATTER = initDateFormatter();
     // 24 hours in milliseconds
     private final Integer TIME_ADJ_24HOURS_MS = 24 * 60 * 60 * 1000;
     private Map<String, Date> loggedExistingRequests = new HashMap<>();
@@ -267,7 +269,7 @@ public class RequestServiceImpl implements MetadbRequestService {
 
     private Date getFormattedDate(String dateString) {
         try {
-            return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+            return IMPORT_DATE_FORMATTER.parse(dateString);
         } catch (ParseException e) {
             throw new RuntimeException("Could not parse date: " + dateString, e);
         }
@@ -279,5 +281,11 @@ public class RequestServiceImpl implements MetadbRequestService {
             requestSummaryList.add(new RequestSummary(result));
         }
         return requestSummaryList;
+    }
+
+    private DateFormat initDateFormatter() {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        df.setLenient(Boolean.FALSE);
+        return df;
     }
 }

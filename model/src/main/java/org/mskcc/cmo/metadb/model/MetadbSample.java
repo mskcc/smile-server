@@ -127,6 +127,9 @@ public class MetadbSample implements Serializable {
      */
     public SampleMetadata getLatestSampleMetadata() throws ParseException {
         if (sampleMetadataList != null && !sampleMetadataList.isEmpty()) {
+            if (sampleMetadataList.size() == 1) {
+                return sampleMetadataList.get(0);
+            }
             Collections.sort(sampleMetadataList);
             return sampleMetadataList.get(sampleMetadataList.size() - 1);
         }
@@ -134,6 +137,7 @@ public class MetadbSample implements Serializable {
     }
 
     public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
+        sampleMetadata.setId(null);
         addSampleMetadata(sampleMetadata);
     }
 

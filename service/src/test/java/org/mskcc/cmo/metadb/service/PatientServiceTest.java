@@ -97,6 +97,10 @@ public class PatientServiceTest {
         requestService.saveRequest(request5);
     }
 
+    /**
+     * Tests if patient service retrieves MetadbPatient by cmoPatientId.
+     * @throws Exception
+     */
     @Test
     public void testFindPatientByPatientAlias() throws Exception {
         String cmoPatientId = "C-1MP6YY";
@@ -104,6 +108,10 @@ public class PatientServiceTest {
                 patientService.getPatientByCmoPatientId(cmoPatientId)).isNotNull();
     }
 
+    /**
+     * Tests if patientRepo throws an exception when duplicates
+     * are attempted to be saved.
+     */
     @Test
     public void testFindPatientByPatientAliasWithExpectedFailure() {
         String cmoPatientId = "C-1MP6YY";
@@ -117,5 +125,25 @@ public class PatientServiceTest {
             .isThrownBy(() -> {
                 patientService.getPatientByCmoPatientId(cmoPatientId);
             });
+    }
+
+    /**
+     * Tests if Patient Alias node is properly updated to the new cmoPatientId.
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateCmoPatientId() throws Exception {
+        String oldCmoPatientId = "C-1MP6YY";
+        String newCmoPatientId = "NewCmoPatientId";
+
+        int numOfSampleBeforeUpdate = sampleService.getSampleMetadataListByCmoPatientId(
+                oldCmoPatientId).size();
+        patientService.updateCmoPatientId(oldCmoPatientId, newCmoPatientId);
+        int numOfSampleAfterUpdate = sampleService.getSampleMetadataListByCmoPatientId(
+                newCmoPatientId).size();
+
+        Assertions.assertThat(numOfSampleBeforeUpdate)
+            .isEqualTo(numOfSampleAfterUpdate)
+            .isNotEqualTo(0);
     }
 }

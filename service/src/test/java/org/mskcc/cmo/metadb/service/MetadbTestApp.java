@@ -59,4 +59,5 @@ public class MetadbTestApp {
 
     @MockBean
     public RequestReplyHandlingServiceImpl requestReplyHandlingService;
+
 }

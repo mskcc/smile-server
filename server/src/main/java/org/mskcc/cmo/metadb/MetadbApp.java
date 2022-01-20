@@ -42,7 +42,7 @@ public class MetadbApp implements CommandLineRunner {
     private MessageHandlingService messageHandlingService;
 
     @Autowired
-    RequestReplyHandlingService requestReplyHandlingService;
+    private RequestReplyHandlingService requestReplyHandlingService;
 
     private Thread shutdownHook;
     final CountDownLatch metadbAppClose = new CountDownLatch(1);
