@@ -9,7 +9,6 @@ import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
-import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
@@ -168,6 +167,22 @@ public class SampleServiceImpl implements MetadbSampleService {
             PublishedMetadbSample publishedSample = getPublishedMetadbSample(
                     metadbSample.getMetaDbSampleId());
             samples.add(publishedSample);
+        }
+        return samples;
+    }
+
+    @Override
+    public List<MetadbSample> getMetadbSampleListByCmoPatientId(String cmoPatientId) throws Exception {
+        List<SampleMetadata> sampleMetadataList = sampleRepository
+                .findAllSampleMetadataListByCmoPatientId(cmoPatientId);
+        List<MetadbSample> samples = new ArrayList<>();
+        for (SampleMetadata sample: sampleMetadataList) {
+            // TODO: update method to fill in sample details in a more inclusive
+            // way and not just request and igo id since that is very specific
+            // to research samples only
+            MetadbSample metadbSample = sampleRepository.findResearchSampleByRequestAndIgoId(
+                    sample.getIgoRequestId(), sample.getPrimaryId());
+            samples.add(getDetailedMetadbSample(metadbSample));
         }
         return samples;
     }

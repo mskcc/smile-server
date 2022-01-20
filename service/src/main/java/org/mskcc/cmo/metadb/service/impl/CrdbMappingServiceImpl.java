@@ -21,4 +21,9 @@ public class CrdbMappingServiceImpl implements CrdbMappingService {
     public String getCmoPatientIdbyDmpId(String dmpId) {
         return crdbRepository.getCmoPatientIdbyDmpId(dmpId).toString();
     }
+
+    @Override
+    public String getCmoPatientIdByInputId(String inputId) {
+        return crdbRepository.getCmoPatientIdByInputId(inputId).toString();
+    }
 }
