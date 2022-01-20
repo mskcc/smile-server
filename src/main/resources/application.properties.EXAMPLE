@@ -28,8 +28,14 @@ metadb.igo_request_update_topic=
 metadb.igo_sample_update_topic=
 metadb.cmo_request_update_topic=
 metadb.cmo_sample_update_topic=
+
+# request-reply topics
 request_reply.patient_samples_topic=
 request_reply.crdb_mapping_topic=
+request_reply.cmo_label_update_topic=
+
+# admin topics
+mdb_admin.correct_cmoptid_topic=
 
 # messaging failures filepath
 metadb.publishing_failures_filepath=

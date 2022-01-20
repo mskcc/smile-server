@@ -4,6 +4,7 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
+import org.mskcc.cmo.metadb.service.AdminMessageHandlingService;
 import org.mskcc.cmo.metadb.service.MessageHandlingService;
 import org.mskcc.cmo.metadb.service.RequestReplyHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,10 @@ public class MetadbApp implements CommandLineRunner {
     private MessageHandlingService messageHandlingService;
 
     @Autowired
-    RequestReplyHandlingService requestReplyHandlingService;
+    private RequestReplyHandlingService requestReplyHandlingService;
+
+    @Autowired
+    private AdminMessageHandlingService adminMessageHandlingService;
 
     private Thread shutdownHook;
     final CountDownLatch metadbAppClose = new CountDownLatch(1);
@@ -76,6 +80,7 @@ public class MetadbApp implements CommandLineRunner {
             messagingGateway.connect();
             requestReplyHandlingService.initialize(messagingGateway);
             messageHandlingService.initialize(messagingGateway);
+            adminMessageHandlingService.initialize(messagingGateway);
             metadbAppClose.await();
         } catch (Exception e) {
             LOG.error("Encountered error during initialization", e);
@@ -90,6 +95,7 @@ public class MetadbApp implements CommandLineRunner {
                     try {
                         requestReplyHandlingService.shutdown();
                         messageHandlingService.shutdown();
+                        adminMessageHandlingService.shutdown();
                         messagingGateway.shutdown();
                     } catch (Exception e) {
                         LOG.error("Encountered error during shutdown process", e);
