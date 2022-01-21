@@ -97,6 +97,11 @@ public class PatientServiceTest {
         requestService.saveRequest(request5);
     }
 
+    /**
+     * testFindPatientByPatientAlias
+     * Tests if patient service retrieves MetadbPatient by cmoPatientId
+     * @throws Exception
+     */
     @Test
     public void testFindPatientByPatientAlias() throws Exception {
         String cmoPatientId = "C-1MP6YY";
@@ -104,6 +109,11 @@ public class PatientServiceTest {
                 patientService.getPatientByCmoPatientId(cmoPatientId)).isNotNull();
     }
 
+    /**
+     * testFindPatientByPatientAliasWithExpectedFailure
+     * Tests if patientRepo throws an exception when duplicates
+     * are attempted to be saved
+     */
     @Test
     public void testFindPatientByPatientAliasWithExpectedFailure() {
         String cmoPatientId = "C-1MP6YY";
@@ -119,6 +129,11 @@ public class PatientServiceTest {
             });
     }
 
+    /**
+     * testUpdateCmoPatientId
+     * Tests if Patient Alias node is properly updated to the new cmoPatientId
+     * @throws Exception
+     */
     @Test
     public void testUpdateCmoPatientId() throws Exception {
         String oldCmoPatientId = "C-1MP6YY";
