@@ -37,9 +37,6 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
 
     @Value("${mdb_admin.correct_cmoptid_topic}")
     private String ADMIN_CORRECT_CMOPTID_TOPIC;
-
-    @Value("${request_reply.cmo_label_update_topic}")
-    private String CMO_LABEL_UPDATE_REQREPLY_TOPIC;
     
     @Value("${mdb_admin.cmo_sample_label_update_topic}")
     private String CMO_SAMPLE_LABEL_UPDATE;
