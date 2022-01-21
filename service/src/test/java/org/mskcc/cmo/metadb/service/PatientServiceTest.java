@@ -130,7 +130,9 @@ public class PatientServiceTest {
         int numOfSampleAfterUpdate = sampleService.getSampleMetadataListByCmoPatientId(
                 newCmoPatientId).size();
 
-        Assertions.assertThat(numOfSampleBeforeUpdate).isEqualTo(numOfSampleAfterUpdate);
+        Assertions.assertThat(numOfSampleBeforeUpdate)
+        .isEqualTo(numOfSampleAfterUpdate)
+        .isNotEqualTo(0);
 
     }
 }
