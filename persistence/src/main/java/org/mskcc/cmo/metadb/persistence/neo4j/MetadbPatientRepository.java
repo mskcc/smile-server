@@ -28,9 +28,9 @@ public interface MetadbPatientRepository extends Neo4jRepository<MetadbPatient, 
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "
             + "RETURN p.metaDbPatientId")
     UUID findPatientIdBySample(@Param("metaDbSampleId") UUID metaDbSampleId);
-    
-    @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias {value: $oldCmoPatientId, namespace: 'cmoId'})"
-            + "SET pa.value = $newCmoPatientId"
+
+    @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias {value: $oldCmoPatientId, namespace: 'cmoId'}) "
+            + "SET pa.value = $newCmoPatientId "
             + "RETURN p")
     MetadbPatient updateCmoPatientIdInPatientNode(@Param("oldCmoPatientId") String oldCmoPatientId,
             @Param("newCmoPatientId") String newCmoPatientId);
