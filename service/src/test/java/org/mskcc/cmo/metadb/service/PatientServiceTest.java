@@ -118,4 +118,19 @@ public class PatientServiceTest {
                 patientService.getPatientByCmoPatientId(cmoPatientId);
             });
     }
+
+    @Test
+    public void testUpdateCmoPatientId() throws Exception {
+        String oldCmoPatientId = "C-1MP6YY";
+        String newCmoPatientId = "NewCmoPatientId";
+
+        int numOfSampleBeforeUpdate = sampleService.getSampleMetadataListByCmoPatientId(
+                oldCmoPatientId).size();
+        patientService.updateCmoPatientId(oldCmoPatientId, newCmoPatientId);
+        int numOfSampleAfterUpdate = sampleService.getSampleMetadataListByCmoPatientId(
+                newCmoPatientId).size();
+
+        Assertions.assertThat(numOfSampleBeforeUpdate).isEqualTo(numOfSampleAfterUpdate);
+
+    }
 }
