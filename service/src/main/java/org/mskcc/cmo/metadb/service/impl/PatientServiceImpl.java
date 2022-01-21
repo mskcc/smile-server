@@ -42,10 +42,7 @@ public class PatientServiceImpl implements MetadbPatientService {
         if (getPatientByCmoPatientId(oldCmoPatientId) == null) {
             return null;
         }
-        //only update the patient if it is found, hence not null
-        patientRepository.updateCmoPatientIdInPatientNode(oldCmoPatientId, newCmoPatientId);
-        //check to make sure the patient alias node is properly updated
-        return getPatientByCmoPatientId(newCmoPatientId);
+        return patientRepository.updateCmoPatientIdInPatientNode(oldCmoPatientId, newCmoPatientId);
     }
 
 }

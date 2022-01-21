@@ -40,6 +40,9 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
 
     @Value("${request_reply.cmo_label_update_topic}")
     private String CMO_LABEL_UPDATE_REQREPLY_TOPIC;
+    
+    @Value("${mdb_admin.cmo_sample_label_update_topic}")
+    private String CMO_SAMPLE_LABEL_UPDATE;
 
     @Autowired
     private CrdbMappingService crdbMappingService;
@@ -97,19 +100,19 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
                     if (idCorrectionMap != null) {
                         String oldCmoPatientId = idCorrectionMap.get("oldId");
                         String newCmoPatientId = idCorrectionMap.get("newId");
+                        List<SampleMetadata> sampleMetadataList = sampleService
+                                .getSampleMetadataListByCmoPatientId(oldCmoPatientId);
                         MetadbPatient updatedPatient = patientService.updateCmoPatientId(
                                 oldCmoPatientId, newCmoPatientId);
                         
-                        List<SampleMetadata> sampleMetadataList = sampleService
-                                .getSampleMetadataListByCmoPatientId(oldCmoPatientId);
                         for (SampleMetadata sample: sampleMetadataList) {
                             sample.setCmoPatientId(newCmoPatientId);
                             LOG.info("Publishing updated sample metadata: "
                                     + sample.getPrimaryId());
                             //check if sample is research or clinical, then publish to their respective topics
                             // Topic to push updated research samples is yet to be set up
-                            // maybe IGO_SAMPLE_METADATA_UPDATE?
-                            messagingGateway.publish("TBD",
+                            // maybe CMO_SAMPLE_LABEL_UPDATE_TOPIC?
+                            messagingGateway.publish(CMO_SAMPLE_LABEL_UPDATE,
                                     mapper.writeValueAsString(sample));
                         }
                         
