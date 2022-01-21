@@ -34,6 +34,11 @@
     </dependency>
     <!-- neo4j plugin for built-in uuid generation -->
     <dependency>
+      <groupId>com.github.stephenc</groupId>
+      <artifactId>eaio-uuid</artifactId>
+      <version>uuid-3.4.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.graphaware.neo4j</groupId>
       <artifactId>server-community</artifactId>
       <version>2.2.6.35</version>
