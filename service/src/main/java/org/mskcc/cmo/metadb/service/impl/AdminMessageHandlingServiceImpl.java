@@ -37,16 +37,19 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
 
     @Value("${mdb_admin.correct_cmoptid_topic}")
     private String ADMIN_CORRECT_CMOPTID_TOPIC;
-    
+
     @Value("${mdb_admin.cmo_sample_label_update_topic}")
     private String CMO_SAMPLE_LABEL_UPDATE;
 
+    @Value("${num.new_request_handler_threads}")
+    private int NUM_NEW_REQUEST_HANDLERS;
+
     @Autowired
     private CrdbMappingService crdbMappingService;
-    
+
     @Autowired
     private MetadbPatientService patientService;
-    
+
     @Autowired
     private MetadbSampleService sampleService;
 
@@ -60,24 +63,6 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
     private static Gateway messagingGateway;
 
     private static final Log LOG = LogFactory.getLog(AdminMessageHandlingServiceImpl.class);
-
-    private class ReplyInfo {
-        String requestMessage;
-        String replyTo;
-
-        ReplyInfo(String requestMessage, String replyTo) {
-            this.requestMessage = requestMessage;
-            this.replyTo = replyTo;
-        }
-
-        String getRequestMessage() {
-            return requestMessage;
-        }
-
-        String getReplyTo() {
-            return replyTo;
-        }
-    }
 
     private class CorrectCmoPatientIdReqReplyHandler implements Runnable {
         final Phaser phaser;
@@ -101,7 +86,7 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
                                 .getSampleMetadataListByCmoPatientId(oldCmoPatientId);
                         MetadbPatient updatedPatient = patientService.updateCmoPatientId(
                                 oldCmoPatientId, newCmoPatientId);
-                        
+
                         for (SampleMetadata sample: sampleMetadataList) {
                             sample.setCmoPatientId(newCmoPatientId);
                             LOG.info("Publishing updated sample metadata: "
@@ -112,7 +97,7 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
                             messagingGateway.publish(CMO_SAMPLE_LABEL_UPDATE,
                                     mapper.writeValueAsString(sample));
                         }
-                        
+
                         LOG.info("Old cmo sample label is updated to the new label,"
                                 + " and should be persisted in the database shortly");
                     }
@@ -134,7 +119,10 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
         if (!initialized) {
             messagingGateway = gateway;
             setupCorrectCmoPatientIdHandler(messagingGateway, this);
-
+            initializeMessageHandlers();
+            initialized = true;
+        } else {
+            LOG.error("Messaging Handler Service has already been initialized, ignoring request.");
         }
     }
 
@@ -159,6 +147,17 @@ public class AdminMessageHandlingServiceImpl implements AdminMessageHandlingServ
         exec.shutdownNow();
         correctCmoPatientIdShutdownLatch.await();
         shutdownInitiated = true;
+    }
+
+    private void initializeMessageHandlers() throws Exception {
+        correctCmoPatientIdShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
+        final Phaser correctCmoPtIdPhaser = new Phaser();
+        correctCmoPtIdPhaser.register();
+        for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
+            correctCmoPtIdPhaser.register();
+            exec.execute(new CorrectCmoPatientIdReqReplyHandler(correctCmoPtIdPhaser));
+        }
+        correctCmoPtIdPhaser.arriveAndAwaitAdvance();
     }
 
     private void setupCorrectCmoPatientIdHandler(Gateway gateway,
