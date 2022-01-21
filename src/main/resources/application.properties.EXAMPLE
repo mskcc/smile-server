@@ -28,6 +28,7 @@ metadb.igo_request_update_topic=
 metadb.igo_sample_update_topic=
 metadb.cmo_request_update_topic=
 metadb.cmo_sample_update_topic=
+mdb_admin.cmo_sample_label_update_topic=
 
 # request-reply topics
 request_reply.patient_samples_topic=
