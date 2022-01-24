@@ -4,7 +4,6 @@ import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.common.impl.MetadbJsonComparatorImpl;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.utils.SSLUtils;
-import org.mskcc.cmo.metadb.service.impl.AdminMessageHandlingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.MessageHandlingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.PatientServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.RequestReplyHandlingServiceImpl;
@@ -61,6 +60,4 @@ public class MetadbTestApp {
     @MockBean
     public RequestReplyHandlingServiceImpl requestReplyHandlingService;
 
-    @MockBean
-    public AdminMessageHandlingServiceImpl adminMessageHandlingService;
 }
