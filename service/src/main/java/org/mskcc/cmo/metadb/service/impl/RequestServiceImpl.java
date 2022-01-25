@@ -3,6 +3,7 @@ package org.mskcc.cmo.metadb.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -267,7 +268,9 @@ public class RequestServiceImpl implements MetadbRequestService {
 
     private Date getFormattedDate(String dateString) {
         try {
-            return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            df.setLenient(false);
+            return df.parse(dateString);
         } catch (ParseException e) {
             throw new RuntimeException("Could not parse date: " + dateString, e);
         }
