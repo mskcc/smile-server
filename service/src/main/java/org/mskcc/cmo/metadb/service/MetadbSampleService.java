@@ -26,5 +26,6 @@ public interface MetadbSampleService {
     PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception;
     List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(String cmoPatientId)
             throws Exception;
+    List<MetadbSample> getMetadbSampleListByCmoPatientId(String cmoPatientId) throws Exception;
     MetadbSample getDetailedMetadbSample(MetadbSample sample) throws ParseException;
 }

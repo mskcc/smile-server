@@ -16,9 +16,11 @@ import org.mskcc.cmo.metadb.model.igo.Library;
 import org.mskcc.cmo.metadb.model.igo.QcReport;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
+import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NodeEntity
 public class SampleMetadata implements Serializable, Comparable<SampleMetadata> {
     @Id @GeneratedValue
     @JsonIgnore
@@ -331,10 +333,13 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
 
     @Override
     public int compareTo(SampleMetadata sampleMetadata) {
-        if (getImportDate() == null || sampleMetadata.getImportDate() == null) {
+        if (importDate == null || sampleMetadata.getImportDate() == null) {
             return 0;
         }
-        return getImportDate().compareTo(sampleMetadata.getImportDate());
+        if (importDate.equals(sampleMetadata.getImportDate())) {
+            return id.compareTo(sampleMetadata.getId());
+        }
+        return importDate.compareTo(sampleMetadata.getImportDate());
     }
 
     @Override

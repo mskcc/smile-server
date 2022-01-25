@@ -36,5 +36,13 @@ public class PatientServiceImpl implements MetadbPatientService {
     public UUID getPatientIdBySample(UUID metadbSampleId) {
         return patientRepository.findPatientIdBySample(metadbSampleId);
     }
+    
+    @Override
+    public MetadbPatient updateCmoPatientId(String oldCmoPatientId, String newCmoPatientId) {
+        if (getPatientByCmoPatientId(oldCmoPatientId) == null) {
+            return null;
+        }
+        return patientRepository.updateCmoPatientIdInPatientNode(oldCmoPatientId, newCmoPatientId);
+    }
 
 }
