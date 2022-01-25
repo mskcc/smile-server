@@ -160,7 +160,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public List<MetadbSample> getMetadbSampleListByCmoPatientId(String cmoPatientId) throws Exception {
         List<SampleMetadata> sampleMetadataList = sampleRepository
-                .findAllSampleMetadataListByCmoPatientId(cmoPatientId);
+                .findAllSampleMetadataByCmoPatientId(cmoPatientId);
         List<MetadbSample> samples = new ArrayList<>();
         for (SampleMetadata sm: sampleMetadataList) {
             // TODO: update method to fill in sample details in a more inclusive

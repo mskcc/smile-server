@@ -41,7 +41,7 @@ public class SampleServiceTest {
 
     @Autowired
     private MetadbPatientService patientService;
-    
+
     @Container
     private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
@@ -102,7 +102,7 @@ public class SampleServiceTest {
                 .get("mockIncomingRequest5JsonPtMultiSamples");
         MetadbRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
         requestService.saveRequest(request5);
-        
+
         //persist mock clinical data
         MockJsonTestData clinicalSample = mockDataUtils.mockedDmpMetadataMap
                 .get("P0000001N01IM3");
@@ -111,8 +111,8 @@ public class SampleServiceTest {
                 DmpSampleMetadata.class);
         MetadbSample clinicalSample1 = SampleDataFactory.buildNewClinicalSampleFromMetadata(
                 dmpSample.getDmpPatientId(), dmpSample);
-        sampleService.saveSampleMetadata(clinicalSample1);
-        
+        sampleService.saveMetadbSample(clinicalSample1);
+
     }
 
 
@@ -250,12 +250,12 @@ public class SampleServiceTest {
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory).isSorted();
     }
-    
+
     /**
      * Test if the persisted clinical sample is accurately mapped
-     * @throws Exception 
+     * @throws Exception
      */
-    
+
     @Test
     public void testPersistClinicalSample() throws Exception {
         String cmoPatientId = "P-0000001";
