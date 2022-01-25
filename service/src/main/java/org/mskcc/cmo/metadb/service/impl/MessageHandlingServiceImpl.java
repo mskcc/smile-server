@@ -143,7 +143,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                                 LOG.info("CLINICAL SAMPLE UPDATES NOT SUPPORTED YET");
                             }
                             LOG.info("Persisting update for sample to database");
-                            sampleService.saveSampleMetadata(sample);
+                            sampleService.saveMetadbSample(sample);
                         }
                     }
                     if (interrupted && correctCmoPatientIdQueue.isEmpty()) {
@@ -530,7 +530,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
             exec.execute(new CorrectCmoPatientIdHandler(correctCmoPtIdPhaser));
         }
         correctCmoPtIdPhaser.arriveAndAwaitAdvance();
-        
+
         // new clinical sample handler
         newClinicalSampleHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
         final Phaser newClinicalsamplePhaser = new Phaser();
