@@ -9,7 +9,6 @@ import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
-import org.mskcc.cmo.metadb.model.SampleAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
@@ -67,6 +66,8 @@ public class SampleServiceImpl implements MetadbSampleService {
             patientService.savePatientMetadata(patient);
             sample.setPatient(patient);
         } else {
+            // need to update patient in case there are new aliases
+            patientService.updatePatientMetadata(patient, existingPatient);
             sample.setPatient(existingPatient);
         }
 
