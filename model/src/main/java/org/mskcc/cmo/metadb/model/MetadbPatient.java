@@ -92,6 +92,24 @@ public class MetadbPatient implements Serializable {
         patientAliases.add(patientAlias);
     }
 
+    /**
+     * Determines whether Patient already has the provided patientAlias.
+     * @param patientAlias
+     * @return Boolean
+     */
+    public Boolean hasPatientAlias(PatientAlias patientAlias) {
+        if (patientAliases == null) {
+            patientAliases = new ArrayList<>();
+        }
+        for (PatientAlias alias : patientAliases) {
+            if (patientAlias.getNamespace().equalsIgnoreCase(alias.getNamespace())
+                    && patientAlias.getValue().equalsIgnoreCase(alias.getValue())) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
