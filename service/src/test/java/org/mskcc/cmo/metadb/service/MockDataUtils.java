@@ -27,15 +27,17 @@ public final class MockDataUtils {
             = "data/dmp_clinical/mocked_dmp_data_details.txt";
     private final String MOCKED_DMP_PATIENT_MAPPING_FILEPATH
             = "data/dmp_clinical/mocked_dmp_patient_mappings.txt";
-    private final String MOCKED_DMP_SAMPLE_MAPPING_FILEPATH
-            = "data/dmp_clinical/mocked_dmp_sample_mappings.txt";
     private final String MOCKED_JSON_DATA_DIR = "data";
     private final ClassPathResource mockJsonTestDataResource = new ClassPathResource(MOCKED_JSON_DATA_DIR);
+
     // mocked data maps
     public Map<String, MockJsonTestData> mockedRequestJsonDataMap;
     public Map<String, MockJsonTestData> mockedDmpMetadataMap;
     public Map<String, String> mockedDmpPatientMapping;
     public Map<String, String> mockedDmpSampleMapping;
+
+    // expected patient-sample counts (research and clinical)
+    public final Map<String, Integer> EXPECTED_PATIENT_SAMPLES_COUNT = initExpectedPatientSamplesCount();
 
     /**
      * Inits the mocked dmp metadata map.
@@ -96,34 +98,26 @@ public final class MockDataUtils {
     }
 
     /**
-     * Inits the mocked dmp sample id mappings.
-     * @throws IOException
+     * Returns the CMO patient ID for a given DMP patient ID.
+     * @param dmpPatientId
+     * @return String
      */
-    @Autowired
-    public void mockedDmpSampleMapping() throws IOException {
-        this.mockedDmpSampleMapping = new HashMap<>();
-        ClassPathResource jsonDataDetailsResource =
-                new ClassPathResource(MOCKED_DMP_SAMPLE_MAPPING_FILEPATH);
-        BufferedReader reader = new BufferedReader(new FileReader(jsonDataDetailsResource.getFile()));
-        List<String> columns = new ArrayList<>();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] data = line.split("\t");
-            if (columns.isEmpty()) {
-                columns = Arrays.asList(data);
-                continue;
+    public String getCmoPatientIdForDmpPatient(String dmpPatientId) {
+        return mockedDmpPatientMapping.get(dmpPatientId);
+    }
+
+    /**
+     * Returns the DMP patient ID for a given CMO patient ID.
+     * @param cmoPatientId
+     * @return String
+     */
+    public String getDmpPatientIdForCmoPatient(String cmoPatientId) {
+        for (Map.Entry<String, String> entry : mockedDmpPatientMapping.entrySet()) {
+            if (entry.getValue().equals(cmoPatientId)) {
+                return entry.getKey();
             }
-            String igoSampleId = data[columns.indexOf("IGO_SAMPLE_ID")];
-            // not every igo sample will have a matching dmp id
-            String dmpSampleId = null;
-            try {
-                dmpSampleId = data[columns.indexOf("DMP_ID")];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                // do nothing
-            }
-            mockedDmpSampleMapping.put(igoSampleId, dmpSampleId);
         }
-        reader.close();
+        return null;
     }
 
     /**
@@ -166,4 +160,30 @@ public final class MockDataUtils {
         return mapper.writeValueAsString(filedata);
     }
 
+    /**
+     * Inits map of expected sample counts for each cmo patient id.
+     * @return Map
+     */
+    private Map<String, Integer> initExpectedPatientSamplesCount() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("C-KXXL3J", 2);
+        map.put("C-X09281", 2);
+        map.put("C-999XX", 2);
+        map.put("C-1MP6YY", 6);
+        map.put("C-9XX8808", 2);
+        map.put("C-PXXXD9", 2);
+        map.put("C-XXA40X", 2);
+        map.put("C-MXX99F", 1);
+        map.put("C-MP789JR", 4);
+        map.put("C-8DH24X", 4);
+        map.put("C-DPCXX1", 2);
+        map.put("C-XXC4XX", 1);
+        map.put("C-FFX222", 2);
+        map.put("C-HXXX3X", 1);
+        map.put("C-TX6DNG", 1);
+        map.put("C-XXX711", 2);
+        map.put("C-PPPXX2", 2);
+        map.put("C-YXX89J", 2);
+        return map;
+    }
 }

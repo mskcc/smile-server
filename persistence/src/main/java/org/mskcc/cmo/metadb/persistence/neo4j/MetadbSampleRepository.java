@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UUID> {
     @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSampleId}) "
             + "RETURN s")
-    MetadbSample findAllSamplesById(@Param("metaDbSampleId") UUID metaDbSampleId);
+    MetadbSample findSampleById(@Param("metaDbSampleId") UUID metaDbSampleId);
 
     @Query("MATCH (sa: SampleAlias {value: $igoId, namespace: 'igoId'})"
         + "<-[:IS_ALIAS]-(s: Sample) "
@@ -66,9 +66,9 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
             @Param("igoId") String igoId);
 
     @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
-            + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata) "
-            + "RETURN sm")
-    List<SampleMetadata> findAllSampleMetadataByCmoPatientId(
+            + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample) "
+            + "RETURN s")
+    List<MetadbSample> findAllSamplesByCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId);
 
     @Query("MATCH (sa :SampleAlias {value:$value, namespace: $namespace})"
