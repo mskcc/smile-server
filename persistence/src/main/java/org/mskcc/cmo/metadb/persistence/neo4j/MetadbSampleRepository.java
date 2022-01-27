@@ -29,7 +29,7 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     @Query("MATCH (sa: SampleAlias {value: $alias.value, namespace: $alias.namespace})"
         + "<-[:IS_ALIAS]-(s: Sample) "
         + "RETURN s")
-    MetadbSample findResearchSampleBySampleAlias(@Param("alias") SampleAlias alias);
+    MetadbSample findSampleBySampleAlias(@Param("alias") SampleAlias alias);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId})"
             + "RETURN s")

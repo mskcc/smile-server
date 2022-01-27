@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
+import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.dmp.DmpSampleMetadata;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbPatientRepository;
@@ -102,17 +104,28 @@ public class SampleServiceTest {
                 .get("mockIncomingRequest5JsonPtMultiSamples");
         MetadbRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
         requestService.saveRequest(request5);
-
-        //persist mock clinical data
-        MockJsonTestData clinicalSample = mockDataUtils.mockedDmpMetadataMap
-                .get("P0000001N01IM3");
+        
         final ObjectMapper mapper = new ObjectMapper();
-        DmpSampleMetadata dmpSample = mapper.readValue(clinicalSample.getJsonString(),
-                DmpSampleMetadata.class);
-        MetadbSample clinicalSample1 = SampleDataFactory.buildNewClinicalSampleFromMetadata(
-                dmpSample.getDmpPatientId(), dmpSample);
-        sampleService.saveMetadbSample(clinicalSample1);
 
+        //mock clinical data dmp id: P-0000001-N01-IM3
+        MockJsonTestData clinicalSample1 = mockDataUtils.mockedDmpMetadataMap
+                .get("P0000001N01IM3");
+        DmpSampleMetadata dmpSample1 = mapper.readValue(clinicalSample1.getJsonString(),
+                DmpSampleMetadata.class);
+        String cmoPatientId = mockDataUtils.mockedDmpPatientMapping.get(dmpSample1.getDmpPatientId());
+        MetadbSample builtClinicalSample1 = SampleDataFactory.buildNewClinicalSampleFromMetadata(
+                cmoPatientId, dmpSample1);
+        sampleService.saveMetadbSample(builtClinicalSample1);
+        
+      //mock clinical data dmp id: P-7778999-N01-IM3
+        MockJsonTestData clinicalSample2 = mockDataUtils.mockedDmpMetadataMap
+                .get("P7778999N01IM3");
+        DmpSampleMetadata dmpSample2 = mapper.readValue(clinicalSample2.getJsonString(),
+                DmpSampleMetadata.class);
+        String cmoPatientId2 = mockDataUtils.mockedDmpPatientMapping.get(dmpSample2.getDmpPatientId());
+        MetadbSample builtClinicalSample2 = SampleDataFactory.buildNewClinicalSampleFromMetadata(
+                cmoPatientId2, dmpSample2);
+        sampleService.saveMetadbSample(builtClinicalSample2);
     }
 
 
@@ -137,7 +150,7 @@ public class SampleServiceTest {
         String igoId = "MOCKREQUEST1_B_1";
         MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(sample);
-        Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
+        Assertions.assertThat(matchedNormalList.size()).isEqualTo(2);
     }
 
     /**
@@ -256,11 +269,47 @@ public class SampleServiceTest {
      * @throws Exception
      */
 
+    //This test is failing because i see two instances of the clinical sample P-0000001-N01-IM3 connected to patient C-DPCXX1
     @Test
     public void testPersistClinicalSample() throws Exception {
-        String cmoPatientId = "P-0000001";
+        String cmoPatientId = "C-DPCXX1";
         List<SampleMetadata> sampleMetadataList = sampleService
                 .getSampleMetadataListByCmoPatientId(cmoPatientId);
-        Assertions.assertThat(sampleMetadataList.size()).isEqualTo(2);
+        for (SampleMetadata s: sampleMetadataList) {
+            System.out.println("\n\n" + s.toString());
+        }
+        Assertions.assertThat(sampleMetadataList.size()).isEqualTo(1);
+    }
+    
+    /**
+     * Test if duplicate patient nodes are persisted
+     * when 2 samples share the same patient
+     * @throws Exception 
+     */
+    //Here I'm seeing 13 samples attached to this patient node, that 11 instances of the clinical sample P-7778999-N01-IM3
+    @Test
+    public void testDuplicatePatientNodesSharedBySamples() throws Exception {
+        String cmoPatientId = "C-MP789JR";
+        // tried using getMetadbSampleListByCmoPatientId, throwing NPE IN getDetailedMetadbSample
+        List<SampleMetadata> sampleMetadataList = sampleService
+                .getSampleMetadataListByCmoPatientId(cmoPatientId);
+        for (SampleMetadata s: sampleMetadataList) {
+            System.out.println("\n\n" + s.toString());
+        }
+        Assertions.assertThat(sampleMetadataList.size()).isEqualTo(3);
+        
+    }
+    
+    /**
+     * Test if the patient node only has 2 patient alias nodes
+     * when it shared by a clinical sample and research sample
+     */
+    @Test
+    public void testClinicalAndResearchSamplesSharedPatient() {
+        String cmoPatientId = "C-MP789JR";
+        MetadbPatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+        List<PatientAlias> aliases = patientRepository.findPatientAliasesByPatient(patient);
+        Assertions.assertThat(aliases.size()).isEqualTo(2);
+
     }
 }
