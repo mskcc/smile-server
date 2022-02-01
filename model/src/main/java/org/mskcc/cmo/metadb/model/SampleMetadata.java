@@ -336,7 +336,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         if (importDate == null || sampleMetadata.getImportDate() == null) {
             return 0;
         }
-        if (importDate.equals(sampleMetadata.getImportDate())) {
+        if (id != null && importDate.equals(sampleMetadata.getImportDate())) {
             return id.compareTo(sampleMetadata.getId());
         }
         return importDate.compareTo(sampleMetadata.getImportDate());
