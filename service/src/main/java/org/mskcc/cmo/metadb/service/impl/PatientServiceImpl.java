@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
@@ -20,17 +21,6 @@ public class PatientServiceImpl implements MetadbPatientService {
         MetadbPatient result = patientRepository.save(patient);
         patient.setMetaDbPatientId(result.getMetaDbPatientId());
         return patient;
-    }
-
-    @Override
-    public MetadbPatient updatePatientMetadata(MetadbPatient patient, MetadbPatient existingPatient) {
-        for (PatientAlias alias : patient.getPatientAliases()) {
-            if (!existingPatient.hasPatientAlias(alias)) {
-                existingPatient.addPatientAlias(alias);
-            }
-        }
-        patientRepository.save(existingPatient);
-        return existingPatient;
     }
 
     @Override

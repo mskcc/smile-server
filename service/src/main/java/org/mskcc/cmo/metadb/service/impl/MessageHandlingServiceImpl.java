@@ -128,20 +128,17 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                                 oldCmoPatientId, newCmoPatientId);
 
                         for (MetadbSample sample: samples) {
-                            // TODO: add support for clinical sample updates
+                            SampleMetadata latestMetadata = sample.getLatestSampleMetadata();
+                            latestMetadata.setCmoPatientId(newCmoPatientId);
                             if (sample.getSampleCategory().equals("research")) {
-                                SampleMetadata latestMetadata = sample.getLatestSampleMetadata();
-                                latestMetadata.setCmoPatientId(newCmoPatientId);
-                                String newCmoSampleLabel = latestMetadata.getCmoSampleName()
-                                        .replaceAll(oldCmoPatientId, newCmoPatientId);
-
                                 LOG.info("Updating patient ID prefix embedded in CMO sample label "
                                         + "for research sample: " + latestMetadata.getPrimaryId());
+                                String newCmoSampleLabel = latestMetadata.getCmoSampleName()
+                                        .replaceAll(oldCmoPatientId, newCmoPatientId);
                                 latestMetadata.setCmoSampleName(newCmoSampleLabel);
-                                sample.updateSampleMetadata(latestMetadata);
-                            } else if (sample.getSampleCategory().equals("clinical")) {
-                                LOG.info("CLINICAL SAMPLE UPDATES NOT SUPPORTED YET");
                             }
+                            sample.setPatient(updatedPatient);
+                            sample.updateSampleMetadata(latestMetadata);
                             LOG.info("Persisting update for sample to database");
                             sampleService.saveMetadbSample(sample);
                         }

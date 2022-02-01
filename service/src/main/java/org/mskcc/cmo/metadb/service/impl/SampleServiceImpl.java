@@ -66,8 +66,6 @@ public class SampleServiceImpl implements MetadbSampleService {
             patientService.savePatientMetadata(patient);
             sample.setPatient(patient);
         } else {
-            // need to update patient in case there are new aliases
-            patientService.updatePatientMetadata(patient, existingPatient);
             sample.setPatient(existingPatient);
         }
 
