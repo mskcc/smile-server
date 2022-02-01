@@ -358,13 +358,14 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         MetadbSample existingSample = sampleService.getClinicalSampleByDmpId(
                                 metadbSample.getPrimarySampleAlias());
                         if (existingSample == null) {
-                            LOG.info("Sample metadata does not already exist - persisting to db: "
+                            LOG.info("Clinical sample does not already exist - persisting to db: "
                                     + metadbSample.getPrimarySampleAlias());
 
                             sampleService.saveMetadbSample(metadbSample);
                             LOG.info("Publishing metadata history for new sample: "
                                     + metadbSample.getPrimarySampleAlias());
-                            //publish here if needed
+                            // TODO: PUBLISH HERE TO APPRORPIATE CLINICAL DATA PROCESSING TOPICS ONCE
+                            // ACTUALLY SUPPORTED
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(),
                                 metadbSample.getLatestSampleMetadata())) {
@@ -668,9 +669,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             DmpSampleMetadata.class);
                     String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
                             dmpSample.getDmpPatientId());
-                    MetadbSample sampleMetadata = SampleDataFactory.buildNewClinicalSampleFromMetadata(
+                    MetadbSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
                             cmoPatientId, dmpSample);
-                    messageHandlingService.newClinicalSampleHandler(sampleMetadata);
+                    messageHandlingService.newClinicalSampleHandler(sample);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of new clinical sample on topic: "
                             + NEW_DMP_SAMPLE_TOPIC, e);

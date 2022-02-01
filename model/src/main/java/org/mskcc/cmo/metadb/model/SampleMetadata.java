@@ -104,6 +104,9 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.baitSet = dmpSampleMetadata.getGenePanel();
         this.species = "Human";
         this.tissueLocation = dmpSampleMetadata.getBiopsySite();
+        this.qcReports = new ArrayList<>(); // default for dmp samples
+        this.libraries = new ArrayList<>(); // default for dmp samples
+        this.cmoSampleIdFields = new HashMap<>(); // default for dmp samples
     }
 
     Map<String, String> setUpMetastasisValueMapping() {
