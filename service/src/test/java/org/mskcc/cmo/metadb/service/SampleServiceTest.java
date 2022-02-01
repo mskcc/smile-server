@@ -2,6 +2,7 @@ package org.mskcc.cmo.metadb.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
@@ -30,6 +31,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DataNeo4jTest
 @Import(MockDataUtils.class)
 public class SampleServiceTest {
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Autowired
     private MockDataUtils mockDataUtils;
 
@@ -103,18 +106,16 @@ public class SampleServiceTest {
         MetadbRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
         requestService.saveRequest(request5);
 
-        //persist mock clinical data
-        MockJsonTestData clinicalSample = mockDataUtils.mockedDmpMetadataMap
-                .get("P0000001N01IM3");
-        final ObjectMapper mapper = new ObjectMapper();
-        DmpSampleMetadata dmpSample = mapper.readValue(clinicalSample.getJsonString(),
+        //persist all mocked clinical data
+        for (MockJsonTestData mockJsonTestData : mockDataUtils.mockedDmpMetadataMap.values()) {
+            DmpSampleMetadata dmpSample = mapper.readValue(mockJsonTestData.getJsonString(),
                 DmpSampleMetadata.class);
-        MetadbSample clinicalSample1 = SampleDataFactory.buildNewClinicalSampleFromMetadata(
-                dmpSample.getDmpPatientId(), dmpSample);
-        sampleService.saveMetadbSample(clinicalSample1);
-
+            String cmoPatientId = mockDataUtils.getCmoPatientIdForDmpPatient(dmpSample.getDmpPatientId());
+            MetadbSample clinicalSample =
+                    SampleDataFactory.buildNewClinicalSampleFromMetadata(cmoPatientId, dmpSample);
+            sampleService.saveMetadbSample(clinicalSample);
+        }
     }
-
 
     /**
      * Tests if the graphDb is set up accurately
@@ -128,7 +129,9 @@ public class SampleServiceTest {
     }
 
     /**
-     * Tests whether findMatchedNormalSample retrieves an accurate list MetadbSample
+     * Tests whether findMatchedNormalSample retrieves an accurate list MetadbSample.
+     * Note: after adding and persisting the mocked clinical data, there is now
+     * an additional matched normal for the sample below.
      * @throws Exception
      */
     @Test
@@ -137,7 +140,7 @@ public class SampleServiceTest {
         String igoId = "MOCKREQUEST1_B_1";
         MetadbSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<MetadbSample> matchedNormalList = sampleService.getMatchedNormalsBySample(sample);
-        Assertions.assertThat(matchedNormalList.size()).isEqualTo(1);
+        Assertions.assertThat(matchedNormalList.size()).isEqualTo(2);
     }
 
     /**
@@ -252,15 +255,38 @@ public class SampleServiceTest {
     }
 
     /**
-     * Test if the persisted clinical sample is accurately mapped
+     * Test if the persisted clinical sample is accurately mapped.
+     * DMP patient 'P-0000001' is expected to only have 2 clinical samples
+     * and no research samples.
      * @throws Exception
      */
-
     @Test
     public void testPersistClinicalSample() throws Exception {
-        String cmoPatientId = "P-0000001";
-        List<SampleMetadata> sampleMetadataList = sampleService
-                .getSampleMetadataListByCmoPatientId(cmoPatientId);
-        Assertions.assertThat(sampleMetadataList.size()).isEqualTo(2);
+        String dmpPatientId = "P-0000001";
+        String cmoPatientId = mockDataUtils.getCmoPatientIdForDmpPatient(dmpPatientId);
+        List<MetadbSample> sampleList = sampleService
+                .getMetadbSampleListByCmoPatientId(cmoPatientId);
+        Assertions.assertThat(sampleList.size()).isEqualTo(2);
+    }
+
+    /**
+     * Tests that the number of samples (research and clinical) persisted for
+     * each patient matches the expected  number of samples.
+     * @throws Exception
+     */
+    @Test
+    public void testPatientSamplesCountMatchExpectedValues() throws Exception {
+        for (Map.Entry<String, Integer> entry : mockDataUtils.EXPECTED_PATIENT_SAMPLES_COUNT.entrySet()) {
+            String cmoPatientId = entry.getKey();
+            Integer expectedSampleCount = entry.getValue();
+            List<MetadbSample> sampleList = sampleService.getMetadbSampleListByCmoPatientId(cmoPatientId);
+            if (expectedSampleCount != sampleList.size()) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("CMO patient id: ").append(cmoPatientId)
+                        .append("\n\tExpected count ").append(expectedSampleCount)
+                        .append(", Actual count: ").append(sampleList.size());
+                Assertions.fail(builder.toString());
+            }
+        }
     }
 }
