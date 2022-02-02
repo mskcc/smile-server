@@ -9,7 +9,6 @@ import org.mskcc.cmo.metadb.persistence.jpa.CrdbRepository;
 import org.mskcc.cmo.metadb.service.impl.CrdbMappingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -22,7 +21,7 @@ public class CrdbMappingServiceTest {
     @Autowired
     private MockDataUtils mockDataUtils;
 
-    @MockBean
+    @Autowired
     private CrdbRepository crdbRepository;
 
     private CrdbMappingServiceImpl crdbMappingService;
@@ -32,13 +31,13 @@ public class CrdbMappingServiceTest {
      */
     @BeforeEach
     public void before() {
-        for (String cmoId : mockDataUtils.mockedDmpPatientMapping.keySet()) {
-            String dmpId = mockDataUtils.mockedDmpPatientMapping.get(cmoId);
+        for (Map.Entry<String, String> entry : mockDataUtils.mockedDmpPatientMapping.entrySet()) {
+            String dmpId = entry.getKey();
+            String cmoId = entry.getValue();
             Mockito.when(crdbRepository.getCmoPatientIdbyDmpId(dmpId))
                     .thenReturn(cmoId);
         }
         this.crdbMappingService = new CrdbMappingServiceImpl(crdbRepository);
-
     }
 
     /**
@@ -58,8 +57,8 @@ public class CrdbMappingServiceTest {
     @Test
     public void testDmpToCmoIdMapping() {
         for (Map.Entry<String, String> entry : mockDataUtils.mockedDmpPatientMapping.entrySet()) {
-            String dmpId = entry.getValue();
-            String cmoId = entry.getKey();
+            String dmpId = entry.getKey();
+            String cmoId = entry.getValue();
             if (dmpId != null) {
                 Assertions.assertThat(cmoId)
                         .isEqualTo(crdbMappingService.getCmoPatientIdbyDmpId(dmpId));

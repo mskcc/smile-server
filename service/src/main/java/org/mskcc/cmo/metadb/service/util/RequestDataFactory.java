@@ -11,7 +11,6 @@ import java.util.Map;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
-import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.igo.IgoRequest;
 import org.mskcc.cmo.metadb.model.igo.IgoSampleManifest;
 

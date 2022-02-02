@@ -1,5 +1,6 @@
 package org.mskcc.cmo.metadb.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
@@ -36,7 +37,7 @@ public class PatientServiceImpl implements MetadbPatientService {
     public UUID getPatientIdBySample(UUID metadbSampleId) {
         return patientRepository.findPatientIdBySample(metadbSampleId);
     }
-    
+
     @Override
     public MetadbPatient updateCmoPatientId(String oldCmoPatientId, String newCmoPatientId) {
         if (getPatientByCmoPatientId(oldCmoPatientId) == null) {
