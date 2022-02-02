@@ -123,7 +123,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         // get samples by old cmo patient id before updating the
                         // cmo patient id for the given patient alias/patient node
                         List<MetadbSample> samples =
-                                sampleService.getMetadbSampleListByCmoPatientId(oldCmoPatientId);
+                                sampleService.getSamplesByCmoPatientId(oldCmoPatientId);
                         MetadbPatient updatedPatient = patientService.updateCmoPatientId(
                                 oldCmoPatientId, newCmoPatientId);
 

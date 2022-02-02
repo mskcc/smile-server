@@ -56,7 +56,7 @@ public class SampleController {
             @ApiParam(value = "CMO Patient ID", required = true)
             @PathVariable String cmoPatientId) throws Exception {
         List<PublishedMetadbSample> samples = sampleService
-                .getPublishedMetadbSampleListByCmoPatientId(cmoPatientId);
+                .getPublishedMetadbSamplesByCmoPatientId(cmoPatientId);
         if (samples == null) {
             return requestNotFoundHandler("Samples not found by CMO patient ID: " + cmoPatientId);
         }
