@@ -71,6 +71,12 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     List<MetadbSample> findAllSamplesByCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId);
 
+    @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
+            + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample {sampleCategory: $sampleCategory}) "
+            + "RETURN s")
+    List<MetadbSample> findAllSamplesByCategoryAndCmoPatientId(
+            @Param("cmoPatientId") String cmoPatientId, @Param("sampleCategory") String sampleCategory);
+
     @Query("MATCH (sa :SampleAlias {value:$value, namespace: $namespace})"
             + "-[:IS_ALIAS]->(s: Sample)"
             + "-[:HAS_METADATA]->(sm: SampleMetadata)"

@@ -2,6 +2,7 @@ package org.mskcc.cmo.metadb.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -14,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.CrdbMappingService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
@@ -86,13 +88,18 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             phaser.arrive();
             while (true) {
                 try {
+                    // reply info request message contains cmo patient id
                     ReplyInfo replyInfo = patientSamplesReqReplyQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (replyInfo != null) {
-                        List<SampleMetadata> sampleList =
-                                sampleService.getSampleMetadataListByCmoPatientId(
-                                        replyInfo.getRequestMessage());
+                        List<MetadbSample> researchSamples =
+                                sampleService.getSamplesByCategoryAndCmoPatientId(
+                                        replyInfo.getRequestMessage(), "research");
+                        List<SampleMetadata> sampleMetadataList = new ArrayList<>();
+                        for (MetadbSample sample : researchSamples) {
+                            sampleMetadataList.add(sample.getLatestSampleMetadata());
+                        }
                         messagingGateway.replyPublish(replyInfo.getReplyTo(),
-                                mapper.writeValueAsString(sampleList));
+                                mapper.writeValueAsString(sampleMetadataList));
                     }
                     if (interrupted && patientSamplesReqReplyQueue.isEmpty()) {
                         break;

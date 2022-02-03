@@ -165,9 +165,9 @@ public class SampleServiceTest {
     @Test
     public void testGetSampleMetadataListByCmoPatientId() throws Exception {
         String cmoPatientId = "C-PXXXD9";
-        List<SampleMetadata> savedSampleMetadataList = sampleService
-                .getSampleMetadataListByCmoPatientId(cmoPatientId);
-        Assertions.assertThat(savedSampleMetadataList.size()).isEqualTo(2);
+        List<MetadbSample> savedSampleList =
+                sampleService.getSamplesByCmoPatientId(cmoPatientId);
+        Assertions.assertThat(savedSampleList.size()).isEqualTo(2);
     }
 
     /**
@@ -265,7 +265,7 @@ public class SampleServiceTest {
         String dmpPatientId = "P-0000001";
         String cmoPatientId = mockDataUtils.getCmoPatientIdForDmpPatient(dmpPatientId);
         List<MetadbSample> sampleList = sampleService
-                .getMetadbSampleListByCmoPatientId(cmoPatientId);
+                .getSamplesByCmoPatientId(cmoPatientId);
         Assertions.assertThat(sampleList.size()).isEqualTo(2);
     }
 
@@ -279,7 +279,7 @@ public class SampleServiceTest {
         for (Map.Entry<String, Integer> entry : mockDataUtils.EXPECTED_PATIENT_SAMPLES_COUNT.entrySet()) {
             String cmoPatientId = entry.getKey();
             Integer expectedSampleCount = entry.getValue();
-            List<MetadbSample> sampleList = sampleService.getMetadbSampleListByCmoPatientId(cmoPatientId);
+            List<MetadbSample> sampleList = sampleService.getSamplesByCmoPatientId(cmoPatientId);
             if (expectedSampleCount != sampleList.size()) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("CMO patient id: ").append(cmoPatientId)

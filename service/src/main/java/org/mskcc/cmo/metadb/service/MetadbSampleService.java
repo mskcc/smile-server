@@ -15,16 +15,16 @@ public interface MetadbSampleService {
     List<String> getPooledNormalsBySample(MetadbSample metaDbSample) throws Exception;
     MetadbSample getMetadbSample(UUID metaDbSampleId) throws Exception;
     MetadbSample getResearchSampleByRequestAndIgoId(String requestId, String igoId) throws Exception;
-    List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception;
     List<MetadbSample> getResearchSamplesByRequestId(String requestId) throws Exception;
     List<SampleMetadata> getResearchSampleMetadataHistoryByIgoId(String igoId) throws Exception;
     Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata, SampleMetadata sampleMetadata)
             throws Exception;
     PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception;
-    List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(String cmoPatientId)
+    List<PublishedMetadbSample> getPublishedMetadbSamplesByCmoPatientId(String cmoPatientId)
             throws Exception;
-    List<MetadbSample> getMetadbSampleListByCmoPatientId(String cmoPatientId) throws Exception;
+    List<MetadbSample> getSamplesByCmoPatientId(String cmoPatientId) throws Exception;
     MetadbSample getDetailedMetadbSample(MetadbSample sample) throws ParseException;
     MetadbSample getClinicalSampleByDmpId(String dmpId) throws Exception;
-
+    List<MetadbSample> getSamplesByCategoryAndCmoPatientId(String cmoPatientId,
+            String sampleCategory) throws Exception;
 }

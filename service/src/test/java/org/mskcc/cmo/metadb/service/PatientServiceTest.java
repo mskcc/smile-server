@@ -136,10 +136,10 @@ public class PatientServiceTest {
         String oldCmoPatientId = "C-1MP6YY";
         String newCmoPatientId = "NewCmoPatientId";
 
-        int numOfSampleBeforeUpdate = sampleService.getSampleMetadataListByCmoPatientId(
+        int numOfSampleBeforeUpdate = sampleService.getSamplesByCmoPatientId(
                 oldCmoPatientId).size();
         patientService.updateCmoPatientId(oldCmoPatientId, newCmoPatientId);
-        int numOfSampleAfterUpdate = sampleService.getSampleMetadataListByCmoPatientId(
+        int numOfSampleAfterUpdate = sampleService.getSamplesByCmoPatientId(
                 newCmoPatientId).size();
 
         Assertions.assertThat(numOfSampleBeforeUpdate)

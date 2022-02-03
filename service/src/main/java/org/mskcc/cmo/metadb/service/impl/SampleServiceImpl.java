@@ -104,16 +104,6 @@ public class SampleServiceImpl implements MetadbSampleService {
     }
 
     @Override
-    public List<SampleMetadata> getSampleMetadataListByCmoPatientId(String cmoPatientId) throws Exception {
-        List<SampleMetadata> sampleMetadataList = new ArrayList<>();
-        for (MetadbSample sample: sampleRepository.findAllSamplesByCmoPatientId(cmoPatientId)) {
-            getDetailedMetadbSample(sample);
-            sampleMetadataList.add(sample.getLatestSampleMetadata());
-        }
-        return sampleMetadataList;
-    }
-
-    @Override
     public List<MetadbSample> getResearchSamplesByRequestId(String requestId) throws Exception {
         List<MetadbSample> requestSamples = new ArrayList<>();
         for (MetadbSample s : sampleRepository.findResearchSamplesByRequest(requestId)) {
@@ -147,7 +137,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     }
 
     @Override
-    public List<PublishedMetadbSample> getPublishedMetadbSampleListByCmoPatientId(
+    public List<PublishedMetadbSample> getPublishedMetadbSamplesByCmoPatientId(
             String cmoPatientId) throws Exception {
         List<MetadbSample> sampleList = sampleRepository
                 .findAllSamplesByCmoPatientId(cmoPatientId);
@@ -161,7 +151,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     }
 
     @Override
-    public List<MetadbSample> getMetadbSampleListByCmoPatientId(String cmoPatientId) throws Exception {
+    public List<MetadbSample> getSamplesByCmoPatientId(String cmoPatientId) throws Exception {
         List<MetadbSample> samples = new ArrayList<>();
         for (MetadbSample sample: sampleRepository.findAllSamplesByCmoPatientId(cmoPatientId)) {
             samples.add(getDetailedMetadbSample(sample));
@@ -189,4 +179,14 @@ public class SampleServiceImpl implements MetadbSampleService {
         return metadbSample;
     }
 
+    @Override
+    public List<MetadbSample> getSamplesByCategoryAndCmoPatientId(String cmoPatientId, String sampleCategory)
+            throws Exception {
+        List<MetadbSample> samples = new ArrayList<>();
+        for (MetadbSample sample: sampleRepository.findAllSamplesByCategoryAndCmoPatientId(cmoPatientId,
+                sampleCategory)) {
+            samples.add(getDetailedMetadbSample(sample));
+        }
+        return samples;
+    }
 }
