@@ -230,22 +230,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         MetadbRequest existingRequest =
                                 requestService.getMetadbRequestById(requestMetadata.getIgoRequestId());
                         if (existingRequest == null) {
-                            // We can't persist a request without samples
-//                            LOG.info("Request does not already exist - saving to database: "
-//                                    + requestMetadata.getIgoRequestId());
-//                            // persist and handle new request
-//                            MetadbRequest request =
-//                                    RequestDataFactory.buildNewRequestFromMetadata(requestMetadata);
-//
-//                            LOG.info("Publishing new request metadata to " + CMO_REQUEST_UPDATE_TOPIC);
-//                            requestService.saveRequest(request);
-//                            messagingGateway.publish(request.getIgoRequestId(),
-//                                    CMO_REQUEST_UPDATE_TOPIC,
-//                                    mapper.writeValueAsString(
-//                                          request.getRequestMetadataList()));
+                            // TODO: Log this request
                         } else if (requestService.requestHasMetadataUpdates(
-                                RequestDataFactory.buildNewRequestMetadataFromMetadata(
-                                        existingRequest.getRequestJson()), requestMetadata)) {
+                                                mapper.writeValueAsString(existingRequest),
+                                                requestMetadata.getRequestMetadataJson())) {
                             // persist request-level metadata updates to database
                             LOG.info("Found updates in request metadata: " + requestMetadata.getIgoRequestId()
                                     + " - persisting to database");
@@ -568,8 +556,10 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     String requestMetadataJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
+                    System.out.println("\nbefore\n" + requestMetadataJson);
                     RequestMetadata requestMetadata =
                             RequestDataFactory.buildNewRequestMetadataFromMetadata(requestMetadataJson);
+                    System.out.println("\nafter\n" + requestMetadata.getRequestMetadataJson());
                     LOG.info("Received message on topic: "  + IGO_REQUEST_UPDATE_TOPIC + " and request id: "
                             + requestMetadata.getIgoRequestId());
                     messageHandlingService.requestUpdateHandler(requestMetadata);

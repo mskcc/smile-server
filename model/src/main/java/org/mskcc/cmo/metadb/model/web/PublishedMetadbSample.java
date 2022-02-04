@@ -22,6 +22,7 @@ public class PublishedMetadbSample {
     @Convert(UuidStringConverter.class)
     private UUID metaDbSampleId;
     private UUID metaDbPatientId;
+    private String igoRequestId;
     private String primaryId;
     private String cmoPatientId;
     private String cmoSampleName;
@@ -44,6 +45,7 @@ public class PublishedMetadbSample {
     private String genePanel;
     private String baitSet;
     private String datasource;
+    private Boolean isCmoSample;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
     @Convert(QcReportsStringConverter.class)
@@ -63,6 +65,7 @@ public class PublishedMetadbSample {
     public PublishedMetadbSample(MetadbSample metaDbSample) throws ParseException {
         SampleMetadata latestSampleMetadata = metaDbSample.getLatestSampleMetadata();
         this.metaDbSampleId = metaDbSample.getMetaDbSampleId();
+        this.igoRequestId = latestSampleMetadata.getIgoRequestId();
         this.cmoInfoIgoId = latestSampleMetadata.getCmoInfoIgoId();
         this.cmoSampleName = latestSampleMetadata.getCmoSampleName();
         this.sampleName = latestSampleMetadata.getSampleName();
@@ -220,6 +223,14 @@ public class PublishedMetadbSample {
         this.metaDbPatientId = metaDbPatientId;
     }
 
+    public String getIgoRequestId() {
+        return igoRequestId;
+    }
+
+    public void setIgoRequestId(String igoRequestId) {
+        this.igoRequestId = igoRequestId;
+    }
+
     public String getPrimaryId() {
         return primaryId;
     }
@@ -314,6 +325,14 @@ public class PublishedMetadbSample {
 
     public void setDatasource(String datasource) {
         this.datasource = datasource;
+    }
+
+    public Boolean getIsCmoSample() {
+        return isCmoSample;
+    }
+
+    public void setIsCmoSample(Boolean isCmoSample) {
+        this.isCmoSample = isCmoSample;
     }
 
     public Map<String, String> getCmoSampleIdFields() {

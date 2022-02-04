@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mskcc.cmo.metadb.model.igo.IgoRequest;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -365,8 +366,8 @@ public class MetadbRequest implements Serializable {
         Map<String, Object> metadataMap =
                 mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
 
-        this.igoRequestId = String.valueOf(metadataMap.get("igoRequestId"));
-        this.genePanel = String.valueOf(metadataMap.get("genePanel"));
+        this.igoRequestId = resolveIgoRequestId(metadataMap);
+        this.genePanel = resolveGenePanel(metadataMap);
         this.projectManagerName = String.valueOf(metadataMap.get("projectManagerName"));
         this.piEmail = String.valueOf(metadataMap.get("piEmail"));
         this.labHeadName = String.valueOf(metadataMap.get("labHeadName"));
@@ -383,6 +384,16 @@ public class MetadbRequest implements Serializable {
         this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
         this.metaDbProject = new MetadbProject(igoRequestId.split("_")[0]);
         addRequestMetadata(requestMetadata);
+    }
+
+    public String resolveIgoRequestId(Map<String, Object> metadataMap) {
+        return ObjectUtils.firstNonNull(String.valueOf(metadataMap.get("igoRequestId")),
+                String.valueOf(metadataMap.get("requestId")));
+    }
+
+    public String resolveGenePanel(Map<String, Object> metadataMap) {
+        return ObjectUtils.firstNonNull(String.valueOf(metadataMap.get("genePanel")),
+                String.valueOf(metadataMap.get("recipe")));
     }
 
     /**
