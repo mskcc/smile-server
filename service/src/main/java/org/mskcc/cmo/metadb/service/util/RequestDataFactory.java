@@ -86,8 +86,12 @@ public class RequestDataFactory {
         if (requestMetadataMap.containsKey("samples")) {
             requestMetadataMap.remove("samples");
         }
-        RequestMetadata requestMetadata = new RequestMetadata(
-                requestMetadataMap.get("requestId").toString(),
+        // an attempt to make this method flexible with both schemas
+        Object requestId = requestMetadataMap.get("igoRequestId");
+        if(requestId == null) {
+            requestId = requestMetadataMap.get("requestId");
+        }
+        RequestMetadata requestMetadata = new RequestMetadata(requestId.toString(),
                 mapper.writeValueAsString(requestMetadataMap),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return requestMetadata;

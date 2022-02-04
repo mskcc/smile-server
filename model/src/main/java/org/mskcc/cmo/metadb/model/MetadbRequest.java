@@ -365,8 +365,8 @@ public class MetadbRequest implements Serializable {
         Map<String, Object> metadataMap =
                 mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
 
-        this.igoRequestId = String.valueOf(metadataMap.get("requestId"));
-        this.genePanel = String.valueOf(metadataMap.get("recipe"));
+        this.igoRequestId = String.valueOf(metadataMap.get("igoRequestId"));
+        this.genePanel = String.valueOf(metadataMap.get("genePanel"));
         this.projectManagerName = String.valueOf(metadataMap.get("projectManagerName"));
         this.piEmail = String.valueOf(metadataMap.get("piEmail"));
         this.labHeadName = String.valueOf(metadataMap.get("labHeadName"));
