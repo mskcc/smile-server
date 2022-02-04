@@ -556,10 +556,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                 try {
                     String requestMetadataJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
-                    System.out.println("\nbefore\n" + requestMetadataJson);
                     RequestMetadata requestMetadata =
                             RequestDataFactory.buildNewRequestMetadataFromMetadata(requestMetadataJson);
-                    System.out.println("\nafter\n" + requestMetadata.getRequestMetadataJson());
                     LOG.info("Received message on topic: "  + IGO_REQUEST_UPDATE_TOPIC + " and request id: "
                             + requestMetadata.getIgoRequestId());
                     messageHandlingService.requestUpdateHandler(requestMetadata);
