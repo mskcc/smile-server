@@ -387,13 +387,13 @@ public class MetadbRequest implements Serializable {
     }
 
     public String resolveIgoRequestId(Map<String, Object> metadataMap) {
-        return ObjectUtils.firstNonNull(String.valueOf(metadataMap.get("igoRequestId")),
-                String.valueOf(metadataMap.get("requestId")));
+        return ObjectUtils.firstNonNull(String.valueOf(metadataMap.get("requestId")),
+                String.valueOf(metadataMap.get("igoRequestId")));
     }
 
     public String resolveGenePanel(Map<String, Object> metadataMap) {
-        return ObjectUtils.firstNonNull(String.valueOf(metadataMap.get("genePanel")),
-                String.valueOf(metadataMap.get("recipe")));
+        return ObjectUtils.firstNonNull(String.valueOf(metadataMap.get("recipe")),
+                String.valueOf(metadataMap.get("genePanel")));
     }
 
     /**
