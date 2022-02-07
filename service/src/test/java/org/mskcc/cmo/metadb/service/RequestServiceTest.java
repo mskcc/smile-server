@@ -162,6 +162,34 @@ public class RequestServiceTest {
         Boolean hasUpdates = requestService.requestHasUpdates(
                 origRequest, updatedRequest);
         Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
+
+
+        RequestMetadata updatedMetadata = RequestDataFactory.buildNewRequestMetadataFromMetadata(
+                updatedRequestData.getJsonString());
+        Boolean hasMetadataUpdates = requestService.requestHasMetadataUpdates(
+                origRequest.getLatestRequestMetadata(), updatedMetadata);
+        Assertions.assertThat(hasMetadataUpdates).isEqualTo(Boolean.TRUE);
+    }
+
+    /**
+     * Tests instance of RequestMetadata that's been updated against the latest request
+     * metadata persisted in the database for the matching Request ID.
+     * @throws Exception
+     */
+    @Test
+    public void testRequestHasUpdatesWithUniversalSchema() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        MetadbRequest origRequest = requestService.getMetadbRequestById(requestId);
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(origRequest)).isTrue();
+
+        MockJsonTestData updatedRequestMetadataData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockUpdatedPublishedRequest1Metadata");
+        RequestMetadata updatedRequestMetadata = RequestDataFactory
+                .buildNewRequestMetadataFromMetadata(updatedRequestMetadataData.getJsonString());
+
+        Boolean hasUpdates = requestService.requestHasMetadataUpdates(
+                origRequest.getLatestRequestMetadata(), updatedRequestMetadata);
+        Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
     }
 
     /**

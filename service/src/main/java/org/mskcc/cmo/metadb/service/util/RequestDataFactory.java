@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
@@ -87,12 +86,11 @@ public class RequestDataFactory {
         if (requestMetadataMap.containsKey("samples")) {
             requestMetadataMap.remove("samples");
         }
-        // an attempt to make this method flexible with both schemas
-        String requestId = ObjectUtils.firstNonNull(
-                String.valueOf(requestMetadataMap.get("igoRequestId")),
-                String.valueOf(requestMetadataMap.get("requestId")));
+        Object requestId = requestMetadataMap.containsKey("requestId")
+                ? requestMetadataMap.get("requestId") : requestMetadataMap.get("igoRequestId");
 
-        RequestMetadata requestMetadata = new RequestMetadata(requestId.toString(),
+        RequestMetadata requestMetadata = new RequestMetadata(
+                requestId.toString(),
                 mapper.writeValueAsString(requestMetadataMap),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return requestMetadata;

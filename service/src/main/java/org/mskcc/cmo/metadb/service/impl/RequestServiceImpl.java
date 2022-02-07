@@ -199,14 +199,8 @@ public class RequestServiceImpl implements MetadbRequestService {
             RequestMetadata requestMetadata) throws Exception {
         String existingMetadata = mapper.writeValueAsString(existingRequestMetadata);
         String currentMetadata = mapper.writeValueAsString(requestMetadata);
-        return requestHasMetadataUpdates(existingMetadata, currentMetadata);
-    }
-
-    @Override
-    public Boolean requestHasMetadataUpdates(String existingRequestMetadataJson,
-            String requestMetadataJson) throws Exception {
         try {
-            metadbJsonComparator.isConsistent(requestMetadataJson, existingRequestMetadataJson);
+            metadbJsonComparator.isConsistent(currentMetadata, existingMetadata);
         } catch (AssertionError e) {
             LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
             return Boolean.TRUE;
