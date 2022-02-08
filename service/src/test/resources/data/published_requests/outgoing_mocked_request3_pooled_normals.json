@@ -89,7 +89,11 @@
           "namespace": "investigatorId",
           "value": "AGAG-LXX8"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "33344_Z"
+      }
     },
     {
       "metaDbSampleId": "afe75035-8756-11eb-9832-acde48001122",
@@ -164,7 +168,11 @@
           "namespace": "investigatorId",
           "value": "LXX8-AGAG"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "33344_Z"
+      }
     },
     {
       "metaDbSampleId": "afe75070-8756-11eb-9a86-acde48001122",
@@ -239,7 +247,11 @@
           "namespace": "investigatorId",
           "value": "AGAG"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "33344_Z"
+      }
     },
     {
       "metaDbSampleId": "afe750ab-8756-11eb-8adf-acde48001122",
@@ -314,7 +326,11 @@
           "namespace": "investigatorId",
           "value": "LXX8"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "33344_Z"
+      }
     }
   ],
   "pooledNormals": [
