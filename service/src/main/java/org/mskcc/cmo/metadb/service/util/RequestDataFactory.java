@@ -39,20 +39,6 @@ public class RequestDataFactory {
     }
 
     /**
-     * Method factory returns an instance of MetadbRequest built from
-     * an instance of RequestMetadata;
-     * @param requestMetadata
-     * @return MetadbRequest
-     * @throws JsonProcessingException
-     */
-    public static MetadbRequest buildNewRequestFromMetadata(RequestMetadata requestMetadata)
-            throws JsonProcessingException {
-        MetadbRequest request = new MetadbRequest();
-        request.updateRequestMetadataByMetadata(requestMetadata);
-        return request;
-    }
-
-    /**
      * Method factory returns an instance of RequestMetadata built from
      * request metadata JSON string.
      * @param requestMetadataJson

@@ -147,10 +147,7 @@ public class SampleServiceImpl implements MetadbSampleService {
     @Override
     public PublishedMetadbSample getPublishedMetadbSample(UUID metadbSampleId) throws Exception {
         MetadbSample sample = getMetadbSample(metadbSampleId);
-        PublishedMetadbSample publishedSample = new PublishedMetadbSample(sample);
-        publishedSample.setIsCmoSample(Boolean.valueOf(sampleRepository
-                .findSampleHasCmoRequest(metadbSampleId)));
-        return publishedSample;
+        return new PublishedMetadbSample(sample);
     }
 
     @Override

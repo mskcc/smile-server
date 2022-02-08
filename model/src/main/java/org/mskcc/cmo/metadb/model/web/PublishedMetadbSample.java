@@ -2,6 +2,7 @@ package org.mskcc.cmo.metadb.model.web;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,7 +23,6 @@ public class PublishedMetadbSample {
     @Convert(UuidStringConverter.class)
     private UUID metaDbSampleId;
     private UUID metaDbPatientId;
-    private String igoRequestId;
     private String primaryId;
     private String cmoPatientId;
     private String cmoSampleName;
@@ -45,7 +45,6 @@ public class PublishedMetadbSample {
     private String genePanel;
     private String baitSet;
     private String datasource;
-    private Boolean isCmoSample;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
     @Convert(QcReportsStringConverter.class)
@@ -54,6 +53,7 @@ public class PublishedMetadbSample {
     private List<Library> libraries;
     private List<SampleAlias> sampleAliases;
     private List<PatientAlias> patientAliases;
+    private Map<String, String> additionalProperties = new HashMap<>();
 
     public PublishedMetadbSample() {}
 
@@ -65,7 +65,6 @@ public class PublishedMetadbSample {
     public PublishedMetadbSample(MetadbSample metaDbSample) throws ParseException {
         SampleMetadata latestSampleMetadata = metaDbSample.getLatestSampleMetadata();
         this.metaDbSampleId = metaDbSample.getMetaDbSampleId();
-        this.igoRequestId = latestSampleMetadata.getIgoRequestId();
         this.cmoInfoIgoId = latestSampleMetadata.getCmoInfoIgoId();
         this.cmoSampleName = latestSampleMetadata.getCmoSampleName();
         this.sampleName = latestSampleMetadata.getSampleName();
@@ -94,6 +93,7 @@ public class PublishedMetadbSample {
         this.sampleAliases = metaDbSample.getSampleAliases();
         this.cmoSampleIdFields = latestSampleMetadata.getCmoSampleIdFields();
         this.patientAliases = metaDbSample.getPatient().getPatientAliases();
+        this.additionalProperties = latestSampleMetadata.getAdditionalProperties();
     }
 
     public UUID getMetaDbSampleId() {
@@ -223,14 +223,6 @@ public class PublishedMetadbSample {
         this.metaDbPatientId = metaDbPatientId;
     }
 
-    public String getIgoRequestId() {
-        return igoRequestId;
-    }
-
-    public void setIgoRequestId(String igoRequestId) {
-        this.igoRequestId = igoRequestId;
-    }
-
     public String getPrimaryId() {
         return primaryId;
     }
@@ -327,14 +319,6 @@ public class PublishedMetadbSample {
         this.datasource = datasource;
     }
 
-    public Boolean getIsCmoSample() {
-        return isCmoSample;
-    }
-
-    public void setIsCmoSample(Boolean isCmoSample) {
-        this.isCmoSample = isCmoSample;
-    }
-
     public Map<String, String> getCmoSampleIdFields() {
         return cmoSampleIdFields;
     }
@@ -364,6 +348,18 @@ public class PublishedMetadbSample {
 
     public void setPatientAliases(List<PatientAlias> patientAliases) {
         this.patientAliases = patientAliases;
+    }
+
+    public Map<String, String> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(Map<String, String> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+
+    public void addAdditionalProperty(String property, String value) {
+        this.additionalProperties.put(property, value);
     }
 
     @Override
