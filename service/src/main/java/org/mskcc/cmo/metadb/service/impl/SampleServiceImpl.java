@@ -3,12 +3,15 @@ package org.mskcc.cmo.metadb.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
+import org.mskcc.cmo.metadb.model.PatientAlias;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.model.web.PublishedMetadbSample;
 import org.mskcc.cmo.metadb.persistence.neo4j.MetadbSampleRepository;
@@ -66,9 +69,20 @@ public class SampleServiceImpl implements MetadbSampleService {
             patientService.savePatientMetadata(patient);
             sample.setPatient(patient);
         } else {
+            // go through the new patient aliases and indicator for whether a
+            // new patient alias was added to the existing patient
+            Boolean patientUpdated = Boolean.FALSE;
+            for (PatientAlias pa : patient.getPatientAliases()) {
+                if (!existingPatient.hasPatientAlias(pa)) {
+                    existingPatient.addPatientAlias(pa);
+                    patientUpdated = Boolean.TRUE;
+                }
+            }
+            if (patientUpdated) {
+                patientService.savePatientMetadata(existingPatient);
+            }
             sample.setPatient(existingPatient);
         }
-
         return sample;
     }
 

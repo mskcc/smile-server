@@ -73,7 +73,14 @@ public class MetadbPatient implements Serializable {
         metaDbSampleList.add(metaDbSample);
     }
 
+    /**
+     * Returns patient aliases list.
+     * @return List
+     */
     public List<PatientAlias> getPatientAliases() {
+        if (patientAliases == null) {
+            patientAliases = new ArrayList<>();
+        }
         return patientAliases;
     }
 
@@ -90,6 +97,24 @@ public class MetadbPatient implements Serializable {
             patientAliases = new ArrayList<>();
         }
         patientAliases.add(patientAlias);
+    }
+
+    /**
+     * Determines whether Patient has a patient alias matching the namespace provided.
+     * @param patientAlias
+     * @return Boolean
+     */
+    public Boolean hasPatientAlias(PatientAlias patientAlias) {
+        if (patientAliases == null) {
+            patientAliases = new ArrayList<>();
+            return Boolean.FALSE;
+        }
+        for (PatientAlias alias : patientAliases) {
+            if (alias.getNamespace().equalsIgnoreCase(patientAlias.getNamespace())) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
     }
 
     @Override
