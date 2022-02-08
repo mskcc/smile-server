@@ -232,8 +232,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         if (existingRequest == null) {
                             // TODO: Log this request
                         } else if (requestService.requestHasMetadataUpdates(
-                                                mapper.writeValueAsString(existingRequest),
-                                                requestMetadata.getRequestMetadataJson())) {
+                                existingRequest.getLatestRequestMetadata(), requestMetadata)) {
                             // persist request-level metadata updates to database
                             LOG.info("Found updates in request metadata: " + requestMetadata.getIgoRequestId()
                                     + " - persisting to database");
