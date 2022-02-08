@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mskcc.cmo.metadb.model.igo.IgoRequest;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -67,6 +66,18 @@ public class MetadbRequest implements Serializable {
     private boolean bicAnalysis;
 
     public MetadbRequest() {}
+
+    /**
+     * MetadbRequest constructor.
+     * @param requestMetadata
+     * @throws JsonProcessingException 
+     */
+    public MetadbRequest(RequestMetadata requestMetadata) throws JsonProcessingException {
+        this.igoRequestId = requestMetadata.getIgoRequestId();
+        this.igoProjectId = igoRequestId.split("_")[0];
+        this.metaDbProject = new MetadbProject(igoProjectId);
+        updateRequestMetadataByMetadata(requestMetadata);
+    }
 
     /**
      * MetadbRequest constructor.
@@ -384,9 +395,18 @@ public class MetadbRequest implements Serializable {
         addRequestMetadata(requestMetadata);
     }
 
+    /**
+     * Resolves gene panel from recipe or genePanel sample json field.
+     * @param metadataMap
+     * @return String
+     */
     public String resolveGenePanel(Map<String, Object> metadataMap) {
-        return String.valueOf(ObjectUtils.firstNonNull(metadataMap.get("recipe"),
-                metadataMap.get("genePanel")));
+        Object genePanel = (metadataMap.containsKey("recipe"))
+                ? metadataMap.get("recipe") : metadataMap.get("genePanel");
+        if (genePanel != null) {
+            return String.valueOf(genePanel);
+        }
+        return null;
     }
 
     /**

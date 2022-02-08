@@ -98,7 +98,6 @@ public class RequestServiceTest {
         requestService.saveRequest(request5);
     }
 
-
     /**
      * Tests integrity of mock database by fetching request.
      * @throws Exception
