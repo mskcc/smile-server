@@ -366,7 +366,6 @@ public class MetadbRequest implements Serializable {
         Map<String, Object> metadataMap =
                 mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
 
-        this.igoRequestId = resolveIgoRequestId(metadataMap);
         this.genePanel = resolveGenePanel(metadataMap);
         this.projectManagerName = String.valueOf(metadataMap.get("projectManagerName"));
         this.piEmail = String.valueOf(metadataMap.get("piEmail"));
@@ -382,18 +381,12 @@ public class MetadbRequest implements Serializable {
         this.libraryType = String.valueOf(metadataMap.get("libraryType"));
         this.bicAnalysis = Boolean.parseBoolean(String.valueOf(metadataMap.get("bicAnalysis")));
         this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
-        this.metaDbProject = new MetadbProject(igoRequestId.split("_")[0]);
         addRequestMetadata(requestMetadata);
     }
 
-    public String resolveIgoRequestId(Map<String, Object> metadataMap) {
-        return ObjectUtils.firstNonNull(String.valueOf(metadataMap.get("requestId")),
-                String.valueOf(metadataMap.get("igoRequestId")));
-    }
-
     public String resolveGenePanel(Map<String, Object> metadataMap) {
-        return ObjectUtils.firstNonNull(String.valueOf(metadataMap.get("recipe")),
-                String.valueOf(metadataMap.get("genePanel")));
+        return String.valueOf(ObjectUtils.firstNonNull(metadataMap.get("recipe"),
+                metadataMap.get("genePanel")));
     }
 
     /**
