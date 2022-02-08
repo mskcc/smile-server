@@ -83,4 +83,5 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
             + "RETURN sm")
     List<SampleMetadata> findSampleMetadataHistoryByNamespaceValue(
             @Param("namespace") String namespace, @Param("value") String value);
+
 }

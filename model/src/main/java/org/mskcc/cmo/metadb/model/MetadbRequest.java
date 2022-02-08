@@ -69,6 +69,18 @@ public class MetadbRequest implements Serializable {
 
     /**
      * MetadbRequest constructor.
+     * @param requestMetadata
+     * @throws JsonProcessingException 
+     */
+    public MetadbRequest(RequestMetadata requestMetadata) throws JsonProcessingException {
+        this.igoRequestId = requestMetadata.getIgoRequestId();
+        this.igoProjectId = igoRequestId.split("_")[0];
+        this.metaDbProject = new MetadbProject(igoProjectId);
+        updateRequestMetadataByMetadata(requestMetadata);
+    }
+
+    /**
+     * MetadbRequest constructor.
      * @param igoRequest
      * @throws JsonProcessingException
      */
@@ -365,8 +377,7 @@ public class MetadbRequest implements Serializable {
         Map<String, Object> metadataMap =
                 mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
 
-        this.igoRequestId = String.valueOf(metadataMap.get("requestId"));
-        this.genePanel = String.valueOf(metadataMap.get("recipe"));
+        this.genePanel = resolveGenePanel(metadataMap);
         this.projectManagerName = String.valueOf(metadataMap.get("projectManagerName"));
         this.piEmail = String.valueOf(metadataMap.get("piEmail"));
         this.labHeadName = String.valueOf(metadataMap.get("labHeadName"));
@@ -381,8 +392,21 @@ public class MetadbRequest implements Serializable {
         this.libraryType = String.valueOf(metadataMap.get("libraryType"));
         this.bicAnalysis = Boolean.parseBoolean(String.valueOf(metadataMap.get("bicAnalysis")));
         this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
-        this.metaDbProject = new MetadbProject(igoRequestId.split("_")[0]);
         addRequestMetadata(requestMetadata);
+    }
+
+    /**
+     * Resolves gene panel from recipe or genePanel sample json field.
+     * @param metadataMap
+     * @return String
+     */
+    public String resolveGenePanel(Map<String, Object> metadataMap) {
+        Object genePanel = (metadataMap.containsKey("recipe"))
+                ? metadataMap.get("recipe") : metadataMap.get("genePanel");
+        if (genePanel != null) {
+            return String.valueOf(genePanel);
+        }
+        return null;
     }
 
     /**

@@ -2,6 +2,7 @@ package org.mskcc.cmo.metadb.model.web;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +53,7 @@ public class PublishedMetadbSample {
     private List<Library> libraries;
     private List<SampleAlias> sampleAliases;
     private List<PatientAlias> patientAliases;
+    private Map<String, String> additionalProperties = new HashMap<>();
 
     public PublishedMetadbSample() {}
 
@@ -91,6 +93,7 @@ public class PublishedMetadbSample {
         this.sampleAliases = metaDbSample.getSampleAliases();
         this.cmoSampleIdFields = latestSampleMetadata.getCmoSampleIdFields();
         this.patientAliases = metaDbSample.getPatient().getPatientAliases();
+        this.additionalProperties = latestSampleMetadata.getAdditionalProperties();
     }
 
     public UUID getMetaDbSampleId() {
@@ -345,6 +348,18 @@ public class PublishedMetadbSample {
 
     public void setPatientAliases(List<PatientAlias> patientAliases) {
         this.patientAliases = patientAliases;
+    }
+
+    public Map<String, String> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(Map<String, String> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+
+    public void addAdditionalProperty(String property, String value) {
+        this.additionalProperties.put(property, value);
     }
 
     @Override

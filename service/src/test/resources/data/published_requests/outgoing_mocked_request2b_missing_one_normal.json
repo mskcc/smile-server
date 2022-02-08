@@ -94,7 +94,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_3443_N"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74c2e-8756-11eb-b556-acde48001122",
@@ -174,7 +183,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_0034_T_DNA"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74ca6-8756-11eb-ae00-acde48001122",
@@ -254,7 +272,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_9999_T"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74e51-8756-11eb-9a0e-acde48001122",
@@ -301,7 +328,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_8080_N"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74e17-8756-11eb-bb1d-acde48001122",
@@ -381,7 +417,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_0034_N2"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74d5c-8756-11eb-8a70-acde48001122",
@@ -461,7 +506,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_7787_N2"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74a42-8756-11eb-a483-acde48001122",
@@ -541,7 +595,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_2020_DNA"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74f80-8756-11eb-a0f5-acde48001122",
@@ -621,7 +684,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_3030_N"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74f42-8756-11eb-8e66-acde48001122",
@@ -701,7 +773,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_3443_T_DNA"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74c61-8756-11eb-8290-acde48001122",
@@ -781,7 +862,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_6565_T2_DNA"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74bb5-8756-11eb-8365-acde48001122",
@@ -861,7 +951,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_0011_T"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74ddc-8756-11eb-9c0d-acde48001122",
@@ -941,7 +1040,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_6565_N2"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74ae3-8756-11eb-a9f8-acde48001122",
@@ -1021,7 +1129,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_2299_N"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74e91-8756-11eb-8e29-acde48001122",
@@ -1101,7 +1218,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_8080_T_DNA"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74b2b-8756-11eb-82f5-acde48001122",
@@ -1181,7 +1307,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_3030_T_DNA"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74b70-8756-11eb-8386-acde48001122",
@@ -1261,7 +1396,16 @@
           "namespace": "investigatorId",
           "value": "WT_PXX_bc"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74ce1-8756-11eb-8145-acde48001122",
@@ -1341,7 +1485,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_0011_N"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74ecc-8756-11eb-a6cc-acde48001122",
@@ -1421,7 +1574,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_8895_N"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74da1-8756-11eb-8903-acde48001122",
@@ -1501,7 +1663,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_2020_N"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74bf3-8756-11eb-9ed7-acde48001122",
@@ -1581,7 +1752,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_7787_T"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     },
     {
       "metaDbSampleId": "afe74f11-8756-11eb-a0db-acde48001122",
@@ -1661,7 +1841,16 @@
           "namespace": "investigatorId",
           "value": "LMNO_2299_T_DNA"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_BZ"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      }
     }
   ],
   "pooledNormals": [
