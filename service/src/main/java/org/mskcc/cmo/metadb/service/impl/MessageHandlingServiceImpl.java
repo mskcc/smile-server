@@ -230,18 +230,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         MetadbRequest existingRequest =
                                 requestService.getMetadbRequestById(requestMetadata.getIgoRequestId());
                         if (existingRequest == null) {
-                            LOG.info("Request does not already exist - saving to database: "
-                                    + requestMetadata.getIgoRequestId());
-                            // persist and handle new request
-                            MetadbRequest request =
-                                    RequestDataFactory.buildNewRequestFromMetadata(requestMetadata);
-
-                            LOG.info("Publishing new request metadata to " + CMO_REQUEST_UPDATE_TOPIC);
-                            requestService.saveRequest(request);
-                            messagingGateway.publish(request.getIgoRequestId(),
-                                    CMO_REQUEST_UPDATE_TOPIC,
-                                    mapper.writeValueAsString(
-                                          request.getRequestMetadataList()));
+                            // TODO: Log this request
                         } else if (requestService.requestHasMetadataUpdates(
                                 existingRequest.getLatestRequestMetadata(), requestMetadata)) {
                             // persist request-level metadata updates to database

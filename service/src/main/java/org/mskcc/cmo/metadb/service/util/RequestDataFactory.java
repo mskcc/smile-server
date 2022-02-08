@@ -86,8 +86,11 @@ public class RequestDataFactory {
         if (requestMetadataMap.containsKey("samples")) {
             requestMetadataMap.remove("samples");
         }
+        Object requestId = requestMetadataMap.containsKey("requestId")
+                ? requestMetadataMap.get("requestId") : requestMetadataMap.get("igoRequestId");
+
         RequestMetadata requestMetadata = new RequestMetadata(
-                requestMetadataMap.get("requestId").toString(),
+                requestId.toString(),
                 mapper.writeValueAsString(requestMetadataMap),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         return requestMetadata;
