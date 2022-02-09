@@ -91,7 +91,11 @@
           "namespace": "investigatorId",
           "value": "LMNO_4396_N"
         }
-      ]
+      ],
+      "additionalProperties": {
+        "isCmoSample": "true",
+        "igoRequestId": "22022_CC"
+      }
     }
   ],
   "pooledNormals": [
