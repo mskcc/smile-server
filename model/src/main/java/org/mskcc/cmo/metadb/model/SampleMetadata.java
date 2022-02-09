@@ -111,15 +111,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.cmoSampleIdFields = new HashMap<>(); // default for dmp samples
     }
 
-    Map<String, String> setUpMetastasisValueMapping() {
-        Map<String, String> metastasisValueMapping = new HashMap<>();
-        metastasisValueMapping.put("0", "Primary");
-        metastasisValueMapping.put("1", "Metastasis");
-        metastasisValueMapping.put("2", "Local Recurrence");
-        metastasisValueMapping.put("127", "Unknown");
-        return metastasisValueMapping;
-    }
-
     public Long getId() {
         return id;
     }

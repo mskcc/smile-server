@@ -95,6 +95,11 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_CC"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
       }
     }
   ],
