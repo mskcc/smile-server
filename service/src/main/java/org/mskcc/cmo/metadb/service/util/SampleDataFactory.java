@@ -116,6 +116,16 @@ public class SampleDataFactory {
                 mapper.readValue(sampleMetadataJson, SampleMetadata.class);
         sampleMetadata.setImportDate(
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        // resolve igo request id if null from additionalProperties if possible
+        if (sampleMetadata.getIgoRequestId() == null
+                && !sampleMetadata.getAdditionalProperties().isEmpty()) {
+            Map<String, String> additionalProperties = sampleMetadata.getAdditionalProperties();
+            if (additionalProperties.containsKey("requestId")) {
+                sampleMetadata.setIgoRequestId(additionalProperties.get("requestId"));
+            } else if (additionalProperties.containsKey("igoRequestId")) {
+                sampleMetadata.setIgoRequestId(additionalProperties.get("igoRequestId"));
+            }
+        }
         return sampleMetadata;
     }
 

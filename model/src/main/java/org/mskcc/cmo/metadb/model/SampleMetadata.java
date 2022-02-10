@@ -1,6 +1,7 @@
 package org.mskcc.cmo.metadb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.Serializable;
@@ -22,6 +23,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @NodeEntity
 public class SampleMetadata implements Serializable, Comparable<SampleMetadata> {
     @Id @GeneratedValue
@@ -107,15 +109,6 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
         this.qcReports = new ArrayList<>(); // default for dmp samples
         this.libraries = new ArrayList<>(); // default for dmp samples
         this.cmoSampleIdFields = new HashMap<>(); // default for dmp samples
-    }
-
-    Map<String, String> setUpMetastasisValueMapping() {
-        Map<String, String> metastasisValueMapping = new HashMap<>();
-        metastasisValueMapping.put("0", "Primary");
-        metastasisValueMapping.put("1", "Metastasis");
-        metastasisValueMapping.put("2", "Local Recurrence");
-        metastasisValueMapping.put("127", "Unknown");
-        return metastasisValueMapping;
     }
 
     public Long getId() {

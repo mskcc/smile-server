@@ -230,18 +230,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                         MetadbRequest existingRequest =
                                 requestService.getMetadbRequestById(requestMetadata.getIgoRequestId());
                         if (existingRequest == null) {
-                            LOG.info("Request does not already exist - saving to database: "
-                                    + requestMetadata.getIgoRequestId());
-                            // persist and handle new request
-                            MetadbRequest request =
-                                    RequestDataFactory.buildNewRequestFromMetadata(requestMetadata);
-
-                            LOG.info("Publishing new request metadata to " + CMO_REQUEST_UPDATE_TOPIC);
-                            requestService.saveRequest(request);
-                            messagingGateway.publish(request.getIgoRequestId(),
-                                    CMO_REQUEST_UPDATE_TOPIC,
-                                    mapper.writeValueAsString(
-                                          request.getRequestMetadataList()));
+                            LOG.warn("Request does not already exist in the database: "
+                                    + requestMetadata.getIgoRequestId()
+                                    + " - will not be persisting updates.");
                         } else if (requestService.requestHasMetadataUpdates(
                                 existingRequest.getLatestRequestMetadata(), requestMetadata)) {
                             // persist request-level metadata updates to database
@@ -310,7 +301,15 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(sample.getSampleMetadataList()));
                         } else if (sampleService.sampleHasMetadataUpdates(
-                                existingSample.getLatestSampleMetadata(), sampleMetadata)) {
+                                existingSample.getLatestSampleMetadata(), sampleMetadata)
+                                || (!sampleService.sampleHasMetadataUpdates(
+                                        existingSample.getLatestSampleMetadata(), sampleMetadata))
+                                && !existingSample.getLatestSampleMetadata().getCmoSampleName()
+                                        .equals(sampleMetadata.getCmoSampleName())) {
+                            // logic checks if 1. comparator detects changes or 2. comparator does not
+                            // detect changes because 'cmoSampleName' is ignored but the 'cmoSampleName'
+                            // for existing and current sample metadata clearly differ then proceed with
+                            // persisting updates for sample
                             LOG.info("Found updates for research sample - persisting to database: "
                                     + sampleMetadata.getPrimaryId());
                             // persist sample level updates to database and publish

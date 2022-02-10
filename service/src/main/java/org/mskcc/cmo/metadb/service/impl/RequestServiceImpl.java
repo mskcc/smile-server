@@ -163,6 +163,9 @@ public class RequestServiceImpl implements MetadbRequestService {
         for (MetadbSample sample : request.getMetaDbSampleList()) {
             PublishedMetadbSample publishedSample = sampleService
                     .getPublishedMetadbSample(sample.getMetaDbSampleId());
+            // add request id and cmo indicator to sample's additional properties
+            publishedSample.addAdditionalProperty("igoRequestId", requestId);
+            publishedSample.addAdditionalProperty("isCmoSample", String.valueOf(request.getIsCmoRequest()));
             samples.add(publishedSample);
         }
         return new PublishedMetadbRequest(request, samples);
