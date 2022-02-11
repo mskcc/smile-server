@@ -61,6 +61,9 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
     @Value("${metadb.correct_cmoptid_topic}")
     private String CORRECT_CMOPTID_TOPIC;
 
+    @Value("${request_reply.cmo_label_generator_topic}")
+    private String CMO_LABEL_GENERATOR_REQREPLY_TOPIC;
+
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
 
@@ -117,30 +120,65 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     Map<String, String> idCorrectionMap =
                             correctCmoPatientIdQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (idCorrectionMap != null) {
-                        String oldCmoPatientId = idCorrectionMap.get("oldId");
-                        String newCmoPatientId = idCorrectionMap.get("newId");
+                        String oldCmoPtId = idCorrectionMap.get("oldId");
+                        String newCmoPtId = idCorrectionMap.get("newId");
 
-                        // get samples by old cmo patient id before updating the
-                        // cmo patient id for the given patient alias/patient node
-                        List<MetadbSample> samples =
-                                sampleService.getSamplesByCmoPatientId(oldCmoPatientId);
-                        MetadbPatient updatedPatient = patientService.updateCmoPatientId(
-                                oldCmoPatientId, newCmoPatientId);
+                        List<MetadbSample> samplesByOldCmoPatient =
+                                sampleService.getSamplesByCmoPatientId(oldCmoPtId);
+                        List<MetadbSample> samplesByNewCmoPatient =
+                                sampleService.getSamplesByCmoPatientId(newCmoPtId);
+                        MetadbPatient patientByNewId = patientService.getPatientByCmoPatientId(newCmoPtId);
 
-                        for (MetadbSample sample: samples) {
-                            SampleMetadata latestMetadata = sample.getLatestSampleMetadata();
-                            latestMetadata.setCmoPatientId(newCmoPatientId);
+                        // update the cmo patient id for each sample linked to the "old" patient
+                        // and the metadata as well
+                        for (MetadbSample sample : samplesByOldCmoPatient) {
+                            SampleMetadata updatedMetadata = sample.getLatestSampleMetadata();
+                            updatedMetadata.setCmoPatientId(newCmoPtId);
+
+                            // research samples need a new label as well
                             if (sample.getSampleCategory().equals("research")) {
-                                LOG.info("Updating patient ID prefix embedded in CMO sample label "
-                                        + "for research sample: " + latestMetadata.getPrimaryId());
-                                String newCmoSampleLabel = latestMetadata.getCmoSampleName()
-                                        .replaceAll(oldCmoPatientId, newCmoPatientId);
-                                latestMetadata.setCmoSampleName(newCmoSampleLabel);
+                                LOG.info("Requesting new CMO sample label for sample: "
+                                        + updatedMetadata.getPrimaryId());
+                                Message reply = messagingGateway.request(CMO_LABEL_GENERATOR_REQREPLY_TOPIC,
+                                        mapper.writeValueAsString(updatedMetadata));
+                                String newCmoSampleLabel = new String(reply.getData(),
+                                        StandardCharsets.UTF_8);
+                                updatedMetadata.setCmoSampleName(newCmoSampleLabel);
                             }
-                            sample.setPatient(updatedPatient);
-                            sample.updateSampleMetadata(latestMetadata);
-                            LOG.info("Persisting update for sample to database");
+                            // now update sample with the target patient we want to swap to
+                            sample.updateSampleMetadata(updatedMetadata);
+
+                            // update the sample-to-patient relationship if swapping to a different
+                            // patient node. if still using the same node the samples are already linked
+                            // to then there's no need to override the patient currently set for the sample
+                            if (patientByNewId != null) {
+                                sample.setPatient(patientByNewId);
+                                sampleService.updateSamplePatientRelationship(sample.getMetaDbSampleId(),
+                                        patientByNewId.getMetaDbPatientId());
+                            }
                             sampleService.saveMetadbSample(sample);
+                        }
+
+                        // delete old patient node if we are swapping to an existing patient node
+                        // otherwise simply update the existing patient node with the new cmo id
+                        if (patientByNewId != null) {
+                            LOG.info("Deleting Patient node (and its relationships) for old ID: "
+                                + oldCmoPtId);
+                            MetadbPatient patientByOldId =
+                                    patientService.getPatientByCmoPatientId(oldCmoPtId);
+                            patientService.deletePatient(patientByOldId);
+                        } else {
+                            patientService.updateCmoPatientId(oldCmoPtId, newCmoPtId);
+                        }
+
+                        // sanity check the counts before and after the swaps
+                        Integer expectedCount = samplesByOldCmoPatient.size()
+                                + samplesByNewCmoPatient.size();
+                        List<MetadbSample> samplesAfterSwap =
+                                sampleService.getSamplesByCmoPatientId(newCmoPtId);
+                        if (expectedCount != samplesAfterSwap.size()) {
+                            LOG.error("Expected sample count after patient ID swap does not match actual"
+                                    + " count: " + expectedCount + " != " + samplesAfterSwap.size());
                         }
                     }
                     if (interrupted && correctCmoPatientIdQueue.isEmpty()) {

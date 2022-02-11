@@ -3,9 +3,7 @@ package org.mskcc.cmo.metadb.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.mskcc.cmo.common.MetadbJsonComparator;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
@@ -51,7 +49,7 @@ public class SampleServiceImpl implements MetadbSampleService {
             sample.setMetaDbSampleId(newSampleId);
             return sample;
         } else {
-            existingSample.addSampleMetadata(sample.getLatestSampleMetadata());
+            existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
             sampleRepository.save(existingSample);
             return existingSample;
         }
@@ -202,5 +200,11 @@ public class SampleServiceImpl implements MetadbSampleService {
             samples.add(getDetailedMetadbSample(sample));
         }
         return samples;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public void updateSamplePatientRelationship(UUID metaDbSampleId, UUID metaDbPatientId) {
+        sampleRepository.updateSamplePatientRelationship(metaDbSampleId, metaDbPatientId);
     }
 }
