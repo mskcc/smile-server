@@ -61,6 +61,38 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     private Map<String, String> additionalProperties = new HashMap<>();
 
     public SampleMetadata() {}
+    
+    /**
+     * SampleMetadata constructor from SampleMetadata.
+     * @param sampleMetadata
+     * @throws JsonProcessingException
+     */
+    public SampleMetadata(SampleMetadata sampleMetadata) throws JsonProcessingException {
+        this.primaryId = sampleMetadata.getPrimaryId();
+        this.cmoPatientId = sampleMetadata.getCmoPatientId();
+        this.investigatorSampleId = sampleMetadata.getInvestigatorSampleId();
+        this.cmoSampleName = sampleMetadata.getCmoSampleName();
+        this.sampleName = sampleMetadata.getSampleName();
+        this.cmoInfoIgoId = sampleMetadata.getCmoInfoIgoId();
+        this.oncotreeCode = sampleMetadata.getOncotreeCode();
+        this.collectionYear = sampleMetadata.getCollectionYear();
+        this.tubeId = sampleMetadata.getTubeId();
+        this.cfDNA2dBarcode = sampleMetadata.getCfDNA2dBarcode();
+        this.species = sampleMetadata.getSpecies();
+        this.sex = sampleMetadata.getSex();
+        this.tumorOrNormal = sampleMetadata.getTumorOrNormal();
+        this.sampleType = sampleMetadata.getSampleType();
+        this.preservation = sampleMetadata.getPreservation();
+        this.sampleClass = sampleMetadata.getSampleClass();
+        this.sampleOrigin = sampleMetadata.getSampleOrigin();
+        this.tissueLocation = sampleMetadata.getTissueLocation();
+        this.genePanel = sampleMetadata.getGenePanel();
+        this.baitSet = sampleMetadata.getBaitSet();
+        this.qcReports =  sampleMetadata.getQcReports();
+        this.libraries = sampleMetadata.getLibraries();
+        this.cmoSampleIdFields = sampleMetadata.getCmoSampleIdFields();
+    }
+
 
     /**
      * SampleMetadata constructor from igoSampleManifest.
