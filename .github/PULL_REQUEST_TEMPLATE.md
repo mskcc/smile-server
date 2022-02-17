@@ -38,6 +38,7 @@ Please follow these checks if any changes were made to any classes in the web, s
 Updates were made to the mocked incoming request data and/or mocked published request data:
 - [ ] [cmo-metadb test data](https://github.com/mskcc/cmo-metadb/tree/master/service/src/test/resources/data)
 - [ ] [cmo-metadb-common test data](https://github.com/mskcc/cmo-metadb-common/tree/master/src/test/resources/data)
+- [ ] [cmo-metadb-label-generator test data](https://github.com/mskcc/cmo-metadb-label-generator/tree/master/src/test/resources/data)
 
 **Code checks:**
 - [ ] Endpoints were tested to ensure their integrity.
