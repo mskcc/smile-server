@@ -8,4 +8,5 @@ public interface MetadbPatientService {
     MetadbPatient getPatientByCmoPatientId(String cmoPatientId);
     UUID getPatientIdBySample(UUID metadbSampleId);
     MetadbPatient updateCmoPatientId(String oldCmoPatientId, String newCmoPatientId);
+    void deletePatient(MetadbPatient patient);
 }

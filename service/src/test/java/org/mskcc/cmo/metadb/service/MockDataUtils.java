@@ -125,26 +125,30 @@ public final class MockDataUtils {
      * @throws IOException
      */
     @Autowired
-    public void mockedRequestJsonDataMap() throws IOException {
+    public void mockedRequestJsonDataMap() {
         this.mockedRequestJsonDataMap = new HashMap<>();
         ClassPathResource jsonDataDetailsResource =
                 new ClassPathResource(MOCKED_REQUEST_DATA_DETAILS_FILEPATH);
-        BufferedReader reader = new BufferedReader(new FileReader(jsonDataDetailsResource.getFile()));
-        List<String> columns = new ArrayList<>();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] data = line.split("\t");
-            if (columns.isEmpty()) {
-                columns = Arrays.asList(data);
-                continue;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(jsonDataDetailsResource.getFile()));
+            List<String> columns = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split("\t");
+                if (columns.isEmpty()) {
+                    columns = Arrays.asList(data);
+                    continue;
+                }
+                String identifier = data[columns.indexOf("identifier")];
+                String filepath = data[columns.indexOf("filepath")];
+                String description = data[columns.indexOf("description")];
+                mockedRequestJsonDataMap.put(identifier,
+                        createMockJsonTestData(identifier, filepath, description));
             }
-            String identifier = data[columns.indexOf("identifier")];
-            String filepath = data[columns.indexOf("filepath")];
-            String description = data[columns.indexOf("description")];
-            mockedRequestJsonDataMap.put(identifier,
-                    createMockJsonTestData(identifier, filepath, description));
+            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading data from test file source", e);
         }
-        reader.close();
     }
 
     private MockJsonTestData createMockJsonTestData(String identifier, String filepath,

@@ -29,15 +29,19 @@ public interface MetadbPatientRepository extends Neo4jRepository<MetadbPatient, 
             + "RETURN p.metaDbPatientId")
     UUID findPatientIdBySample(@Param("metaDbSampleId") UUID metaDbSampleId);
 
-    @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias {value: $oldCmoPatientId, namespace: 'cmoId'}) "
-            + "SET pa.value = $newCmoPatientId "
+    @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias {value: $oldCmoId, namespace: 'cmoId'}) "
+            + "SET pa.value = $newCmoId "
             + "RETURN p")
-    MetadbPatient updateCmoPatientIdInPatientNode(@Param("oldCmoPatientId") String oldCmoPatientId,
-            @Param("newCmoPatientId") String newCmoPatientId);
+    MetadbPatient updateCmoPatientIdInPatientNode(@Param("oldCmoId") String oldCmoId,
+            @Param("newCmoId") String newCmoId);
 
     @Query("MATCH (s: Sample)<-[:IS_ALIAS]-(sa: SampleAlias {value: $value, namespace: $namespace}) "
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "
             + "RETURN p")
     MetadbPatient findPatientByNamespaceValue(
             @Param("namespace") String namespace, @Param("value") String value);
+
+    @Query("MATCH (p: Patient {metaDbPatientId: $patient.metaDbPatientId})"
+            + "<-[:IS_ALIAS]-(pa: PatientAlias) DETACH DELETE p, pa")
+    void deletePatientAndAliases(@Param("patient") MetadbPatient patient);
 }

@@ -25,7 +25,7 @@ import org.neo4j.ogm.annotation.typeconversion.Convert;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NodeEntity
-public class SampleMetadata implements Serializable, Comparable<SampleMetadata> {
+public class SampleMetadata implements Serializable, Comparable<SampleMetadata>, Cloneable {
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
@@ -381,5 +381,10 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata> 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone(); // return shallow copy
     }
 }

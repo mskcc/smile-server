@@ -1,6 +1,5 @@
 package org.mskcc.cmo.metadb.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.cmo.metadb.model.MetadbPatient;
@@ -9,6 +8,7 @@ import org.mskcc.cmo.metadb.persistence.neo4j.MetadbPatientRepository;
 import org.mskcc.cmo.metadb.service.MetadbPatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class PatientServiceImpl implements MetadbPatientService {
@@ -17,6 +17,7 @@ public class PatientServiceImpl implements MetadbPatientService {
     private MetadbPatientRepository patientRepository;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public MetadbPatient savePatientMetadata(MetadbPatient patient) {
         MetadbPatient result = patientRepository.save(patient);
         patient.setMetaDbPatientId(result.getMetaDbPatientId());
@@ -39,6 +40,7 @@ public class PatientServiceImpl implements MetadbPatientService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public MetadbPatient updateCmoPatientId(String oldCmoPatientId, String newCmoPatientId) {
         if (getPatientByCmoPatientId(oldCmoPatientId) == null) {
             return null;
@@ -46,4 +48,9 @@ public class PatientServiceImpl implements MetadbPatientService {
         return patientRepository.updateCmoPatientIdInPatientNode(oldCmoPatientId, newCmoPatientId);
     }
 
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public void deletePatient(MetadbPatient patient) {
+        patientRepository.deletePatientAndAliases(patient);
+    }
 }

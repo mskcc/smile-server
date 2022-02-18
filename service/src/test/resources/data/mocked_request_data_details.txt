@@ -14,3 +14,5 @@ mockPublishedRequest3JsonDataPooledNormals	published_requests/outgoing_mocked_re
 mockPublishedRequest1JsonNullValues	published_requests/outgoing_mocked_request1_null_values.json	Mock published request with null values.
 mockPublishedRequest4JsonNullOrEmptyValues	published_requests/outgoing_mocked_request4_null_or_empty_values.json	Mock published request with null or empty values.
 mockUpdatedPublishedRequest1Metadata	other_mocked_data/outgoing_mocked_request1_updated_metadata.json	Mock published request metadata json with updates.
+mockIncomingRequestPreCmoPatientSwap	incoming_requests/mocked_request6_cmopt_swap.json	Mock incoming request json for pre-CMO patient ID swap testing.
+mockIncomingRequestPostCmoPatientSwap	incoming_requests/mocked_request6_cmopt_after_swap.json	Mock incoming request json for post-CMO patient ID swap testing.

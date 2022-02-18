@@ -84,4 +84,9 @@ public interface MetadbSampleRepository extends Neo4jRepository<MetadbSample, UU
     List<SampleMetadata> findSampleMetadataHistoryByNamespaceValue(
             @Param("namespace") String namespace, @Param("value") String value);
 
+    @Query("MATCH (s: Sample {metaDbSampleId: $metaDbSampleId}) "
+            + "MATCH (p: Patient {metaDbPatientId: $metaDbPatientId}) "
+            + "CREATE (s)<-[:HAS_SAMPLE]-(p)")
+    void updateSamplePatientRelationship(@Param("metaDbSampleId") UUID metaDbSampleId,
+            @Param("metaDbPatientId") UUID metaDbPatientId);
 }

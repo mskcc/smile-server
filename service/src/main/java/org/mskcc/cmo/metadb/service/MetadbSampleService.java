@@ -27,4 +27,5 @@ public interface MetadbSampleService {
     MetadbSample getClinicalSampleByDmpId(String dmpId) throws Exception;
     List<MetadbSample> getSamplesByCategoryAndCmoPatientId(String cmoPatientId,
             String sampleCategory) throws Exception;
+    void updateSamplePatientRelationship(UUID metaDbSampleId, UUID metaDbPatientId);
 }
