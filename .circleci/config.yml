@@ -4,7 +4,7 @@ jobs:
   run_checkstyle:
     working_directory: /tmp/repos/cmo-metadb
     machine:
-	image: ubuntu-2004:202201-02
+      image: ubuntu-2004:202201-02
     steps:
       - checkout
       - run:
