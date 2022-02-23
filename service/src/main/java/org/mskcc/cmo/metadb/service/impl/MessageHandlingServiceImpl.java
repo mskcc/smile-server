@@ -806,7 +806,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         gateway.subscribe(DMP_SAMPLE_UPDATE_TOPIC, Object.class, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
-                LOG.info("Received message on topic: " + NEW_DMP_SAMPLE_TOPIC);
+                LOG.info("Received message on topic: " + DMP_SAMPLE_UPDATE_TOPIC);
                 try {
                     String clinicalSampleJson = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
@@ -819,7 +819,7 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
                     messageHandlingService.clinicalSampleUpdateHandler(sample);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of clinical sample updates on topic: "
-                            + NEW_DMP_SAMPLE_TOPIC, e);
+                            + DMP_SAMPLE_UPDATE_TOPIC, e);
                 }
             }
         });
