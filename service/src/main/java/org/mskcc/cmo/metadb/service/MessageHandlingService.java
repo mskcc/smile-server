@@ -14,5 +14,6 @@ public interface MessageHandlingService {
     void correctCmoPatientIdHandler(Map<String, String> idCorrectionMap) throws Exception;
     void researchSampleUpdateHandler(SampleMetadata sampleMetadata) throws Exception;
     void newClinicalSampleHandler(MetadbSample metadbSample) throws Exception;
+    void clinicalSampleUpdateHandler(MetadbSample metadbSample) throws Exception;
     void shutdown() throws Exception;
 }

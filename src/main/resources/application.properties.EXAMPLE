@@ -29,6 +29,7 @@ metadb.igo_sample_update_topic=
 metadb.cmo_request_update_topic=
 metadb.cmo_sample_update_topic=
 metadb.dmp_new_sample_topic=
+metadb.dmp_sample_update_topic=
 
 # request-reply topics
 request_reply.patient_samples_topic=
