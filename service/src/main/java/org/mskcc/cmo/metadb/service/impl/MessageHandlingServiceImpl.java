@@ -801,8 +801,8 @@ public class MessageHandlingServiceImpl implements MessageHandlingService {
         });
     }
 
-    private void setupClinicalSampleUpdateHandler(Gateway gateway, MessageHandlingService messageHandlingService)
-            throws Exception {
+    private void setupClinicalSampleUpdateHandler(Gateway gateway,
+            MessageHandlingService messageHandlingService) throws Exception {
         gateway.subscribe(DMP_SAMPLE_UPDATE_TOPIC, Object.class, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
