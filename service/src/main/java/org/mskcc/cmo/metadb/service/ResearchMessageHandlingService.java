@@ -1,19 +1,14 @@
 package org.mskcc.cmo.metadb.service;
 
-import java.util.Map;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.metadb.model.MetadbRequest;
-import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
 
-public interface MessageHandlingService {
+public interface ResearchMessageHandlingService {
     void initialize(Gateway gateway) throws Exception;
     void newRequestHandler(MetadbRequest request) throws Exception;
     void requestUpdateHandler(RequestMetadata requestMetadata) throws Exception;
-    void correctCmoPatientIdHandler(Map<String, String> idCorrectionMap) throws Exception;
     void researchSampleUpdateHandler(SampleMetadata sampleMetadata) throws Exception;
-    void newClinicalSampleHandler(MetadbSample metadbSample) throws Exception;
-    void clinicalSampleUpdateHandler(MetadbSample metadbSample) throws Exception;
     void shutdown() throws Exception;
 }

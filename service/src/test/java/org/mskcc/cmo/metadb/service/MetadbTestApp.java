@@ -5,7 +5,9 @@ import org.mskcc.cmo.common.impl.MetadbJsonComparatorImpl;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.utils.SSLUtils;
 import org.mskcc.cmo.metadb.persistence.jpa.CrdbRepository;
-import org.mskcc.cmo.metadb.service.impl.MessageHandlingServiceImpl;
+import org.mskcc.cmo.metadb.service.impl.ResearchMessageHandlingServiceImpl;
+import org.mskcc.cmo.metadb.service.impl.ClinicalMessageHandlingServiceImpl;
+import org.mskcc.cmo.metadb.service.impl.PatientCorrectionHandlingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.PatientServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.RequestReplyHandlingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.RequestServiceImpl;
@@ -59,7 +61,13 @@ public class MetadbTestApp {
     public SSLUtils sslUtils;
 
     @MockBean
-    public MessageHandlingServiceImpl messageHandlingService;
+    public ResearchMessageHandlingServiceImpl researchMessageHandlingService;
+    
+    @MockBean
+    public ClinicalMessageHandlingServiceImpl clinicalMessageHandlingService;
+    
+    @MockBean
+    public PatientCorrectionHandlingServiceImpl patientCorrectionHandlingService;
 
     @MockBean
     public RequestReplyHandlingServiceImpl requestReplyHandlingService;
