@@ -5,7 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.metadb.service.ClinicalMessageHandlingService;
-import org.mskcc.cmo.metadb.service.PatientCorrectionHandlingService;
+import org.mskcc.cmo.metadb.service.CorrectCmoPatientHandlingService;
 import org.mskcc.cmo.metadb.service.RequestReplyHandlingService;
 import org.mskcc.cmo.metadb.service.ResearchMessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class MetadbApp implements CommandLineRunner {
     private ClinicalMessageHandlingService clinicalMessageHandlingService;
     
     @Autowired
-    private PatientCorrectionHandlingService patientCorrectionHandlingService;
+    private CorrectCmoPatientHandlingService correctCmoPatientHandlingService;
 
     @Autowired
     private RequestReplyHandlingService requestReplyHandlingService;
@@ -85,7 +85,7 @@ public class MetadbApp implements CommandLineRunner {
             requestReplyHandlingService.initialize(messagingGateway);
             researchMessageHandlingService.initialize(messagingGateway);
             clinicalMessageHandlingService.initialize(messagingGateway);
-            patientCorrectionHandlingService.initialize(messagingGateway);
+            correctCmoPatientHandlingService.initialize(messagingGateway);
             metadbAppClose.await();
         } catch (Exception e) {
             LOG.error("Encountered error during initialization", e);
@@ -101,7 +101,7 @@ public class MetadbApp implements CommandLineRunner {
                         requestReplyHandlingService.shutdown();
                         researchMessageHandlingService.shutdown();
                         clinicalMessageHandlingService.shutdown();
-                        patientCorrectionHandlingService.shutdown();
+                        correctCmoPatientHandlingService.shutdown();
                         messagingGateway.shutdown();
                     } catch (Exception e) {
                         LOG.error("Encountered error during shutdown process", e);

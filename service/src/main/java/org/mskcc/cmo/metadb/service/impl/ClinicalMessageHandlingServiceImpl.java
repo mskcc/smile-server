@@ -50,7 +50,6 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
     private static CountDownLatch newClinicalSampleHandlerShutdownLatch;
     private static CountDownLatch clinicalSampleUpdateHandlerShutdownLatch;
 
-
     @Autowired
     private MetadbSampleService sampleService;
 
@@ -63,14 +62,14 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
             messagingGateway = gateway;
             setupNewClinicalSampleHandler(messagingGateway, this);
             setupClinicalSampleUpdateHandler(messagingGateway, this);
-            initializeNewMessageHandlers();
+            initializeMessageHandlers();
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring request.\n");
         }
     }
 
-    private void initializeNewMessageHandlers() throws Exception {
+    private void initializeMessageHandlers() throws Exception {
         // new clinical sample handler
         newClinicalSampleHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
         final Phaser newClinicalsamplePhaser = new Phaser();

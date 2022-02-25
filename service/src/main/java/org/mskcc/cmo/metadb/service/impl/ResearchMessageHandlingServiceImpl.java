@@ -264,7 +264,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             setupIgoNewRequestHandler(messagingGateway, this);
             setupRequestUpdateHandler(messagingGateway, this);
             setupResearchSampleUpdateHandler(messagingGateway, this);
-            initializeNewRequestHandlers();
+            initializeMessageHandlers();
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring request.\n");
@@ -322,7 +322,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         shutdownInitiated = true;
     }
 
-    private void initializeNewRequestHandlers() throws Exception {
+    private void initializeMessageHandlers() throws Exception {
         // new request handler
         newRequestHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
         final Phaser newRequestPhaser = new Phaser();

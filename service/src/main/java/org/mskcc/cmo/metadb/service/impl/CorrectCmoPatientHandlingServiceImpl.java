@@ -24,13 +24,13 @@ import org.mskcc.cmo.metadb.model.SampleMetadata;
 import org.mskcc.cmo.metadb.service.CrdbMappingService;
 import org.mskcc.cmo.metadb.service.MetadbPatientService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
-import org.mskcc.cmo.metadb.service.PatientCorrectionHandlingService;
+import org.mskcc.cmo.metadb.service.CorrectCmoPatientHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHandlingService {
+public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHandlingService {
     @Value("${metadb.correct_cmoptid_topic}")
     private String CORRECT_CMOPTID_TOPIC;
 
@@ -50,7 +50,7 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
     private MetadbSampleService sampleService;
 
     private static Gateway messagingGateway;
-    private static final Log LOG = LogFactory.getLog(PatientCorrectionHandlingServiceImpl.class);
+    private static final Log LOG = LogFactory.getLog(CorrectCmoPatientHandlingServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
     private static boolean initialized = false;
@@ -65,14 +65,14 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
         if (!initialized) {
             messagingGateway = gateway;
             setupCorrectCmoPatientIdHandler(messagingGateway, this);
-            initializeNewMessageHandlers();
+            initializeMessageHandlers();
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring request.\n");
         }
     }
 
-    private void initializeNewMessageHandlers() throws Exception {
+    private void initializeMessageHandlers() throws Exception {
         // Correct CmoPatientId Handler
         correctCmoPatientIdShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
         final Phaser correctCmoPtIdPhaser = new Phaser();
@@ -188,7 +188,7 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
     }
 
     private void setupCorrectCmoPatientIdHandler(Gateway gateway,
-            PatientCorrectionHandlingService patientCorrectionHandlingService) throws Exception {
+            CorrectCmoPatientHandlingService correctCmoPatientHandlingService) throws Exception {
         gateway.subscribe(CORRECT_CMOPTID_TOPIC, Object.class, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
@@ -231,7 +231,7 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
                         incomingDataMap.put("oldId", oldCmoPatientId);
                         incomingDataMap.put("newId", newCmoPatientId);
                         try {
-                            patientCorrectionHandlingService.correctCmoPatientIdHandler(incomingDataMap);
+                            correctCmoPatientHandlingService.correctCmoPatientIdHandler(incomingDataMap);
                         } catch (Exception e) {
                             LOG.error("Error occurred while adding the CMO Patient ID "
                                     + "correction data to message handler queue");
