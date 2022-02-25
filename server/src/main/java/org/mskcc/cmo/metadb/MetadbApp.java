@@ -4,8 +4,10 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
-import org.mskcc.cmo.metadb.service.MessageHandlingService;
+import org.mskcc.cmo.metadb.service.ClinicalMessageHandlingService;
+import org.mskcc.cmo.metadb.service.CorrectCmoPatientHandlingService;
 import org.mskcc.cmo.metadb.service.RequestReplyHandlingService;
+import org.mskcc.cmo.metadb.service.ResearchMessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -39,7 +41,13 @@ public class MetadbApp implements CommandLineRunner {
     private Gateway messagingGateway;
 
     @Autowired
-    private MessageHandlingService messageHandlingService;
+    private ResearchMessageHandlingService researchMessageHandlingService;
+    
+    @Autowired
+    private ClinicalMessageHandlingService clinicalMessageHandlingService;
+    
+    @Autowired
+    private CorrectCmoPatientHandlingService correctCmoPatientHandlingService;
 
     @Autowired
     private RequestReplyHandlingService requestReplyHandlingService;
@@ -75,7 +83,9 @@ public class MetadbApp implements CommandLineRunner {
             installShutdownHook();
             messagingGateway.connect();
             requestReplyHandlingService.initialize(messagingGateway);
-            messageHandlingService.initialize(messagingGateway);
+            researchMessageHandlingService.initialize(messagingGateway);
+            clinicalMessageHandlingService.initialize(messagingGateway);
+            correctCmoPatientHandlingService.initialize(messagingGateway);
             metadbAppClose.await();
         } catch (Exception e) {
             LOG.error("Encountered error during initialization", e);
@@ -89,7 +99,9 @@ public class MetadbApp implements CommandLineRunner {
                     System.err.printf("\nCaught CTRL-C, shutting down gracefully...\n");
                     try {
                         requestReplyHandlingService.shutdown();
-                        messageHandlingService.shutdown();
+                        researchMessageHandlingService.shutdown();
+                        clinicalMessageHandlingService.shutdown();
+                        correctCmoPatientHandlingService.shutdown();
                         messagingGateway.shutdown();
                     } catch (Exception e) {
                         LOG.error("Encountered error during shutdown process", e);
