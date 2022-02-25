@@ -39,7 +39,7 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
 
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
-    
+
     @Autowired
     private CrdbMappingService crdbMappingService;
 
@@ -48,11 +48,11 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
 
     @Autowired
     private MetadbSampleService sampleService;
-    
+
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(PatientCorrectionHandlingServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
-    
+
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
     private static final ExecutorService exec = Executors.newCachedThreadPool();
@@ -69,9 +69,9 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring request.\n");
-        }        
+        }
     }
-    
+
     private void initializeNewMessageHandlers() throws Exception {
         // Correct CmoPatientId Handler
         correctCmoPatientIdShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
@@ -83,7 +83,7 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
         }
         correctCmoPtIdPhaser.arriveAndAwaitAdvance();
     }
-    
+
     private class CorrectCmoPatientIdHandler implements Runnable {
         final Phaser phaser;
         boolean interrupted = false;
@@ -184,9 +184,9 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
         } else {
             throw new IllegalStateException("Shutdown intiated, not accepting "
                     + "new CMO patient ID correction messages");
-        }        
+        }
     }
-    
+
     private void setupCorrectCmoPatientIdHandler(Gateway gateway,
             PatientCorrectionHandlingService patientCorrectionHandlingService) throws Exception {
         gateway.subscribe(CORRECT_CMOPTID_TOPIC, Object.class, new MessageConsumer() {
@@ -250,6 +250,6 @@ public class PatientCorrectionHandlingServiceImpl implements PatientCorrectionHa
         }
         exec.shutdownNow();
         correctCmoPatientIdShutdownLatch.await();
-        shutdownInitiated = true;        
+        shutdownInitiated = true;
     }
 }

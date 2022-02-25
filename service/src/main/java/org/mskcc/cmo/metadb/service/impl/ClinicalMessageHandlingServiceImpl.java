@@ -31,14 +31,14 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
 
     @Value("${metadb.dmp_sample_update_topic}")
     private String DMP_SAMPLE_UPDATE_TOPIC;
-    
+
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
-    
+
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(ClinicalMessageHandlingServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
-    
+
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
     private static final ExecutorService exec = Executors.newCachedThreadPool();
@@ -50,13 +50,13 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
     private static CountDownLatch newClinicalSampleHandlerShutdownLatch;
     private static CountDownLatch clinicalSampleUpdateHandlerShutdownLatch;
 
-    
+
     @Autowired
     private MetadbSampleService sampleService;
-    
+
     @Autowired
     private CrdbMappingService crdbMappingService;
-    
+
     @Override
     public void initialize(Gateway gateway) throws Exception {
         if (!initialized) {
@@ -67,9 +67,9 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring request.\n");
-        }        
+        }
     }
-    
+
     private void initializeNewMessageHandlers() throws Exception {
         // new clinical sample handler
         newClinicalSampleHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
@@ -91,7 +91,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
         }
         clinicalsampleUpdatePhaser.arriveAndAwaitAdvance();
     }
-    
+
     private class NewClinicalSampleMetadataHandler implements Runnable {
 
         final Phaser phaser;
@@ -210,7 +210,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
         } else {
             LOG.error("Shutdown initiated, not accepting clinical sample: " + metadbSample);
             throw new IllegalStateException("Shutdown initiated, not handling any more clinical samples");
-        }        
+        }
     }
 
     @Override
@@ -223,9 +223,9 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
         } else {
             LOG.error("Shutdown initiated, not accepting clinical sample: " + metadbSample);
             throw new IllegalStateException("Shutdown initiated, not handling any more clinical samples");
-        }        
+        }
     }
-    
+
     private void setupNewClinicalSampleHandler(Gateway gateway, ClinicalMessageHandlingService
             clinicalMessageHandlingService) throws Exception {
         gateway.subscribe(NEW_DMP_SAMPLE_TOPIC, Object.class, new MessageConsumer() {
@@ -282,6 +282,6 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
         exec.shutdownNow();
         newClinicalSampleHandlerShutdownLatch.await();
         clinicalSampleUpdateHandlerShutdownLatch.await();
-        shutdownInitiated = true;        
-    }  
+        shutdownInitiated = true;
+    }
 }

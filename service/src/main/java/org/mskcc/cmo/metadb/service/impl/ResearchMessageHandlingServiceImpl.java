@@ -59,11 +59,11 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(ResearchMessageHandlingServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
-    
+
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
     private static final ExecutorService exec = Executors.newCachedThreadPool();
-    
+
     private static final BlockingQueue<MetadbRequest> newRequestQueue =
         new LinkedBlockingQueue<MetadbRequest>();
     private static final BlockingQueue<RequestMetadata> requestUpdateQueue =
@@ -74,7 +74,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
     private static CountDownLatch newRequestHandlerShutdownLatch;
     private static CountDownLatch requestUpdateHandlerShutdownLatch;
     private static CountDownLatch researchSampleUpdateHandlerShutdownLatch;
- 
+
     private class NewIgoRequestHandler implements Runnable {
 
         final Phaser phaser;
@@ -413,5 +413,5 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                 }
             }
         });
-    }   
+    }
 }
