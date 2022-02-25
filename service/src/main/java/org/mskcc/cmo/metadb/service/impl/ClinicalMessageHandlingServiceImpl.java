@@ -226,8 +226,8 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
         }        
     }
     
-    private void setupNewClinicalSampleHandler(Gateway gateway, ClinicalMessageHandlingService clinicalMessageHandlingService)
-            throws Exception {
+    private void setupNewClinicalSampleHandler(Gateway gateway, ClinicalMessageHandlingService
+            clinicalMessageHandlingService) throws Exception {
         gateway.subscribe(NEW_DMP_SAMPLE_TOPIC, Object.class, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {

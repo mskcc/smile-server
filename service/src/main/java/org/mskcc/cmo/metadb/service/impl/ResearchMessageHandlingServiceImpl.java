@@ -18,9 +18,9 @@ import org.mskcc.cmo.metadb.model.MetadbRequest;
 import org.mskcc.cmo.metadb.model.MetadbSample;
 import org.mskcc.cmo.metadb.model.RequestMetadata;
 import org.mskcc.cmo.metadb.model.SampleMetadata;
-import org.mskcc.cmo.metadb.service.ResearchMessageHandlingService;
 import org.mskcc.cmo.metadb.service.MetadbRequestService;
 import org.mskcc.cmo.metadb.service.MetadbSampleService;
+import org.mskcc.cmo.metadb.service.ResearchMessageHandlingService;
 import org.mskcc.cmo.metadb.service.util.RequestDataFactory;
 import org.mskcc.cmo.metadb.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -354,8 +354,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         researchSampleUpdatePhaser.arriveAndAwaitAdvance();
     }
 
-    private void setupIgoNewRequestHandler(Gateway gateway, ResearchMessageHandlingService researchMessageHandlingService)
-        throws Exception {
+    private void setupIgoNewRequestHandler(Gateway gateway, ResearchMessageHandlingService
+            researchMessageHandlingService) throws Exception {
         gateway.subscribe(IGO_NEW_REQUEST_TOPIC, Object.class, new MessageConsumer() {
             public void onMessage(Message msg, Object message) {
                 try {
@@ -373,8 +373,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         });
     }
 
-    private void setupRequestUpdateHandler(Gateway gateway, ResearchMessageHandlingService researchMessageHandlingService)
-            throws Exception {
+    private void setupRequestUpdateHandler(Gateway gateway, ResearchMessageHandlingService
+            researchMessageHandlingService) throws Exception {
         gateway.subscribe(IGO_REQUEST_UPDATE_TOPIC, Object.class, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
