@@ -32,6 +32,12 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
     @Value("${metadb.dmp_sample_update_topic}")
     private String DMP_SAMPLE_UPDATE_TOPIC;
 
+    @Value("${consumers.dmp_new_sample_topic}")
+    private String CONS_DMP_NEW_SAMPLE_TOPIC;
+
+    @Value("${consumers.dmp_sample_update_topic}")
+    private String CONS_DMP_SAMPLE_UPDATE_TOPIC;
+
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
 
@@ -116,8 +122,8 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             sampleService.saveMetadbSample(metadbSample);
                             LOG.info("Publishing metadata history for new sample: "
                                     + metadbSample.getPrimarySampleAlias());
-                            // TODO: PUBLISH HERE TO APPRORPIATE CLINICAL DATA PROCESSING TOPICS ONCE
-                            // ACTUALLY SUPPORTED
+                            messagingGateway.publish(CONS_DMP_NEW_SAMPLE_TOPIC,
+                                    mapper.writeValueAsString(metadbSample));
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(),
                                 metadbSample.getLatestSampleMetadata())) {
@@ -125,8 +131,8 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     + metadbSample.getPrimarySampleAlias());
                             existingSample.updateSampleMetadata(metadbSample.getLatestSampleMetadata());
                             sampleService.saveMetadbSample(existingSample);
-                            // TODO: pUBLISH TO APPROPRIATE CLINICAL DATA PROCESSING TOPIC
-                            // ONCE SUPPORTED
+                            messagingGateway.publish(CONS_DMP_SAMPLE_UPDATE_TOPIC,
+                                    mapper.writeValueAsString(metadbSample));
                         } else {
                             LOG.info("There are no updates to persist for clincial sample: "
                                     + metadbSample.getPrimarySampleAlias());
@@ -170,8 +176,8 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             sampleService.saveMetadbSample(metadbSample);
                             LOG.info("Publishing metadata history for new sample: "
                                     + metadbSample.getPrimarySampleAlias());
-                            // TODO: PUBLISH HERE TO APPRORPIATE CLINICAL DATA PROCESSING TOPICS ONCE
-                            // ACTUALLY SUPPORTED
+                            messagingGateway.publish(CONS_DMP_NEW_SAMPLE_TOPIC,
+                                    mapper.writeValueAsString(metadbSample));
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(),
                                 metadbSample.getLatestSampleMetadata())) {
@@ -179,8 +185,8 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     + metadbSample.getPrimarySampleAlias());
                             existingSample.updateSampleMetadata(metadbSample.getLatestSampleMetadata());
                             sampleService.saveMetadbSample(existingSample);
-                            // TODO: PUBLISH TO APPROPRIATE CLINICAL DATA PROCESSING TOPIC
-                            // ONCE SUPPORTED
+                            messagingGateway.publish(CONS_DMP_SAMPLE_UPDATE_TOPIC,
+                                    mapper.writeValueAsString(metadbSample));
                         } else {
                             LOG.info("There are no updates to persist for clincial sample: "
                                     + metadbSample.getPrimarySampleAlias());
