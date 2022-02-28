@@ -20,16 +20,22 @@ spring.data.neo4j.username=
 spring.data.neo4j.password=
 spring.data.neo4j.uri=
 
-# messaging configuration
+# new request topics
 num.new_request_handler_threads=
 igo.new_request_topic=
 consistency_check.new_request_topic=
+
+# request/sample update topics
 metadb.igo_request_update_topic=
 metadb.igo_sample_update_topic=
 metadb.cmo_request_update_topic=
 metadb.cmo_sample_update_topic=
+
+# dmp sample topics
 metadb.dmp_new_sample_topic=
 metadb.dmp_sample_update_topic=
+consumers.dmp_new_sample_topic=
+consumers.dmp_sample_update_topic=
 
 # request-reply topics
 request_reply.patient_samples_topic=
