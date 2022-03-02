@@ -24,6 +24,7 @@ public class CrdbMappingServiceTest {
     @Autowired
     private CrdbRepository crdbRepository;
 
+    @Autowired
     private CrdbMappingServiceImpl crdbMappingService;
 
     /**
@@ -34,10 +35,9 @@ public class CrdbMappingServiceTest {
         for (Map.Entry<String, String> entry : mockDataUtils.mockedDmpPatientMapping.entrySet()) {
             String dmpId = entry.getKey();
             String cmoId = entry.getValue();
-            Mockito.when(crdbRepository.getCmoPatientIdbyDmpId(dmpId))
+            Mockito.when(crdbMappingService.getCmoPatientIdbyDmpId(dmpId))
                     .thenReturn(cmoId);
         }
-        this.crdbMappingService = new CrdbMappingServiceImpl(crdbRepository);
     }
 
     /**
@@ -46,9 +46,8 @@ public class CrdbMappingServiceTest {
      */
     @Test
     public void testMadeUpDmpIdThrowsNullPointerException() {
-        Assertions.assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
-            crdbMappingService.getCmoPatientIdbyDmpId("MADEUPVALUE");
-        });
+        Assertions.assertThat(crdbMappingService.getCmoPatientIdbyDmpId("MADEUPVALUE"))
+                .isNull();
     }
 
     /**
@@ -59,10 +58,7 @@ public class CrdbMappingServiceTest {
         for (Map.Entry<String, String> entry : mockDataUtils.mockedDmpPatientMapping.entrySet()) {
             String dmpId = entry.getKey();
             String cmoId = entry.getValue();
-            if (dmpId != null) {
-                Assertions.assertThat(cmoId)
-                        .isEqualTo(crdbMappingService.getCmoPatientIdbyDmpId(dmpId));
-            }
+            Assertions.assertThat(crdbMappingService.getCmoPatientIdbyDmpId(dmpId)).isEqualTo(cmoId);
         }
     }
 

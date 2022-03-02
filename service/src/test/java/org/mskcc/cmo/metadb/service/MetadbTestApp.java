@@ -7,6 +7,7 @@ import org.mskcc.cmo.messaging.utils.SSLUtils;
 import org.mskcc.cmo.metadb.persistence.jpa.CrdbRepository;
 import org.mskcc.cmo.metadb.service.impl.ClinicalMessageHandlingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.CorrectCmoPatientHandlingServiceImpl;
+import org.mskcc.cmo.metadb.service.impl.CrdbMappingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.PatientServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.RequestReplyHandlingServiceImpl;
 import org.mskcc.cmo.metadb.service.impl.RequestServiceImpl;
@@ -52,6 +53,9 @@ public class MetadbTestApp {
     public CrdbRepository crdbRepository;
 
     @MockBean
+    public CrdbMappingServiceImpl crdbMappingService;
+
+    @MockBean
     public RequestStatusLogger requestStatusLogger;
 
     @MockBean
@@ -62,10 +66,10 @@ public class MetadbTestApp {
 
     @MockBean
     public ResearchMessageHandlingServiceImpl researchMessageHandlingService;
-    
+
     @MockBean
     public ClinicalMessageHandlingServiceImpl clinicalMessageHandlingService;
-    
+
     @MockBean
     public CorrectCmoPatientHandlingServiceImpl patientCorrectionHandlingService;
 
