@@ -163,7 +163,6 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                             LOG.error("Expected sample count after patient ID swap does not match actual"
                                     + " count: " + expectedCount + " != " + samplesAfterSwap.size());
                         } else {
-                            // expectedCount == samplesAfterSwap.size()
                             List<MetadbSample> samplesByNewCmoPatientAfterCorrection =
                                     sampleService.getSamplesByCmoPatientId(newCmoPtId);
                             for (MetadbSample sample : samplesByNewCmoPatientAfterCorrection) {
