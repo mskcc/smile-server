@@ -168,6 +168,8 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                                     sampleService.getSamplesByCmoPatientId(newCmoPtId);
                             for (MetadbSample sample : samplesByNewCmoPatientAfterCorrection) {
                                 // publish sampleMetadata history to CMO_SAMPLE_UPDATE_TOPIC
+                                LOG.info("Publishing sample-level metadata history for research sample: "
+                                        + sample.getLatestSampleMetadata().getPrimaryId());
                                 messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                         mapper.writeValueAsString(sample.getSampleMetadataList()));
                             }
