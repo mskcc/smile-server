@@ -34,6 +34,9 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
     @Value("${metadb.correct_cmoptid_topic}")
     private String CORRECT_CMOPTID_TOPIC;
 
+    @Value("${metadb.cmo_sample_update_topic}")
+    private String CMO_SAMPLE_UPDATE_TOPIC;
+
     @Value("${request_reply.cmo_label_generator_topic}")
     private String CMO_LABEL_GENERATOR_REQREPLY_TOPIC;
 
@@ -159,6 +162,16 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                         if (expectedCount != samplesAfterSwap.size()) {
                             LOG.error("Expected sample count after patient ID swap does not match actual"
                                     + " count: " + expectedCount + " != " + samplesAfterSwap.size());
+
+                        } else {
+                            // expectedCount == samplesAfterSwap.size()
+                            List<MetadbSample> samplesByNewCmoPatientAfterCorrection =
+                                    sampleService.getSamplesByCmoPatientId(newCmoPtId);
+                            for (MetadbSample sample : samplesByNewCmoPatientAfterCorrection) {
+                                // publish sampleMetadata history to CMO_SAMPLE_UPDATE_TOPIC
+                                messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
+                                        mapper.writeValueAsString(sample.getSampleMetadataList()));
+                            }
                         }
                     }
                     if (interrupted && correctCmoPatientIdQueue.isEmpty()) {
