@@ -92,7 +92,9 @@ public final class MockDataUtils {
             } catch (ArrayIndexOutOfBoundsException e) {
                 // do nothing
             }
-            mockedDmpPatientMapping.put(dmpPatientId, cmoPatientId);
+            if (dmpPatientId != null) {
+                mockedDmpPatientMapping.put(dmpPatientId, cmoPatientId);
+            }
         }
         reader.close();
     }
