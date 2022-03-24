@@ -46,14 +46,14 @@ igo.new_request_topic=
 consistency_check.new_request_topic=
 
 # request/sample update topics
-metadb.igo_request_update_topic=
-metadb.igo_sample_update_topic=
-metadb.cmo_request_update_topic=
-metadb.cmo_sample_update_topic=
+smile.igo_request_update_topic=
+smile.igo_sample_update_topic=
+smile.cmo_request_update_topic=
+smile.cmo_sample_update_topic=
 
 # dmp sample topics
-metadb.dmp_new_sample_topic=
-metadb.dmp_sample_update_topic=
+smile.dmp_new_sample_topic=
+smile.dmp_sample_update_topic=
 consumers.dmp_new_sample_topic=
 consumers.dmp_sample_update_topic=
 
@@ -63,10 +63,10 @@ request_reply.crdb_mapping_topic=
 request_reply.cmo_label_generator_topic=
 
 # cmo patient id correction topics
-metadb.correct_cmoptid_topic=
+smile.correct_cmoptid_topic=
 
 # messaging failures filepath
-metadb.publishing_failures_filepath=
+smile.publishing_failures_filepath=
 
 # request handling failure filepath
-metadb.request_handling_failures_filepath=
+smile.request_handling_failures_filepath=
