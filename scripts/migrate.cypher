@@ -1,4 +1,4 @@
-// migrate.cypher documents database migrations executed after metadb.schema_version: v1.1
+// migrate.cypher documents database migrations executed after smile.schema_version: v1.1
 
 
 // SCHEMA VERSION: v1.2
@@ -82,4 +82,31 @@ RETURN true;
 MATCH (s: Sample)
 WHERE s.datasource IS NULL
 SET s.datasource = "igo"
+RETURN true;
+
+
+// SCHEMA VERSION: v2.1
+// ------------------------------------------------------------
+
+// property name changes
+// - metaDbRequestId --> smileRequestId
+// - metaDbSampleId --> smileSampleId
+// - metaDbPatientId --> smilePatientId
+
+MATCH (r: Request)
+WHERE r.smileRequestId IS NULL
+SET r.smileRequestId = r.metaDbRequestId
+REMOVE r.metaDbRequestId
+RETURN true;
+
+MATCH (p: Patient)
+WHERE p.smilePatientId IS NULL
+SET p.smilePatientId = p.metaDbPatientId
+REMOVE p.metaDbPatientId
+RETURN true;
+
+MATCH (s: Sample)
+WHERE s.smileSampleId IS NULL
+SET s.smileSampleId = s.metaDbSampleId
+REMOVE s.metaDbSampleId
 RETURN true;

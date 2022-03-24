@@ -1,5 +1,5 @@
 name-template: '$NEXT_PATCH_VERSION.RELEASE'
-tag-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+tag-template: '$NEXT_PATCH_VERSION.RELEASE' 
 categories:
   - title: 🚀 Features
     label: feature
@@ -14,4 +14,4 @@ template: |
 
   ## 🕵️ Full commit logs
 
-  https://github.com/mskcc/cmo-metadb/compare/$PREVIOUS_TAG...$NEXT_PATCH_VERSION
+  https://github.com/mskcc/smile-server/compare/$PREVIOUS_TAG...$NEXT_PATCH_VERSION.RELEASE

@@ -1,6 +1,6 @@
-# CMO MetaDB 🔍
+# CMO SMILE Server 🔍
 
-CMO MetaDB is a distributed microservices system. It receives messages from LIMS when a request is marked delivered. This message is processed and persisted to NEO4J. Any new message is then published to downstream subscribers.
+SMILE is a distributed microservices system. It receives messages from LIMS when a request is marked delivered. This message is processed and persisted to NEO4J. Any new message is then published to downstream subscribers.
 
 ## Run
 
@@ -32,7 +32,7 @@ mvn clean install
 Run with
 
 ```
-java -jar server/target/cmo_metadb_server.jar
+java -jar server/target/smile_server.jar
 ```
 
 ### With Docker
@@ -56,15 +56,15 @@ If the Docker image is built with the properties baked in then simply run with:
 
 
 ```
-docker run --name cmo-metadb <repo>/<tag>:<version> \
-	-jar /cmo-metadb/cmo_metadb_server.jar
+docker run --name smile-server <repo>/<tag>:<version> \
+	-jar /smile-server/smile_server.jar
 ```
 
 Otherwise use a bind mount to make the local files available to the Docker image and add  `--spring.config.location` to the java arg
 
 ```
-docker run --mount type=bind,source=<local path to properties files>,target=/cmo-metadb/src/main/resources \
-	--name cmo-metadb <repo>/<tag>:<version> \
-	-jar /cmo-metadb/cmo_metadb_server.jar \
+docker run --mount type=bind,source=<local path to properties files>,target=/smile-server/src/main/resources \
+	--name smile-server <repo>/<tag>:<version> \
+	-jar /smile-server/smile_server.jar \
 	--spring.config.location=/cmo-metadb/src/main/resources/application.properties
 ```

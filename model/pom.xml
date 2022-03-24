@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <name>MSKCC CMO MetaDB Model</name>
-  <description>MetaDB Model</description>
+  <name>SMILE Model</name>
+  <description>SMILE Model Layer</description>
   <artifactId>model</artifactId>
   <parent>
-    <groupId>org.mskcc.cmo.metadb</groupId>
+    <groupId>org.mskcc.cmo.smile</groupId>
     <artifactId>master</artifactId>
     <version>0.1.0</version>
   </parent>

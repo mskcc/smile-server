@@ -1,5 +1,5 @@
 {
-  "metaDbRequestId": "6ccad40a-875a-11eb-ba0a-acde48001122",
+  "smileRequestId": "6ccad40a-875a-11eb-ba0a-acde48001122",
   "igoRequestId": "33344_Z",
   "genePanel": "IMPACT468",
   "projectManagerName": "",
@@ -17,8 +17,8 @@
   "bicAnalysis": false,
   "samples": [
     {
-      "metaDbSampleId": "afe74ff8-8756-11eb-8db3-acde48001122",
-      "metaDbPatientId": "6ccac98a-875a-11eb-90ec-acde48001122",
+      "smileSampleId": "afe74ff8-8756-11eb-8db3-acde48001122",
+      "smilePatientId": "6ccac98a-875a-11eb-90ec-acde48001122",
       "cmoSampleName": "AGAG-LXX8-33344Z",
       "sampleName": "AGAG-LXX8",
       "sampleType": "Primary",
@@ -101,8 +101,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe75035-8756-11eb-9832-acde48001122",
-      "metaDbPatientId": "6ccac98a-875a-11eb-90ec-acde48001122",
+      "smileSampleId": "afe75035-8756-11eb-9832-acde48001122",
+      "smilePatientId": "6ccac98a-875a-11eb-90ec-acde48001122",
       "cmoSampleName": "LXX8-AGAG-33344Z",
       "sampleName": "LXX8-AGAG",
       "sampleType": "Primary",
@@ -185,8 +185,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe75070-8756-11eb-9a86-acde48001122",
-      "metaDbPatientId": "6ccad073-875a-11eb-af7c-acde48001122",
+      "smileSampleId": "afe75070-8756-11eb-9a86-acde48001122",
+      "smilePatientId": "6ccad073-875a-11eb-af7c-acde48001122",
       "cmoSampleName": "AGAG-33344Z",
       "sampleName": "AGAG",
       "sampleType": "Primary",
@@ -269,8 +269,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe750ab-8756-11eb-8adf-acde48001122",
-      "metaDbPatientId": "6ccad394-875a-11eb-b1f6-acde48001122",
+      "smileSampleId": "afe750ab-8756-11eb-8adf-acde48001122",
+      "smilePatientId": "6ccad394-875a-11eb-b1f6-acde48001122",
       "cmoSampleName": "LXX8-33344Z",
       "sampleName": "LXX8",
       "sampleType": "Primary",

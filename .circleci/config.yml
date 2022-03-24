@@ -2,21 +2,21 @@ version: 2.1
 
 jobs:
   run_checkstyle:
-    working_directory: /tmp/repos/cmo-metadb
+    working_directory: /tmp/repos/smile-server
     machine:
       image: ubuntu-2004:202201-02
     steps:
       - checkout
       - run:
-          name: Pull cmo metadb common code
+          name: Pull smile commons code
           command: |
-              export METADB_COMMON_VERSION=$(grep 'cmo_metadb_common\.version' pom.xml | head -1 | sed 's/<cmo_metadb_common\.version>//g' | sed 's|</cmo_metadb_common\.version>||' | tr -d '[:blank:]' | cut -f1) && \
-              export METADB_COMMON_ORG=$(grep 'cmo_metadb_common\.group' pom.xml | head -1 | sed 's/<cmo_metadb_common\.group>//g' | sed 's|</cmo_metadb_common\.group>||' | tr -d '[:blank:]' | cut -d. -f3) && \
+              export SMILE_COMMONS_VERSION=$(grep 'smile_commons\.version' pom.xml | head -1 | sed 's/<smile_commons\.version>//g' | sed 's|</smile_commons\.version>||' | tr -d '[:blank:]' | cut -f1) && \
+              export SMILE_COMMONS_ORG=$(grep 'smile_commons\.group' pom.xml | head -1 | sed 's/<smile_commons\.group>//g' | sed 's|</smile_commons\.group>||' | tr -d '[:blank:]' | cut -d. -f3) && \
               cd .. && \
-              git clone https://github.com/$METADB_COMMON_ORG/cmo-metadb-common.git && \
-              cd cmo-metadb-common && \
+              git clone https://github.com/$SMILE_COMMONS_ORG/smile-commons.git && \
+              cd smile-commons && \
               git fetch --tags && \
-              git checkout ${METADB_COMMON_VERSION}
+              git checkout ${SMILE_COMMONS_VERSION}
       - run:
           name: "Build project and run checkstyle plugin..."
           command: mvn clean install
@@ -25,9 +25,9 @@ jobs:
           command: mvn checkstyle:checkstyle
       - run:
           name: "Validating checkstyle plugin report..."
-          command: bash /tmp/repos/cmo-metadb-common/test/scripts/generate_checkstyle_report.sh /tmp/repos/cmo-metadb
+          command: bash /tmp/repos/smile-commons/test/scripts/generate_checkstyle_report.sh /tmp/repos/smile-server
       - store_artifacts:
-          path: /tmp/repos/cmo-metadb/checkstyle_report_compiled.txt
+          path: /tmp/repos/smile-server/checkstyle_report_compiled.txt
           destination: /checkstyle_report.txt
 
 workflows:

@@ -1,5 +1,5 @@
 {
-  "metaDbRequestId": "6cca6166-875a-11eb-ae9e-acde48001122",
+  "smileRequestId": "6cca6166-875a-11eb-ae9e-acde48001122",
   "igoRequestId": "22022_BZ",
   "genePanel": "GENESET101_BAITS",
   "projectManagerName": "",
@@ -17,8 +17,8 @@
   "bicAnalysis": false,
   "samples": [
     {
-      "metaDbSampleId": "afe74fba-8756-11eb-9b45-acde48001122",
-      "metaDbPatientId": "6cc7394f-875a-11eb-91ec-acde48001122",
+      "smileSampleId": "afe74fba-8756-11eb-9b45-acde48001122",
+      "smilePatientId": "6cc7394f-875a-11eb-91ec-acde48001122",
       "cmoSampleName": "C-TX6DNG-N001-d",
       "sampleName": "LMNO_4396_N",
       "sampleType": "Normal",
@@ -103,8 +103,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74d1c-8756-11eb-a95a-acde48001122",
-      "metaDbPatientId": "6cca3573-875a-11eb-911e-acde48001122",
+      "smileSampleId": "afe74d1c-8756-11eb-a95a-acde48001122",
+      "smilePatientId": "6cca3573-875a-11eb-911e-acde48001122",
       "cmoSampleName": "C-DPCXX1-N001-d",
       "sampleName": "LMNO_3443_N",
       "sampleType": "Normal",
@@ -192,8 +192,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74c2e-8756-11eb-b556-acde48001122",
-      "metaDbPatientId": "6cca38e3-875a-11eb-9e48-acde48001122",
+      "smileSampleId": "afe74c2e-8756-11eb-b556-acde48001122",
+      "smilePatientId": "6cca38e3-875a-11eb-9e48-acde48001122",
       "cmoSampleName": "C-KXXL3J-P001-d",
       "sampleName": "LMNO_0034_T_DNA",
       "sampleType": "Primary",
@@ -281,8 +281,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74ca6-8756-11eb-ae00-acde48001122",
-      "metaDbPatientId": "6cca3bdc-875a-11eb-a412-acde48001122",
+      "smileSampleId": "afe74ca6-8756-11eb-ae00-acde48001122",
+      "smilePatientId": "6cca3bdc-875a-11eb-a412-acde48001122",
       "cmoSampleName": "C-XXX711-M001-d",
       "sampleName": "LMNO_9999_T",
       "sampleType": "Metastasis",
@@ -370,8 +370,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74e51-8756-11eb-9a0e-acde48001122",
-      "metaDbPatientId": "6cca3d19-875a-11eb-92e8-acde48001122",
+      "smileSampleId": "afe74e51-8756-11eb-9a0e-acde48001122",
+      "smilePatientId": "6cca3d19-875a-11eb-92e8-acde48001122",
       "cmoSampleName": "C-PPPXX2-N001-d",
       "sampleName": "LMNO_8080_N",
       "sampleType": "Normal",
@@ -426,8 +426,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74e17-8756-11eb-bb1d-acde48001122",
-      "metaDbPatientId": "6cca38e3-875a-11eb-9e48-acde48001122",
+      "smileSampleId": "afe74e17-8756-11eb-bb1d-acde48001122",
+      "smilePatientId": "6cca38e3-875a-11eb-9e48-acde48001122",
       "cmoSampleName": "C-KXXL3J-N001-d",
       "sampleName": "LMNO_0034_N2",
       "sampleType": "Normal",
@@ -515,8 +515,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74d5c-8756-11eb-8a70-acde48001122",
-      "metaDbPatientId": "6cca414a-875a-11eb-b133-acde48001122",
+      "smileSampleId": "afe74d5c-8756-11eb-8a70-acde48001122",
+      "smilePatientId": "6cca414a-875a-11eb-b133-acde48001122",
       "cmoSampleName": "C-X09281-N001-d",
       "sampleName": "LMNO_7787_N2",
       "sampleType": "Normal",
@@ -604,8 +604,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74a42-8756-11eb-a483-acde48001122",
-      "metaDbPatientId": "6cca438f-875a-11eb-8dda-acde48001122",
+      "smileSampleId": "afe74a42-8756-11eb-a483-acde48001122",
+      "smilePatientId": "6cca438f-875a-11eb-8dda-acde48001122",
       "cmoSampleName": "C-XXA40X-P001-d",
       "sampleName": "LMNO_2020_DNA",
       "sampleType": "Primary",
@@ -693,8 +693,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74f80-8756-11eb-a0f5-acde48001122",
-      "metaDbPatientId": "6cca45c7-875a-11eb-9cce-acde48001122",
+      "smileSampleId": "afe74f80-8756-11eb-a0f5-acde48001122",
+      "smilePatientId": "6cca45c7-875a-11eb-9cce-acde48001122",
       "cmoSampleName": "C-YXX89J-N001-d",
       "sampleName": "LMNO_3030_N",
       "sampleType": "Normal",
@@ -782,8 +782,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74f42-8756-11eb-8e66-acde48001122",
-      "metaDbPatientId": "6cca3573-875a-11eb-911e-acde48001122",
+      "smileSampleId": "afe74f42-8756-11eb-8e66-acde48001122",
+      "smilePatientId": "6cca3573-875a-11eb-911e-acde48001122",
       "cmoSampleName": "C-DPCXX1-M001-d",
       "sampleName": "LMNO_3443_T_DNA",
       "sampleType": "Metastasis",
@@ -871,8 +871,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74c61-8756-11eb-8290-acde48001122",
-      "metaDbPatientId": "6cca4a4f-875a-11eb-833e-acde48001122",
+      "smileSampleId": "afe74c61-8756-11eb-8290-acde48001122",
+      "smilePatientId": "6cca4a4f-875a-11eb-833e-acde48001122",
       "cmoSampleName": "C-999XX-M001-d",
       "sampleName": "LMNO_6565_T2_DNA",
       "sampleType": "Metastasis",
@@ -960,8 +960,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74bb5-8756-11eb-8365-acde48001122",
-      "metaDbPatientId": "6cca4c9e-875a-11eb-b6d1-acde48001122",
+      "smileSampleId": "afe74bb5-8756-11eb-8365-acde48001122",
+      "smilePatientId": "6cca4c9e-875a-11eb-b6d1-acde48001122",
       "cmoSampleName": "C-9XX8808-P001-d",
       "sampleName": "LMNO_0011_T",
       "sampleType": "Primary",
@@ -1049,8 +1049,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74ddc-8756-11eb-9c0d-acde48001122",
-      "metaDbPatientId": "6cca4a4f-875a-11eb-833e-acde48001122",
+      "smileSampleId": "afe74ddc-8756-11eb-9c0d-acde48001122",
+      "smilePatientId": "6cca4a4f-875a-11eb-833e-acde48001122",
       "cmoSampleName": "C-999XX-N002-d",
       "sampleName": "LMNO_6565_N2",
       "sampleType": "Normal",
@@ -1138,8 +1138,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74ae3-8756-11eb-a9f8-acde48001122",
-      "metaDbPatientId": "6cca50e1-875a-11eb-bf5b-acde48001122",
+      "smileSampleId": "afe74ae3-8756-11eb-a9f8-acde48001122",
+      "smilePatientId": "6cca50e1-875a-11eb-bf5b-acde48001122",
       "cmoSampleName": "C-FFX222-N001-d",
       "sampleName": "LMNO_2299_N",
       "sampleType": "Normal",
@@ -1227,8 +1227,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74e91-8756-11eb-8e29-acde48001122",
-      "metaDbPatientId": "6cca3d19-875a-11eb-92e8-acde48001122",
+      "smileSampleId": "afe74e91-8756-11eb-8e29-acde48001122",
+      "smilePatientId": "6cca3d19-875a-11eb-92e8-acde48001122",
       "cmoSampleName": "C-PPPXX2-P001-d",
       "sampleName": "LMNO_8080_T_DNA",
       "sampleType": "Primary",
@@ -1316,8 +1316,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74b2b-8756-11eb-82f5-acde48001122",
-      "metaDbPatientId": "6cca45c7-875a-11eb-9cce-acde48001122",
+      "smileSampleId": "afe74b2b-8756-11eb-82f5-acde48001122",
+      "smilePatientId": "6cca45c7-875a-11eb-9cce-acde48001122",
       "cmoSampleName": "C-YXX89J-P001-d",
       "sampleName": "LMNO_3030_T_DNA",
       "sampleType": "Primary",
@@ -1405,8 +1405,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74b70-8756-11eb-8386-acde48001122",
-      "metaDbPatientId": "6cca3bdc-875a-11eb-a412-acde48001122",
+      "smileSampleId": "afe74b70-8756-11eb-8386-acde48001122",
+      "smilePatientId": "6cca3bdc-875a-11eb-a412-acde48001122",
       "cmoSampleName": "C-XXX711-N001-d",
       "sampleName": "WT_PXX_bc",
       "sampleType": "Normal",
@@ -1494,8 +1494,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74ce1-8756-11eb-8145-acde48001122",
-      "metaDbPatientId": "6cca4c9e-875a-11eb-b6d1-acde48001122",
+      "smileSampleId": "afe74ce1-8756-11eb-8145-acde48001122",
+      "smilePatientId": "6cca4c9e-875a-11eb-b6d1-acde48001122",
       "cmoSampleName": "C-9XX8808-N001-d",
       "sampleName": "LMNO_0011_N",
       "sampleType": "Normal",
@@ -1583,8 +1583,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74ecc-8756-11eb-a6cc-acde48001122",
-      "metaDbPatientId": "6cca5b30-875a-11eb-9186-acde48001122",
+      "smileSampleId": "afe74ecc-8756-11eb-a6cc-acde48001122",
+      "smilePatientId": "6cca5b30-875a-11eb-9186-acde48001122",
       "cmoSampleName": "C-XXC4XX-N001-d",
       "sampleName": "LMNO_8895_N",
       "sampleType": "Normal",
@@ -1672,8 +1672,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74da1-8756-11eb-8903-acde48001122",
-      "metaDbPatientId": "6cca438f-875a-11eb-8dda-acde48001122",
+      "smileSampleId": "afe74da1-8756-11eb-8903-acde48001122",
+      "smilePatientId": "6cca438f-875a-11eb-8dda-acde48001122",
       "cmoSampleName": "C-XXA40X-N001-d",
       "sampleName": "LMNO_2020_N",
       "sampleType": "Normal",
@@ -1761,8 +1761,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74bf3-8756-11eb-9ed7-acde48001122",
-      "metaDbPatientId": "6cca414a-875a-11eb-b133-acde48001122",
+      "smileSampleId": "afe74bf3-8756-11eb-9ed7-acde48001122",
+      "smilePatientId": "6cca414a-875a-11eb-b133-acde48001122",
       "cmoSampleName": "C-X09281-M001-d",
       "sampleName": "LMNO_7787_T",
       "sampleType": "Metastasis",
@@ -1850,8 +1850,8 @@
       }
     },
     {
-      "metaDbSampleId": "afe74f11-8756-11eb-a0db-acde48001122",
-      "metaDbPatientId": "6cca50e1-875a-11eb-bf5b-acde48001122",
+      "smileSampleId": "afe74f11-8756-11eb-a0db-acde48001122",
+      "smilePatientId": "6cca50e1-875a-11eb-bf5b-acde48001122",
       "cmoSampleName": "C-FFX222-P001-d",
       "sampleName": "LMNO_2299_T_DNA",
       "sampleType": "Primary",

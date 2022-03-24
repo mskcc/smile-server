@@ -36,9 +36,9 @@ Please follow these checks if any changes were made to any classes in the web, s
 
 **Data checks:**
 Updates were made to the mocked incoming request data and/or mocked published request data:
-- [ ] [cmo-metadb test data](https://github.com/mskcc/cmo-metadb/tree/master/service/src/test/resources/data)
-- [ ] [cmo-metadb-common test data](https://github.com/mskcc/cmo-metadb-common/tree/master/src/test/resources/data)
-- [ ] [cmo-metadb-label-generator test data](https://github.com/mskcc/cmo-metadb-label-generator/tree/master/src/test/resources/data)
+- [ ] [smile-server test data](https://github.com/mskcc/smile-server/tree/master/service/src/test/resources/data)
+- [ ] [smile-commons test data](https://github.com/mskcc/smile-commons/tree/master/src/test/resources/data)
+- [ ] [smile-label-generator test data](https://github.com/mskcc/smile-label-generator/tree/master/src/test/resources/data)
 
 **Code checks:**
 - [ ] Endpoints were tested to ensure their integrity.
@@ -62,8 +62,8 @@ Please describe how the workflow and messaging was tested/simulated:
 
 - NATS [local, local docker, dev server, production]
 - Neo4j [local, local docker, dev server, production]
-- MetaDB [local, local docker, dev server, production]
-- Message publishing simulation [nats cli, docker nats cli, metadb publisher tool, other (describe below)]
+- SMILE Server [local, local docker, dev server, production]
+- Message publishing simulation [nats cli, docker nats cli, smile publisher tool, other (describe below)]
 
 Other: [insert details on how messages were published or simulated for testing]
 
