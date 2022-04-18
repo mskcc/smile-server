@@ -1,10 +1,13 @@
 package org.mskcc.smile.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import org.mskcc.smile.model.internal.CrdbMappingModel;
 import org.mskcc.smile.persistence.jpa.CrdbRepository;
 import org.mskcc.smile.service.CrdbMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ public class CrdbMappingServiceImpl implements CrdbMappingService {
     private int crdbQueryTimeoutSeconds;
 
     private ExecutorService executor = Executors.newCachedThreadPool();
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     private CrdbRepository crdbRepository;
@@ -53,6 +58,24 @@ public class CrdbMappingServiceImpl implements CrdbMappingService {
         Object result = runQueryWithForcedTimeout(task);
         if (result != null) {
             return result.toString();
+        }
+        return null;
+    }
+
+    @Override
+    public CrdbMappingModel getCrdbMappingModelByInputId(String inputId) throws Exception {
+        //Add check for if the input query starts with "C-" then remove it (replace with empty string)
+        inputId.replace("C-", "");
+        Callable<Object> task = new Callable<Object>() {
+            @Override
+            public Object call() {
+                return crdbRepository.getCmoPatientIdByInputId(inputId);
+            }
+        };
+        Object result = runQueryWithForcedTimeout(task);
+        if (result != null) {
+            ArrayList<Object> crdbValues = mapper.convertValue(result, ArrayList.class);
+            return new CrdbMappingModel(crdbValues);
         }
         return null;
     }
