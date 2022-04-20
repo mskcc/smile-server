@@ -10,8 +10,10 @@ import org.springframework.stereotype.Repository;
 public interface CrdbRepository extends CrudRepository<CrdbMappingModel, Long> {
     @Query(value = "SELECT CMO_ID FROM CRDB_CMO_DMP_MAP WHERE DMP_ID = :dmpId", nativeQuery = true)
     Object getCmoPatientIdbyDmpId(@Param("dmpId") String dmpId);
-
-    @Query(value = "SELECT CMO_ID FROM CRDB_CMO_DMP_MAP WHERE DMP_ID = :inputId OR "
-            + "PT_MRN = :inputId", nativeQuery = true)
+    
+    @Query(value = "SELECT CMO_ID, DMP_ID, 'MRNREDACTED', API_DMP_ID "
+            + "FROM CRDB_CMO_DMP_MAP WHERE :inputId IN (DMP_ID, PT_MRN, CMO_ID)",
+            nativeQuery = true)
     Object getCmoPatientIdByInputId(@Param("inputId") String inputId);
+    // another query option
 }
