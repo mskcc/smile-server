@@ -107,15 +107,16 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             // make call to update the requestJson member of existingRequest in the
                             // database to reflect the latest version of the raw json string that we got
                             // directly from IGO LIMS
-
-                            // message handlers will check if there are updates to persist or not
-                            requestUpdateQueue.add(request.getLatestRequestMetadata());
-                            for (SmileSample sample : request.getSmileSampleList()) {
-                                researchSampleUpdateQueue.add(sample.getLatestSampleMetadata());
-                            }
+                            existingRequest.updateRequestMetadataByRequest(request);
+                            requestService.saveRequest(existingRequest);
+                            messagingGateway.publish(request.getIgoRequestId(),
+                                    CONSISTENCY_CHECK_NEW_REQUEST,
+                                    mapper.writeValueAsString(
+                                            requestService.getPublishedSmileRequestById(
+                                                    request.getIgoRequestId())));
                         } else {
-                            LOG.warn("Request already in database - it will not be saved: "
-                                    + request.getIgoRequestId());
+                            LOG.warn("Request already exists in database and no updates were detected - "
+                                    + "it will not be saved: " + request.getIgoRequestId());
                         }
                     }
                     if (interrupted && newRequestQueue.isEmpty()) {
