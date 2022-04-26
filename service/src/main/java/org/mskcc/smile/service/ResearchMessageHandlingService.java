@@ -8,6 +8,7 @@ import org.mskcc.smile.model.SmileRequest;
 public interface ResearchMessageHandlingService {
     void initialize(Gateway gateway) throws Exception;
     void newRequestHandler(SmileRequest request) throws Exception;
+    void promotedRequestHandler(SmileRequest request) throws Exception;
     void requestUpdateHandler(RequestMetadata requestMetadata) throws Exception;
     void researchSampleUpdateHandler(SampleMetadata sampleMetadata) throws Exception;
     void shutdown() throws Exception;
