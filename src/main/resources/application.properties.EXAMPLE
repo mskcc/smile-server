@@ -45,6 +45,11 @@ num.new_request_handler_threads=
 igo.new_request_topic=
 consistency_check.new_request_topic=
 
+# promoted request topics
+num.promoted_request_handler_threads=
+igo.promoted_request_topic=
+consumers.promoted_request_topic=
+
 # request/sample update topics
 smile.igo_request_update_topic=
 smile.igo_sample_update_topic=

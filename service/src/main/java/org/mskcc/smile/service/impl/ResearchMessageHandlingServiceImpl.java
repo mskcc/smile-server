@@ -32,8 +32,14 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
     @Value("${igo.new_request_topic}")
     private String IGO_NEW_REQUEST_TOPIC;
 
+    @Value("${igo.promoted_request_topic}")
+    private String IGO_PROMOTED_REQUEST_TOPIC;
+
     @Value("${consistency_check.new_request_topic}")
     private String CONSISTENCY_CHECK_NEW_REQUEST;
+
+    @Value("${consumers.promoted_request_topic}")
+    private String CONSUMERS_PROMOTED_REQUEST_TOPIC;
 
     @Value("${smile.igo_request_update_topic}")
     private String IGO_REQUEST_UPDATE_TOPIC;
@@ -49,6 +55,9 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
 
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
+
+    @Value("${num.promoted_request_handler_threads}")
+    private int NUM_PROMOTED_REQUEST_HANDLERS;
 
     @Autowired
     private SmileRequestService requestService;
@@ -66,22 +75,37 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
 
     private static final BlockingQueue<SmileRequest> newRequestQueue =
         new LinkedBlockingQueue<SmileRequest>();
+    private static final BlockingQueue<SmileRequest> promotedRequestQueue =
+        new LinkedBlockingQueue<SmileRequest>();
     private static final BlockingQueue<RequestMetadata> requestUpdateQueue =
             new LinkedBlockingQueue<RequestMetadata>();
     private static final BlockingQueue<SampleMetadata> researchSampleUpdateQueue =
             new LinkedBlockingQueue<SampleMetadata>();
 
     private static CountDownLatch newRequestHandlerShutdownLatch;
+    private static CountDownLatch promotedRequestHandlerShutdownLatch;
     private static CountDownLatch requestUpdateHandlerShutdownLatch;
     private static CountDownLatch researchSampleUpdateHandlerShutdownLatch;
 
-    private class NewIgoRequestHandler implements Runnable {
+    public static enum SmileRequestDest {
+        NEW_REQUEST_DEST,
+        PROMOTED_REQUEST_DEST
+    }
+
+    private class IgoRequestHandler implements Runnable {
 
         final Phaser phaser;
+        final SmileRequestDest smileRequestDest;
+        final BlockingQueue<SmileRequest> requestQueue;
+        final CountDownLatch shutdownLatch;
         boolean interrupted = false;
 
-        NewIgoRequestHandler(Phaser phaser) {
+        IgoRequestHandler(Phaser phaser, SmileRequestDest smileRequestDest,
+                BlockingQueue<SmileRequest> requestQueue, CountDownLatch shutdownLatch) {
             this.phaser = phaser;
+            this.smileRequestDest = smileRequestDest;
+            this.requestQueue = requestQueue;
+            this.shutdownLatch = shutdownLatch;
         }
 
         @Override
@@ -89,37 +113,45 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             phaser.arrive();
             while (true) {
                 try {
-                    SmileRequest request = newRequestQueue.poll(100, TimeUnit.MILLISECONDS);
+                    SmileRequest request = requestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
                         SmileRequest existingRequest =
                                 requestService.getSmileRequestById(request.getIgoRequestId());
-
-                        // persist new request to database
-                        if (existingRequest == null) {
-                            LOG.info("Received new request with id: " + request.getIgoRequestId());
-                            requestService.saveRequest(request);
-                            messagingGateway.publish(request.getIgoRequestId(),
-                                    CONSISTENCY_CHECK_NEW_REQUEST,
-                                    mapper.writeValueAsString(
-                                            requestService.getPublishedSmileRequestById(
-                                                    request.getIgoRequestId())));
-                        } else if (requestService.requestHasUpdates(existingRequest, request)) {
-                            // make call to update the requestJson member of existingRequest in the
-                            // database to reflect the latest version of the raw json string that we got
-                            // directly from IGO LIMS
-                            existingRequest.updateRequestMetadataByRequest(request);
-                            requestService.saveRequest(existingRequest);
-                            messagingGateway.publish(request.getIgoRequestId(),
-                                    CONSISTENCY_CHECK_NEW_REQUEST,
-                                    mapper.writeValueAsString(
-                                            requestService.getPublishedSmileRequestById(
-                                                    request.getIgoRequestId())));
-                        } else {
+                        if (existingRequest != null
+                                && !requestService.requestHasUpdates(existingRequest, request)) {
                             LOG.warn("Request already exists in database and no updates were detected - "
                                     + "it will not be saved: " + request.getIgoRequestId());
+                            return;
+                        }
+
+                        // save new request to database
+                        if (existingRequest == null) {
+                            LOG.info("Persisting new request: " + request.getIgoRequestId());
+                            requestService.saveRequest(request);
+                        } else {
+                            LOG.info("Updating existing request: " + existingRequest.getIgoRequestId());
+                            existingRequest.updateRequestMetadataByRequest(request);
+                            requestService.saveRequest(existingRequest);
+                        }
+                        // publish updated/saved request to consistency checker or promoted request topic
+                        String requestJson = mapper.writeValueAsString(
+                                requestService.getPublishedSmileRequestById(request.getIgoRequestId()));
+                        switch (smileRequestDest) {
+                            case NEW_REQUEST_DEST:
+                                LOG.info("Publishing request to: " + CONSISTENCY_CHECK_NEW_REQUEST);
+                                messagingGateway.publish(request.getIgoRequestId(),
+                                        CONSISTENCY_CHECK_NEW_REQUEST, requestJson);
+                                break;
+                            case PROMOTED_REQUEST_DEST:
+                                LOG.info("Publishing request to: " + CONSUMERS_PROMOTED_REQUEST_TOPIC);
+                                messagingGateway.publish(request.getIgoRequestId(),
+                                        CONSUMERS_PROMOTED_REQUEST_TOPIC, requestJson);
+                                break;
+                            default:
+                                break;
                         }
                     }
-                    if (interrupted && newRequestQueue.isEmpty()) {
+                    if (interrupted && requestQueue.isEmpty()) {
                         break;
                     }
                 } catch (InterruptedException e) {
@@ -128,7 +160,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                     LOG.error("Error during request handling", e);
                 }
             }
-            newRequestHandlerShutdownLatch.countDown();
+            shutdownLatch.countDown();
         }
     }
 
@@ -263,6 +295,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         if (!initialized) {
             messagingGateway = gateway;
             setupIgoNewRequestHandler(messagingGateway, this);
+            setupIgoPromotedRequestHandler(messagingGateway, this);
             setupRequestUpdateHandler(messagingGateway, this);
             setupResearchSampleUpdateHandler(messagingGateway, this);
             initializeMessageHandlers();
@@ -279,6 +312,19 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         }
         if (!shutdownInitiated) {
             newRequestQueue.put(request);
+        } else {
+            LOG.error("Shutdown initiated, not accepting request: " + request);
+            throw new IllegalStateException("Shutdown initiated, not handling any more requests");
+        }
+    }
+
+    @Override
+    public void promotedRequestHandler(SmileRequest request) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            promotedRequestQueue.put(request);
         } else {
             LOG.error("Shutdown initiated, not accepting request: " + request);
             throw new IllegalStateException("Shutdown initiated, not handling any more requests");
@@ -318,6 +364,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         }
         exec.shutdownNow();
         newRequestHandlerShutdownLatch.await();
+        promotedRequestHandlerShutdownLatch.await();
         requestUpdateHandlerShutdownLatch.await();
         researchSampleUpdateHandlerShutdownLatch.await();
         shutdownInitiated = true;
@@ -330,9 +377,21 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         newRequestPhaser.register();
         for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
             newRequestPhaser.register();
-            exec.execute(new NewIgoRequestHandler(newRequestPhaser));
+            exec.execute(new IgoRequestHandler(newRequestPhaser, SmileRequestDest.NEW_REQUEST_DEST,
+                    newRequestQueue, newRequestHandlerShutdownLatch));
         }
         newRequestPhaser.arriveAndAwaitAdvance();
+
+        // promoted request handler
+        promotedRequestHandlerShutdownLatch = new CountDownLatch(NUM_PROMOTED_REQUEST_HANDLERS);
+        final Phaser promotedRequestPhaser = new Phaser();
+        promotedRequestPhaser.register();
+        for (int lc = 0; lc < NUM_PROMOTED_REQUEST_HANDLERS; lc++) {
+            promotedRequestPhaser.register();
+            exec.execute(new IgoRequestHandler(promotedRequestPhaser, SmileRequestDest.PROMOTED_REQUEST_DEST,
+                    promotedRequestQueue, promotedRequestHandlerShutdownLatch));
+        }
+        promotedRequestPhaser.arriveAndAwaitAdvance();
 
         // request update handler
         requestUpdateHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
@@ -374,6 +433,26 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         });
     }
 
+    private void setupIgoPromotedRequestHandler(Gateway gateway, ResearchMessageHandlingService
+            researchMessageHandlingService) throws Exception {
+        gateway.subscribe(IGO_PROMOTED_REQUEST_TOPIC, Object.class, new MessageConsumer() {
+            public void onMessage(Message msg, Object message) {
+                try {
+                    String requestJson = mapper.readValue(
+                            new String(msg.getData(), StandardCharsets.UTF_8),
+                            String.class);
+                    SmileRequest request = RequestDataFactory.buildNewLimsRequestFromJson(requestJson);
+                    LOG.info("Received message on topic: " + IGO_PROMOTED_REQUEST_TOPIC + " and request id: "
+                            + request.getIgoRequestId());
+                    researchMessageHandlingService.promotedRequestHandler(request);
+                } catch (Exception e) {
+                    LOG.error("Exception during processing of request on topic: "
+                            + IGO_PROMOTED_REQUEST_TOPIC, e);
+                }
+            }
+        });
+    }
+
     private void setupRequestUpdateHandler(Gateway gateway, ResearchMessageHandlingService
             researchMessageHandlingService) throws Exception {
         gateway.subscribe(IGO_REQUEST_UPDATE_TOPIC, Object.class, new MessageConsumer() {
@@ -410,7 +489,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                     researchMessageHandlingService.researchSampleUpdateHandler(sampleMetadata);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of research sample update on topic: "
-                            + IGO_REQUEST_UPDATE_TOPIC, e);
+                            + IGO_SAMPLE_UPDATE_TOPIC, e);
                 }
             }
         });
