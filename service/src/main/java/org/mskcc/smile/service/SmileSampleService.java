@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.PublishedSmileSample;
+import org.mskcc.smile.model.web.SmileSampleIdMapping;
 
 public interface SmileSampleService {
     SmileSample saveSmileSample(SmileSample smileSample) throws Exception;
@@ -28,4 +29,5 @@ public interface SmileSampleService {
     List<SmileSample> getSamplesByCategoryAndCmoPatientId(String cmoPatientId,
             String sampleCategory) throws Exception;
     void updateSamplePatientRelationship(UUID smileSampleId, UUID smilePatientId);
+    List<SmileSampleIdMapping> getSamplesByDate(String inputDate);
 }

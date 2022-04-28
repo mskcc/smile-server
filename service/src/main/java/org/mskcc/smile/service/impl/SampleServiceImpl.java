@@ -1,8 +1,14 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.smile.commons.JsonComparator;
@@ -12,6 +18,7 @@ import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.PublishedSmileSample;
+import org.mskcc.smile.model.web.SmileSampleIdMapping;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
 import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileRequestService;
@@ -206,5 +213,23 @@ public class SampleServiceImpl implements SmileSampleService {
     @Transactional(rollbackFor = {Exception.class})
     public void updateSamplePatientRelationship(UUID smileSampleId, UUID smilePatientId) {
         sampleRepository.updateSamplePatientRelationship(smileSampleId, smilePatientId);
+    }
+
+    @Override
+    public List<SmileSampleIdMapping> getSamplesByDate(String importDate) {
+        if (Strings.isNullOrEmpty(importDate)) {
+            throw new RuntimeException("Start date " + importDate + " cannot be null or empty");
+        }
+        // return latest sample metadata for each sample uuid returned
+        List<UUID> sampleIds = sampleRepository.findSamplesByLatestImportDate(importDate);
+        if (sampleIds == null) {
+            return null;
+        }
+        List<SmileSampleIdMapping> sampleIdsList = new ArrayList<>();
+        for (UUID smileSampleId : sampleIds) {
+            SampleMetadata sm = sampleRepository.findLatestSampleMetadataBySmileId(smileSampleId);
+            sampleIdsList.add(new SmileSampleIdMapping(smileSampleId, sm));
+        }
+        return sampleIdsList;
     }
 }

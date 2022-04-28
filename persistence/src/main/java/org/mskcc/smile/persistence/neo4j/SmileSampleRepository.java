@@ -89,4 +89,12 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "CREATE (s)<-[:HAS_SAMPLE]-(p)")
     void updateSamplePatientRelationship(@Param("smileSampleId") UUID smileSampleId,
             @Param("smilePatientId") UUID smilePatientId);
+
+    @Query("MATCH (s: Sample {sampleCategory: 'research'})-[:HAS_METADATA]->(sm: SampleMetadata) "
+            + "WHERE sm.importDate > $inputDate RETURN DISTINCT s.smileSampleId")
+    List<UUID> findSamplesByLatestImportDate(@Param("inputDate") String inputDate);
+
+    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata) "
+            + "RETURN sm ORDER BY sm.importDate DESC LIMIT 1")
+    SampleMetadata findLatestSampleMetadataBySmileId(@Param("smileSampleId") UUID smileSampleId);
 }

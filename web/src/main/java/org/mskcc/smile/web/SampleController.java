@@ -3,10 +3,14 @@ package org.mskcc.smile.web;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.mskcc.smile.model.web.PublishedSmileSample;
+import org.mskcc.smile.model.web.SmileSampleIdMapping;
 import org.mskcc.smile.service.SmileSampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +37,8 @@ public class SampleController {
     @Value("${smile.schema_version}")
     private String smileSchemaVersion;
 
+    private final DateFormat IMPORT_DATE_FORMATTER = initDateFormatter();
+
     @Autowired
     private SmileSampleService sampleService;
 
@@ -45,6 +51,7 @@ public class SampleController {
      * Given a CMO patient ID, returns a list of SampleMetadata.
      * @param cmoPatientId
      * @return ResponseEntity
+     * @throws Exception
      */
     @ApiOperation(value = "Fetch SampleMetadata list by CMO Patient ID",
         nickname = "fetchSampleMetadataListByCmoPatientIdGET")
@@ -64,6 +71,37 @@ public class SampleController {
                 .body(samples);
     }
 
+    /**
+     * Given an input date as yyyy-MM-dd, returns a list of sample id mappings.
+     * @param importDate
+     * @return ResponseEntity
+     * @throws Exception
+     */
+    @ApiOperation(value = "Fetch SmileSampleIdMapping list by inputDate",
+        nickname = "fetchSmileSampleIdMappingListByInputDateGET")
+    @RequestMapping(value = "/samplesByDate/{importDate}",
+        method = RequestMethod.GET,
+        produces = "application/json")
+    public ResponseEntity<List<SmileSampleIdMapping>> fetchSampleIdMappingsByInputDateGET(
+            @ApiParam(value = "Import date to search from", required = true)
+            @PathVariable String importDate) throws Exception {
+        // validate input date string before submitting db query
+        try {
+            IMPORT_DATE_FORMATTER.parse(importDate);
+        } catch (ParseException e) {
+            return badRequestHandler(e.getLocalizedMessage());
+        }
+
+        List<SmileSampleIdMapping> sampleIdsList = sampleService.getSamplesByDate(importDate);
+        if (sampleIdsList == null) {
+            return requestNotFoundHandler("Samples not found by import date: " + importDate);
+        }
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders())
+                .body(sampleIdsList);
+    }
+
     private HttpHeaders responseHeaders() {
         HttpHeaders headers  = new HttpHeaders();
         headers.set("smile-schema-version", smileSchemaVersion);
@@ -74,5 +112,17 @@ public class SampleController {
         Map<String, String> map = new HashMap<>();
         map.put("message", message);
         return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+    }
+
+    private ResponseEntity badRequestHandler(String message) {
+        Map<String, String> map = new HashMap<>();
+        map.put("message", message);
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    private DateFormat initDateFormatter() {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        df.setLenient(Boolean.FALSE);
+        return df;
     }
 }
