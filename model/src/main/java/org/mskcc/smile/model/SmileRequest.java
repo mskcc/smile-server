@@ -29,6 +29,7 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 @JsonIgnoreProperties({"samples"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SmileRequest implements Serializable {
+    @JsonIgnore
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Id @GeneratedValue(strategy = UuidStrategy.class)

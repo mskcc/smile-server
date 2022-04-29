@@ -3,6 +3,7 @@ package org.mskcc.smile.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.SampleMetadata;
@@ -239,7 +240,6 @@ public class SampleServiceTest {
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
-
     }
 
     /**
@@ -288,5 +288,39 @@ public class SampleServiceTest {
                 Assertions.fail(builder.toString());
             }
         }
+    }
+
+    /**
+     * Tests that samples can be found by an import date and cmo label matches expected output.
+     * @throws Exception
+     */
+    @Test
+    public void testFindSamplesByDate() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        String igoId = "MOCKREQUEST1_B_2";
+
+        SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        sample.getLatestSampleMetadata().setCmoSampleName("C-LATESTLABEL-T02-d002");
+
+        SampleMetadata updatedMetadata = new SampleMetadata();
+        updatedMetadata.setImportDate("2000-06-10");
+        updatedMetadata.setPrimaryId(igoId);
+        updatedMetadata.setCmoSampleName("C-OLDSAMPLELABEL-T11");
+        sample.updateSampleMetadata(updatedMetadata);
+        sampleService.saveSmileSample(sample);
+
+        // confirm that new sample metadata was persisted
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
+        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(3);
+
+        // confirms that both methods return the same latest metadata and
+        // same cmo sample label corresponding to it
+        SmileSample updatedSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        Assertions.assertThat(updatedSample.getLatestSampleMetadata().getCmoSampleName())
+                .isEqualTo("C-LATESTLABEL-T02-d002");
+        SampleMetadata latestMetadata =
+                sampleRepository.findLatestSampleMetadataBySmileId(updatedSample.getSmileSampleId());
+        Assertions.assertThat(latestMetadata.getCmoSampleName()).isEqualTo("C-LATESTLABEL-T02-d002");
     }
 }
