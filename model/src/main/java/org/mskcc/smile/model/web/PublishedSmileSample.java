@@ -45,6 +45,7 @@ public class PublishedSmileSample {
     private String genePanel;
     private String baitSet;
     private String datasource;
+    private Boolean igoComplete;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
     @Convert(QcReportsStringConverter.class)
@@ -83,6 +84,7 @@ public class PublishedSmileSample {
         this.genePanel = latestSampleMetadata.getGenePanel();
         this.baitSet = latestSampleMetadata.getBaitSet();
         this.datasource = smileSample.getDatasource();
+        this.igoComplete = latestSampleMetadata.getIgoComplete();
         this.importDate = latestSampleMetadata.getImportDate();
         this.oncotreeCode = latestSampleMetadata.getOncotreeCode();
         this.collectionYear = latestSampleMetadata.getCollectionYear();
@@ -317,6 +319,14 @@ public class PublishedSmileSample {
 
     public void setDatasource(String datasource) {
         this.datasource = datasource;
+    }
+
+    public Boolean getIgoComplete() {
+        return igoComplete;
+    }
+
+    public void setIgoComplete(Boolean igoComplete) {
+        this.igoComplete = igoComplete;
     }
 
     public Map<String, String> getCmoSampleIdFields() {

@@ -51,6 +51,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
     private String tissueLocation;
     private String genePanel;
     private String baitSet;
+    private Boolean igoComplete;
     @Convert(QcReportsStringConverter.class)
     private List<QcReport> qcReports;
     @Convert(LibrariesStringConverter.class)
@@ -88,6 +89,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
         this.tissueLocation = igoSampleManifest.getTissueLocation();
         this.genePanel = igoSampleManifest.getCmoSampleIdFieldValue("recipe");
         this.baitSet = igoSampleManifest.getBaitSet();
+        this.igoComplete = igoSampleManifest.getIgoComplete();
         this.qcReports =  igoSampleManifest.getQcReports();
         this.libraries = igoSampleManifest.getLibraries();
         this.cmoSampleIdFields = igoSampleManifest.getCmoSampleIdFields();
@@ -337,6 +339,14 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
 
     public void setBaitSet(String baitSet) {
         this.baitSet = baitSet;
+    }
+
+    public Boolean getIgoComplete() {
+        return igoComplete;
+    }
+
+    public void setIgoComplete(Boolean igoComplete) {
+        this.igoComplete = igoComplete;
     }
 
     public String getIgoRequestId() {

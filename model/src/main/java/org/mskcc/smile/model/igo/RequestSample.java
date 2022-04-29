@@ -1,4 +1,4 @@
-package org.mskcc.smile.model;
+package org.mskcc.smile.model.igo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
