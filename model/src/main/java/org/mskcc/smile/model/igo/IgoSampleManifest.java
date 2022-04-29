@@ -29,6 +29,7 @@ public class IgoSampleManifest {
     private String tissueLocation;
     private String tubeId;
     private String tumorOrNormal;
+    private Boolean igoComplete;
     private List<QcReport> qcReports;
     private List<Library> libraries;
     private Map<String, String> cmoSampleIdFields = new HashMap<>();
@@ -185,6 +186,14 @@ public class IgoSampleManifest {
 
     public void setTumorOrNormal(String tumorOrNormal) {
         this.tumorOrNormal = tumorOrNormal;
+    }
+
+    public Boolean getIgoComplete() {
+        return igoComplete;
+    }
+
+    public void setIgoComplete(Boolean igoComplete) {
+        this.igoComplete = igoComplete;
     }
 
     public List<QcReport> getQcReports() {
