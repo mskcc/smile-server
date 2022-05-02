@@ -106,7 +106,7 @@ public class SampleController {
     /**
      * Given a valid inputId, returns smileSample
      * @param inputId
-     * @return
+     * @return ResponseEntity
      * @throws Exception
      */
     @ApiOperation(value = "Fetch SmileSample by inputId",
