@@ -232,4 +232,9 @@ public class SampleServiceImpl implements SmileSampleService {
         }
         return sampleIdsList;
     }
+
+    @Override
+    public SmileSample getSampleByInputId(String inputId) {
+        return sampleRepository.findSampleByInputId(inputId);
+    }
 }

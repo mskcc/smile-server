@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.PublishedSmileSample;
 import org.mskcc.smile.model.web.SmileSampleIdMapping;
 import org.mskcc.smile.service.SmileSampleService;
@@ -100,6 +102,23 @@ public class SampleController {
         return ResponseEntity.ok()
                 .headers(responseHeaders())
                 .body(sampleIdsList);
+    }
+
+    @ApiOperation(value = "Fetch SmileSample by inputId",
+            nickname = "fetchSmileSampleByInputIdGET")
+        @RequestMapping(value = "/sampleById/{inputId}",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public ResponseEntity<SmileSample> fetchSmileSampleByInputIdGET(
+            @ApiParam(value = "input id to search with", required = true)
+            @PathVariable String inputId) throws Exception {
+        SmileSample smileSample = sampleService.getSampleByInputId(inputId);
+        if (smileSample == null) {
+            return requestNotFoundHandler("Sample not found by input id: " + inputId);
+        }
+        return ResponseEntity.ok()
+                .headers(responseHeaders())
+                .body(smileSample);
     }
 
     private HttpHeaders responseHeaders() {
