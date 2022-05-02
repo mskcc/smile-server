@@ -324,6 +324,10 @@ public class SampleServiceTest {
         Assertions.assertThat(latestMetadata.getCmoSampleName()).isEqualTo("C-LATESTLABEL-T02-d002");
     }
 
+    /**
+     * Tests that sample can be found by a valid igoId
+     * @throws Exception
+     */
     @Test
     public void testFindSampleByIgoId() throws Exception {
         String igoId = "MOCKREQUEST1_B_2";
@@ -332,6 +336,10 @@ public class SampleServiceTest {
         Assertions.assertThat(sample).isNotNull();
     }
 
+    /**
+     * Tests that sample can be found by a valid uuid
+     * @throws Exception
+     */
     @Test
     public void testFindSampleByUuid() throws Exception {
         String igoId = "MOCKREQUEST1_B_2";
@@ -343,6 +351,10 @@ public class SampleServiceTest {
         Assertions.assertThat(sampleByUuid).isNotNull();
     }
 
+    /**
+     * Tests that sample can not be found by a invalid inputId
+     * @throws Exception
+     */
     @Test
     public void testFindSampleByInvalidInputId() throws Exception {
         String inputId = "invalidInput";

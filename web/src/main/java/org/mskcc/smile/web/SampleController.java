@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.PublishedSmileSample;
 import org.mskcc.smile.model.web.SmileSampleIdMapping;
@@ -104,9 +103,15 @@ public class SampleController {
                 .body(sampleIdsList);
     }
 
+    /**
+     * Given a valid inputId, returns smileSample
+     * @param inputId
+     * @return
+     * @throws Exception
+     */
     @ApiOperation(value = "Fetch SmileSample by inputId",
             nickname = "fetchSmileSampleByInputIdGET")
-        @RequestMapping(value = "/sampleById/{inputId}",
+    @RequestMapping(value = "/sampleById/{inputId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<SmileSample> fetchSmileSampleByInputIdGET(
