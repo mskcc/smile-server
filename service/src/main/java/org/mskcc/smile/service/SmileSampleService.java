@@ -30,4 +30,5 @@ public interface SmileSampleService {
             String sampleCategory) throws Exception;
     void updateSamplePatientRelationship(UUID smileSampleId, UUID smilePatientId);
     List<SmileSampleIdMapping> getSamplesByDate(String inputDate);
+    SmileSample getSampleByInputId(String inputId);
 }

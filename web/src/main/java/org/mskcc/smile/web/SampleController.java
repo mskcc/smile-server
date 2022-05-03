@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.PublishedSmileSample;
 import org.mskcc.smile.model.web.SmileSampleIdMapping;
 import org.mskcc.smile.service.SmileSampleService;
@@ -100,6 +101,31 @@ public class SampleController {
         return ResponseEntity.ok()
                 .headers(responseHeaders())
                 .body(sampleIdsList);
+    }
+
+    /**
+     * Given a valid inputId, returns smileSample
+     * @param inputId
+     * @return ResponseEntity
+     * @throws Exception
+     */
+    @ApiOperation(value = "Fetch SmileSample by inputId",
+            nickname = "fetchSmileSampleByInputIdGET")
+    @RequestMapping(value = "/sampleById/{inputId}",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public ResponseEntity<PublishedSmileSample> fetchSmileSampleByInputIdGET(
+            @ApiParam(value = "input id to search with", required = true)
+            @PathVariable String inputId) throws Exception {
+        SmileSample smileSample = sampleService.getSampleByInputId(inputId);
+        PublishedSmileSample publishedSample = sampleService.getPublishedSmileSample(
+                smileSample.getSmileSampleId());
+        if (publishedSample == null) {
+            return requestNotFoundHandler("Sample not found by input id: " + inputId);
+        }
+        return ResponseEntity.ok()
+                .headers(responseHeaders())
+                .body(publishedSample);
     }
 
     private HttpHeaders responseHeaders() {

@@ -323,4 +323,32 @@ public class SampleServiceTest {
                 sampleRepository.findLatestSampleMetadataBySmileId(updatedSample.getSmileSampleId());
         Assertions.assertThat(latestMetadata.getCmoSampleName()).isEqualTo("C-LATESTLABEL-T02-d002");
     }
+
+    /**
+     * Tests if samples found by a valid uuid and igoId are the same (not null)
+     * @throws Exception
+     */
+    @Test
+    public void testFindSampleByUuid() throws Exception {
+        String igoId = "MOCKREQUEST1_B_2";
+        String investigatorId = "01-0012345a";
+
+        SmileSample sample = sampleService.getSampleByInputId(igoId);
+        SmileSample sampleByUuid = sampleService.getSampleByInputId(investigatorId);
+
+        Assertions.assertThat(sample).isNotNull();
+        Assertions.assertThat(sample).isEqualToComparingFieldByField(sampleByUuid);
+    }
+
+    /**
+     * Tests that sample can not be found by a invalid inputId
+     * @throws Exception
+     */
+    @Test
+    public void testFindSampleByInvalidInputId() throws Exception {
+        String inputId = "invalidInput";
+
+        SmileSample sample = sampleService.getSampleByInputId(inputId);
+        Assertions.assertThat(sample).isNull();
+    }
 }
