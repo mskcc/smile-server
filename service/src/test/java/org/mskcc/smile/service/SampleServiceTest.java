@@ -325,19 +325,7 @@ public class SampleServiceTest {
     }
 
     /**
-     * Tests that sample can be found by a valid igoId
-     * @throws Exception
-     */
-    @Test
-    public void testFindSampleByIgoId() throws Exception {
-        String igoId = "MOCKREQUEST1_B_2";
-
-        SmileSample sample = sampleService.getSampleByInputId(igoId);
-        Assertions.assertThat(sample).isNotNull();
-    }
-
-    /**
-     * Tests that sample can be found by a valid uuid
+     * Tests if samples found by a valid uuid and igoId are the same(not null)
      * @throws Exception
      */
     @Test
@@ -348,7 +336,9 @@ public class SampleServiceTest {
         String uuid = sample.getSmileSampleId().toString();
         SmileSample sampleByUuid = sampleService.getSampleByInputId(uuid);
 
-        Assertions.assertThat(sampleByUuid).isNotNull();
+        Assertions.assertThat(sample).isNotNull();
+        Assertions.assertThat(sample).isEqualToComparingFieldByField(sampleByUuid);
+
     }
 
     /**
