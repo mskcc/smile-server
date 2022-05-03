@@ -331,10 +331,10 @@ public class SampleServiceTest {
     @Test
     public void testFindSampleByUuid() throws Exception {
         String igoId = "MOCKREQUEST1_B_2";
+        String investigatorId = "01-0012345a";
 
         SmileSample sample = sampleService.getSampleByInputId(igoId);
-        String uuid = sample.getSmileSampleId().toString();
-        SmileSample sampleByUuid = sampleService.getSampleByInputId(uuid);
+        SmileSample sampleByUuid = sampleService.getSampleByInputId(investigatorId);
 
         Assertions.assertThat(sample).isNotNull();
         Assertions.assertThat(sample).isEqualToComparingFieldByField(sampleByUuid);
