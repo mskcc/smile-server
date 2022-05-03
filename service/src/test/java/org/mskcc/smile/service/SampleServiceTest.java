@@ -325,7 +325,7 @@ public class SampleServiceTest {
     }
 
     /**
-     * Tests if samples found by a valid uuid and igoId are the same(not null)
+     * Tests if samples found by a valid uuid and igoId are the same (not null)
      * @throws Exception
      */
     @Test
@@ -338,7 +338,6 @@ public class SampleServiceTest {
 
         Assertions.assertThat(sample).isNotNull();
         Assertions.assertThat(sample).isEqualToComparingFieldByField(sampleByUuid);
-
     }
 
     /**

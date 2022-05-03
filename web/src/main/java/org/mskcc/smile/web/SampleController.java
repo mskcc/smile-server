@@ -114,16 +114,17 @@ public class SampleController {
     @RequestMapping(value = "/sampleById/{inputId}",
             method = RequestMethod.GET,
             produces = "application/json")
-    public ResponseEntity<SmileSample> fetchSmileSampleByInputIdGET(
+    public ResponseEntity<PublishedSmileSample> fetchSmileSampleByInputIdGET(
             @ApiParam(value = "input id to search with", required = true)
             @PathVariable String inputId) throws Exception {
         SmileSample smileSample = sampleService.getSampleByInputId(inputId);
-        if (smileSample == null) {
+        PublishedSmileSample publishedSample = sampleService.getPublishedSmileSample(smileSample.getSmileSampleId());
+        if (publishedSample == null) {
             return requestNotFoundHandler("Sample not found by input id: " + inputId);
         }
         return ResponseEntity.ok()
                 .headers(responseHeaders())
-                .body(smileSample);
+                .body(publishedSample);
     }
 
     private HttpHeaders responseHeaders() {
