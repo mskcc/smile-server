@@ -56,6 +56,7 @@ public class SampleServiceImpl implements SmileSampleService {
             sample.setSmileSampleId(newSampleId);
             return sample;
         } else {
+            fetchAndLoadSampleDetails(existingSample);
             existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
             sampleRepository.save(existingSample);
             return existingSample;
