@@ -165,6 +165,8 @@ public class SampleDataFactory {
                 String.valueOf(dmpSampleMetadata.getTmbScore()));
         sampleMetadata.addAdditionalProperty("tmb_tt_percentile",
                 String.valueOf(dmpSampleMetadata.getTmbTtPercentile()));
+        sampleMetadata.addAdditionalProperty("standard_coverage",
+                dmpSampleMetadata.getStandardCoverage());
         return sampleMetadata;
     }
 
