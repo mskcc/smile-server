@@ -129,9 +129,37 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             LOG.info("Persisting new request: " + request.getIgoRequestId());
                             requestService.saveRequest(request);
                         } else {
-                            LOG.info("Updating existing request: " + existingRequest.getIgoRequestId());
-                            existingRequest.updateRequestMetadataByRequest(request);
-                            requestService.saveRequest(existingRequest);
+                            // update and persist request-level updates
+                            if (requestService.requestHasMetadataUpdates(
+                                existingRequest.getLatestRequestMetadata(),
+                                    request.getLatestRequestMetadata())) {
+                                LOG.info("Updating existing request: " + existingRequest.getIgoRequestId());
+                                existingRequest.updateRequestMetadataByMetadata(
+                                        request.getLatestRequestMetadata());
+                                requestService.saveRequestMetadata(existingRequest);
+                            }
+                            // check samples for updates and persist to db if applicable
+                            for (SmileSample sample : request.getSmileSampleList()) {
+                                SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
+                                SmileSample existingSample =
+                                        sampleService.getResearchSampleByRequestAndIgoId(
+                                                request.getIgoRequestId(), sampleMetadata.getPrimaryId());
+                                if (existingSample == null) {
+                                    LOG.info("Persisting new sample to db: "
+                                            + sampleMetadata.getPrimaryId());
+                                    sampleService.saveSmileSample(sample);
+                                } else if (sampleService.sampleHasMetadataUpdates(
+                                        existingSample.getLatestSampleMetadata(), sampleMetadata)
+                                        || (!sampleService.sampleHasMetadataUpdates(
+                                                existingSample.getLatestSampleMetadata(), sampleMetadata))
+                                        && !existingSample.getLatestSampleMetadata().getCmoSampleName()
+                                                .equals(sampleMetadata.getCmoSampleName())) {
+                                    LOG.info("Persisting updates for sample: "
+                                            + sampleMetadata.getPrimaryId());
+                                    existingSample.updateSampleMetadata(sampleMetadata);
+                                    sampleService.saveSmileSample(existingSample);
+                                }
+                            }
                         }
                         // publish updated/saved request to consistency checker or promoted request topic
                         String requestJson = mapper.writeValueAsString(
