@@ -3,7 +3,6 @@ package org.mskcc.smile.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.SampleMetadata;
@@ -351,6 +350,10 @@ public class SampleServiceTest {
         Assertions.assertThat(sample).isNull();
     }
 
+    /**
+     * Tests if sampleMetadata with updates is being persisted correctly
+     * @throws Exception
+     */
     @Test
     public void testUpdateSampleMetadata() throws Exception {
         String igoId = "MOCKREQUEST1_B_2";

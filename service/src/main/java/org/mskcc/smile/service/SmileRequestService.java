@@ -2,7 +2,6 @@ package org.mskcc.smile.service;
 
 import java.util.List;
 import org.mskcc.smile.model.RequestMetadata;
-import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.PublishedSmileRequest;

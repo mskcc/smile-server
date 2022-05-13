@@ -113,7 +113,7 @@ public class SampleServiceImpl implements SmileSampleService {
             existingSample.updateSampleMetadata(newSample);
             saveSmileSample(existingSample);
             return Boolean.TRUE;
-        // Sample Metadata has updates
+        // Sample Metadata has no updates
         } else {
             LOG.info("There are no updates to persist for research sample: "
                     + newSample.getPrimaryId());

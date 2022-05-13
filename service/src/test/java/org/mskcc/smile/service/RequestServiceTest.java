@@ -4,7 +4,6 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.RequestMetadata;
-import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.RequestSummary;
@@ -337,6 +336,10 @@ public class RequestServiceTest {
                 && (request.getRequestJson() != null && !request.getRequestJson().isEmpty()));
     }
 
+    /**
+     * Tests if requestMetadata with updates is being persisted correctly
+     * @throws Exception
+     */
     @Test
     public void testUpdateRequestMetadata() throws Exception {
         String requestId = "MOCKREQUEST1_B";
