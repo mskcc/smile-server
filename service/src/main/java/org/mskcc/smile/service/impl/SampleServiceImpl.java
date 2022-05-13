@@ -2,15 +2,12 @@ package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleMetadata;
@@ -23,6 +20,7 @@ import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
 import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +40,7 @@ public class SampleServiceImpl implements SmileSampleService {
     @Autowired
     private SmilePatientService patientService;
 
+    private static final Log LOG = LogFactory.getLog(SampleServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -89,6 +88,37 @@ public class SampleServiceImpl implements SmileSampleService {
             sample.setPatient(existingPatient);
         }
         return sample;
+    }
+
+    @Override
+    public Boolean updateSampleMetadata(SampleMetadata newSample) throws Exception {
+        SmileSample existingSample = getResearchSampleByRequestAndIgoId(
+                        newSample.getIgoRequestId(), newSample.getPrimaryId());
+        // Sample doesn't exist in db
+        if (existingSample == null) {
+            LOG.info("Persisting new sample to db: " + newSample.getPrimaryId());
+            SmileSample sample = SampleDataFactory
+                    .buildNewResearchSampleFromMetadata(newSample.getIgoRequestId(),
+                            newSample);
+            saveSmileSample(sample);
+            return Boolean.TRUE;
+        // Sample Metadata has updates
+        } else if (sampleHasMetadataUpdates(
+                existingSample.getLatestSampleMetadata(), newSample)
+                || (!sampleHasMetadataUpdates(
+                        existingSample.getLatestSampleMetadata(), newSample))
+                && !existingSample.getLatestSampleMetadata().getCmoSampleName()
+                        .equals(newSample.getCmoSampleName())) {
+            LOG.info("Persisting updates for sample: " + newSample.getPrimaryId());
+            existingSample.updateSampleMetadata(newSample);
+            saveSmileSample(existingSample);
+            return Boolean.TRUE;
+        // Sample Metadata has updates
+        } else {
+            LOG.info("There are no updates to persist for research sample: "
+                    + newSample.getPrimaryId());
+            return Boolean.FALSE;
+        }
     }
 
     @Override

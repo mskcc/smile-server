@@ -4,6 +4,7 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.RequestMetadata;
+import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.RequestSummary;
@@ -334,5 +335,20 @@ public class RequestServiceTest {
                 && (request.getSmileSampleList() != null && !request.getSmileSampleList().isEmpty())
                 && (request.getNamespace() != null && !request.getNamespace().isEmpty())
                 && (request.getRequestJson() != null && !request.getRequestJson().isEmpty()));
+    }
+
+    @Test
+    public void testUpdateRequestMetadata() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        SmileRequest origRequest = requestService.getSmileRequestById(requestId);
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(origRequest)).isTrue();
+
+        MockJsonTestData updatedRequestMetadataData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockUpdatedPublishedRequest1Metadata");
+        RequestMetadata updatedRequestMetadata = RequestDataFactory
+                .buildNewRequestMetadataFromMetadata(updatedRequestMetadataData.getJsonString());
+        requestService.updateRequestMetadata(updatedRequestMetadata);
+
+        Assertions.assertThat(requestService.getRequestMetadataHistory(requestId).size()).isEqualTo(2);
     }
 }

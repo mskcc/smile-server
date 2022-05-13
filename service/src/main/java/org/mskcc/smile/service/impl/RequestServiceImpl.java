@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.model.RequestMetadata;
+import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileProject;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
@@ -28,6 +29,7 @@ import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.util.RequestStatusLogger;
+import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,6 +171,30 @@ public class RequestServiceImpl implements SmileRequestService {
             samples.add(publishedSample);
         }
         return new PublishedSmileRequest(request, samples);
+    }
+
+    @Override
+    public Boolean updateRequestMetadata(RequestMetadata newRequest) throws Exception {
+        SmileRequest existingRequest = getSmileRequestById(newRequest.getIgoRequestId());
+        // Request doesn't exist in db
+        if (existingRequest == null) {
+            LOG.warn("Request does not already exist in the database: "
+                    + newRequest.getIgoRequestId()
+                    + " - will not be persisting updates.");
+            return Boolean.FALSE;
+        // Request Metadata has updates
+        } else if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(), newRequest)) {
+            LOG.info("Found updates in request metadata: " + newRequest.getIgoRequestId()
+                + " - persisting to database");
+            existingRequest.updateRequestMetadataByMetadata(newRequest);
+            saveRequestMetadata(existingRequest);
+            return Boolean.TRUE;
+        // Request Metadata has no updates
+        } else {
+            LOG.warn("Request already exists in database and no updates were detected - "
+                    + "it will not be saved: " + newRequest.getIgoRequestId());
+            return Boolean.FALSE;
+        }
     }
 
     /**

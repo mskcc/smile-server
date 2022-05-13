@@ -117,21 +117,15 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                     if (request != null) {
                         SmileRequest existingRequest =
                                 requestService.getSmileRequestById(request.getIgoRequestId());
-                        if (existingRequest != null
-                                && !requestService.requestHasUpdates(existingRequest, request)) {
-                            LOG.warn("Request already exists in database and no updates were detected - "
-                                    + "it will not be saved: " + request.getIgoRequestId());
-                            return;
-                        }
-
                         // save new request to database
                         if (existingRequest == null) {
                             LOG.info("Persisting new request: " + request.getIgoRequestId());
                             requestService.saveRequest(request);
                         } else {
-                            LOG.info("Updating existing request: " + existingRequest.getIgoRequestId());
-                            existingRequest.updateRequestMetadataByRequest(request);
-                            requestService.saveRequest(existingRequest);
+                            requestService.updateRequestMetadata(request.getLatestRequestMetadata());
+                            for (SmileSample sample : request.getSmileSampleList()) {
+                                sampleService.updateSampleMetadata(sample.getLatestSampleMetadata());
+                            }
                         }
                         // publish updated/saved request to consistency checker or promoted request topic
                         String requestJson = mapper.writeValueAsString(
@@ -179,33 +173,16 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                 try {
                     RequestMetadata requestMetadata = requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (requestMetadata != null) {
-                        SmileRequest existingRequest =
-                                requestService.getSmileRequestById(requestMetadata.getIgoRequestId());
-                        if (existingRequest == null) {
-                            LOG.warn("Request does not already exist in the database: "
-                                    + requestMetadata.getIgoRequestId()
-                                    + " - will not be persisting updates.");
-                        } else if (requestService.requestHasMetadataUpdates(
-                                existingRequest.getLatestRequestMetadata(), requestMetadata)) {
-                            // persist request-level metadata updates to database
-                            LOG.info("Found updates in request metadata: " + requestMetadata.getIgoRequestId()
-                                    + " - persisting to database");
-                            existingRequest.updateRequestMetadataByMetadata(requestMetadata);
-                            if (requestService.saveRequestMetadata(existingRequest)) {
-                                LOG.info("Publishing Request-level Metadata updates "
-                                        + "to " + CMO_REQUEST_UPDATE_TOPIC);
-                                // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC
-                                messagingGateway.publish(existingRequest.getIgoRequestId(),
-                                        CMO_REQUEST_UPDATE_TOPIC,
-                                        mapper.writeValueAsString(
-                                              existingRequest.getRequestMetadataList()));
-                            } else {
-                                LOG.error("Failed to update the request metadata for request: "
-                                        + existingRequest.getIgoRequestId());
-                            }
-                        } else {
-                            LOG.warn("There are no request-level metadata updates to persist: "
-                                    + requestMetadata.getIgoRequestId());
+                        if (requestService.updateRequestMetadata(requestMetadata)) {
+                            LOG.info("Publishing Request-level Metadata updates "
+                                    + "to " + CMO_REQUEST_UPDATE_TOPIC);
+                            SmileRequest existingRequest =
+                                    requestService.getSmileRequestById(requestMetadata.getIgoRequestId());
+                            // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC
+                            messagingGateway.publish(existingRequest.getIgoRequestId(),
+                                    CMO_REQUEST_UPDATE_TOPIC,
+                                    mapper.writeValueAsString(
+                                          existingRequest.getRequestMetadataList()));
                         }
                     }
                     if (interrupted && requestUpdateQueue.isEmpty()) {
@@ -238,43 +215,14 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                     SampleMetadata sampleMetadata = researchSampleUpdateQueue.poll(
                             100, TimeUnit.MILLISECONDS);
                     if (sampleMetadata != null) {
-                        SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
-                                sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
-                        if (existingSample == null) {
-                            LOG.info("research Sample metadata does not already exist - persisting to db: "
-                                    + sampleMetadata.getPrimaryId());
-                            // handle and persist new sample received
-                            SmileSample sample = SampleDataFactory
-                                    .buildNewResearchSampleFromMetadata(sampleMetadata.getIgoRequestId(),
-                                            sampleMetadata);
-                            sampleService.saveSmileSample(sample);
-                            LOG.info("Publishing metadata history for new research sample: "
-                                    + sampleMetadata.getPrimaryId());
-                            messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
-                                    mapper.writeValueAsString(sample.getSampleMetadataList()));
-                        } else if (sampleService.sampleHasMetadataUpdates(
-                                existingSample.getLatestSampleMetadata(), sampleMetadata)
-                                || (!sampleService.sampleHasMetadataUpdates(
-                                        existingSample.getLatestSampleMetadata(), sampleMetadata))
-                                && !existingSample.getLatestSampleMetadata().getCmoSampleName()
-                                        .equals(sampleMetadata.getCmoSampleName())) {
-                            // logic checks if 1. comparator detects changes or 2. comparator does not
-                            // detect changes because 'cmoSampleName' is ignored but the 'cmoSampleName'
-                            // for existing and current sample metadata clearly differ then proceed with
-                            // persisting updates for sample
-                            LOG.info("Found updates for research sample - persisting to database: "
-                                    + sampleMetadata.getPrimaryId());
-                            // persist sample level updates to database and publish
-                            // sample metadata history to CMO_SAMPLE_METADATA_UPDATE
-                            existingSample.updateSampleMetadata(sampleMetadata);
-                            sampleService.saveSmileSample(existingSample);
+                        if (sampleService.updateSampleMetadata(sampleMetadata)) {
+                            SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
+                                    sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
                             LOG.info("Publishing sample-level metadata history for research sample: "
                                     + sampleMetadata.getPrimaryId());
+                            // publish sample-level metadata history to CMO_REQUEST_UPDATE_TOPIC
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(existingSample.getSampleMetadataList()));
-                        } else {
-                            LOG.info("There are no updates to persist for research sample: "
-                                    + sampleMetadata.getPrimaryId());
                         }
                     }
                     if (interrupted && researchSampleUpdateQueue.isEmpty()) {
