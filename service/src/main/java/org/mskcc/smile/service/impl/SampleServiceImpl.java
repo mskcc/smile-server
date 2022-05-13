@@ -91,34 +91,33 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public Boolean updateSampleMetadata(SampleMetadata newSample) throws Exception {
+    public Boolean updateSampleMetadata(SampleMetadata sampleMetadata) throws Exception {
         SmileSample existingSample = getResearchSampleByRequestAndIgoId(
-                        newSample.getIgoRequestId(), newSample.getPrimaryId());
-        // Sample doesn't exist in db
+                        sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
+        // persist new sample to db if does not already exist
         if (existingSample == null) {
-            LOG.info("Persisting new sample to db: " + newSample.getPrimaryId());
-            SmileSample sample = SampleDataFactory
-                    .buildNewResearchSampleFromMetadata(newSample.getIgoRequestId(),
-                            newSample);
+            LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
+            SmileSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(
+                    sampleMetadata.getIgoRequestId(), sampleMetadata);
             saveSmileSample(sample);
             return Boolean.TRUE;
-        // Sample Metadata has updates
-        } else if (sampleHasMetadataUpdates(
-                existingSample.getLatestSampleMetadata(), newSample)
+        }
+        // save updates to sample if applicable
+        SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
+        if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata)
                 || (!sampleHasMetadataUpdates(
-                        existingSample.getLatestSampleMetadata(), newSample))
-                && !existingSample.getLatestSampleMetadata().getCmoSampleName()
-                        .equals(newSample.getCmoSampleName())) {
-            LOG.info("Persisting updates for sample: " + newSample.getPrimaryId());
-            existingSample.updateSampleMetadata(newSample);
+                        existingMetadata, sampleMetadata))
+                && !existingMetadata.getCmoSampleName()
+                        .equals(sampleMetadata.getCmoSampleName())) {
+            LOG.info("Persisting updates for sample: " + sampleMetadata.getPrimaryId());
+            existingSample.updateSampleMetadata(sampleMetadata);
             saveSmileSample(existingSample);
             return Boolean.TRUE;
-        // Sample Metadata has no updates
-        } else {
-            LOG.info("There are no updates to persist for research sample: "
-                    + newSample.getPrimaryId());
-            return Boolean.FALSE;
         }
+        // no updates to persist to sample, log and return false
+        LOG.info("There are no updates to persist for research sample: "
+                + sampleMetadata.getPrimaryId());
+        return Boolean.FALSE;
     }
 
     @Override

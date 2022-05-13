@@ -122,6 +122,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             LOG.info("Persisting new request: " + request.getIgoRequestId());
                             requestService.saveRequest(request);
                         } else {
+                            // request-service and sample-service methods will check for updates and persist
+                            // them if applicable
                             requestService.updateRequestMetadata(request.getLatestRequestMetadata());
                             for (SmileSample sample : request.getSmileSampleList()) {
                                 sampleService.updateSampleMetadata(sample.getLatestSampleMetadata());
