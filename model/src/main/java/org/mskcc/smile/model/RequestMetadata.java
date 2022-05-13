@@ -1,5 +1,6 @@
 package org.mskcc.smile.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
@@ -7,6 +8,7 @@ import org.neo4j.ogm.annotation.Id;
 
 public class RequestMetadata implements Serializable, Comparable<RequestMetadata> {
     @Id @GeneratedValue
+    @JsonIgnore
     private Long id;
     private String igoRequestId;
     private String requestMetadataJson;
@@ -22,6 +24,14 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
         this.igoRequestId = igoRequestId;
         this.requestMetadataJson = requestMetadataJson;
         this.importDate = importDate;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getIgoRequestId() {
@@ -50,10 +60,13 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
 
     @Override
     public int compareTo(RequestMetadata requestMetadata) {
-        if (getImportDate() == null || requestMetadata.getImportDate() == null) {
+        if (importDate == null || requestMetadata.getImportDate() == null) {
             return 0;
         }
-        return getImportDate().compareTo(requestMetadata.getImportDate());
+        if (id != null && importDate.equals(requestMetadata.getImportDate())) {
+            return id.compareTo(requestMetadata.getId());
+        }
+        return importDate.compareTo(requestMetadata.getImportDate());
     }
 
     @Override

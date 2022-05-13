@@ -370,11 +370,10 @@ public class SmileRequest implements Serializable {
     /**
      * Updates the metadata for the current request provided a RequestMetadata object.
      * @param requestMetadata
-     * @throws com.fasterxml.jackson.core.JsonProcessingException
+     * @throws JsonProcessingException
      */
     public void updateRequestMetadataByMetadata(RequestMetadata requestMetadata)
             throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> metadataMap =
                 mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
 
@@ -393,6 +392,7 @@ public class SmileRequest implements Serializable {
         this.libraryType = String.valueOf(metadataMap.get("libraryType"));
         this.bicAnalysis = Boolean.parseBoolean(String.valueOf(metadataMap.get("bicAnalysis")));
         this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
+        this.requestJson = requestMetadata.getRequestMetadataJson();
         addRequestMetadata(requestMetadata);
     }
 

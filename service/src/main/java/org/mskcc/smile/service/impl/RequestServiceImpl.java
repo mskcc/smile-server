@@ -172,27 +172,22 @@ public class RequestServiceImpl implements SmileRequestService {
     }
 
     @Override
-    public Boolean updateRequestMetadata(RequestMetadata newRequest) throws Exception {
-        SmileRequest existingRequest = getSmileRequestById(newRequest.getIgoRequestId());
-        // Request doesn't exist in db
+    public Boolean updateRequestMetadata(RequestMetadata requestMetadata) throws Exception {
+        SmileRequest existingRequest = getSmileRequestById(requestMetadata.getIgoRequestId());
         if (existingRequest == null) {
-            LOG.warn("Request does not already exist in the database: "
-                    + newRequest.getIgoRequestId()
-                    + " - will not be persisting updates.");
-            return Boolean.FALSE;
-        // Request Metadata has updates
-        } else if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(), newRequest)) {
-            LOG.info("Found updates in request metadata: " + newRequest.getIgoRequestId()
-                + " - persisting to database");
-            existingRequest.updateRequestMetadataByMetadata(newRequest);
-            saveRequestMetadata(existingRequest);
-            return Boolean.TRUE;
-        // Request Metadata has no updates
-        } else {
-            LOG.warn("Request already exists in database and no updates were detected - "
-                    + "it will not be saved: " + newRequest.getIgoRequestId());
+            LOG.error("Cannot persist updates to a request that does not already exist: "
+                    + requestMetadata.getIgoRequestId());
             return Boolean.FALSE;
         }
+        // persist updates for request metadata if applicable
+        if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(), requestMetadata)) {
+            LOG.info("Persisting updates for request: " + existingRequest.getIgoRequestId());
+            existingRequest.updateRequestMetadataByMetadata(requestMetadata);
+            saveRequestMetadata(existingRequest);
+            return Boolean.TRUE;
+        }
+        LOG.warn("No updates to persist for request: " + existingRequest.getIgoRequestId());
+        return Boolean.FALSE;
     }
 
     /**
@@ -212,8 +207,8 @@ public class RequestServiceImpl implements SmileRequestService {
     @Override
     public Boolean requestHasUpdates(SmileRequest existingRequest, SmileRequest request) throws Exception {
         try {
-            jsonComparator.isConsistent(existingRequest.getRequestJson(),
-                request.getRequestJson());
+            jsonComparator.isConsistent(mapper.writeValueAsString(existingRequest),
+                mapper.writeValueAsString(request));
         } catch (AssertionError e) {
             LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
             return Boolean.TRUE;
@@ -224,10 +219,9 @@ public class RequestServiceImpl implements SmileRequestService {
     @Override
     public Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
             RequestMetadata requestMetadata) throws Exception {
-        String existingMetadata = mapper.writeValueAsString(existingRequestMetadata);
-        String currentMetadata = mapper.writeValueAsString(requestMetadata);
         try {
-            jsonComparator.isConsistent(currentMetadata, existingMetadata);
+            jsonComparator.isConsistent(existingRequestMetadata.getRequestMetadataJson(),
+                    requestMetadata.getRequestMetadataJson());
         } catch (AssertionError e) {
             LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
             return Boolean.TRUE;
