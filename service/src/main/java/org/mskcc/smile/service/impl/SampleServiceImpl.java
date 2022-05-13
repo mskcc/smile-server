@@ -94,7 +94,8 @@ public class SampleServiceImpl implements SmileSampleService {
     public Boolean updateSampleMetadata(SampleMetadata sampleMetadata) throws Exception {
         SmileSample existingSample = getResearchSampleByRequestAndIgoId(
                         sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
-        // persist new sample to db if does not already exist
+        // new samples may come from IGO_NEW_REQUEST which also invokes this method
+        // so if a new sample is encountered we should persist it to the database
         if (existingSample == null) {
             LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
             SmileSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(
@@ -144,6 +145,11 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public SmileSample getResearchSampleByRequestAndIgoId(String requestId, String igoId)
             throws Exception {
+        if (requestId == null) {
+            LOG.error("Cannot query for research sample without a request ID "
+                    + "- confirm that request ID is provided in the incoming data for sample: " + igoId);
+            return null;
+        }
         SmileSample sample = sampleRepository.findResearchSampleByRequestAndIgoId(requestId, igoId);
         if (sample == null) {
             return null;
