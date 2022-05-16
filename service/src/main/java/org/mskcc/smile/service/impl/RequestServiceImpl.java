@@ -171,6 +171,25 @@ public class RequestServiceImpl implements SmileRequestService {
         return new PublishedSmileRequest(request, samples);
     }
 
+    @Override
+    public Boolean updateRequestMetadata(RequestMetadata requestMetadata) throws Exception {
+        SmileRequest existingRequest = getSmileRequestById(requestMetadata.getIgoRequestId());
+        if (existingRequest == null) {
+            LOG.error("Cannot persist updates to a request that does not already exist: "
+                    + requestMetadata.getIgoRequestId());
+            return Boolean.FALSE;
+        }
+        // persist updates for request metadata if applicable
+        if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(), requestMetadata)) {
+            LOG.info("Persisting updates for request: " + existingRequest.getIgoRequestId());
+            existingRequest.updateRequestMetadataByMetadata(requestMetadata);
+            saveRequestMetadata(existingRequest);
+            return Boolean.TRUE;
+        }
+        LOG.warn("No updates to persist for request: " + existingRequest.getIgoRequestId());
+        return Boolean.FALSE;
+    }
+
     /**
      * Returns true if new timestamp occurs within 24 hours of the reference timestamp.
      * @param referenceTimestamp
@@ -188,8 +207,8 @@ public class RequestServiceImpl implements SmileRequestService {
     @Override
     public Boolean requestHasUpdates(SmileRequest existingRequest, SmileRequest request) throws Exception {
         try {
-            jsonComparator.isConsistent(existingRequest.getRequestJson(),
-                request.getRequestJson());
+            jsonComparator.isConsistent(mapper.writeValueAsString(existingRequest),
+                mapper.writeValueAsString(request));
         } catch (AssertionError e) {
             LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
             return Boolean.TRUE;
@@ -200,10 +219,9 @@ public class RequestServiceImpl implements SmileRequestService {
     @Override
     public Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
             RequestMetadata requestMetadata) throws Exception {
-        String existingMetadata = mapper.writeValueAsString(existingRequestMetadata);
-        String currentMetadata = mapper.writeValueAsString(requestMetadata);
         try {
-            jsonComparator.isConsistent(currentMetadata, existingMetadata);
+            jsonComparator.isConsistent(existingRequestMetadata.getRequestMetadataJson(),
+                    requestMetadata.getRequestMetadataJson());
         } catch (AssertionError e) {
             LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
             return Boolean.TRUE;

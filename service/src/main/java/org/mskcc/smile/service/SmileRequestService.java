@@ -16,6 +16,7 @@ public interface SmileRequestService {
     Boolean saveRequestMetadata(SmileRequest request);
     SmileRequest getSmileRequestById(String requestId) throws Exception;
     PublishedSmileRequest getPublishedSmileRequestById(String requestId) throws Exception;
+    Boolean updateRequestMetadata(RequestMetadata requestMetadata) throws Exception;
     Boolean requestHasUpdates(SmileRequest existingRequest, SmileRequest request) throws Exception;
     Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
             RequestMetadata requestMetadata) throws Exception;

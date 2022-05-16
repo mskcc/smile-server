@@ -335,4 +335,23 @@ public class RequestServiceTest {
                 && (request.getNamespace() != null && !request.getNamespace().isEmpty())
                 && (request.getRequestJson() != null && !request.getRequestJson().isEmpty()));
     }
+
+    /**
+     * Tests if requestMetadata with updates is being persisted correctly
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateRequestMetadata() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        SmileRequest origRequest = requestService.getSmileRequestById(requestId);
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(origRequest)).isTrue();
+
+        MockJsonTestData updatedRequestMetadataData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockUpdatedPublishedRequest1Metadata");
+        RequestMetadata updatedRequestMetadata = RequestDataFactory
+                .buildNewRequestMetadataFromMetadata(updatedRequestMetadataData.getJsonString());
+        requestService.updateRequestMetadata(updatedRequestMetadata);
+
+        Assertions.assertThat(requestService.getRequestMetadataHistory(requestId).size()).isEqualTo(2);
+    }
 }

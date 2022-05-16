@@ -3,7 +3,6 @@ package org.mskcc.smile.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.SampleMetadata;
@@ -227,7 +226,6 @@ public class SampleServiceTest {
      */
     @Test
     public void testSampleHistoryAfterUpdate() throws Exception {
-        String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_2";
 
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
@@ -350,5 +348,25 @@ public class SampleServiceTest {
 
         SmileSample sample = sampleService.getSampleByInputId(inputId);
         Assertions.assertThat(sample).isNull();
+    }
+
+    /**
+     * Tests if sampleMetadata with updates is being persisted correctly
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateSampleMetadata() throws Exception {
+        String igoId = "MOCKREQUEST1_B_2";
+
+        MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
+        SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
+                updatedRequestData.getJsonString());
+        SmileSample updatedSample = updatedRequest.getSmileSampleList().get(1);
+        sampleService.updateSampleMetadata(updatedSample.getLatestSampleMetadata());
+
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
+        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
     }
 }
