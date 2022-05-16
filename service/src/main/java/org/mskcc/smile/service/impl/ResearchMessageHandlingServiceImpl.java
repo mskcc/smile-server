@@ -436,6 +436,11 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     SampleMetadata sampleMetadata =
                             SampleDataFactory.buildNewSampleMetadatafromJson(sampleMetadataJson);
+                    if (sampleMetadata.getIgoRequestId() == null) {
+                        LOG.error("Sample metadata is missing request ID information. Skipping sample: "
+                                + sampleMetadata.getPrimaryId());
+                        return;
+                    }
                     researchMessageHandlingService.researchSampleUpdateHandler(sampleMetadata);
                 } catch (Exception e) {
                     LOG.error("Exception during processing of research sample update on topic: "
