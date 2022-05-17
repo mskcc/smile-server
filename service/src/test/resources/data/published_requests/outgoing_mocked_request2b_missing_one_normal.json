@@ -79,6 +79,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -98,11 +105,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -168,6 +170,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -187,11 +196,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -257,6 +261,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -276,11 +287,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -313,6 +319,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -332,11 +345,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -402,6 +410,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -421,11 +436,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -491,6 +501,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -510,11 +527,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -580,6 +592,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -599,11 +618,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -669,6 +683,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -688,11 +709,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -758,6 +774,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -777,11 +800,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -847,6 +865,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -866,11 +891,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -936,6 +956,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -955,11 +982,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1025,6 +1047,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1044,11 +1073,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1114,6 +1138,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1133,11 +1164,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1203,6 +1229,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1222,11 +1255,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1292,6 +1320,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1311,11 +1346,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1381,6 +1411,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1400,11 +1437,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1470,6 +1502,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1489,11 +1528,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1559,6 +1593,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1578,11 +1619,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1648,6 +1684,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1667,11 +1710,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1737,6 +1775,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1756,11 +1801,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     },
     {
@@ -1826,6 +1866,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Tissue",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -1845,11 +1892,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_BZ"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     }
   ],

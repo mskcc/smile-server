@@ -74,8 +74,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -139,8 +141,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "Left Kidney",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -204,8 +208,10 @@
       "sampleOrigin": "",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -236,8 +242,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "Blood",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -301,8 +309,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -366,8 +376,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "Blood",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -431,8 +443,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "Right Distal Femur",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -496,8 +510,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -561,8 +577,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "Lung/Middle Lobe",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -626,8 +644,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "Bladder Peritoneum",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -691,8 +711,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "Right Femur 4",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -756,8 +778,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -821,8 +845,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -886,8 +912,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "Liver/Right lobe",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -951,8 +979,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "left retroperitoneum",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -1016,8 +1046,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -1081,8 +1113,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -1146,8 +1180,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -1211,8 +1247,10 @@
       "sampleOrigin": "Buffy Coat",
       "tissueLocation": "Buffy Coat",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -1276,8 +1314,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "Left Kidney Hilar Lymph Node",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -1341,8 +1381,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "Abdomen",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }

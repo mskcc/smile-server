@@ -76,6 +76,13 @@
       "baitSet": "GENESET101_BAITS",
       "genePanel": "GENESET101_BAITS",
       "datasource": "igo",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "sampleType": "Buffy Coat",
+        "normalizedPatientId": "MRN_REDACTED",
+        "recipe": "GENESET101_BAITS"
+      },
       "patientAliases": [
         {
           "namespace": "cmo",
@@ -95,11 +102,6 @@
       "additionalProperties": {
         "isCmoSample": "true",
         "igoRequestId": "22022_CC"
-      },
-      "cmoSampleIdFields": {
-        "naToExtract": "",
-        "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
       }
     }
   ],

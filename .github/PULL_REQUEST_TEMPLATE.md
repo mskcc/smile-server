@@ -39,6 +39,7 @@ Updates were made to the mocked incoming request data and/or mocked published re
 - [ ] [smile-server test data](https://github.com/mskcc/smile-server/tree/master/service/src/test/resources/data)
 - [ ] [smile-commons test data](https://github.com/mskcc/smile-commons/tree/master/src/test/resources/data)
 - [ ] [smile-label-generator test data](https://github.com/mskcc/smile-label-generator/tree/master/src/test/resources/data)
+- [ ] [smile-request-filter test data](https://github.com/mskcc/smile-request-filter/tree/master/src/test/resources/data)
 
 **Code checks:**
 - [ ] Endpoints were tested to ensure their integrity.
