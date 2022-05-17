@@ -69,8 +69,10 @@
       "sampleOrigin": "Sorted Cells",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Sorted Cells",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -129,8 +131,10 @@
       "sampleOrigin": "Sorted Cells",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Sorted Cells",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -189,8 +193,10 @@
       "sampleOrigin": "Sorted Cells",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Sorted Cells",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -249,8 +255,10 @@
       "sampleOrigin": "Sorted Cells",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Sorted Cells",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }

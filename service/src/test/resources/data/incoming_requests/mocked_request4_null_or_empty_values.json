@@ -62,8 +62,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -115,8 +117,10 @@
       "sampleOrigin": "Whole Blood",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Whole Blood",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -168,8 +172,10 @@
       "sampleOrigin": "Tissue",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }
@@ -221,8 +227,10 @@
       "sampleOrigin": "Whole Blood",
       "tissueLocation": "",
       "baitSet": "GENESET101_BAITS",
+      "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
+        "sampleType": "Whole Blood",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
       }

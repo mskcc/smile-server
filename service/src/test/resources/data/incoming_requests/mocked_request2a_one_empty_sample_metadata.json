@@ -1,0 +1,79 @@
+{
+  "requestId": "22022_CC",
+  "recipe": "GENESET101",
+  "projectManagerName": "",
+  "piEmail": "",
+  "labHeadName": "James Holt",
+  "labHeadEmail": "holtj@mskcc.org",
+  "investigatorName": "Jessie Hall",
+  "investigatorEmail": "hallj@mskcc.org",
+  "dataAnalystName": "",
+  "dataAnalystEmail": "",
+  "otherContactEmails": "preclinical_group_shared@mskcc.org",
+  "dataAccessEmails": "",
+  "qcAccessEmails": "",
+  "isCmoRequest": true,
+  "bicAnalysis": false,
+  "samples": [
+    {
+      "cmoSampleName": "",
+      "sampleName": "",
+      "cmoSampleClass": "",
+      "oncoTreeCode": "",
+      "collectionYear": "",
+      "tubeId": "",
+      "qcReports": [
+        {
+          "qcReportType": "",
+          "comments": "",
+          "investigatorDecision": ""
+        }
+      ],
+      "libraries": [
+        {
+          "libraryIgoId": "",
+          "libraryConcentrationNgul": null,
+          "captureConcentrationNm": "",
+          "captureInputNg": "",
+          "captureName": "",
+          "runs": [
+            {
+              "runMode": "",
+              "runId": "",
+              "flowCellId": "",
+              "readLength": "",
+              "runDate": "",
+              "flowCellLanes": [],
+              "fastqs": []
+            }
+          ]
+        }
+      ],
+      "cmoPatientId": "",
+      "igoId": "",
+      "investigatorSampleId": "",
+      "species": "",
+      "sex": "",
+      "tumorOrNormal": "",
+      "preservation": "",
+      "specimenType": "",
+      "sampleOrigin": "",
+      "tissueLocation": "",
+      "baitSet": "",
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "recipe": "",
+        "normalizedPatientId": "",
+        "sampleType": ""
+      }
+    }
+  ],
+  "pooledNormals": [
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT/FFPEPOOLEDNORMAL_IGO_GENESET101_TGCTAGCT_S118_R2_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R1_001.fastq.gz",
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG/FROZENPOOLEDNORMAL_IGO_GENESET101_GCGGCTAG_S22_R2_001.fastq.gz"
+  ],
+  "projectId": "22022"
+}
