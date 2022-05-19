@@ -229,14 +229,36 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
 
                     // verify that old and new ids resolve to a valid cmo patient id in crdb service
                     if (oldCmoPatientId == null || oldCmoPatientId.isEmpty()) {
-                        LOG.error("Could not resolve 'old' provided patient ID to a CMO patient ID - "
-                                + "please manually check the incoming message contents to verify contents");
-                        crdbMappingStatus = Boolean.FALSE;
+                        StringBuilder logMessage = new StringBuilder();
+                        logMessage.append("Could not resolve 'old' provided patient "
+                                + "ID to a CMO patient ID - ");
+                        if (incomingDataMap.get("oldId").startsWith("C-")) {
+                            logMessage.append("using provided ID as is since it has a "
+                                    + "CMO patient ID prefix");
+                            LOG.warn(logMessage.toString());
+                            oldCmoPatientId = incomingDataMap.get("oldId");
+                        } else {
+                            logMessage.append("please manually check the incoming message "
+                                    + "contents to verify contents");
+                            LOG.error(logMessage.toString());
+                            crdbMappingStatus = Boolean.FALSE;
+                        }
                     }
                     if (newCmoPatientId == null || newCmoPatientId.isEmpty()) {
-                        LOG.error("Could not resolve 'new' provided patient ID to a CMO patient ID - "
-                                + "please manually check the incoming message contents to verify contents");
-                        crdbMappingStatus = Boolean.FALSE;
+                        StringBuilder logMessage = new StringBuilder();
+                        logMessage.append("Could not resolve 'new' provided patient "
+                                + "ID to a CMO patient ID - ");
+                        if (incomingDataMap.get("newId").startsWith("C-")) {
+                            logMessage.append("using provided ID as is since it has a "
+                                    + "CMO patient ID prefix");
+                            LOG.warn(logMessage.toString());
+                            newCmoPatientId = incomingDataMap.get("newId");
+                        } else {
+                            logMessage.append("please manually check the incoming message "
+                                    + "contents to verify contents");
+                            LOG.error(logMessage.toString());
+                            crdbMappingStatus = Boolean.FALSE;
+                        }
                     }
                     if (crdbMappingStatus) {
                         // if crdb mapping succeeded then update the incoming data map and
