@@ -214,7 +214,7 @@ public class SampleServiceTest {
         SmileSample updatedSample = updatedRequest.getSmileSampleList().get(0);
 
         Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(sample.getLatestSampleMetadata(),
-                updatedSample.getLatestSampleMetadata());
+                updatedSample.getLatestSampleMetadata(), Boolean.TRUE);
         Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
 
     }
@@ -232,9 +232,11 @@ public class SampleServiceTest {
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
                 updatedRequestData.getJsonString());
-        SmileSample updatedSample = updatedRequest.getSmileSampleList().get(1);
-        sampleService.saveSmileSample(updatedSample);
-
+        for (SmileSample updatedSample : updatedRequest.getSmileSampleList()) {
+            if (updatedSample.getLatestSampleMetadata().getPrimaryId().equals(igoId)) {
+                sampleService.saveSmileSample(updatedSample);
+            }
+        }
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
@@ -297,29 +299,46 @@ public class SampleServiceTest {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_2";
 
+        // fetch sample from db and insert an older version of its metadata
         SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
-        sample.getLatestSampleMetadata().setCmoSampleName("C-LATESTLABEL-T02-d002");
-
         SampleMetadata updatedMetadata = new SampleMetadata();
         updatedMetadata.setImportDate("2000-06-10");
-        updatedMetadata.setPrimaryId(igoId);
+        updatedMetadata.setPrimaryId(sample.getPrimarySampleAlias());
+        updatedMetadata.setBaitSet("DIFFERENTBAITSET");
         updatedMetadata.setCmoSampleName("C-OLDSAMPLELABEL-T11");
-        sample.updateSampleMetadata(updatedMetadata);
-        sampleService.saveSmileSample(sample);
+        sample.addSampleMetadata(updatedMetadata);
 
-        // confirm that new sample metadata was persisted
-        List<SampleMetadata> sampleMetadataHistory = sampleService
+        // assert that the metadata history size is equal to 1 before any updates are made
+        List<SampleMetadata> sampleMetadataHistoryBeforeUpdate = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(3);
+        Assertions.assertThat(sampleMetadataHistoryBeforeUpdate.size()).isEqualTo(1);
+        // persist updates for sample and confirm that the metadata history size increased
+        sampleService.updateSampleMetadata(updatedMetadata);
+        List<SampleMetadata> sampleMetadataHistoryAfterUpdate = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
+        Assertions.assertThat(sampleMetadataHistoryAfterUpdate.size()).isEqualTo(2);
+
+        // confirm that new sample metadata was persisted and that there is an older sample
+        // metadata with the date '2000-06-10' that we basically inserted into the
+        // history for this sample
+        Boolean hasMockOldMetadata = Boolean.FALSE;
+        for (SampleMetadata sm : sampleMetadataHistoryAfterUpdate) {
+            if (sm.getImportDate().equals("2000-06-10")) {
+                hasMockOldMetadata = Boolean.TRUE;
+                break;
+            }
+        }
+        Assertions.assertThat(hasMockOldMetadata).isTrue();
 
         // confirms that both methods return the same latest metadata and
         // same cmo sample label corresponding to it
+        // the most up-to-date cmo label is C-MP789JR-N001-d based on mocked test data
         SmileSample updatedSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         Assertions.assertThat(updatedSample.getLatestSampleMetadata().getCmoSampleName())
-                .isEqualTo("C-LATESTLABEL-T02-d002");
+                .isEqualTo("C-MP789JR-N001-d");
         SampleMetadata latestMetadata =
                 sampleRepository.findLatestSampleMetadataBySmileId(updatedSample.getSmileSampleId());
-        Assertions.assertThat(latestMetadata.getCmoSampleName()).isEqualTo("C-LATESTLABEL-T02-d002");
+        Assertions.assertThat(latestMetadata.getCmoSampleName()).isEqualTo("C-MP789JR-N001-d");
     }
 
     /**
@@ -356,17 +375,89 @@ public class SampleServiceTest {
      */
     @Test
     public void testUpdateSampleMetadata() throws Exception {
-        String igoId = "MOCKREQUEST1_B_2";
-
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
                 updatedRequestData.getJsonString());
-        SmileSample updatedSample = updatedRequest.getSmileSampleList().get(1);
-        sampleService.updateSampleMetadata(updatedSample.getLatestSampleMetadata());
+        // get the updated sample data from the mocked updated request
+        String igoId = "MOCKREQUEST1_B_2";
+        SmileSample updatedSample = null;
+        for (SmileSample s : updatedRequest.getSmileSampleList()) {
+            if (s.getLatestSampleMetadata().getPrimaryId().equals(igoId)) {
+                updatedSample = s;
+                break;
+            }
+        }
+        Assertions.assertThat(updatedSample).isNotNull();
+        SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
+        updatedMetadata.setImportDate("2000-10-15");
+        updatedMetadata.setBaitSet("NEW BAIT SET");
+        updatedMetadata.setGenePanel("NEW GENE PANEL");
+        updatedSample.addSampleMetadata(updatedMetadata);
+        sampleService.saveSmileSample(updatedSample);
 
+        // confirm that the sample metadata history size increases
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
+    }
+
+
+    /**
+     * Tests if sampleMetadata with updates that includes a patient swap is being persisted correctly
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateSampleMetadataWithPatientSwap() throws Exception {
+        MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
+        SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
+                updatedRequestData.getJsonString());
+        // get the updated sample data from the mocked updated request
+        String igoId = "MOCKREQUEST1_B_2";
+        SmileSample updatedSample = null;
+        for (SmileSample s : updatedRequest.getSmileSampleList()) {
+            if (s.getLatestSampleMetadata().getPrimaryId().equals(igoId)) {
+                updatedSample = s;
+                break;
+            }
+        }
+        Assertions.assertThat(updatedSample).isNotNull();
+        SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
+
+        // do a quick string replacement for the current cmo sample label and persist update
+        String currentCmoPtId = updatedMetadata.getCmoPatientId();
+        String swappedCmoPtId = "C-123456H";
+
+        // first confirm that there arent any samples by the swapped cmo pt id
+        List<SmileSample> samplesBeforeUpdateForCurrentPt =
+                sampleService.getSamplesByCmoPatientId(currentCmoPtId);
+        Assertions.assertThat(samplesBeforeUpdateForCurrentPt.size()).isEqualTo(4);
+        List<SmileSample> samplesBeforeUpdate =
+                sampleService.getSamplesByCmoPatientId(swappedCmoPtId);
+        Assertions.assertThat(samplesBeforeUpdate).isEmpty();
+
+        // perform update on the metadata and save to db
+        String updatedLabel = updatedMetadata.getCmoSampleName().replace(currentCmoPtId, swappedCmoPtId);
+        updatedMetadata.setCmoPatientId(swappedCmoPtId);
+        updatedMetadata.setCmoSampleName(updatedLabel);
+        updatedSample.updateSampleMetadata(updatedMetadata);
+        sampleService.saveSmileSample(updatedSample);
+
+        // confirm that the sample metadata history size increases
+        List<SampleMetadata> sampleMetadataHistory = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
+        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
+
+        // confirm that the patient linked to the sample after the update matches the swapped id
+        // first confirm that there arent any samples by the swapped cmo pt id
+        List<SmileSample> samplesAfterUpdate =
+                sampleService.getSamplesByCmoPatientId(swappedCmoPtId);
+        Assertions.assertThat(samplesAfterUpdate.size()).isEqualTo(1);
+        List<SmileSample> samplesStillLinkedToOldPt =
+                sampleService.getSamplesByCmoPatientId(currentCmoPtId);
+        Assertions.assertThat(samplesStillLinkedToOldPt.size())
+                .isEqualTo(samplesBeforeUpdateForCurrentPt.size() - 1);
+
     }
 }

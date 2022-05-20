@@ -30,6 +30,11 @@ public class SmilePatient implements Serializable {
 
     public SmilePatient() {}
 
+    public SmilePatient(String aliasValue, String aliasNamespace) {
+        this.patientAliases = new ArrayList<>();
+        patientAliases.add(new PatientAlias(aliasValue, aliasNamespace));
+    }
+
     public UUID getSmilePatientId() {
         return smilePatientId;
     }

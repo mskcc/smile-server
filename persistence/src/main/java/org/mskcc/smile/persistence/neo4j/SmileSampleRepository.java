@@ -105,4 +105,10 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "OR sm.cmoSampleName = $inputId "
             + "RETURN s;")
     SmileSample findSampleByInputId(@Param("inputId") String inputId);
+
+    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
+            + "MATCH (s)<-[r:HAS_SAMPLE]-(p: Patient {smilePatientId: $smilePatientId}) "
+            + "DELETE r")
+    void removeSamplePatientRelationship(@Param("smileSampleId") UUID smileSampleId,
+            @Param("smilePatientId") UUID smilePatientId);
 }

@@ -53,6 +53,9 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
     @Value("${smile.cmo_sample_update_topic}")
     private String CMO_SAMPLE_UPDATE_TOPIC;
 
+    @Value("${request_reply.cmo_label_generator_topic}")
+    private String CMO_LABEL_GENERATOR_REQREPLY_TOPIC;
+
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
 
@@ -123,10 +126,10 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             requestService.saveRequest(request);
                         } else {
                             // request-service and sample-service methods will check for updates and persist
-                            // them if applicable
+                            // them if applicable (including patient swapping)
                             requestService.updateRequestMetadata(request.getLatestRequestMetadata());
                             for (SmileSample sample : request.getSmileSampleList()) {
-                                sampleService.updateSampleMetadata(sample.getLatestSampleMetadata());
+                                sampleService.saveSmileSample(sample);
                             }
                         }
                         // publish updated/saved request to consistency checker or promoted request topic
