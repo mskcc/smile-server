@@ -47,7 +47,7 @@ public class SampleServiceImpl implements SmileSampleService {
     @Transactional(rollbackFor = {Exception.class})
     public SmileSample saveSmileSample(SmileSample
             sample) throws Exception {
-        fetchAndLoadSampleDetails(sample);
+        fetchAndLoadPatientDetails(sample);
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
         if (existingSample == null) {
@@ -62,7 +62,7 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public SmileSample fetchAndLoadSampleDetails(SmileSample sample) throws Exception {
+    public SmileSample fetchAndLoadPatientDetails(SmileSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         SmilePatient patient = sample.getPatient();
 
@@ -71,6 +71,8 @@ public class SampleServiceImpl implements SmileSampleService {
                 sampleMetadata.getCmoPatientId());
         if (existingPatient == null) {
             patientService.savePatientMetadata(patient);
+            updateSamplePatientRelationship(sample.getSmileSampleId(),
+                    patient.getSmilePatientId());
             sample.setPatient(patient);
         } else {
             // go through the new patient aliases and indicator for whether a
@@ -84,6 +86,8 @@ public class SampleServiceImpl implements SmileSampleService {
             }
             if (patientUpdated) {
                 patientService.savePatientMetadata(existingPatient);
+                updateSamplePatientRelationship(sample.getSmileSampleId(),
+                        existingPatient.getSmilePatientId());
             }
             sample.setPatient(existingPatient);
         }

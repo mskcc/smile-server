@@ -52,6 +52,9 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
 
     @Value("${smile.cmo_sample_update_topic}")
     private String CMO_SAMPLE_UPDATE_TOPIC;
+    
+    @Value("${request_reply.cmo_label_generator_topic}")
+    private String CMO_LABEL_GENERATOR_REQREPLY_TOPIC;
 
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
@@ -126,7 +129,16 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             // them if applicable
                             requestService.updateRequestMetadata(request.getLatestRequestMetadata());
                             for (SmileSample sample : request.getSmileSampleList()) {
-                                sampleService.updateSampleMetadata(sample.getLatestSampleMetadata());
+                                SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
+                                LOG.info("Requesting new CMO sample label for sample: "
+                                        + sampleMetadata.getPrimaryId());
+                                Message reply = messagingGateway.request(CMO_LABEL_GENERATOR_REQREPLY_TOPIC,
+                                        mapper.writeValueAsString(sampleMetadata));
+                                System.out.println("reply is   " + reply);
+                                String newCmoSampleLabel = new String(reply.getData(),
+                                        StandardCharsets.UTF_8);
+                                sampleMetadata.setCmoSampleName(newCmoSampleLabel);
+                                sampleService.updateSampleMetadata(sampleMetadata);
                             }
                         }
                         // publish updated/saved request to consistency checker or promoted request topic
@@ -217,6 +229,13 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                     SampleMetadata sampleMetadata = researchSampleUpdateQueue.poll(
                             100, TimeUnit.MILLISECONDS);
                     if (sampleMetadata != null) {
+                        LOG.info("Requesting new CMO sample label for sample: "
+                                + sampleMetadata.getPrimaryId());
+                        Message reply = messagingGateway.request(CMO_LABEL_GENERATOR_REQREPLY_TOPIC,
+                                mapper.writeValueAsString(sampleMetadata));
+                        String newCmoSampleLabel = new String(reply.getData(),
+                                StandardCharsets.UTF_8);
+                        sampleMetadata.setCmoSampleName(newCmoSampleLabel);
                         if (sampleService.updateSampleMetadata(sampleMetadata)) {
                             SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
                                     sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());

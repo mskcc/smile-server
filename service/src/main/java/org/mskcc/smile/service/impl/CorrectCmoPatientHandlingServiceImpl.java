@@ -136,8 +136,6 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                             // to then there's no need to override the patient currently set for the sample
                             if (patientByNewId != null) {
                                 sample.setPatient(patientByNewId);
-                                sampleService.updateSamplePatientRelationship(sample.getSmileSampleId(),
-                                        patientByNewId.getSmilePatientId());
                             }
                             sampleService.saveSmileSample(sample);
                         }
