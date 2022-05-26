@@ -89,6 +89,23 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "CREATE (s)<-[:HAS_SAMPLE]-(p)")
     void updateSamplePatientRelationship(@Param("smileSampleId") UUID smileSampleId,
             @Param("smilePatientId") UUID smilePatientId);
+    
+    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
+            + "MATCH (s)<-[r:HAS_SAMPLE]-(p1: Patient) "
+            + "<-[:IS_ALIAS]- (pa1: PatientAlias {namespace: 'cmoId', value: $oldCmoPatientId}) "
+            + "MATCH (p: Patient) <-[:IS_ALIAS]- "
+            + "(pa: PatientAlias {namespace: 'cmoId', value: $newCmoPatientId}) "
+            + "CREATE (s)<-[:HAS_SAMPLE]-(p) "
+            + "DELETE r")
+    void updateSamplePatientRelationship(@Param("smileSampleId") UUID smileSampleId,
+            @Param("newCmoPatientId") String newCmoPatientId, @Param("oldCmoPatientId") String oldCmoPatientId);
+    
+    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
+            + "MATCH (s)<-[r:HAS_SAMPLE]-(p1: Patient) "
+            + "<-[:IS_ALIAS]- (pa1: PatientAlias {namespace: 'cmoId', value: $cmoPatientId}) "
+            + "DELETE r")
+    void removeSamplePatientRelationship(@Param("smileSampleId") UUID smileSampleId,
+            @Param("cmoPatientId") String cmoPatientId);
 
     @Query("MATCH (s: Sample {sampleCategory: 'research'})-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "WHERE sm.importDate > $inputDate RETURN DISTINCT s.smileSampleId")

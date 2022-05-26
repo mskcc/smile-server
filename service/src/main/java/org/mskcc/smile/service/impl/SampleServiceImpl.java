@@ -46,46 +46,69 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public SmileSample saveSmileSample(SmileSample
-            sample) throws Exception {
-        fetchAndLoadSampleDetails(sample);
+            smileSample) throws Exception {
+        SmileSample sample = fetchAndLoadSampleDetails(smileSample);
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
+        
         if (existingSample == null) {
             UUID newSampleId = sampleRepository.save(sample).getSmileSampleId();
             sample.setSmileSampleId(newSampleId);
             return sample;
         } else {
-            existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
-            sampleRepository.save(existingSample);
-            return existingSample;
+            String oldCmoPatientId = sampleRepository.findLatestSampleMetadataBySmileId(existingSample.getSmileSampleId()).getCmoPatientId();
+            
+            SmileSample detailedExistingSample = getDetailedSmileSample(existingSample);
+            
+            detailedExistingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
+            detailedExistingSample.setPatient(sample.getPatient());
+            sampleRepository.save(detailedExistingSample);
+            sampleRepository.removeSamplePatientRelationship(detailedExistingSample.getSmileSampleId(), oldCmoPatientId);
+            System.out.println("from the detailed sample: " + detailedExistingSample.getPatient());
+            System.out.println("from db: " + patientService.getPatientByCmoPatientId(detailedExistingSample.getPatient().getCmoPatientId().getValue()));
+            return detailedExistingSample;
         }
     }
 
     @Override
     public SmileSample fetchAndLoadSampleDetails(SmileSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
-        SmilePatient patient = sample.getPatient();
+        SmilePatient existingPatient = sample.getPatient();
 
         // find or save new patient for sample
-        SmilePatient existingPatient = patientService.getPatientByCmoPatientId(
+        SmilePatient patientByLatestCmoId = patientService.getPatientByCmoPatientId(
                 sampleMetadata.getCmoPatientId());
-        if (existingPatient == null) {
-            patientService.savePatientMetadata(patient);
-            sample.setPatient(patient);
-        } else {
-            // go through the new patient aliases and indicator for whether a
-            // new patient alias was added to the existing patient
-            Boolean patientUpdated = Boolean.FALSE;
-            for (PatientAlias pa : patient.getPatientAliases()) {
-                if (!existingPatient.hasPatientAlias(pa)) {
-                    existingPatient.addPatientAlias(pa);
-                    patientUpdated = Boolean.TRUE;
+        //incase of null patient
+        if (existingPatient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())) {
+            if (patientByLatestCmoId != null) {
+                // go through the new patient aliases and indicator for whether a
+                // new patient alias was added to the existing patient
+                Boolean patientUpdated = Boolean.FALSE;
+                for (PatientAlias pa : existingPatient.getPatientAliases()) {
+                    if (!patientByLatestCmoId.hasPatientAlias(pa)) {
+                        patientByLatestCmoId.addPatientAlias(pa);
+                        patientUpdated = Boolean.TRUE;
+                    }
                 }
+                if (patientUpdated) {
+                    sample.setPatient(patientService.savePatientMetadata(patientByLatestCmoId));
+                } else {
+                    sample.setPatient(patientByLatestCmoId);
+                }
+            } else {
+                SmilePatient savedPatient = patientService.savePatientMetadata(existingPatient);
+                sample.setPatient(savedPatient);
             }
-            if (patientUpdated) {
-                patientService.savePatientMetadata(existingPatient);
+            
+        } else {
+            if (patientByLatestCmoId != null) {
+                //SmilePatient savedPatient = patientService.savePatientMetadata(patientByLatestCmoId);
+                sample.setPatient(patientByLatestCmoId);
+            } else {
+                SmilePatient savedPatient = patientService.savePatientMetadata(
+                        patientService.setUpPatient(sampleMetadata.getCmoPatientId()));
+                sample.setPatient(savedPatient);  
             }
-            sample.setPatient(existingPatient);
         }
         return sample;
     }
@@ -112,7 +135,7 @@ public class SampleServiceImpl implements SmileSampleService {
                         .equals(sampleMetadata.getCmoSampleName())) {
             LOG.info("Persisting updates for sample: " + sampleMetadata.getPrimaryId());
             existingSample.updateSampleMetadata(sampleMetadata);
-            saveSmileSample(existingSample);
+            SmileSample savedSample = saveSmileSample(existingSample);
             return Boolean.TRUE;
         }
         // no updates to persist to sample, log and return false
@@ -120,7 +143,7 @@ public class SampleServiceImpl implements SmileSampleService {
                 + sampleMetadata.getPrimaryId());
         return Boolean.FALSE;
     }
-
+    
     @Override
     public List<SmileSample> getMatchedNormalsBySample(
             SmileSample sample) throws Exception {
@@ -187,6 +210,7 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public PublishedSmileSample getPublishedSmileSample(UUID smileSampleId) throws Exception {
         SmileSample sample = getSmileSample(smileSampleId);
+        System.out.println("getting published sample: " + sample.getSmileSampleId());
         return new PublishedSmileSample(sample);
     }
 

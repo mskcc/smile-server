@@ -5,6 +5,7 @@ import org.mskcc.smile.model.SmilePatient;
 
 public interface SmilePatientService {
     SmilePatient savePatientMetadata(SmilePatient patient);
+    SmilePatient setUpPatient(String cmoPatientId);
     SmilePatient getPatientByCmoPatientId(String cmoPatientId);
     UUID getPatientIdBySample(UUID smileSampleId);
     SmilePatient updateCmoPatientId(String oldCmoPatientId, String newCmoPatientId);
