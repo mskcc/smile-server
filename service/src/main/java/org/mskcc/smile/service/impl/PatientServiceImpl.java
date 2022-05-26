@@ -26,7 +26,7 @@ public class PatientServiceImpl implements SmilePatientService {
         patient.setSmilePatientId(result.getSmilePatientId());
         return patient;
     }
-    
+
     @Override
     public SmilePatient setUpPatient(String cmoPatientId) {
         SmilePatient patient = new SmilePatient();

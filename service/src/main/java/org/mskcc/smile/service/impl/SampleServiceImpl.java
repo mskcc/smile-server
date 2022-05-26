@@ -50,22 +50,21 @@ public class SampleServiceImpl implements SmileSampleService {
         SmileSample sample = fetchAndLoadSampleDetails(smileSample);
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
-        
+
         if (existingSample == null) {
             UUID newSampleId = sampleRepository.save(sample).getSmileSampleId();
             sample.setSmileSampleId(newSampleId);
             return sample;
         } else {
             String oldCmoPatientId = sampleRepository.findLatestSampleMetadataBySmileId(existingSample.getSmileSampleId()).getCmoPatientId();
-            
+
             SmileSample detailedExistingSample = getDetailedSmileSample(existingSample);
-            
+
             detailedExistingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
             detailedExistingSample.setPatient(sample.getPatient());
             sampleRepository.save(detailedExistingSample);
             sampleRepository.removeSamplePatientRelationship(detailedExistingSample.getSmileSampleId(), oldCmoPatientId);
-            System.out.println("from the detailed sample: " + detailedExistingSample.getPatient());
-            System.out.println("from db: " + patientService.getPatientByCmoPatientId(detailedExistingSample.getPatient().getCmoPatientId().getValue()));
+
             return detailedExistingSample;
         }
     }
@@ -99,7 +98,7 @@ public class SampleServiceImpl implements SmileSampleService {
                 SmilePatient savedPatient = patientService.savePatientMetadata(existingPatient);
                 sample.setPatient(savedPatient);
             }
-            
+
         } else {
             if (patientByLatestCmoId != null) {
                 //SmilePatient savedPatient = patientService.savePatientMetadata(patientByLatestCmoId);
@@ -107,7 +106,7 @@ public class SampleServiceImpl implements SmileSampleService {
             } else {
                 SmilePatient savedPatient = patientService.savePatientMetadata(
                         patientService.setUpPatient(sampleMetadata.getCmoPatientId()));
-                sample.setPatient(savedPatient);  
+                sample.setPatient(savedPatient);
             }
         }
         return sample;
@@ -143,7 +142,7 @@ public class SampleServiceImpl implements SmileSampleService {
                 + sampleMetadata.getPrimaryId());
         return Boolean.FALSE;
     }
-    
+
     @Override
     public List<SmileSample> getMatchedNormalsBySample(
             SmileSample sample) throws Exception {
@@ -210,7 +209,6 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public PublishedSmileSample getPublishedSmileSample(UUID smileSampleId) throws Exception {
         SmileSample sample = getSmileSample(smileSampleId);
-        System.out.println("getting published sample: " + sample.getSmileSampleId());
         return new PublishedSmileSample(sample);
     }
 
