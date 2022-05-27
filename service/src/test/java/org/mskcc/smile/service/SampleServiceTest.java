@@ -6,6 +6,7 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.SampleMetadata;
+import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.dmp.DmpSampleMetadata;
@@ -114,6 +115,12 @@ public class SampleServiceTest {
             SmileSample clinicalSample =
                     SampleDataFactory.buildNewClinicalSampleFromMetadata(cmoPatientId, dmpSample);
             sampleService.saveSmileSample(clinicalSample);
+            SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+            SmileSample persistedSample = sampleService.getClinicalSampleByDmpId(dmpSample.getDmpSampleId());
+            if (patient == null) {
+                System.out.println("failed to fetch patient from cmoPatientId " + cmoPatientId);
+                System.exit(2);
+            }
         }
     }
 
@@ -262,8 +269,15 @@ public class SampleServiceTest {
     public void testPersistClinicalSample() throws Exception {
         String dmpPatientId = "P-0000001";
         String cmoPatientId = mockDataUtils.getCmoPatientIdForDmpPatient(dmpPatientId);
-        List<SmileSample> sampleList = sampleService
-                .getSamplesByCmoPatientId(cmoPatientId);
+        Assertions.assertThat(cmoPatientId).isEqualTo("C-DPCXX1");
+        SmileSample savedTumorClinicalSample = sampleService.getClinicalSampleByDmpId("P-0000001-T01-IM3");
+        SmileSample savedNormalClinicalSample = sampleService.getClinicalSampleByDmpId("P-0000001-N01-IM3");
+        SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+
+        Assertions.assertThat(savedTumorClinicalSample).isNotNull();
+        Assertions.assertThat(savedNormalClinicalSample).isNotNull();
+        Assertions.assertThat(patient).isNotNull();
+        List<SmileSample> sampleList = sampleService.getSamplesByCmoPatientId(cmoPatientId);
         Assertions.assertThat(sampleList.size()).isEqualTo(2);
     }
 
@@ -298,7 +312,10 @@ public class SampleServiceTest {
         String igoId = "MOCKREQUEST1_B_2";
 
         SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
-        sample.getLatestSampleMetadata().setCmoSampleName("C-LATESTLABEL-T02-d002");
+        String cmoSampleName = sample.getLatestSampleMetadata().getCmoSampleName();
+        List<SampleMetadata> sampleMetadataHistoryBeforeUpdate = sampleService
+                .getResearchSampleMetadataHistoryByIgoId(igoId);
+        Assertions.assertThat(sampleMetadataHistoryBeforeUpdate.size()).isEqualTo(1);
 
         SampleMetadata updatedMetadata = new SampleMetadata();
         updatedMetadata.setImportDate("2000-06-10");
@@ -308,18 +325,17 @@ public class SampleServiceTest {
         sampleService.saveSmileSample(sample);
 
         // confirm that new sample metadata was persisted
-        List<SampleMetadata> sampleMetadataHistory = sampleService
+        List<SampleMetadata> sampleMetadataHistoryAfterUpdate = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(3);
+
+        Assertions.assertThat(sampleMetadataHistoryAfterUpdate.size()).isEqualTo(2);
 
         // confirms that both methods return the same latest metadata and
         // same cmo sample label corresponding to it
         SmileSample updatedSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
-        Assertions.assertThat(updatedSample.getLatestSampleMetadata().getCmoSampleName())
-                .isEqualTo("C-LATESTLABEL-T02-d002");
         SampleMetadata latestMetadata =
                 sampleRepository.findLatestSampleMetadataBySmileId(updatedSample.getSmileSampleId());
-        Assertions.assertThat(latestMetadata.getCmoSampleName()).isEqualTo("C-LATESTLABEL-T02-d002");
+        Assertions.assertThat(latestMetadata.getCmoSampleName()).isEqualTo(cmoSampleName);
     }
 
     /**

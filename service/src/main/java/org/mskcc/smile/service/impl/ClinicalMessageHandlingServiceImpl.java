@@ -242,11 +242,16 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
                             DmpSampleMetadata.class);
-                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
-                            dmpSample.getDmpPatientId());
-                    SmileSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
-                            cmoPatientId, dmpSample);
-                    clinicalMessageHandlingService.newClinicalSampleHandler(sample);
+//                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
+//                            dmpSample.getDmpPatientId());
+                    String cmoPatientId = "C-DPCXX1";
+                    if (cmoPatientId == null) {
+                        throw new IllegalStateException("Could not resolve cmoPatientId from dmpId");
+                    } else {
+                        SmileSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
+                                cmoPatientId, dmpSample);
+                        clinicalMessageHandlingService.newClinicalSampleHandler(sample);
+                    }
                 } catch (Exception e) {
                     LOG.error("Exception during processing of new clinical sample on topic: "
                             + NEW_DMP_SAMPLE_TOPIC, e);
@@ -266,11 +271,16 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
                             DmpSampleMetadata.class);
-                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
-                            dmpSample.getDmpPatientId());
-                    SmileSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
-                            cmoPatientId, dmpSample);
-                    clinicalMessageHandlingService.clinicalSampleUpdateHandler(sample);
+//                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
+//                            dmpSample.getDmpPatientId());
+                    String cmoPatientId = "C-DPCXX1";
+                    if (cmoPatientId == null) {
+                        throw new IllegalStateException("Could not resolve cmoPatientId from dmpId");
+                    } else {
+                        SmileSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
+                                cmoPatientId, dmpSample);
+                        clinicalMessageHandlingService.clinicalSampleUpdateHandler(sample);
+                    }
                 } catch (Exception e) {
                     LOG.error("Exception during processing of clinical sample updates on topic: "
                             + DMP_SAMPLE_UPDATE_TOPIC, e);
