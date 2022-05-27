@@ -47,7 +47,7 @@ public class SampleServiceImpl implements SmileSampleService {
     @Transactional(rollbackFor = {Exception.class})
     public SmileSample saveSmileSample(SmileSample
             smileSample) throws Exception {
-        SmileSample sample = fetchAndLoadSampleDetails(smileSample);
+        SmileSample sample = fetchAndLoadPatientDetails(smileSample);
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
         if (existingSample == null) {
@@ -55,8 +55,6 @@ public class SampleServiceImpl implements SmileSampleService {
             sample.setSmileSampleId(newSampleId);
             return sample;
         } else {
-            String oldCmoPatientId = sampleRepository.findLatestSampleMetadataBySmileId(existingSample.getSmileSampleId()).getCmoPatientId();
-
             SmileSample detailedExistingSample = getDetailedSmileSample(existingSample);
 
             detailedExistingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
@@ -68,25 +66,29 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public SmileSample fetchAndLoadSampleDetails(SmileSample sample) throws Exception {
+    public SmileSample fetchAndLoadPatientDetails(SmileSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         SmilePatient patient = sample.getPatient();
-       if (patientService.getPatientByCmoPatientId(
-                sample.getPatient().getCmoPatientId().getValue()) == null) {
-           patientService.savePatientMetadata(patient);
-           sample.setPatient(patient);
-       }
+        if (patientService.getPatientByCmoPatientId(
+               sample.getPatient().getCmoPatientId().getValue()) == null) {
+            patientService.savePatientMetadata(patient);
+            sample.setPatient(patient);
+        }
         // find or save new patient for sample
         SmilePatient patientByLatestCmoId = patientService.getPatientByCmoPatientId(
                 sampleMetadata.getCmoPatientId());
-        
+
         // Case 2: For a new sample, patient and patientByLatestCmoId are both null --> set up a new sample
         // with the new cmoPatientId and save this patient to db
-        // Case 1: For sample updates, if patient exists but doesn't match patientByLatestCmoId --> cmoPatientId swap
-        // Case 1a: If patientByLatestCmoId is null, perisit it to db and update the sample with the new patient and remove the old relationship
-        // Case 1b: If patientByLatestCmoId is not null, update the sample with the patient and remove the old relationship
+        // Case 1: For sample updates, if patient exists but doesn't match
+        //patientByLatestCmoId --> cmoPatientId swap
+        // Case 1a: If patientByLatestCmoId is null, perisit it to db and update the sample with
+        //the new patient and remove the old relationship
+        // Case 1b: If patientByLatestCmoId is not null, update the sample with the patient
+        //and remove the old relationship
         // Case 3: For a new sample, patient is not null and patientByLatestCmoId is null
-        // Case 3a: patient and patientByLatestCmoId have different cmoPatientIds --> set up a new patient with cmoPatientId
+        // Case 3a: patient and patientByLatestCmoId have different cmoPatientIds --> set up a
+        //new patient with cmoPatientId
         // from patientByLatestCmoId and persist this patient
         // Case 3b: patient and patientByLatestCmoId have the same cmoPatientIds --> persist patient to db
         // Case 4: For a new sample, patient is null and patientByLatestCmoId is not null
@@ -99,7 +101,8 @@ public class SampleServiceImpl implements SmileSampleService {
             newPatient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
             SmilePatient savedPatient = patientService.savePatientMetadata(newPatient);
             sample.setPatient(savedPatient);
-            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(), patient.getSmilePatientId());
+            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(),
+                    patient.getSmilePatientId());
         } else if (patient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())) {
             // go through the new patient aliases and indicator for whether a
             // new patient alias was added to the existing patient
@@ -118,7 +121,8 @@ public class SampleServiceImpl implements SmileSampleService {
         } else if (!patient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())) {
             // Former sample-patient relationship will be removed in saveSmileSample
             sample.setPatient(patientByLatestCmoId);
-            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(), patient.getSmilePatientId());
+            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(),
+                    patient.getSmilePatientId());
 
         }
         return sample;
@@ -240,15 +244,8 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public List<SmileSample> getSamplesByCmoPatientId(String cmoPatientId) throws Exception {
-        System.out.println("\n\n\ncalled getSamplesByCmoPatientId");
         List<SmileSample> samples = new ArrayList<>();
-        System.out.println("finding all samples with cmoPatientId " + cmoPatientId);
-        List<SmileSample> samplelist = sampleRepository.findAllSamplesByCmoPatientId(cmoPatientId);
-        if (samplelist.size() == 0) {
-            System.out.println("couldn't find samples with cmoPatientId " + cmoPatientId);
-        }
         for (SmileSample sample: sampleRepository.findAllSamplesByCmoPatientId(cmoPatientId)) {
-            System.out.println("adding sample " + sample.getSmileSampleId());
             samples.add(getDetailedSmileSample(sample));
         }
         return samples;

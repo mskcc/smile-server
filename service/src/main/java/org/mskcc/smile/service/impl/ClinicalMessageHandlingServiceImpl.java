@@ -242,9 +242,8 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
                             DmpSampleMetadata.class);
-//                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
-//                            dmpSample.getDmpPatientId());
-                    String cmoPatientId = "C-DPCXX1";
+                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
+                            dmpSample.getDmpPatientId());
                     if (cmoPatientId == null) {
                         throw new IllegalStateException("Could not resolve cmoPatientId from dmpId");
                     } else {
@@ -271,9 +270,8 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
                             DmpSampleMetadata.class);
-//                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
-//                            dmpSample.getDmpPatientId());
-                    String cmoPatientId = "C-DPCXX1";
+                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
+                            dmpSample.getDmpPatientId());
                     if (cmoPatientId == null) {
                         throw new IllegalStateException("Could not resolve cmoPatientId from dmpId");
                     } else {

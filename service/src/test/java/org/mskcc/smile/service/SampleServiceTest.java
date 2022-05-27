@@ -6,7 +6,6 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.SampleMetadata;
-import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.dmp.DmpSampleMetadata;
@@ -115,12 +114,6 @@ public class SampleServiceTest {
             SmileSample clinicalSample =
                     SampleDataFactory.buildNewClinicalSampleFromMetadata(cmoPatientId, dmpSample);
             sampleService.saveSmileSample(clinicalSample);
-            SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
-            SmileSample persistedSample = sampleService.getClinicalSampleByDmpId(dmpSample.getDmpSampleId());
-            if (patient == null) {
-                System.out.println("failed to fetch patient from cmoPatientId " + cmoPatientId);
-                System.exit(2);
-            }
         }
     }
 
@@ -269,14 +262,7 @@ public class SampleServiceTest {
     public void testPersistClinicalSample() throws Exception {
         String dmpPatientId = "P-0000001";
         String cmoPatientId = mockDataUtils.getCmoPatientIdForDmpPatient(dmpPatientId);
-        Assertions.assertThat(cmoPatientId).isEqualTo("C-DPCXX1");
-        SmileSample savedTumorClinicalSample = sampleService.getClinicalSampleByDmpId("P-0000001-T01-IM3");
-        SmileSample savedNormalClinicalSample = sampleService.getClinicalSampleByDmpId("P-0000001-N01-IM3");
-        SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
 
-        Assertions.assertThat(savedTumorClinicalSample).isNotNull();
-        Assertions.assertThat(savedNormalClinicalSample).isNotNull();
-        Assertions.assertThat(patient).isNotNull();
         List<SmileSample> sampleList = sampleService.getSamplesByCmoPatientId(cmoPatientId);
         Assertions.assertThat(sampleList.size()).isEqualTo(2);
     }

@@ -10,7 +10,7 @@ import org.mskcc.smile.model.web.SmileSampleIdMapping;
 
 public interface SmileSampleService {
     SmileSample saveSmileSample(SmileSample smileSample) throws Exception;
-    SmileSample fetchAndLoadSampleDetails(SmileSample smileSample) throws Exception;
+    SmileSample fetchAndLoadPatientDetails(SmileSample smileSample) throws Exception;
     Boolean updateSampleMetadata(SampleMetadata sampleMetadata) throws Exception;
     List<SmileSample> getMatchedNormalsBySample(SmileSample smileSample)
             throws Exception;
