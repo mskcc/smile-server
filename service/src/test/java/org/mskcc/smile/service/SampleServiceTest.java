@@ -294,11 +294,11 @@ public class SampleServiceTest {
      */
     @Test
     public void testFindSamplesByDate() throws Exception {
-        String requestId = "MOCKREQUEST1_B";
-        String igoId = "MOCKREQUEST1_B_2";
+        final String requestId = "MOCKREQUEST1_B";
+        final String igoId = "MOCKREQUEST1_B_2";
 
         SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
-        String cmoSampleName = sample.getLatestSampleMetadata().getCmoSampleName();
+        final String cmoSampleName = sample.getLatestSampleMetadata().getCmoSampleName();
         List<SampleMetadata> sampleMetadataHistoryBeforeUpdate = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistoryBeforeUpdate.size()).isEqualTo(1);
