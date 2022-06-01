@@ -47,7 +47,7 @@ public class SampleServiceImpl implements SmileSampleService {
     @Transactional(rollbackFor = {Exception.class})
     public SmileSample saveSmileSample(SmileSample
             sample) throws Exception {
-        fetchAndLoadSampleDetails(sample);
+        fetchAndLoadPatientDetails(sample);
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
         if (existingSample == null) {
@@ -55,37 +55,129 @@ public class SampleServiceImpl implements SmileSampleService {
             sample.setSmileSampleId(newSampleId);
             return sample;
         } else {
-            existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
+            // populate existing sample details and check if there are actual updates to persist
+            getDetailedSmileSample(existingSample);
+            SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
+            SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
+            if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata,
+                    sample.getSampleCategory().equals("research"))) {
+                LOG.info("Found updates to persist for sample: " + existingSample.getPrimarySampleAlias());
+                existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
+
+                // determine where a patient swap is required also
+                if (!sample.getPatient().getSmilePatientId().equals(
+                        existingSample.getPatient().getSmilePatientId())) {
+                    LOG.info("Updating sample-to-patient relationship and removing connection to patient: "
+                            + existingSample.getPatient().getSmilePatientId());
+                    sampleRepository.removeSamplePatientRelationship(existingSample.getSmileSampleId(),
+                            existingSample.getPatient().getSmilePatientId());
+                    existingSample.setPatient(sample.getPatient());
+                }
+                existingSample.setPatient(sample.getPatient());
+            }
             sampleRepository.save(existingSample);
             return existingSample;
         }
     }
 
+    /**
+     * Fetching and loading patient details explained.
+     *
+     * <p>Scenario #1: new sample, new patient
+     *  --> new sample and patient are persisted to the database
+     *
+     * <p>Scenario #2: existing sample with updates and patient swap
+     *  a) patient by cmo id in the incoming metadata updates does not already exist and does not match
+     *      the patient linked to the existing sample:
+     *      --> patient by the new id is persisted to the database, sample-to-patient relationship
+     *      is updated to match the newly persisted patient and the former sample-to-patient relationship
+     *      is removed
+     * b) patient by cmo id in the incoming metadata updates already exists but does not match
+     *      the patient linked to the existing sample:
+     *      --> sample-to-patient relationship is updated to match the patient referenced in the incoming
+     *      sample updates and the former sample-to-patient relationship is removed
+     *
+     * <p>Scenario #3: special case where new sample is added to database but there's a mismatch
+     *  between the patient that the canonical sample is pointing to and the patient referenced in the
+     *  latest sample metadata
+     *  a) cmo patient ids do not match
+     *      --> construct and persist a new patient node with the cmo id from the latest metadata
+     *  b) cmo patient ids match
+     *      --> persist patient from sample.getPatient() to database
+     *
+     * <p>Scenario #4: new sample where sample.getPatient() is null and cmo patient id in latest
+     *  metadata is not null and exists in the database
+     *  --> throws exception, this is a case that should never happen and would result from malformed data
+     * @param sample
+     * @return SmileSample
+     * @throws Exception
+     */
     @Override
-    public SmileSample fetchAndLoadSampleDetails(SmileSample sample) throws Exception {
+    public SmileSample fetchAndLoadPatientDetails(SmileSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         SmilePatient patient = sample.getPatient();
 
-        // find or save new patient for sample
-        SmilePatient existingPatient = patientService.getPatientByCmoPatientId(
-                sampleMetadata.getCmoPatientId());
-        if (existingPatient == null) {
+        // handle the scenario where a patient node does not already exist in the database
+        // to prevent any null pointer exceptions (a situation that had arose in some test dmp sample cases)
+        if (patientService.getPatientByCmoPatientId(
+               sample.getPatient().getCmoPatientId().getValue()) == null) {
             patientService.savePatientMetadata(patient);
             sample.setPatient(patient);
-        } else {
+        }
+
+        // get patient by cmo id from latest sample metadata
+        SmilePatient patientByLatestCmoId = patientService.getPatientByCmoPatientId(
+                sampleMetadata.getCmoPatientId());
+
+        // again this is something that should never happen and would arise from some error
+        // in the data construction/parsing
+        if (patient == null) {
+            throw new IllegalStateException("Patient object assigned to the sample is null "
+                    + "- confirm whether data construction and parsing is being handled correctly");
+        }
+
+        // scenario that requires a patient swap and updating the sample-to-patient relationship
+        // in the database and removing the former sample-to-patient relationship
+        if (patientByLatestCmoId == null) {
+            SmilePatient newPatient = new SmilePatient(sampleMetadata.getCmoPatientId(), "cmoId");
+            patientService.savePatientMetadata(newPatient);
+            sample.setPatient(newPatient);
+            // remove sample-to-patient relationship from former patient node
+            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(),
+                    patient.getSmilePatientId());
+            return sample;
+        }
+
+        // scenario where we are checking for an update to the existing patient, which is the same
+        // that already existing and is linked to the sample in the database but may contain updates
+        // (i.e., a new patient alias)
+        if (patient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())) {
             // go through the new patient aliases and indicator for whether a
             // new patient alias was added to the existing patient
             Boolean patientUpdated = Boolean.FALSE;
             for (PatientAlias pa : patient.getPatientAliases()) {
-                if (!existingPatient.hasPatientAlias(pa)) {
-                    existingPatient.addPatientAlias(pa);
+                if (!patientByLatestCmoId.hasPatientAlias(pa)) {
+                    patientByLatestCmoId.addPatientAlias(pa);
                     patientUpdated = Boolean.TRUE;
                 }
             }
             if (patientUpdated) {
-                patientService.savePatientMetadata(existingPatient);
+                sample.setPatient(patientService.savePatientMetadata(patientByLatestCmoId));
+            } else {
+                sample.setPatient(patientByLatestCmoId);
             }
-            sample.setPatient(existingPatient);
+            return sample;
+        }
+
+        // scenario where the patient that the sample-to-patient relationship points to in the database
+        // does not match the cmo patient id referenced in the latest sample metadata updates
+        // and the former sample-to-patient relationship needs to be removed
+        if (!patient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())) {
+            sample.setPatient(patientByLatestCmoId);
+            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(),
+                    patient.getSmilePatientId());
+            return sample;
+
         }
         return sample;
     }
@@ -105,11 +197,13 @@ public class SampleServiceImpl implements SmileSampleService {
         }
         // save updates to sample if applicable
         SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
-        if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata)
+
+        Boolean isResearchSample = existingSample.getSampleCategory().equals("research");
+        if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata, isResearchSample)
                 || (!sampleHasMetadataUpdates(
-                        existingMetadata, sampleMetadata))
+                        existingMetadata, sampleMetadata, isResearchSample)
                 && !existingMetadata.getCmoSampleName()
-                        .equals(sampleMetadata.getCmoSampleName())) {
+                        .equals(sampleMetadata.getCmoSampleName()))) {
             LOG.info("Persisting updates for sample: " + sampleMetadata.getPrimaryId());
             existingSample.updateSampleMetadata(sampleMetadata);
             saveSmileSample(existingSample);
@@ -173,12 +267,22 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata,
-            SampleMetadata sampleMetadata) throws Exception {
+            SampleMetadata sampleMetadata, Boolean isResearchSample) throws Exception {
         String existingMetadata = mapper.writeValueAsString(existingSampleMetadata);
         String currentMetadata = mapper.writeValueAsString(sampleMetadata);
-        try {
-            jsonComparator.isConsistent(currentMetadata, existingMetadata);
-        } catch (AssertionError e) {
+        Boolean isConsistent = jsonComparator.isConsistent(currentMetadata, existingMetadata);
+        // if not consistent then return true since changes were detected
+        if (!isConsistent) {
+            return Boolean.TRUE;
+        }
+        // if there is a change to the cmo sample label..
+        if (isResearchSample && !existingSampleMetadata.getCmoSampleName()
+                .equals(sampleMetadata.getCmoSampleName())) {
+            return Boolean.TRUE;
+        }
+        // if there needs to be a patient swap..
+        if (!existingSampleMetadata.getCmoPatientId()
+                .equals(sampleMetadata.getCmoPatientId())) {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;

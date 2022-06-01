@@ -206,27 +206,15 @@ public class RequestServiceImpl implements SmileRequestService {
 
     @Override
     public Boolean requestHasUpdates(SmileRequest existingRequest, SmileRequest request) throws Exception {
-        try {
-            jsonComparator.isConsistent(mapper.writeValueAsString(existingRequest),
-                mapper.writeValueAsString(request));
-        } catch (AssertionError e) {
-            LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        return !(jsonComparator.isConsistent(mapper.writeValueAsString(existingRequest),
+                mapper.writeValueAsString(request)));
     }
 
     @Override
     public Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
             RequestMetadata requestMetadata) throws Exception {
-        try {
-            jsonComparator.isConsistent(existingRequestMetadata.getRequestMetadataJson(),
-                    requestMetadata.getRequestMetadataJson());
-        } catch (AssertionError e) {
-            LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        return !(jsonComparator.isConsistent(existingRequestMetadata.getRequestMetadataJson(),
+                requestMetadata.getRequestMetadataJson()));
     }
 
     @Override
@@ -240,14 +228,10 @@ public class RequestServiceImpl implements SmileRequestService {
             if (existingSample == null) {
                 continue;
             }
-            // compare sample metadata from current request and the saved request
-            String latestMetadata = mapper.writeValueAsString(existingSample.getLatestSampleMetadata());
-            String currentMetadata = mapper.writeValueAsString(sample.getLatestSampleMetadata());
-
-            try {
-                jsonComparator.isConsistent(latestMetadata, currentMetadata);
-            } catch (AssertionError e) {
-                LOG.warn("Found discrepancies between JSONs:\n" + e.getLocalizedMessage());
+            Boolean sampleHasUpdates = 
+                    sampleService.sampleHasMetadataUpdates(existingSample.getLatestSampleMetadata(),
+                    sample.getLatestSampleMetadata(), Boolean.TRUE);
+            if (sampleHasUpdates) {
                 existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
                 updatedSamples.add(existingSample);
             }

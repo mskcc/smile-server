@@ -126,7 +126,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     mapper.writeValueAsString(smileSample));
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(),
-                                smileSample.getLatestSampleMetadata())) {
+                                smileSample.getLatestSampleMetadata(), Boolean.FALSE)) {
                             LOG.info("Found updates for sample - persisting to database: "
                                     + smileSample.getPrimarySampleAlias());
                             existingSample.updateSampleMetadata(smileSample.getLatestSampleMetadata());
@@ -180,7 +180,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     mapper.writeValueAsString(smileSample));
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(),
-                                smileSample.getLatestSampleMetadata())) {
+                                smileSample.getLatestSampleMetadata(), Boolean.FALSE)) {
                             LOG.info("Found updates for sample - persisting to database: "
                                     + smileSample.getPrimarySampleAlias());
                             existingSample.updateSampleMetadata(smileSample.getLatestSampleMetadata());
@@ -244,6 +244,11 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             DmpSampleMetadata.class);
                     String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
                             dmpSample.getDmpPatientId());
+                    if (cmoPatientId == null) {
+                        LOG.error("Could not resolve cmoPatientId from dmpId: "
+                                + dmpSample.getDmpPatientId());
+                        return;
+                    }
                     SmileSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
                             cmoPatientId, dmpSample);
                     clinicalMessageHandlingService.newClinicalSampleHandler(sample);
@@ -268,6 +273,11 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             DmpSampleMetadata.class);
                     String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
                             dmpSample.getDmpPatientId());
+                    if (cmoPatientId == null) {
+                        LOG.error("Could not resolve cmoPatientId from dmpId: "
+                                + dmpSample.getDmpPatientId());
+                        return;
+                    }
                     SmileSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
                             cmoPatientId, dmpSample);
                     clinicalMessageHandlingService.clinicalSampleUpdateHandler(sample);

@@ -47,7 +47,9 @@ public class SampleDataFactory {
     public static SmileSample buildNewResearchSampleFromMetadata(String requestId,
             SampleMetadata sampleMetadata) {
         sampleMetadata.setIgoRequestId(requestId);
-        sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        if (sampleMetadata.getImportDate() == null) {
+            sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        }
 
         SmileSample sample = new SmileSample();
         sample.addSampleMetadata(sampleMetadata);
