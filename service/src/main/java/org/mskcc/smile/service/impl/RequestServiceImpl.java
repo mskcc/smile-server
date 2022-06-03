@@ -78,6 +78,19 @@ public class RequestServiceImpl implements SmileRequestService {
             }
             requestRepository.save(request);
             return Boolean.TRUE;
+        } else if ((requestHasMetadataUpdates(savedRequest.getLatestRequestMetadata(), request.getLatestRequestMetadata()))
+                || savedRequest.getSmileSampleList().size() != request.getSmileSampleList().size()) {
+            LOG.info("Persisting updates for request: " + savedRequest.getIgoRequestId());
+            savedRequest.updateRequestMetadataByMetadata(request.getLatestRequestMetadata());
+            //Check if there are sampleUpdates
+            for (SmileSample sample: request.getSmileSampleList()) {
+                if (!savedRequest.getSmileSampleList().contains(sample)) {
+                    savedRequest.getSmileSampleList().add(sample);
+                }
+                sampleService.saveSmileSample(sample);
+            }
+            saveRequestMetadata(savedRequest);
+            return Boolean.TRUE;
         }
         logDuplicateRequest(request);
         return Boolean.FALSE;
@@ -183,6 +196,7 @@ public class RequestServiceImpl implements SmileRequestService {
         if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(), requestMetadata)) {
             LOG.info("Persisting updates for request: " + existingRequest.getIgoRequestId());
             existingRequest.updateRequestMetadataByMetadata(requestMetadata);
+            //Check if there are sampleUpdates
             saveRequestMetadata(existingRequest);
             return Boolean.TRUE;
         }

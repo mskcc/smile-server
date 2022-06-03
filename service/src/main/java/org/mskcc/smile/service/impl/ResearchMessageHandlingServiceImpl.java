@@ -3,6 +3,7 @@ package org.mskcc.smile.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -118,20 +119,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                 try {
                     SmileRequest request = requestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        SmileRequest existingRequest =
-                                requestService.getSmileRequestById(request.getIgoRequestId());
-                        // save new request to database
-                        if (existingRequest == null) {
-                            LOG.info("Persisting new request: " + request.getIgoRequestId());
-                            requestService.saveRequest(request);
-                        } else {
-                            // request-service and sample-service methods will check for updates and persist
-                            // them if applicable (including patient swapping)
-                            requestService.updateRequestMetadata(request.getLatestRequestMetadata());
-                            for (SmileSample sample : request.getSmileSampleList()) {
-                                sampleService.saveSmileSample(sample);
-                            }
-                        }
+                        requestService.saveRequest(request);
                         // publish updated/saved request to consistency checker or promoted request topic
                         String requestJson = mapper.writeValueAsString(
                                 requestService.getPublishedSmileRequestById(request.getIgoRequestId()));
