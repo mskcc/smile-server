@@ -196,7 +196,6 @@ public class RequestServiceImpl implements SmileRequestService {
         if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(), requestMetadata)) {
             LOG.info("Persisting updates for request: " + existingRequest.getIgoRequestId());
             existingRequest.updateRequestMetadataByMetadata(requestMetadata);
-            //Check if there are sampleUpdates
             saveRequestMetadata(existingRequest);
             return Boolean.TRUE;
         }

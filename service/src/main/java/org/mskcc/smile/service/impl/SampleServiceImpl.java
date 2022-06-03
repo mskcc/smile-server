@@ -199,6 +199,8 @@ public class SampleServiceImpl implements SmileSampleService {
                 if (request != null) {
                     request.addSmileSample(savedSample);
                     requestService.saveRequest(request);
+                } else {
+                    // request doesn't exist, should we still persist the request node?
                 }
             }
             return Boolean.TRUE;
