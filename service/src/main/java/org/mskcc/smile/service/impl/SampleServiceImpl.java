@@ -183,46 +183,51 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
+    //@Transactional(rollbackFor = {Exception.class})
     public Boolean updateSampleMetadata(SampleMetadata sampleMetadata) throws Exception {
         SmileSample existingSample = getResearchSampleByRequestAndIgoId(
                         sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
         // new samples may come from IGO_NEW_REQUEST which also invokes this method
         // so if a new sample is encountered we should persist it to the database
+        // Update: Only new samples with existing request nodes are persisted
         if (existingSample == null) {
-            LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
             SmileSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(
                     sampleMetadata.getIgoRequestId(), sampleMetadata);
-            SmileSample savedSample = saveSmileSample(sample);
             // add link to request
-            if (requestService.getRequestBySample(savedSample) == null) {
-                SmileRequest request = requestService.getSmileRequestById(sampleMetadata.getIgoRequestId());
-                if (request != null) {
-                    request.addSmileSample(savedSample);
-                    requestService.saveRequest(request);
-                } else {
-                    // request doesn't exist, should we still persist the request node?
-                }
+            SmileRequest request = requestService.getSmileRequestById(sampleMetadata.getIgoRequestId());
+            if (request != null) {
+                LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
+                SmileSample savedSample = saveSmileSample(sample);
+                List<SmileSample> sampleList = request.getSmileSampleList();
+                sampleList.add(savedSample);
+                request.setSmileSampleList(sampleList);
+                requestService.saveRequest(request);
+                return Boolean.TRUE;
+            } else {
+                // If the request is null, the sample will not be persisted
+                LOG.error("Couldn't find request " + sampleMetadata.getIgoRequestId());
+                return Boolean.FALSE;
             }
-            return Boolean.TRUE;
-        }
-        // save updates to sample if applicable
-        SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
+        } else {
+            // save updates to sample if applicable
+            SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
 
-        Boolean isResearchSample = existingSample.getSampleCategory().equals("research");
-        if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata, isResearchSample)
-                || (!sampleHasMetadataUpdates(
-                        existingMetadata, sampleMetadata, isResearchSample)
-                && !existingMetadata.getCmoSampleName()
-                        .equals(sampleMetadata.getCmoSampleName()))) {
-            LOG.info("Persisting updates for sample: " + sampleMetadata.getPrimaryId());
-            existingSample.updateSampleMetadata(sampleMetadata);
-            saveSmileSample(existingSample);
-            return Boolean.TRUE;
+            Boolean isResearchSample = existingSample.getSampleCategory().equals("research");
+            if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata, isResearchSample)
+                    || (!sampleHasMetadataUpdates(
+                            existingMetadata, sampleMetadata, isResearchSample)
+                    && !existingMetadata.getCmoSampleName()
+                            .equals(sampleMetadata.getCmoSampleName()))) {
+                LOG.info("Persisting updates for sample: " + sampleMetadata.getPrimaryId());
+                existingSample.updateSampleMetadata(sampleMetadata);
+                saveSmileSample(existingSample);
+                return Boolean.TRUE;
+            }
+            // no updates to persist to sample, log and return false
+            LOG.info("There are no updates to persist for research sample: "
+                    + sampleMetadata.getPrimaryId());
+            return Boolean.FALSE;
         }
-        // no updates to persist to sample, log and return false
-        LOG.info("There are no updates to persist for research sample: "
-                + sampleMetadata.getPrimaryId());
-        return Boolean.FALSE;
     }
 
     @Override
