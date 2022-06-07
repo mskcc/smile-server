@@ -118,7 +118,22 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                 try {
                     SmileRequest request = requestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
-                        requestService.saveRequest(request);
+                        SmileRequest existingRequest =
+                                requestService.getSmileRequestById(request.getIgoRequestId());
+                        // save new request to database
+                        if (existingRequest == null) {
+                            LOG.info("Persisting new request: " + request.getIgoRequestId());
+                            requestService.saveRequest(request);
+                        } else {
+                            // request-service and sample-service methods will check for updates and persist
+                            // them if applicable (including patient swapping)
+                            requestService.updateRequestMetadata(request.getLatestRequestMetadata());
+                            for (SmileSample sample : request.getSmileSampleList()) {
+                                SmileSample savedSample = sampleService.saveSmileSample(sample);
+                                sampleService.createSampleRequestRelationship(savedSample.getSmileSampleId(),
+                                        existingRequest.getSmileRequestId());
+                            }
+                        }
                         // publish updated/saved request to consistency checker or promoted request topic
                         String requestJson = mapper.writeValueAsString(
                                 requestService.getPublishedSmileRequestById(request.getIgoRequestId()));

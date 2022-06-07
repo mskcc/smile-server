@@ -114,7 +114,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (r:Request {smileRequestId: $smileRequestId}) "
             + "MATCH (s:Sample {smileSampleId: $smileSampleId}) "
-            + "CREATE (r)-[:HAS_SAMPLE]->(s)")
+            + "MERGE (r)-[:HAS_SAMPLE]->(s)")
     void createSampleRequestRelationship(@Param("smileSampleId") UUID smileSampleId,
             @Param("smileRequestId") UUID smileRequestId);
 }

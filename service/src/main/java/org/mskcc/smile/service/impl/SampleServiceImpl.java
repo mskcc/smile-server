@@ -200,8 +200,7 @@ public class SampleServiceImpl implements SmileSampleService {
                 return Boolean.FALSE;
             }
             saveSmileSample(sample);
-            sampleRepository.createSampleRequestRelationship(
-                    sample.getSmileSampleId(), request.getSmileRequestId());
+            createSampleRequestRelationship(sample.getSmileSampleId(), request.getSmileRequestId());
             return Boolean.TRUE;
         }
         // save updates to sample if applicable
@@ -384,5 +383,10 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public SmileSample getSampleByInputId(String inputId) {
         return sampleRepository.findSampleByInputId(inputId);
+    }
+
+    @Override
+    public void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId) {
+        sampleRepository.createSampleRequestRelationship(smileSampleId, smileRequestId);
     }
 }

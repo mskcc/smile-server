@@ -78,19 +78,6 @@ public class RequestServiceImpl implements SmileRequestService {
             }
             requestRepository.save(request);
             return Boolean.TRUE;
-        } else if ((requestHasMetadataUpdates(savedRequest.getLatestRequestMetadata(),
-                request.getLatestRequestMetadata()))
-                || savedRequest.getSmileSampleList().size() != request.getSmileSampleList().size()) {
-            LOG.info("Persisting updates for request: " + savedRequest.getIgoRequestId());
-            savedRequest.updateRequestMetadataByMetadata(request.getLatestRequestMetadata());
-            //Check if there are sampleUpdates
-            List<SmileSample> updatedSamples = new ArrayList<>();
-            for (SmileSample sample: request.getSmileSampleList()) {
-                updatedSamples.add(sampleService.saveSmileSample(sample));
-            }
-            savedRequest.setSmileSampleList(updatedSamples);
-            saveRequestMetadata(savedRequest);
-            return Boolean.TRUE;
         }
         logDuplicateRequest(request);
         return Boolean.FALSE;
