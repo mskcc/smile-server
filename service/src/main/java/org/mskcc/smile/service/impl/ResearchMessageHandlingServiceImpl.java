@@ -129,8 +129,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             // them if applicable (including patient swapping)
                             requestService.updateRequestMetadata(request.getLatestRequestMetadata());
                             for (SmileSample sample : request.getSmileSampleList()) {
-                                SmileSample savedSample = sampleService.saveSmileSample(sample);
-                                sampleService.createSampleRequestRelationship(savedSample.getSmileSampleId(),
+                                sampleService.saveSmileSample(sample);
+                                sampleService.createSampleRequestRelationship(sample.getSmileSampleId(),
                                         existingRequest.getSmileRequestId());
                             }
                         }
