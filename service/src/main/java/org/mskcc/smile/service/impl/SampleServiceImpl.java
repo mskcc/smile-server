@@ -73,7 +73,6 @@ public class SampleServiceImpl implements SmileSampleService {
                             existingSample.getPatient().getSmilePatientId());
                     existingSample.setPatient(sample.getPatient());
                 }
-                existingSample.setPatient(sample.getPatient());
             }
             sampleRepository.save(existingSample);
             return existingSample;

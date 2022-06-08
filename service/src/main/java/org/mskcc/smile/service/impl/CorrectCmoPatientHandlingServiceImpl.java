@@ -110,7 +110,6 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                                 sampleService.getSamplesByCmoPatientId(oldCmoPtId);
                         List<SmileSample> samplesByNewCmoPatient =
                                 sampleService.getSamplesByCmoPatientId(newCmoPtId);
-                        SmilePatient patientByNewId = patientService.getPatientByCmoPatientId(newCmoPtId);
 
                         // update the cmo patient id for each sample linked to the "old" patient
                         // and the metadata as well
@@ -128,31 +127,17 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                                         StandardCharsets.UTF_8);
                                 updatedMetadata.setCmoSampleName(newCmoSampleLabel);
                             }
-                            // now update sample with the target patient we want to swap to
+                            // update the sample with the new metadata which should now reference
+                            // the cmo patient id we are swapping to
                             sample.updateSampleMetadata(updatedMetadata);
-
-                            // update the sample-to-patient relationship if swapping to a different
-                            // patient node. if still using the same node the samples are already linked
-                            // to then there's no need to override the patient currently set for the sample
-                            if (patientByNewId != null) {
-                                sample.setPatient(patientByNewId);
-                                sampleService.updateSamplePatientRelationship(sample.getSmileSampleId(),
-                                        patientByNewId.getSmilePatientId());
-                            }
                             sampleService.saveSmileSample(sample);
                         }
 
-                        // delete old patient node if we are swapping to an existing patient node
-                        // otherwise simply update the existing patient node with the new cmo id
-                        if (patientByNewId != null) {
-                            LOG.info("Deleting Patient node (and its relationships) for old ID: "
-                                + oldCmoPtId);
-                            SmilePatient patientByOldId =
-                                    patientService.getPatientByCmoPatientId(oldCmoPtId);
-                            patientService.deletePatient(patientByOldId);
-                        } else {
-                            patientService.updateCmoPatientId(oldCmoPtId, newCmoPtId);
-                        }
+                        // sample service is handling patient swapping now so we can simply rely on deleting
+                        // this old patient node that shouldn't have any samples attached to it anymore
+                        SmilePatient patientByOldId =
+                                patientService.getPatientByCmoPatientId(oldCmoPtId);
+                        patientService.deletePatient(patientByOldId);
 
                         // sanity check the counts before and after the swaps
                         Integer expectedCount = samplesByOldCmoPatient.size()
