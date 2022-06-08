@@ -73,7 +73,6 @@ public class SampleServiceImpl implements SmileSampleService {
                             existingSample.getPatient().getSmilePatientId());
                     existingSample.setPatient(sample.getPatient());
                 }
-                existingSample.setPatient(sample.getPatient());
             }
             sampleRepository.save(existingSample);
             return existingSample;
@@ -188,11 +187,19 @@ public class SampleServiceImpl implements SmileSampleService {
                         sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
         // new samples may come from IGO_NEW_REQUEST which also invokes this method
         // so if a new sample is encountered we should persist it to the database
+        // a new sample without a existing request will not be persisted
         if (existingSample == null) {
             LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
             SmileSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(
                     sampleMetadata.getIgoRequestId(), sampleMetadata);
+            SmileRequest request = requestService.getSmileRequestById(sampleMetadata.getIgoRequestId());
+            if (request == null) {
+                LOG.error("Failed to persist sample metadata updates, "
+                        + "request does not exist " + sampleMetadata.getIgoRequestId());
+                return Boolean.FALSE;
+            }
             saveSmileSample(sample);
+            createSampleRequestRelationship(sample.getSmileSampleId(), request.getSmileRequestId());
             return Boolean.TRUE;
         }
         // save updates to sample if applicable
@@ -375,5 +382,10 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public SmileSample getSampleByInputId(String inputId) {
         return sampleRepository.findSampleByInputId(inputId);
+    }
+
+    @Override
+    public void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId) {
+        sampleRepository.createSampleRequestRelationship(smileSampleId, smileRequestId);
     }
 }

@@ -86,7 +86,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
             + "MATCH (p: Patient {smilePatientId: $smilePatientId}) "
-            + "CREATE (s)<-[:HAS_SAMPLE]-(p)")
+            + "MERGE (s)<-[:HAS_SAMPLE]-(p)")
     void updateSamplePatientRelationship(@Param("smileSampleId") UUID smileSampleId,
             @Param("smilePatientId") UUID smilePatientId);
 
@@ -111,4 +111,10 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "DELETE r")
     void removeSamplePatientRelationship(@Param("smileSampleId") UUID smileSampleId,
             @Param("smilePatientId") UUID smilePatientId);
+
+    @Query("MATCH (r:Request {smileRequestId: $smileRequestId}) "
+            + "MATCH (s:Sample {smileSampleId: $smileSampleId}) "
+            + "MERGE (r)-[:HAS_SAMPLE]->(s)")
+    void createSampleRequestRelationship(@Param("smileSampleId") UUID smileSampleId,
+            @Param("smileRequestId") UUID smileRequestId);
 }

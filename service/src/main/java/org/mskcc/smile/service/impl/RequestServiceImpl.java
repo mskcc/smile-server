@@ -65,7 +65,7 @@ public class RequestServiceImpl implements SmileRequestService {
         project.setNamespace(request.getNamespace());
         request.setSmileProject(project);
 
-        SmileRequest savedRequest = requestRepository.findRequestById(request.getIgoRequestId());
+        SmileRequest savedRequest = getSmileRequestById(request.getIgoRequestId());
         if (savedRequest == null) {
             if (request.getSmileSampleList() != null) {
                 List<SmileSample> updatedSamples = new ArrayList<>();
@@ -228,7 +228,7 @@ public class RequestServiceImpl implements SmileRequestService {
             if (existingSample == null) {
                 continue;
             }
-            Boolean sampleHasUpdates = 
+            Boolean sampleHasUpdates =
                     sampleService.sampleHasMetadataUpdates(existingSample.getLatestSampleMetadata(),
                     sample.getLatestSampleMetadata(), Boolean.TRUE);
             if (sampleHasUpdates) {

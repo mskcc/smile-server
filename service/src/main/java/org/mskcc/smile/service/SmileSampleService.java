@@ -33,4 +33,5 @@ public interface SmileSampleService {
     void updateSamplePatientRelationship(UUID smileSampleId, UUID smilePatientId);
     List<SmileSampleIdMapping> getSamplesByDate(String inputDate);
     SmileSample getSampleByInputId(String inputId);
+    void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId);
 }

@@ -130,6 +130,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             requestService.updateRequestMetadata(request.getLatestRequestMetadata());
                             for (SmileSample sample : request.getSmileSampleList()) {
                                 sampleService.saveSmileSample(sample);
+                                sampleService.createSampleRequestRelationship(sample.getSmileSampleId(),
+                                        existingRequest.getSmileRequestId());
                             }
                         }
                         // publish updated/saved request to consistency checker or promoted request topic
