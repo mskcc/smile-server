@@ -290,57 +290,61 @@ public class SampleServiceTest {
         }
     }
 
-    //    /**
-    //     * Tests that samples can be found by an import date and cmo label matches expected output.
-    //     * @throws Exception
-    //     */
-    //    @Test
-    //    public void testFindSamplesByDate() throws Exception {
-    //        String requestId = "MOCKREQUEST1_B";
-    //        String igoId = "MOCKREQUEST1_B_2";
-    //
-    //        // fetch sample from db and insert an older version of its metadata
-    //        SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
-    //        SampleMetadata updatedMetadata = new SampleMetadata();
-    //        updatedMetadata.setImportDate("2000-06-10");
-    //        updatedMetadata.setPrimaryId(sample.getPrimarySampleAlias());
-    //        updatedMetadata.setBaitSet("DIFFERENTBAITSET");
-    //        updatedMetadata.setCmoSampleName("C-OLDSAMPLELABEL-T11");
-    //        updatedMetadata.setIgoRequestId(requestId);
-    //        sample.addSampleMetadata(updatedMetadata);
-    //
-    //        // assert that the metadata history size is equal to 1 before any updates are made
-    //        List<SampleMetadata> sampleMetadataHistoryBeforeUpdate = sampleService
-    //                .getResearchSampleMetadataHistoryByIgoId(igoId);
-    //        Assertions.assertThat(sampleMetadataHistoryBeforeUpdate.size()).isEqualTo(1);
-    //        // persist updates for sample and confirm that the metadata history size increased
-    //        sampleService.updateSampleMetadata(updatedMetadata);
-    //        List<SampleMetadata> sampleMetadataHistoryAfterUpdate = sampleService
-    //                .getResearchSampleMetadataHistoryByIgoId(igoId);
-    //        Assertions.assertThat(sampleMetadataHistoryAfterUpdate.size()).isEqualTo(2);
-    //
-    //        // confirm that new sample metadata was persisted and that there is an older sample
-    //        // metadata with the date '2000-06-10' that we basically inserted into the
-    //        // history for this sample
-    //        Boolean hasMockOldMetadata = Boolean.FALSE;
-    //        for (SampleMetadata sm : sampleMetadataHistoryAfterUpdate) {
-    //            if (sm.getImportDate().equals("2000-06-10")) {
-    //                hasMockOldMetadata = Boolean.TRUE;
-    //                break;
-    //            }
-    //        }
-    //        Assertions.assertThat(hasMockOldMetadata).isTrue();
-    //
-    //        // confirms that both methods return the same latest metadata and
-    //        // same cmo sample label corresponding to it
-    //        // the most up-to-date cmo label is C-MP789JR-N001-d based on mocked test data
-    //        SmileSample updatedSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
-    //        Assertions.assertThat(updatedSample.getLatestSampleMetadata().getCmoSampleName())
-    //                .isEqualTo("C-MP789JR-N001-d");
-    //        SampleMetadata latestMetadata =
-    //                sampleRepository.findLatestSampleMetadataBySmileId(updatedSample.getSmileSampleId());
-    //        Assertions.assertThat(latestMetadata.getCmoSampleName()).isEqualTo("C-MP789JR-N001-d");
-    //    }
+    /**
+     * Test that the latest metadata returns the expected cmo label,
+     * even when metadata is updated to a sample that a fake date that precedes the "latest" date
+     * @throws Exception
+     */
+    public void testFindLatestSampleMetadataAfterUpdatingNewPredatedSample() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        String igoId = "MOCKREQUEST1_B_2";
+        String importDate = "2000-06-10";
+
+        SampleMetadata sampleMetadata = sampleService.getResearchSampleByRequestAndIgoId(
+                requestId, igoId).getLatestSampleMetadata();
+        SampleMetadata predatedSampleMetadata = new SampleMetadata();
+        predatedSampleMetadata.setPrimaryId(igoId);
+        predatedSampleMetadata.setIgoRequestId(requestId);
+        predatedSampleMetadata.setCmoPatientId(sampleMetadata.getCmoPatientId());
+        predatedSampleMetadata.setImportDate(importDate);
+        predatedSampleMetadata.setCmoSampleName("C-OLDSAMPLELABEL-T11");
+
+        sampleService.updateSampleMetadata(predatedSampleMetadata);
+        SampleMetadata updatedSampleMetadataAfterUpdate = sampleService.getResearchSampleByRequestAndIgoId(
+                requestId, igoId).getLatestSampleMetadata();
+        Assertions.assertThat(updatedSampleMetadataAfterUpdate.getImportDate()).isNotEqualTo(importDate);
+        Assertions.assertThat(updatedSampleMetadataAfterUpdate.getImportDate()).isEqualTo(
+                sampleMetadata.getImportDate());
+    }
+
+    /**
+     * Test that the latest metadata returns the expected cmo label,
+     * even when metadata is saved to a sample that a fake date that precedes the "latest" date
+     * @throws Exception
+     */
+    public void testFindLatestSampleMetadataAfterSavingNewPredatedSample() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        String igoId = "MOCKREQUEST1_B_3";
+        String importDate = "2000-06-10";
+
+        SampleMetadata sampleMetadata = sampleService.getResearchSampleByRequestAndIgoId(
+                requestId, igoId).getLatestSampleMetadata();
+        SampleMetadata predatedSampleMetadata = new SampleMetadata();
+        predatedSampleMetadata.setPrimaryId(igoId);
+        predatedSampleMetadata.setIgoRequestId(requestId);
+        predatedSampleMetadata.setCmoPatientId(sampleMetadata.getCmoPatientId());
+        predatedSampleMetadata.setImportDate(importDate);
+        predatedSampleMetadata.setCmoSampleName("C-OLDSAMPLELABEL-T11");
+        SmileSample predatedSample = new SmileSample();
+        predatedSample.addSampleMetadata(predatedSampleMetadata);
+
+        sampleService.saveSmileSample(predatedSample);
+        SampleMetadata updatedSampleMetadataAfterSave = sampleService.getResearchSampleByRequestAndIgoId(
+                requestId, igoId).getLatestSampleMetadata();
+        Assertions.assertThat(updatedSampleMetadataAfterSave.getImportDate()).isNotEqualTo(importDate);
+        Assertions.assertThat(updatedSampleMetadataAfterSave.getImportDate()).isEqualTo(
+                sampleMetadata.getImportDate());
+    }
 
     /**
      * Tests if samples found by a valid uuid and igoId are the same (not null)
