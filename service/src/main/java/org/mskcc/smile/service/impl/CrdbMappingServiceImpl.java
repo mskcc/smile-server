@@ -42,7 +42,7 @@ public class CrdbMappingServiceImpl implements CrdbMappingService {
         };
         Object result = runQueryWithForcedTimeout(task);
         if (result != null) {
-            return result.toString();
+            return "C-" + result.toString();
         }
         return null;
     }
