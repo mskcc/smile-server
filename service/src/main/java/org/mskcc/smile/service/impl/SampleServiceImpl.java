@@ -139,6 +139,10 @@ public class SampleServiceImpl implements SmileSampleService {
         // in the database and removing the former sample-to-patient relationship
         if (patientByLatestCmoId == null) {
             SmilePatient newPatient = new SmilePatient(sampleMetadata.getCmoPatientId(), "cmoId");
+            //if this sample is a clinical sample, we would also need to add dmpId
+            if (sample.getDatasource() == "dmp") {
+                newPatient.addPatientAlias(new PatientAlias(sampleMetadata.getPrimaryId().substring(0,8), "dmpId"));
+            }
             patientService.savePatientMetadata(newPatient);
             sample.setPatient(newPatient);
             // remove sample-to-patient relationship from former patient node
