@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
@@ -28,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class SampleServiceImpl implements SmileSampleService {
+    private static final Pattern DMP_PATIENT_ID = Pattern.compile("P-\\d*");
     @Autowired
     private JsonComparator jsonComparator;
 
@@ -139,6 +142,13 @@ public class SampleServiceImpl implements SmileSampleService {
         // in the database and removing the former sample-to-patient relationship
         if (patientByLatestCmoId == null) {
             SmilePatient newPatient = new SmilePatient(sampleMetadata.getCmoPatientId(), "cmoId");
+            //if this sample is a clinical sample, we would also need to add dmpId
+            if (sample.getSampleCategory().equals("clinical")) {
+                Matcher matcher = DMP_PATIENT_ID.matcher(sampleMetadata.getPrimaryId());
+                if (matcher.find()) {
+                    newPatient.addPatientAlias(new PatientAlias(matcher.group(), "dmpId"));
+                }
+            }
             patientService.savePatientMetadata(newPatient);
             sample.setPatient(newPatient);
             // remove sample-to-patient relationship from former patient node
