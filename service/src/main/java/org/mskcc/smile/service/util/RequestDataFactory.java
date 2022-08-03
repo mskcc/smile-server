@@ -56,10 +56,12 @@ public class RequestDataFactory {
         IgoSampleManifest[] samples = mapper.convertValue(map.get("samples"),
                 IgoSampleManifest[].class);
         String requestId = (String) map.get("requestId");
+        Boolean isCmoRequest = (Boolean) map.get("isCmoRequest");
 
         List<SmileSample> requestSamplesList = new ArrayList<>();
         for (IgoSampleManifest s: samples) {
-            SmileSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(requestId, s);
+            SmileSample sample = SampleDataFactory
+                    .buildNewResearchSampleFromMetadata(requestId, s, isCmoRequest);
             requestSamplesList.add(sample);
         }
         return requestSamplesList;

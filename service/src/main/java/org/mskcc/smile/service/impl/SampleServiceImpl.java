@@ -199,15 +199,15 @@ public class SampleServiceImpl implements SmileSampleService {
         // so if a new sample is encountered we should persist it to the database
         // a new sample without a existing request will not be persisted
         if (existingSample == null) {
-            LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
-            SmileSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(
-                    sampleMetadata.getIgoRequestId(), sampleMetadata);
             SmileRequest request = requestService.getSmileRequestById(sampleMetadata.getIgoRequestId());
             if (request == null) {
                 LOG.error("Failed to persist sample metadata updates, "
                         + "request does not exist " + sampleMetadata.getIgoRequestId());
                 return Boolean.FALSE;
             }
+            LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
+            SmileSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(
+                    sampleMetadata.getIgoRequestId(), sampleMetadata, request.getIsCmoRequest());
             saveSmileSample(sample);
             createSampleRequestRelationship(sample.getSmileSampleId(), request.getSmileRequestId());
             return Boolean.TRUE;
