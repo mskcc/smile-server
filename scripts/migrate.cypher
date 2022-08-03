@@ -111,13 +111,12 @@ SET s.smileSampleId = s.metaDbSampleId
 REMOVE s.metaDbSampleId
 RETURN true;
 
-
 // populate research samples with additionalProperties = {"igoRequestId": [requestId], "isCmoSample": [isCmoRequest]}
-MATCH (sm: SampleMetadata {additionalProperties: "{}"})<-[:HAS_METADATA]-(s: Sample)<-[:HAS_SAMPLE]-(r: Request) 
+MATCH (sm: SampleMetadata)<-[:HAS_METADATA]-(s: Sample {sampleCategory: "research"})<-[:HAS_SAMPLE]-(r: Request)
 CALL {
 	WITH r
-	MATCH (sm2: SampleMetadata {additionalProperties: "{}"})<-[:HAS_METADATA]-(s2:Sample)<-[:HAS_SAMPLE]-(r)
-	RETURN "{\"igoRequestId\": " + r.igoRequestId + ", \"isCmoSample\": " + r.isCmoRequest + "}" as additionalProperties
+	MATCH (sm2: SampleMetadata)<-[:HAS_METADATA]-(s2:Sample)<-[:HAS_SAMPLE]-(r)
+	RETURN "{\"igoRequestId\": \"" + r.igoRequestId + "\", \"isCmoSample\": \"" + r.isCmoRequest + "\"}" as additionalProperties
 }
 SET sm.additionalProperties = additionalProperties
 RETURN true
