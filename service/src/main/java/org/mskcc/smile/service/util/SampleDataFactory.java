@@ -41,14 +41,20 @@ public class SampleDataFactory {
     /**
      * Method factory returns an instance of SmileSample with sampleCategory "research"
      * from an instance of SampleMetadata and the provided request id.
+     * @param requestId
      * @param sampleMetadata
+     * @param isCmoRequest
      * @return SmileSample
      */
     public static SmileSample buildNewResearchSampleFromMetadata(String requestId,
-            SampleMetadata sampleMetadata) {
+            SampleMetadata sampleMetadata, Boolean isCmoRequest) {
         sampleMetadata.setIgoRequestId(requestId);
         if (sampleMetadata.getImportDate() == null) {
             sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        }
+        sampleMetadata.addAdditionalProperty("igoRequestId", requestId);
+        if (isCmoRequest != null) {
+            sampleMetadata.addAdditionalProperty("isCmoSample", Boolean.TRUE.toString());
         }
 
         SmileSample sample = new SmileSample();
@@ -71,13 +77,14 @@ public class SampleDataFactory {
      * from an instance of SampleMetadata and the provided request id.
      * @param requestId
      * @param igoSampleManifest
+     * @param isCmoRequest
      * @return SmileSample
      * @throws JsonProcessingException
      */
     public static SmileSample buildNewResearchSampleFromMetadata(String requestId,
-            IgoSampleManifest igoSampleManifest) throws JsonProcessingException {
+            IgoSampleManifest igoSampleManifest, Boolean isCmoRequest) throws JsonProcessingException {
         SampleMetadata sampleMetadata = new SampleMetadata(igoSampleManifest);
-        return buildNewResearchSampleFromMetadata(requestId, sampleMetadata);
+        return buildNewResearchSampleFromMetadata(requestId, sampleMetadata, null);
     }
 
     /**
@@ -86,6 +93,7 @@ public class SampleDataFactory {
      * @param cmoPatientId
      * @param dmpSampleMetadata
      * @return SmileSample
+     * @throws ParseException
      */
     public static SmileSample buildNewClinicalSampleFromMetadata(String cmoPatientId,
             DmpSampleMetadata dmpSampleMetadata) throws ParseException {
