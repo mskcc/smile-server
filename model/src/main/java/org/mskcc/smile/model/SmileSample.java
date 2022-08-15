@@ -61,6 +61,22 @@ public class SmileSample implements Serializable {
         sampleAliases.add(sampleAlias);
     }
 
+    /**
+     * Updates value of sampleAlias for a given namespace
+     * @param namespace
+     * @param value
+     */
+    public void updateSampleAlias(String namespace, String value) {
+        if (sampleAliases != null) {
+            for (SampleAlias sa: sampleAliases) {
+                if (sa.getNamespace().equals(namespace)) {
+                    sa.setValue(value);
+                    break;
+                }
+            }
+        }
+    }
+
     public SmilePatient getPatient() {
         return patient;
     }

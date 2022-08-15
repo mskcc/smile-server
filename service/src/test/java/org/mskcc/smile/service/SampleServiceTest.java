@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mskcc.smile.model.SampleAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
@@ -510,5 +511,39 @@ public class SampleServiceTest {
         Boolean isUpdated = sampleService.updateSampleMetadata(newSampleMetadata);
 
         Assertions.assertThat(isUpdated).isEqualTo(Boolean.FALSE);
+    }
+
+    /**
+     * Tests if sampleAlias list is updated when sampleMetadata
+     * has an investigatorId update
+     * @throws Exception
+     */
+    @Test
+    public void testInvestigatorIdUpdate() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        String igoId = "MOCKREQUEST1_B_4";
+
+        SmileSample oldSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        SampleMetadata oldSampleMetadata = oldSample.getLatestSampleMetadata();
+
+        SampleMetadata newSampleMetadata = new SampleMetadata();
+        newSampleMetadata.setIgoRequestId(requestId);
+        newSampleMetadata.setPrimaryId(igoId);
+        newSampleMetadata.setCmoPatientId(oldSampleMetadata.getCmoPatientId());
+        newSampleMetadata.setInvestigatorSampleId("NEW-INVEST-ID");
+        Boolean isUpdated = sampleService.updateSampleMetadata(newSampleMetadata);
+
+        Assertions.assertThat(isUpdated).isEqualTo(Boolean.TRUE);
+
+        SmileSample newSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        SampleMetadata sampleMetadata = newSample.getLatestSampleMetadata();
+        List<SampleAlias> sampleAliasList =
+                sampleRepository.findAllSampleAliases(oldSample.getSmileSampleId());
+
+        for (SampleAlias sa: sampleAliasList) {
+            if (sa.getNamespace().equals("investigatorId")) {
+                Assertions.assertThat(sa.getValue()).isEqualTo(sampleMetadata.getInvestigatorSampleId());
+            }
+        }
     }
 }
