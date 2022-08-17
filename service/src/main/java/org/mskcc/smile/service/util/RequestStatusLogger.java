@@ -25,7 +25,6 @@ public class RequestStatusLogger {
 
     private File requestStatusLoggerFile;
 
-    @Autowired
     private static final String[] REQUEST_LOGGER_FILE_HEADER = new String[]{"DATE", "STATUS", "MESSAGE"};
 
     /**
@@ -50,7 +49,7 @@ public class RequestStatusLogger {
      * Writes request contents and status to the request status logger file.
      * @param message
      * @param status
-     * @throws IOException 
+     * @throws IOException
      */
     public void logRequestStatus(String message, StatusType status) throws IOException {
         if (requestStatusLoggerFile ==  null) {
