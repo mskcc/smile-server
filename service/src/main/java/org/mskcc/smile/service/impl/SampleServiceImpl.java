@@ -65,7 +65,9 @@ public class SampleServiceImpl implements SmileSampleService {
             if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata,
                     sample.getSampleCategory().equals("research"))) {
                 LOG.info("Found updates to persist for sample: " + existingSample.getPrimarySampleAlias());
-                existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
+                SampleMetadata newSampleMetadata = sample.getLatestSampleMetadata();
+                existingSample.updateSampleMetadata(newSampleMetadata);
+
                 // Updates investigatorId sampleAlias if sampleMetadata investigatorSampleId has been updated
                 if (existingSample.getDatasource().equals("igo")
                         && !existingMetadata.getInvestigatorSampleId()
@@ -73,7 +75,13 @@ public class SampleServiceImpl implements SmileSampleService {
                     existingSample.updateSampleAlias("investigatorId",
                             sampleMetadata.getInvestigatorSampleId());
                 }
-                
+
+                // If there is a TumorOrSample update in SampleMetadata level,
+                // then sampleClass should also be updated in the SmileSample level
+                if (!existingSample.getSampleClass().equals(newSampleMetadata.getTumorOrNormal())) {
+                    existingSample.setSampleClass(newSampleMetadata.getTumorOrNormal());
+                }
+
                 // determine where a patient swap is required also
                 if (!sample.getPatient().getSmilePatientId().equals(
                         existingSample.getPatient().getSmilePatientId())) {

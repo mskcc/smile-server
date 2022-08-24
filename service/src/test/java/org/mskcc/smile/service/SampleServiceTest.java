@@ -546,4 +546,32 @@ public class SampleServiceTest {
             }
         }
     }
+
+    /**
+     * Tests if sampleClass from SmileSample level is updated
+     * when there is tumorOrNormal update in the SampleMetadata level
+     * @throws Exception
+     */
+    @Test
+    public void testTumorOrNormalUpdate() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        String igoId = "MOCKREQUEST1_B_3";
+
+        SmileSample oldSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        SampleMetadata oldSampleMetadata = oldSample.getLatestSampleMetadata();
+
+        SampleMetadata sampleMetadata = new SampleMetadata();
+        sampleMetadata.setIgoRequestId(requestId);
+        sampleMetadata.setPrimaryId(igoId);
+        sampleMetadata.setCmoPatientId(oldSampleMetadata.getCmoPatientId());
+        sampleMetadata.setTumorOrNormal("tumor");
+        Boolean isUpdated = sampleService.updateSampleMetadata(sampleMetadata);
+
+        Assertions.assertThat(isUpdated).isEqualTo(Boolean.TRUE);
+
+        SmileSample newSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        SampleMetadata newSampleMetadata = newSample.getLatestSampleMetadata();
+
+        Assertions.assertThat(newSample.getSampleClass()).isEqualTo(newSampleMetadata.getTumorOrNormal());
+    }
 }
