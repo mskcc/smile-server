@@ -564,7 +564,7 @@ public class SampleServiceTest {
         sampleMetadata.setIgoRequestId(requestId);
         sampleMetadata.setPrimaryId(igoId);
         sampleMetadata.setCmoPatientId(oldSampleMetadata.getCmoPatientId());
-        sampleMetadata.setTumorOrNormal("tumor");
+        sampleMetadata.setTumorOrNormal("Tumor");
         Boolean isUpdated = sampleService.updateSampleMetadata(sampleMetadata);
 
         Assertions.assertThat(isUpdated).isEqualTo(Boolean.TRUE);
