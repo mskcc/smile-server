@@ -25,3 +25,4 @@ mockRequest2aEmptySampleManifestValues	incoming_requests/mocked_request2a_one_em
 mockRequest1SamplesMissingFastQs	incoming_requests/mocked_request1_sample_missing_fastqs.json	Mock requset json with 2 samples missing fastqs
 mockRequest1AllSamplesMissingFastQs	incoming_requests/mocked_request1_all_samples_missing_fastqs.json	Mock requset json with all samples missing fastqs
 mockRequest1eNullStringBaitSet	incoming_requests/mocked_request1e_null_string_baitset.json	Mock requset json with "null" baitset values
+mockIncomingRequest1JsonDataWithLibraryUpdate	incoming_requests/mocked_request1_complete_tumor_normal_updated_libraries.json	Mock incoming request json with 2 tumor samples and 2 matching normals. Updated libraries for one sample.
