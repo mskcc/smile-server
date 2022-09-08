@@ -574,4 +574,28 @@ public class SampleServiceTest {
 
         Assertions.assertThat(newSample.getSampleClass()).isEqualTo(newSampleMetadata.getTumorOrNormal());
     }
+
+    /**
+     * Tests that changes in nested sample metadata properties are detected.
+     * @throws Exception
+     */
+    @Test
+    public void testSampleUpdatesAtLibraryLevel() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        String igoId = "MOCKREQUEST1_B_1";
+
+        SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest1JsonDataWithLibraryUpdate");
+        SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
+                updatedRequestData.getJsonString());
+        for (SmileSample updatedSample : updatedRequest.getSmileSampleList()) {
+            SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
+            if (updatedMetadata.getPrimaryId().equals(igoId)) {
+                Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(
+                        existingSample.getLatestSampleMetadata(), updatedMetadata, Boolean.TRUE);
+                Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
+            }
+        }
+    }
 }
