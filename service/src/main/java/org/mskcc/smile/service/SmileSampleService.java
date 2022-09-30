@@ -11,7 +11,7 @@ import org.mskcc.smile.model.web.SmileSampleIdMapping;
 public interface SmileSampleService {
     SmileSample saveSmileSample(SmileSample smileSample) throws Exception;
     SmileSample fetchAndLoadPatientDetails(SmileSample smileSample) throws Exception;
-    Boolean updateSampleMetadata(SampleMetadata sampleMetadata) throws Exception;
+    Boolean updateSampleMetadata(SampleMetadata sampleMetadata, Boolean fromLims) throws Exception;
     List<SmileSample> getMatchedNormalsBySample(SmileSample smileSample)
             throws Exception;
     List<String> getPooledNormalsBySample(SmileSample smileSample) throws Exception;
@@ -20,7 +20,7 @@ public interface SmileSampleService {
     List<SmileSample> getResearchSamplesByRequestId(String requestId) throws Exception;
     List<SampleMetadata> getResearchSampleMetadataHistoryByIgoId(String igoId) throws Exception;
     Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata,
-            SampleMetadata sampleMetadata, Boolean isResearchSample)
+            SampleMetadata sampleMetadata, Boolean isResearchSample, Boolean fromLims)
             throws Exception;
     PublishedSmileSample getPublishedSmileSample(UUID smileSampleId) throws Exception;
     List<PublishedSmileSample> getPublishedSmileSamplesByCmoPatientId(String cmoPatientId)

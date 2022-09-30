@@ -154,6 +154,37 @@ public class SmileSample implements Serializable {
         return null;
     }
 
+    /**
+     * Applies IGO LIMS updates for the following fields
+     * @param sampleMetadata
+     * @return
+     */
+    public void applyIgoLimsUpdates(SampleMetadata sampleMetadata) throws ParseException {
+        SampleMetadata latestSampleMetadata = getLatestSampleMetadata();
+
+        sampleMetadata.setId(null);
+        sampleMetadata.setCmoPatientId(latestSampleMetadata.getCmoPatientId());
+        sampleMetadata.setInvestigatorSampleId(latestSampleMetadata.getInvestigatorSampleId());
+        sampleMetadata.setInvestigatorSampleId(latestSampleMetadata.getInvestigatorSampleId());
+        sampleMetadata.setSampleName(latestSampleMetadata.getSampleName());
+        sampleMetadata.setCmoInfoIgoId(latestSampleMetadata.getCmoInfoIgoId());
+        sampleMetadata.setOncotreeCode(latestSampleMetadata.getOncotreeCode());
+        sampleMetadata.setCollectionYear(latestSampleMetadata.getCollectionYear());
+        sampleMetadata.setTubeId(latestSampleMetadata.getTubeId());
+        sampleMetadata.setSpecies(latestSampleMetadata.getSpecies());
+        sampleMetadata.setSex(latestSampleMetadata.getSex());
+        sampleMetadata.setTumorOrNormal(latestSampleMetadata.getTumorOrNormal());
+        sampleMetadata.setSampleType(latestSampleMetadata.getSampleType());
+        sampleMetadata.setPreservation(latestSampleMetadata.getPreservation());
+        sampleMetadata.setSampleClass(latestSampleMetadata.getSampleClass());
+        sampleMetadata.setSampleOrigin(latestSampleMetadata.getSampleOrigin());
+        sampleMetadata.setTissueLocation(latestSampleMetadata.getTissueLocation());
+        sampleMetadata.setGenePanel(latestSampleMetadata.getGenePanel());
+        sampleMetadata.setIgoComplete(latestSampleMetadata.getIgoComplete());
+
+        addSampleMetadata(sampleMetadata);
+    }
+
     public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
         sampleMetadata.setId(null);
         addSampleMetadata(sampleMetadata);

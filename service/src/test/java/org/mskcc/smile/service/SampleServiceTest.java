@@ -199,7 +199,7 @@ public class SampleServiceTest {
     }
 
     /**
-     * Tests if sampleHasMetadataUpdates accurately recognizes changes in sampleMetadata
+     * Tests if sampleHasMetadataUpdates accurately recognizes non-IGO property changes in sampleMetadata
      * @throws Exception
      */
     @Test
@@ -215,7 +215,7 @@ public class SampleServiceTest {
         SmileSample updatedSample = updatedRequest.getSmileSampleList().get(0);
 
         Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(sample.getLatestSampleMetadata(),
-                updatedSample.getLatestSampleMetadata(), Boolean.TRUE);
+                updatedSample.getLatestSampleMetadata(), Boolean.TRUE, Boolean.FALSE);
         Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
 
     }
@@ -310,7 +310,7 @@ public class SampleServiceTest {
         predatedSampleMetadata.setImportDate(importDate);
         predatedSampleMetadata.setCmoSampleName("C-OLDSAMPLELABEL-T11");
 
-        sampleService.updateSampleMetadata(predatedSampleMetadata);
+        sampleService.updateSampleMetadata(predatedSampleMetadata, Boolean.FALSE);
         SampleMetadata updatedSampleMetadataAfterUpdate = sampleService.getResearchSampleByRequestAndIgoId(
                 requestId, igoId).getLatestSampleMetadata();
         Assertions.assertThat(updatedSampleMetadataAfterUpdate.getImportDate()).isNotEqualTo(importDate);
@@ -399,13 +399,48 @@ public class SampleServiceTest {
         updatedMetadata.setImportDate("2000-10-15");
         updatedMetadata.setBaitSet("NEW BAIT SET");
         updatedMetadata.setGenePanel("NEW GENE PANEL");
-        updatedSample.addSampleMetadata(updatedMetadata);
-        sampleService.saveSmileSample(updatedSample);
+        sampleService.updateSampleMetadata(updatedMetadata, Boolean.TRUE);
 
         // confirm that the sample metadata history size increases
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
+    }
+    
+    /**
+     * Tests if sampleMetadata with invalid updates are not persisted to database
+     * @throws Exception
+     */
+    @Test
+    public void testInvalidIgoUpdateSampleMetadata() throws Exception {
+        MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
+        SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
+                updatedRequestData.getJsonString());
+        // get the updated sample data from the mocked updated request
+        String igoId = "MOCKREQUEST1_B_2";
+        SmileSample updatedSample = null;
+        for (SmileSample s : updatedRequest.getSmileSampleList()) {
+            if (s.getLatestSampleMetadata().getPrimaryId().equals(igoId)) {
+                updatedSample = s;
+                break;
+            }
+        }
+        Assertions.assertThat(updatedSample).isNotNull();
+        
+        String invalidCollectionYear = "INVALID IGO UPDATE";
+        SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
+        updatedMetadata.setImportDate("2000-10-15");
+        updatedMetadata.setBaitSet("NEW BAIT SET");
+        updatedMetadata.setGenePanel("NEW GENE PANEL");
+        updatedMetadata.setCollectionYear(invalidCollectionYear);
+        sampleService.updateSampleMetadata(updatedMetadata, Boolean.TRUE);
+
+        // confirm that the sample metadata only has updated with accepted igo property updates
+        String requestId = "MOCKREQUEST1_B";
+        SmileSample savedSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        SampleMetadata latestSampleMetadata = savedSample.getLatestSampleMetadata();
+        Assertions.assertThat(latestSampleMetadata.getCollectionYear()).isNotEqualTo(invalidCollectionYear);
     }
 
 
@@ -447,7 +482,7 @@ public class SampleServiceTest {
         String updatedLabel = updatedMetadata.getCmoSampleName().replace(currentCmoPtId, swappedCmoPtId);
         updatedMetadata.setCmoPatientId(swappedCmoPtId);
         updatedMetadata.setCmoSampleName(updatedLabel);
-        updatedSample.updateSampleMetadata(updatedMetadata);
+        updatedSample.addSampleMetadata(updatedMetadata);
         sampleService.saveSmileSample(updatedSample);
 
         // confirm that the sample metadata history size increases
@@ -485,7 +520,7 @@ public class SampleServiceTest {
         newSampleMetadata.setPrimaryId("NEW-IGO-ID-A");
         newSampleMetadata.setCmoPatientId(sampleMetadata.getCmoPatientId());
 
-        sampleService.updateSampleMetadata(newSampleMetadata);
+        sampleService.updateSampleMetadata(newSampleMetadata, Boolean.TRUE);
 
         Assertions.assertThat(sampleService.getResearchSamplesByRequestId(requestId).size()).isEqualTo(5);
     }
@@ -508,7 +543,7 @@ public class SampleServiceTest {
         newSampleMetadata.setPrimaryId("NEW-IGO-ID-B");
         newSampleMetadata.setCmoPatientId(sampleMetadata.getCmoPatientId());
 
-        Boolean isUpdated = sampleService.updateSampleMetadata(newSampleMetadata);
+        Boolean isUpdated = sampleService.updateSampleMetadata(newSampleMetadata, Boolean.FALSE);
 
         Assertions.assertThat(isUpdated).isEqualTo(Boolean.FALSE);
     }
@@ -531,7 +566,7 @@ public class SampleServiceTest {
         newSampleMetadata.setPrimaryId(igoId);
         newSampleMetadata.setCmoPatientId(oldSampleMetadata.getCmoPatientId());
         newSampleMetadata.setInvestigatorSampleId("NEW-INVEST-ID");
-        Boolean isUpdated = sampleService.updateSampleMetadata(newSampleMetadata);
+        Boolean isUpdated = sampleService.updateSampleMetadata(newSampleMetadata, Boolean.FALSE);
 
         Assertions.assertThat(isUpdated).isEqualTo(Boolean.TRUE);
 
@@ -565,7 +600,7 @@ public class SampleServiceTest {
         sampleMetadata.setPrimaryId(igoId);
         sampleMetadata.setCmoPatientId(oldSampleMetadata.getCmoPatientId());
         sampleMetadata.setTumorOrNormal("Tumor");
-        Boolean isUpdated = sampleService.updateSampleMetadata(sampleMetadata);
+        Boolean isUpdated = sampleService.updateSampleMetadata(sampleMetadata, Boolean.FALSE);
 
         Assertions.assertThat(isUpdated).isEqualTo(Boolean.TRUE);
 
@@ -593,7 +628,8 @@ public class SampleServiceTest {
             SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
             if (updatedMetadata.getPrimaryId().equals(igoId)) {
                 Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(
-                        existingSample.getLatestSampleMetadata(), updatedMetadata, Boolean.TRUE);
+                        existingSample.getLatestSampleMetadata(), updatedMetadata,
+                        Boolean.TRUE, Boolean.FALSE);
                 Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
             }
         }

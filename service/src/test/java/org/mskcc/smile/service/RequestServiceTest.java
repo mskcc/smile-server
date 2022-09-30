@@ -138,7 +138,8 @@ public class RequestServiceTest {
                 request1Data.getJsonString());
         Assertions.assertThat(requestHasExpectedFieldsPopulated(requestFromMockData)).isTrue();
 
-        Boolean isUpdated = requestService.requestHasUpdates(existingRequest, requestFromMockData);
+        Boolean isUpdated = requestService.requestHasUpdates(existingRequest,
+                requestFromMockData, Boolean.FALSE);
         Assertions.assertThat(isUpdated).isEqualTo(Boolean.FALSE);
     }
 
@@ -159,14 +160,14 @@ public class RequestServiceTest {
         Assertions.assertThat(requestHasExpectedFieldsPopulated(updatedRequest)).isTrue();
 
         Boolean hasUpdates = requestService.requestHasUpdates(
-                origRequest, updatedRequest);
+                origRequest, updatedRequest, Boolean.FALSE);
         Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
 
 
         RequestMetadata updatedMetadata = RequestDataFactory.buildNewRequestMetadataFromMetadata(
                 updatedRequestData.getJsonString());
         Boolean hasMetadataUpdates = requestService.requestHasMetadataUpdates(
-                origRequest.getLatestRequestMetadata(), updatedMetadata);
+                origRequest.getLatestRequestMetadata(), updatedMetadata, Boolean.FALSE);
         Assertions.assertThat(hasMetadataUpdates).isEqualTo(Boolean.TRUE);
     }
 
@@ -187,7 +188,7 @@ public class RequestServiceTest {
                 .buildNewRequestMetadataFromMetadata(updatedRequestMetadataData.getJsonString());
 
         Boolean hasUpdates = requestService.requestHasMetadataUpdates(
-                origRequest.getLatestRequestMetadata(), updatedRequestMetadata);
+                origRequest.getLatestRequestMetadata(), updatedRequestMetadata, Boolean.FALSE);
         Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
     }
 
@@ -226,6 +227,31 @@ public class RequestServiceTest {
                 updatedRequest);
         Assertions.assertThat(sampleList.size()).isEqualTo(2);
 
+    }
+    
+    /**
+     * Tests case where incoming request contains samples with
+     * invalid metadata updates and should not be persisted.
+     * @throws Exception
+     */
+    @Test
+    public void testInvaildIgoRequestUpdates() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        SmileRequest origRequest = requestService.getSmileRequestById(requestId);
+        
+        MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
+        SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
+                updatedRequestData.getJsonString());
+        
+        Boolean hasUpdates = requestService.requestHasMetadataUpdates(origRequest.getLatestRequestMetadata(),
+                updatedRequest.getLatestRequestMetadata(), Boolean.TRUE);
+        Assertions.assertThat(hasUpdates).isTrue();
+        
+        requestService.saveRequest(updatedRequest);
+        SmileRequest existingRequest = requestService.getSmileRequestById(requestId);
+        Assertions.assertThat(existingRequest.getIsCmoRequest()).isTrue();
+        Assertions.assertThat(existingRequest.getQcAccessEmails()).isNotEqualTo("invalid-igo-update"); 
     }
 
     /**
@@ -350,8 +376,28 @@ public class RequestServiceTest {
                 .get("mockUpdatedPublishedRequest1Metadata");
         RequestMetadata updatedRequestMetadata = RequestDataFactory
                 .buildNewRequestMetadataFromMetadata(updatedRequestMetadataData.getJsonString());
-        requestService.updateRequestMetadata(updatedRequestMetadata);
+        requestService.updateRequestMetadata(updatedRequestMetadata, Boolean.FALSE);
 
         Assertions.assertThat(requestService.getRequestMetadataHistory(requestId).size()).isEqualTo(2);
+    }
+
+    /**
+     * Tests if requestMetadata with invalid updates is being handled correctly
+     * @throws Exception
+     */
+    @Test
+    public void testIgoUpdateRequestMetadata() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        SmileRequest origRequest = requestService.getSmileRequestById(requestId);
+        Assertions.assertThat(requestHasExpectedFieldsPopulated(origRequest)).isTrue();
+
+        MockJsonTestData updatedRequestMetadataData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockUpdatedPublishedRequest1Metadata");
+        RequestMetadata updatedRequestMetadata = RequestDataFactory
+                .buildNewRequestMetadataFromMetadata(updatedRequestMetadataData.getJsonString());
+        // The update shouldn't be persisted because no changes are recognized
+        requestService.updateRequestMetadata(updatedRequestMetadata, Boolean.TRUE);
+
+        Assertions.assertThat(requestService.getRequestMetadataHistory(requestId).size()).isEqualTo(1);
     }
 }

@@ -127,9 +127,13 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                         } else {
                             // request-service and sample-service methods will check for updates and persist
                             // them if applicable (including patient swapping)
-                            requestService.updateRequestMetadata(request.getLatestRequestMetadata());
+                            // Boolean arg in updateRequestMetadata refers to fromLims
+                            requestService.updateRequestMetadata(request.getLatestRequestMetadata(),
+                                    Boolean.TRUE);
                             for (SmileSample sample : request.getSmileSampleList()) {
-                                sampleService.saveSmileSample(sample);
+                                // Boolean arg in updateSampleMetadata refers to fromLims
+                                sampleService.updateSampleMetadata(sample.getLatestSampleMetadata(),
+                                        Boolean.TRUE);
                                 sampleService.createSampleRequestRelationship(sample.getSmileSampleId(),
                                         existingRequest.getSmileRequestId());
                             }
@@ -180,7 +184,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                 try {
                     RequestMetadata requestMetadata = requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (requestMetadata != null) {
-                        if (requestService.updateRequestMetadata(requestMetadata)) {
+                        // Boolean arg in updateRequestMetadata refers to fromLims
+                        if (requestService.updateRequestMetadata(requestMetadata, Boolean.FALSE)) {
                             LOG.info("Publishing Request-level Metadata updates "
                                     + "to " + CMO_REQUEST_UPDATE_TOPIC);
                             SmileRequest existingRequest =
@@ -222,7 +227,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                     SampleMetadata sampleMetadata = researchSampleUpdateQueue.poll(
                             100, TimeUnit.MILLISECONDS);
                     if (sampleMetadata != null) {
-                        if (sampleService.updateSampleMetadata(sampleMetadata)) {
+                        // Boolean arg in updateSampleMetadata refers to fromLims
+                        if (sampleService.updateSampleMetadata(sampleMetadata, Boolean.FALSE)) {
                             SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
                                     sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
                             LOG.info("Publishing sample-level metadata history for research sample: "
