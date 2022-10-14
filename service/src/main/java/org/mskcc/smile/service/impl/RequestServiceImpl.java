@@ -172,17 +172,22 @@ public class RequestServiceImpl implements SmileRequestService {
     }
 
     @Override
-    public Boolean updateRequestMetadata(RequestMetadata requestMetadata) throws Exception {
+    public Boolean updateRequestMetadata(RequestMetadata requestMetadata, Boolean fromLims) throws Exception {
         SmileRequest existingRequest = getSmileRequestById(requestMetadata.getIgoRequestId());
         if (existingRequest == null) {
             LOG.error("Cannot persist updates to a request that does not already exist: "
                     + requestMetadata.getIgoRequestId());
             return Boolean.FALSE;
         }
-        // persist updates for request metadata if applicable
-        if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(), requestMetadata)) {
-            LOG.info("Persisting updates for request: " + existingRequest.getIgoRequestId());
-            existingRequest.updateRequestMetadataByMetadata(requestMetadata);
+        if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(),
+                requestMetadata, fromLims)) {
+            if (fromLims) {
+                LOG.info("Persisting igo property updates for request: " + existingRequest.getIgoRequestId());
+                existingRequest.applyIgoRequestMetadataUpdates(requestMetadata);
+            } else {
+                LOG.info("Persisting updates for request: " + existingRequest.getIgoRequestId());
+                existingRequest.updateRequestMetadataByMetadata(requestMetadata);
+            }
             saveRequestMetadata(existingRequest);
             return Boolean.TRUE;
         }
@@ -205,16 +210,28 @@ public class RequestServiceImpl implements SmileRequestService {
     }
 
     @Override
-    public Boolean requestHasUpdates(SmileRequest existingRequest, SmileRequest request) throws Exception {
-        return !(jsonComparator.isConsistent(mapper.writeValueAsString(existingRequest),
-                mapper.writeValueAsString(request)));
+    public Boolean requestHasUpdates(SmileRequest existingRequest, SmileRequest request,
+            Boolean fromLims) throws Exception {
+        if (fromLims) {
+            return !jsonComparator.isConsistentByIgoProperties(mapper.writeValueAsString(existingRequest),
+                    mapper.writeValueAsString(request));
+        }
+        return !jsonComparator.isConsistent(mapper.writeValueAsString(existingRequest),
+                mapper.writeValueAsString(request));
     }
 
     @Override
     public Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
-            RequestMetadata requestMetadata) throws Exception {
-        return !(jsonComparator.isConsistent(existingRequestMetadata.getRequestMetadataJson(),
-                requestMetadata.getRequestMetadataJson()));
+            RequestMetadata requestMetadata, Boolean fromLims) throws Exception {
+        // if request is  from LIMS, look for updates by igo properties
+        if (fromLims) {
+            return !jsonComparator.isConsistentByIgoProperties(
+                    existingRequestMetadata.getRequestMetadataJson(),
+                    requestMetadata.getRequestMetadataJson());
+        }
+        // if request is not from LIMS, look for updates by all properties
+        return !jsonComparator.isConsistent(existingRequestMetadata.getRequestMetadataJson(),
+                requestMetadata.getRequestMetadataJson());
     }
 
     @Override
@@ -230,7 +247,7 @@ public class RequestServiceImpl implements SmileRequestService {
             }
             Boolean sampleHasUpdates =
                     sampleService.sampleHasMetadataUpdates(existingSample.getLatestSampleMetadata(),
-                    sample.getLatestSampleMetadata(), Boolean.TRUE);
+                    sample.getLatestSampleMetadata(), Boolean.TRUE, Boolean.FALSE);
             if (sampleHasUpdates) {
                 existingSample.updateSampleMetadata(sample.getLatestSampleMetadata());
                 updatedSamples.add(existingSample);

@@ -397,6 +397,25 @@ public class SmileRequest implements Serializable {
     }
 
     /**
+     * Updates by LIMS
+     * Update Metadata to only include accepted updates for a list of fields
+     * @param requestMetadata
+     * @throws JsonProcessingException
+     */
+    public void applyIgoRequestMetadataUpdates(RequestMetadata requestMetadata)
+            throws JsonProcessingException {
+        Map<String, Object> metadataMap =
+                mapper.readValue(requestMetadata.getRequestMetadataJson(), Map.class);
+
+        this.genePanel = resolveGenePanel(metadataMap);
+        this.strand = String.valueOf(metadataMap.get("strand"));
+        this.libraryType = String.valueOf(metadataMap.get("libraryType"));
+        this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
+        this.pooledNormals = mapper.convertValue(metadataMap.get("pooledNormals"), List.class);
+        addRequestMetadata(requestMetadata);
+    }
+
+    /**
      * Resolves gene panel from recipe or genePanel sample json field.
      * @param metadataMap
      * @return String

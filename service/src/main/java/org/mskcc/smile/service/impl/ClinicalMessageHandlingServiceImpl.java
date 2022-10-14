@@ -126,7 +126,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     mapper.writeValueAsString(smileSample));
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(),
-                                smileSample.getLatestSampleMetadata(), Boolean.FALSE)) {
+                                smileSample.getLatestSampleMetadata(), Boolean.FALSE, Boolean.FALSE)) {
                             LOG.info("Found updates for sample - persisting to database: "
                                     + smileSample.getPrimarySampleAlias());
                             existingSample.updateSampleMetadata(smileSample.getLatestSampleMetadata());
@@ -180,7 +180,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     mapper.writeValueAsString(smileSample));
                         } else if (sampleService.sampleHasMetadataUpdates(
                                 existingSample.getLatestSampleMetadata(),
-                                smileSample.getLatestSampleMetadata(), Boolean.FALSE)) {
+                                smileSample.getLatestSampleMetadata(), Boolean.FALSE, Boolean.FALSE)) {
                             LOG.info("Found updates for sample - persisting to database: "
                                     + smileSample.getPrimarySampleAlias());
                             existingSample.updateSampleMetadata(smileSample.getLatestSampleMetadata());

@@ -62,35 +62,33 @@ public class SampleServiceImpl implements SmileSampleService {
             getDetailedSmileSample(existingSample);
             SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
             SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
-            if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata,
-                    sample.getSampleCategory().equals("research"))) {
-                LOG.info("Found updates to persist for sample: " + existingSample.getPrimarySampleAlias());
-                existingSample.updateSampleMetadata(sampleMetadata);
 
-                // Updates investigatorId sampleAlias if sampleMetadata investigatorSampleId has been updated
-                if (existingSample.getDatasource().equals("igo")
-                        && !existingMetadata.getInvestigatorSampleId()
-                            .equals(sampleMetadata.getInvestigatorSampleId())) {
-                    existingSample.updateSampleAlias("investigatorId",
-                            sampleMetadata.getInvestigatorSampleId());
-                }
+            // Updates SmileSample metadata history with the latest sampleMetadata updates
+            existingSample.updateSampleMetadata(sampleMetadata);
 
-                // If there is a TumorOrNormal update in SampleMetadata level,
-                // then sampleClass should also be updated in the SmileSample level
-                if (!existingSample.getSampleClass().equals(sampleMetadata.getTumorOrNormal())) {
-                    existingSample.setSampleClass(sampleMetadata.getTumorOrNormal());
-                }
-
-                // determine where a patient swap is required also
-                if (!sample.getPatient().getSmilePatientId().equals(
-                        existingSample.getPatient().getSmilePatientId())) {
-                    LOG.info("Updating sample-to-patient relationship and removing connection to patient: "
-                            + existingSample.getPatient().getSmilePatientId());
-                    sampleRepository.removeSamplePatientRelationship(existingSample.getSmileSampleId(),
-                            existingSample.getPatient().getSmilePatientId());
-                    existingSample.setPatient(sample.getPatient());
-                }
+            // Updates investigatorId sampleAlias if sampleMetadata investigatorSampleId has been updated
+            if (existingSample.getDatasource().equals("igo")
+                    && !existingMetadata.getInvestigatorSampleId()
+                        .equals(sampleMetadata.getInvestigatorSampleId())) {
+                existingSample.updateSampleAlias("investigatorId",
+                        sampleMetadata.getInvestigatorSampleId());
             }
+
+            // If there is a TumorOrNormal update in SampleMetadata level,
+            // then sampleClass should also be updated in the SmileSample level
+            if (!existingSample.getSampleClass().equals(sampleMetadata.getTumorOrNormal())) {
+                existingSample.setSampleClass(sampleMetadata.getTumorOrNormal());
+            }
+            // determine where a patient swap is required also
+            if (!sample.getPatient().getSmilePatientId().equals(
+                    existingSample.getPatient().getSmilePatientId())) {
+                LOG.info("Updating sample-to-patient relationship and removing connection to patient: "
+                        + existingSample.getPatient().getSmilePatientId());
+                sampleRepository.removeSamplePatientRelationship(existingSample.getSmileSampleId(),
+                        existingSample.getPatient().getSmilePatientId());
+                existingSample.setPatient(sample.getPatient());
+            }
+
             sampleRepository.save(existingSample);
             return existingSample;
         }
@@ -206,7 +204,7 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public Boolean updateSampleMetadata(SampleMetadata sampleMetadata) throws Exception {
+    public Boolean updateSampleMetadata(SampleMetadata sampleMetadata, Boolean fromLims) throws Exception {
         SmileSample existingSample = getResearchSampleByRequestAndIgoId(
                         sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
         // new samples may come from IGO_NEW_REQUEST which also invokes this method
@@ -230,13 +228,17 @@ public class SampleServiceImpl implements SmileSampleService {
         SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
 
         Boolean isResearchSample = existingSample.getSampleCategory().equals("research");
-        if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata, isResearchSample)
-                || (!sampleHasMetadataUpdates(
-                        existingMetadata, sampleMetadata, isResearchSample)
-                && !existingMetadata.getCmoSampleName()
-                        .equals(sampleMetadata.getCmoSampleName()))) {
-            LOG.info("Persisting updates for sample: " + sampleMetadata.getPrimaryId());
-            existingSample.updateSampleMetadata(sampleMetadata);
+        if (sampleHasMetadataUpdates(existingMetadata, sampleMetadata, isResearchSample,
+                fromLims)) {
+            // create a sampleMetadata with existing sampleMetadata with accepted field updates
+            // from the new sampleMetadata. Set ID to null
+            if (fromLims) {
+                LOG.info("Persisting igo property updates for sample: " + sampleMetadata.getPrimaryId());
+                existingSample.applyIgoLimsUpdates(sampleMetadata);
+            } else {
+                LOG.info("Persisting updates for sample: " + sampleMetadata.getPrimaryId());
+                existingSample.updateSampleMetadata(sampleMetadata);
+            }
             saveSmileSample(existingSample);
             return Boolean.TRUE;
         }
@@ -298,12 +300,15 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata,
-            SampleMetadata sampleMetadata, Boolean isResearchSample) throws Exception {
+            SampleMetadata sampleMetadata, Boolean isResearchSample, Boolean fromLims) throws Exception {
         String existingMetadata = mapper.writeValueAsString(existingSampleMetadata);
         String currentMetadata = mapper.writeValueAsString(sampleMetadata);
-        Boolean isConsistent = jsonComparator.isConsistent(currentMetadata, existingMetadata);
-        // if not consistent then return true since changes were detected
-        if (!isConsistent) {
+        // if sample is from LIMS, look for updates by igo properties
+        if (fromLims && !jsonComparator.isConsistentByIgoProperties(currentMetadata, existingMetadata)) {
+            return Boolean.TRUE;
+        }
+        // if sample is not from LIMS, look for updates by all properties
+        if (!fromLims && !jsonComparator.isConsistent(currentMetadata, existingMetadata)) {
             return Boolean.TRUE;
         }
         // if there is a change to the cmo sample label..

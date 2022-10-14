@@ -11,8 +11,8 @@
   "dataAnalystEmail": "dexterp@mskcc.org",
   "otherContactEmails": "dexterp@mskcc.org",
   "dataAccessEmails": "",
-  "qcAccessEmails": "",
-  "isCmoRequest": true,
+  "qcAccessEmails": "invalid-igo-update",
+  "isCmoRequest": false,
   "bicAnalysis": false,
   "samples": [
     {
