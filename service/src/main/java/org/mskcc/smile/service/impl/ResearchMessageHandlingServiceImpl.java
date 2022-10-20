@@ -1,8 +1,12 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
+
 import io.nats.client.Message;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -80,10 +84,12 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         new LinkedBlockingQueue<SmileRequest>();
     private static final BlockingQueue<SmileRequest> promotedRequestQueue =
         new LinkedBlockingQueue<SmileRequest>();
-    private static final BlockingQueue<RequestMetadata> requestUpdateQueue =
-            new LinkedBlockingQueue<RequestMetadata>();
-    private static final BlockingQueue<SampleMetadata> researchSampleUpdateQueue =
-            new LinkedBlockingQueue<SampleMetadata>();
+    // Boolean in requestUpdateQueue Map.Entry refers to arg fromLims
+    private static final BlockingQueue<Map.Entry<Boolean,RequestMetadata>> requestUpdateQueue =
+            new LinkedBlockingQueue<Map.Entry<Boolean,RequestMetadata>>();
+    // Boolean in researchSampleUpdateQueue Map.Entry refers to arg fromLims
+    private static final BlockingQueue<Map.Entry<Boolean, SampleMetadata>> researchSampleUpdateQueue =
+            new LinkedBlockingQueue<Map.Entry<Boolean, SampleMetadata>>();
 
     private static CountDownLatch newRequestHandlerShutdownLatch;
     private static CountDownLatch promotedRequestHandlerShutdownLatch;
@@ -125,17 +131,9 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             LOG.info("Persisting new request: " + request.getIgoRequestId());
                             requestService.saveRequest(request);
                         } else {
-                            // request-service and sample-service methods will check for updates and persist
-                            // them if applicable (including patient swapping)
-                            // Boolean arg in updateRequestMetadata refers to fromLims
-                            requestService.updateRequestMetadata(request.getLatestRequestMetadata(),
-                                    Boolean.TRUE);
+                            requestUpdateQueue.add(Maps.immutableEntry(Boolean.TRUE, request.getLatestRequestMetadata()));
                             for (SmileSample sample : request.getSmileSampleList()) {
-                                // Boolean arg in updateSampleMetadata refers to fromLims
-                                sampleService.updateSampleMetadata(sample.getLatestSampleMetadata(),
-                                        Boolean.TRUE);
-                                sampleService.createSampleRequestRelationship(sample.getSmileSampleId(),
-                                        existingRequest.getSmileRequestId());
+                                researchSampleUpdateQueue.add(Maps.immutableEntry(Boolean.TRUE, sample.getLatestSampleMetadata()));
                             }
                         }
                         // publish updated/saved request to consistency checker or promoted request topic
@@ -182,14 +180,14 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             phaser.arrive();
             while (true) {
                 try {
-                    RequestMetadata requestMetadata = requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if (requestMetadata != null) {
+                    Entry<Boolean, RequestMetadata> requestMetadataEntry = requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (requestMetadataEntry.getValue() != null) {
                         // Boolean arg in updateRequestMetadata refers to fromLims
-                        if (requestService.updateRequestMetadata(requestMetadata, Boolean.FALSE)) {
+                        if (requestService.updateRequestMetadata(requestMetadataEntry.getValue(), requestMetadataEntry.getKey())) {
                             LOG.info("Publishing Request-level Metadata updates "
                                     + "to " + CMO_REQUEST_UPDATE_TOPIC);
                             SmileRequest existingRequest =
-                                    requestService.getSmileRequestById(requestMetadata.getIgoRequestId());
+                                    requestService.getSmileRequestById(requestMetadataEntry.getValue().getIgoRequestId());
                             // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC
                             messagingGateway.publish(existingRequest.getIgoRequestId(),
                                     CMO_REQUEST_UPDATE_TOPIC,
@@ -224,15 +222,15 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             phaser.arrive();
             while (true) {
                 try {
-                    SampleMetadata sampleMetadata = researchSampleUpdateQueue.poll(
+                    Entry<Boolean, SampleMetadata> sampleMetadataEntry = researchSampleUpdateQueue.poll(
                             100, TimeUnit.MILLISECONDS);
-                    if (sampleMetadata != null) {
+                    if (sampleMetadataEntry.getValue() != null) {
                         // Boolean arg in updateSampleMetadata refers to fromLims
-                        if (sampleService.updateSampleMetadata(sampleMetadata, Boolean.FALSE)) {
+                        if (sampleService.updateSampleMetadata(sampleMetadataEntry.getValue(), sampleMetadataEntry.getKey())) {
                             SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
-                                    sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
+                                    sampleMetadataEntry.getValue().getIgoRequestId(), sampleMetadataEntry.getValue().getPrimaryId());
                             LOG.info("Publishing sample-level metadata history for research sample: "
-                                    + sampleMetadata.getPrimaryId());
+                                    + sampleMetadataEntry.getValue().getPrimaryId());
                             // publish sample-level metadata history to CMO_REQUEST_UPDATE_TOPIC
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(existingSample.getSampleMetadataList()));
@@ -298,7 +296,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         if (!shutdownInitiated) {
-            requestUpdateQueue.put(requestMetadata);
+            requestUpdateQueue.put(Maps.immutableEntry(Boolean.FALSE, requestMetadata));
         } else {
             LOG.error("Shutdown initiated, not accepting request update: " + requestMetadata);
             throw new IllegalStateException("Shutdown initiated, not handling any more requests");
@@ -311,7 +309,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         if (!shutdownInitiated) {
-            researchSampleUpdateQueue.put(sampleMetadata);
+            researchSampleUpdateQueue.put(Maps.immutableEntry(Boolean.FALSE, sampleMetadata));
         } else {
             LOG.error("Shutdown initiated, not accepting research sample update: " + sampleMetadata);
             throw new IllegalStateException("Shutdown initiated, not handling any more samples");
