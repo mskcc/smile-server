@@ -1,10 +1,9 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Maps;
-
 import io.nats.client.Message;
 import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
@@ -130,28 +129,28 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                         if (existingRequest == null) {
                             LOG.info("Persisting new request: " + request.getIgoRequestId());
                             requestService.saveRequest(request);
-                        } else {
-                            requestUpdateQueue.add(Maps.immutableEntry(Boolean.TRUE, request.getLatestRequestMetadata()));
-                            for (SmileSample sample : request.getSmileSampleList()) {
-                                researchSampleUpdateQueue.add(Maps.immutableEntry(Boolean.TRUE, sample.getLatestSampleMetadata()));
+                            // publish saved request to consistency checker or promoted request topic
+                            String requestJson = mapper.writeValueAsString(
+                                    requestService.getPublishedSmileRequestById(request.getIgoRequestId()));
+                            switch (smileRequestDest) {
+                                case NEW_REQUEST_DEST:
+                                    LOG.info("Publishing request to: " + CONSISTENCY_CHECK_NEW_REQUEST);
+                                    messagingGateway.publish(request.getIgoRequestId(),
+                                            CONSISTENCY_CHECK_NEW_REQUEST, requestJson);
+                                    break;
+                                case PROMOTED_REQUEST_DEST:
+                                    LOG.info("Publishing request to: " + CONSUMERS_PROMOTED_REQUEST_TOPIC);
+                                    messagingGateway.publish(request.getIgoRequestId(),
+                                            CONSUMERS_PROMOTED_REQUEST_TOPIC, requestJson);
+                                    break;
+                                default:
+                                    break;
                             }
-                        }
-                        // publish updated/saved request to consistency checker or promoted request topic
-                        String requestJson = mapper.writeValueAsString(
-                                requestService.getPublishedSmileRequestById(request.getIgoRequestId()));
-                        switch (smileRequestDest) {
-                            case NEW_REQUEST_DEST:
-                                LOG.info("Publishing request to: " + CONSISTENCY_CHECK_NEW_REQUEST);
-                                messagingGateway.publish(request.getIgoRequestId(),
-                                        CONSISTENCY_CHECK_NEW_REQUEST, requestJson);
-                                break;
-                            case PROMOTED_REQUEST_DEST:
-                                LOG.info("Publishing request to: " + CONSUMERS_PROMOTED_REQUEST_TOPIC);
-                                messagingGateway.publish(request.getIgoRequestId(),
-                                        CONSUMERS_PROMOTED_REQUEST_TOPIC, requestJson);
-                                break;
-                            default:
-                                break;
+                        } else {
+                            requestUpdateQueue.add(new AbstractMap.SimpleImmutableEntry<>(Boolean.TRUE, request.getLatestRequestMetadata()));
+                            for (SmileSample sample : request.getSmileSampleList()) {
+                                researchSampleUpdateQueue.add(new AbstractMap.SimpleImmutableEntry<>(Boolean.TRUE, sample.getLatestSampleMetadata()));
+                            }
                         }
                     }
                     if (interrupted && requestQueue.isEmpty()) {
@@ -181,7 +180,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             while (true) {
                 try {
                     Entry<Boolean, RequestMetadata> requestMetadataEntry = requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if (requestMetadataEntry.getValue() != null) {
+                    if (requestMetadataEntry != null) {
                         // Boolean arg in updateRequestMetadata refers to fromLims
                         if (requestService.updateRequestMetadata(requestMetadataEntry.getValue(), requestMetadataEntry.getKey())) {
                             LOG.info("Publishing Request-level Metadata updates "
@@ -224,7 +223,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                 try {
                     Entry<Boolean, SampleMetadata> sampleMetadataEntry = researchSampleUpdateQueue.poll(
                             100, TimeUnit.MILLISECONDS);
-                    if (sampleMetadataEntry.getValue() != null) {
+                    if (sampleMetadataEntry != null) {
                         // Boolean arg in updateSampleMetadata refers to fromLims
                         if (sampleService.updateSampleMetadata(sampleMetadataEntry.getValue(), sampleMetadataEntry.getKey())) {
                             SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
@@ -296,7 +295,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         if (!shutdownInitiated) {
-            requestUpdateQueue.put(Maps.immutableEntry(Boolean.FALSE, requestMetadata));
+            requestUpdateQueue.put(new AbstractMap.SimpleImmutableEntry<>(Boolean.FALSE, requestMetadata));
         } else {
             LOG.error("Shutdown initiated, not accepting request update: " + requestMetadata);
             throw new IllegalStateException("Shutdown initiated, not handling any more requests");
@@ -309,7 +308,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         if (!shutdownInitiated) {
-            researchSampleUpdateQueue.put(Maps.immutableEntry(Boolean.FALSE, sampleMetadata));
+            researchSampleUpdateQueue.put(new AbstractMap.SimpleImmutableEntry<>(Boolean.FALSE, sampleMetadata));
         } else {
             LOG.error("Shutdown initiated, not accepting research sample update: " + sampleMetadata);
             throw new IllegalStateException("Shutdown initiated, not handling any more samples");
