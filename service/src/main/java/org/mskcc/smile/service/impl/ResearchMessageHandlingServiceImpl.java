@@ -147,9 +147,11 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                                     break;
                             }
                         } else {
-                            requestUpdateQueue.add(new AbstractMap.SimpleImmutableEntry<>(Boolean.TRUE, request.getLatestRequestMetadata()));
+                            requestUpdateQueue.add(new AbstractMap.SimpleImmutableEntry<>(
+                                    Boolean.TRUE, request.getLatestRequestMetadata()));
                             for (SmileSample sample : request.getSmileSampleList()) {
-                                researchSampleUpdateQueue.add(new AbstractMap.SimpleImmutableEntry<>(Boolean.TRUE, sample.getLatestSampleMetadata()));
+                                researchSampleUpdateQueue.add(new AbstractMap.SimpleImmutableEntry<>(
+                                        Boolean.TRUE, sample.getLatestSampleMetadata()));
                             }
                         }
                     }
@@ -179,14 +181,17 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             phaser.arrive();
             while (true) {
                 try {
-                    Entry<Boolean, RequestMetadata> requestMetadataEntry = requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
+                    Entry<Boolean, RequestMetadata> requestMetadataEntry =
+                            requestUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (requestMetadataEntry != null) {
                         // Boolean arg in updateRequestMetadata refers to fromLims
-                        if (requestService.updateRequestMetadata(requestMetadataEntry.getValue(), requestMetadataEntry.getKey())) {
+                        if (requestService.updateRequestMetadata(requestMetadataEntry.getValue(),
+                                requestMetadataEntry.getKey())) {
                             LOG.info("Publishing Request-level Metadata updates "
                                     + "to " + CMO_REQUEST_UPDATE_TOPIC);
                             SmileRequest existingRequest =
-                                    requestService.getSmileRequestById(requestMetadataEntry.getValue().getIgoRequestId());
+                                    requestService.getSmileRequestById(
+                                            requestMetadataEntry.getValue().getIgoRequestId());
                             // publish request-level metadata history to CMO_REQUEST_UPDATE_TOPIC
                             messagingGateway.publish(existingRequest.getIgoRequestId(),
                                     CMO_REQUEST_UPDATE_TOPIC,
@@ -225,9 +230,11 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             100, TimeUnit.MILLISECONDS);
                     if (sampleMetadataEntry != null) {
                         // Boolean arg in updateSampleMetadata refers to fromLims
-                        if (sampleService.updateSampleMetadata(sampleMetadataEntry.getValue(), sampleMetadataEntry.getKey())) {
+                        if (sampleService.updateSampleMetadata(sampleMetadataEntry.getValue(),
+                                sampleMetadataEntry.getKey())) {
                             SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
-                                    sampleMetadataEntry.getValue().getIgoRequestId(), sampleMetadataEntry.getValue().getPrimaryId());
+                                    sampleMetadataEntry.getValue().getIgoRequestId(),
+                                    sampleMetadataEntry.getValue().getPrimaryId());
                             LOG.info("Publishing sample-level metadata history for research sample: "
                                     + sampleMetadataEntry.getValue().getPrimaryId());
                             // publish sample-level metadata history to CMO_REQUEST_UPDATE_TOPIC
@@ -308,7 +315,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             throw new IllegalStateException("Message Handling Service has not been initialized");
         }
         if (!shutdownInitiated) {
-            researchSampleUpdateQueue.put(new AbstractMap.SimpleImmutableEntry<>(Boolean.FALSE, sampleMetadata));
+            researchSampleUpdateQueue.put(new AbstractMap.SimpleImmutableEntry<>(
+                    Boolean.FALSE, sampleMetadata));
         } else {
             LOG.error("Shutdown initiated, not accepting research sample update: " + sampleMetadata);
             throw new IllegalStateException("Shutdown initiated, not handling any more samples");
