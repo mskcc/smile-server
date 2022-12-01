@@ -20,6 +20,7 @@ import org.mskcc.smile.model.igo.QcReport;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -60,6 +61,8 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
     private Map<String, String> cmoSampleIdFields;
     @Convert(MapStringConverter.class)
     private Map<String, String> additionalProperties = new HashMap<>();
+    @Relationship(type = "HAS_STATUS", direction = Relationship.OUTGOING)
+    private Status status;
 
     public SampleMetadata() {}
 
@@ -375,6 +378,14 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
 
     public void addAdditionalProperty(String property, String value) {
         this.additionalProperties.put(property, value);
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override

@@ -31,6 +31,7 @@ public class SmileSample implements Serializable {
     private String sampleClass;
     private String sampleCategory;
     private String datasource;
+    private Boolean revisable;
 
     public SmileSample() {}
 
@@ -204,6 +205,14 @@ public class SmileSample implements Serializable {
 
     public void setDatasource(String datasource) {
         this.datasource = datasource;
+    }
+
+    public Boolean getRevisable() {
+        return revisable;
+    }
+
+    public void setRevisable(Boolean revisable) {
+        this.revisable = revisable;
     }
 
     @Override
