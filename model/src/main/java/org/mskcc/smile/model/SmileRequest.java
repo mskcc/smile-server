@@ -65,6 +65,7 @@ public class SmileRequest implements Serializable {
     private List<String> pooledNormals;
     private boolean isCmoRequest;
     private boolean bicAnalysis;
+    private Boolean revisable;
 
     public SmileRequest() {}
 
@@ -340,6 +341,14 @@ public class SmileRequest implements Serializable {
 
     public void setBicAnalysis(boolean bicAnalysis) {
         this.bicAnalysis = bicAnalysis;
+    }
+
+    public Boolean getRevisable() {
+        return revisable;
+    }
+
+    public void setRevisable(Boolean revisable) {
+        this.revisable = revisable;
     }
 
     /**
