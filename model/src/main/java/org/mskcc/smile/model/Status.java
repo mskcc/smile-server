@@ -19,8 +19,6 @@ public class Status implements Serializable {
     private Long id;
     private Boolean validationStatus;
     private String validationReport;
-    @Relationship(type = "HAS_STATUS", direction = Relationship.INCOMING)
-    private SampleMetadata sampleMetadata;
 
     public Status() {}
 
@@ -44,14 +42,6 @@ public class Status implements Serializable {
 
     public void setValidationReport(String validationReport) {
         this.validationReport = validationReport;
-    }
-
-    public SampleMetadata getSampleMetadata() {
-        return sampleMetadata;
-    }
-
-    public void setSampleMetadata(SampleMetadata sampleMetadata) {
-        this.sampleMetadata = sampleMetadata;
     }
 
     @Override

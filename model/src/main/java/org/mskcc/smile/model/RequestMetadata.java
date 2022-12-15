@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
+import org.neo4j.ogm.annotation.Relationship;
 
 public class RequestMetadata implements Serializable, Comparable<RequestMetadata> {
     @Id @GeneratedValue
@@ -13,6 +14,8 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
     private String igoRequestId;
     private String requestMetadataJson;
     private String importDate;
+    @Relationship(type = "HAS_STATUS", direction = Relationship.OUTGOING)
+    private Status status;
 
     /**
      * Default constructor.
@@ -56,6 +59,14 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
 
     public void setImportDate(String importDate) {
         this.importDate = importDate;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
