@@ -11,6 +11,7 @@ import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
+import org.mskcc.smile.model.Status;
 import org.mskcc.smile.model.converter.LibrariesStringConverter;
 import org.mskcc.smile.model.converter.MapStringConverter;
 import org.mskcc.smile.model.converter.QcReportsStringConverter;
@@ -46,6 +47,7 @@ public class PublishedSmileSample {
     private String baitSet;
     private String datasource;
     private Boolean igoComplete;
+    private Status status;
     @Convert(MapStringConverter.class)
     private Map<String, String> cmoSampleIdFields;
     @Convert(QcReportsStringConverter.class)
@@ -96,6 +98,7 @@ public class PublishedSmileSample {
         this.cmoSampleIdFields = latestSampleMetadata.getCmoSampleIdFields();
         this.patientAliases = smileSample.getPatient().getPatientAliases();
         this.additionalProperties = latestSampleMetadata.getAdditionalProperties();
+        this.status = latestSampleMetadata.getStatus();
     }
 
     public UUID getSmileSampleId() {
@@ -327,6 +330,14 @@ public class PublishedSmileSample {
 
     public void setIgoComplete(Boolean igoComplete) {
         this.igoComplete = igoComplete;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Map<String, String> getCmoSampleIdFields() {

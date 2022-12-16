@@ -147,7 +147,7 @@ public class RequestServiceImpl implements SmileRequestService {
         }
         // get request metadata and sample metadata for request if exists
         List<RequestMetadata> requestMetadataList =
-                requestRepository.findRequestMetadataHistoryById(requestId);
+                getRequestMetadataWithStatus(requestId);
         request.setRequestMetadataList(requestMetadataList);
         List<SmileSample> smileSampleList = sampleService.getResearchSamplesByRequestId(requestId);
         request.setSmileSampleList(smileSampleList);
@@ -309,5 +309,15 @@ public class RequestServiceImpl implements SmileRequestService {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setLenient(Boolean.FALSE);
         return df;
+    }
+
+    private List<RequestMetadata> getRequestMetadataWithStatus(String requestId) {
+        List<RequestMetadata> requestMetadataList =
+                requestRepository.findRequestMetadataHistoryById(requestId);
+        // attach status to request metadata
+        for (RequestMetadata rm: requestMetadataList) {
+            rm.setStatus(requestRepository.findStatusForRequestMetadataById(rm.getId()));
+        }
+        return requestMetadataList;
     }
 }

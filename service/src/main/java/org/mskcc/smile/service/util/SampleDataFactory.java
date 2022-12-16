@@ -1,6 +1,7 @@
 package org.mskcc.smile.service.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,6 +18,7 @@ import org.mskcc.smile.model.SampleAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileSample;
+import org.mskcc.smile.model.Status;
 import org.mskcc.smile.model.dmp.DmpSampleMetadata;
 import org.mskcc.smile.model.igo.IgoSampleManifest;
 
@@ -136,6 +138,7 @@ public class SampleDataFactory {
                 sampleMetadata.setIgoRequestId(additionalProperties.get("igoRequestId"));
             }
         }
+        sampleMetadata.setStatus(extractStatusFromJson(sampleMetadataJson));
         return sampleMetadata;
     }
 
@@ -210,5 +213,15 @@ public class SampleDataFactory {
 
     private static String resolveDmpGender(Integer dmpGender) {
         return dmpGender.equals(0) ? "Male" : "Female";
+    }
+
+    private static Status extractStatusFromJson(String inputJson)
+            throws JsonMappingException, JsonProcessingException {
+        Status status = new Status();
+        Map<String, Object> jsonMap = mapper.readValue(inputJson, Map.class);
+        if (jsonMap.containsKey("status")) {
+            status = mapper.convertValue(jsonMap.get("status"), Status.class);
+        }
+        return status;
     }
 }

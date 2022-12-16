@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.mskcc.smile.model.SampleAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
+import org.mskcc.smile.model.Status;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.repository.query.Param;
@@ -117,4 +118,9 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "MERGE (r)-[:HAS_SAMPLE]->(s)")
     void createSampleRequestRelationship(@Param("smileSampleId") UUID smileSampleId,
             @Param("smileRequestId") UUID smileRequestId);
+
+    @Query("MATCH (sm: SampleMetadata)-[:HAS_STATUS]->(st: Status) "
+        + "WHERE ID(sm) = $smId "
+        + "RETURN st")
+    Status findStatusForSampleMetadataById(@Param("smId") Long smId);
 }
