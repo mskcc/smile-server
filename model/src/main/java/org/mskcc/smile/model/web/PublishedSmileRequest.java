@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.smile.model.SmileRequest;
+import org.mskcc.smile.model.Status;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
@@ -32,6 +33,7 @@ public class PublishedSmileRequest {
     private String libraryType;
     private boolean isCmoRequest;
     private boolean bicAnalysis;
+    private Status status;
     private String requestJson;
     private List<String> pooledNormals;
     private List<PublishedSmileSample> samples;
@@ -63,6 +65,7 @@ public class PublishedSmileRequest {
         this.libraryType = smileRequest.getLibraryType();
         this.isCmoRequest = smileRequest.getIsCmoRequest();
         this.bicAnalysis = smileRequest.getBicAnalysis();
+        this.status = smileRequest.getLatestRequestMetadata().getStatus();
         this.requestJson = smileRequest.getRequestJson();
         this.pooledNormals = smileRequest.getPooledNormals();
         this.samples = samples;
@@ -274,6 +277,14 @@ public class PublishedSmileRequest {
 
     public void setBicAnalysis(boolean bicAnalysis) {
         this.bicAnalysis = bicAnalysis;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public String getRequestJson() {

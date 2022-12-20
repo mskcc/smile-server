@@ -15,6 +15,10 @@
   "qcAccessEmails": "",
   "isCmoRequest": true,
   "bicAnalysis": false,
+  "status": {
+  	"validationStatus": true,
+  	"validationReport": ""
+  },
   "samples": [
     {
       "smileSampleId": "afe750e6-8756-11eb-81b0-acde48001122",

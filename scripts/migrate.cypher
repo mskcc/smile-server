@@ -120,3 +120,28 @@ CALL {
 }
 SET sm.additionalProperties = additionalProperties
 RETURN true
+
+
+
+// SCHEMA VERSION: v2.3
+// ------------------------------------------------------------
+
+// add property "revisable" to request and sample nodes
+MATCH (s: Sample)
+WHERE s.revisable IS NULL
+SET s.revisable = true
+RETURN true;
+
+MATCH (r: Request)
+WHERE r.revisable IS NULL
+SET r.revisable = true
+RETURN true;
+
+// add node and relationship for sample metadata and request metadata nodes
+MATCH (rm: RequestMetadata)
+CREATE (st: Status {validationStatus: true, validationReport: ""})<-[:HAS_STATUS]-(rm)
+RETURN true
+
+MATCH (sm: SampleMetadata)
+CREATE (st: Status {validationStatus: true, validationReport: ""})<-[:HAS_STATUS]-(sm)
+RETURN true

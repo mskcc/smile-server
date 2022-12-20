@@ -295,7 +295,8 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public List<SampleMetadata> getResearchSampleMetadataHistoryByIgoId(String igoId) throws Exception {
-        return sampleRepository.findSampleMetadataHistoryByNamespaceValue("igoId", igoId);
+        return getSampleMetadataWithStatus(
+                sampleRepository.findSampleMetadataHistoryByNamespaceValue("igoId", igoId));
     }
 
     @Override
@@ -355,8 +356,9 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public SmileSample getDetailedSmileSample(SmileSample sample) throws ParseException {
-        sample.setSampleMetadataList(sampleRepository.findAllSampleMetadataListBySampleId(
-                sample.getSmileSampleId()));
+        sample.setSampleMetadataList(getSampleMetadataWithStatus(
+                sampleRepository.findAllSampleMetadataListBySampleId(
+                sample.getSmileSampleId())));
         String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
         SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
         sample.setPatient(patient);
@@ -403,6 +405,7 @@ public class SampleServiceImpl implements SmileSampleService {
         List<SmileSampleIdMapping> sampleIdsList = new ArrayList<>();
         for (UUID smileSampleId : sampleIds) {
             SampleMetadata sm = sampleRepository.findLatestSampleMetadataBySmileId(smileSampleId);
+            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getId()));
             sampleIdsList.add(new SmileSampleIdMapping(smileSampleId, sm));
         }
         return sampleIdsList;
@@ -416,5 +419,12 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId) {
         sampleRepository.createSampleRequestRelationship(smileSampleId, smileRequestId);
+    }
+
+    private List<SampleMetadata> getSampleMetadataWithStatus(List<SampleMetadata> smList) {
+        for (SampleMetadata sm : smList) {
+            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getId()));
+        }
+        return smList;
     }
 }

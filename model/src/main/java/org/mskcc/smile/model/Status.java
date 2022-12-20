@@ -8,7 +8,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,7 +19,10 @@ public class Status implements Serializable {
     private Boolean validationStatus;
     private String validationReport;
 
-    public Status() {}
+    public Status() {
+        this.validationStatus = Boolean.TRUE;
+        this.validationReport = "";
+    }
 
     public Status(Boolean validationStatus,
             String validationReport) {

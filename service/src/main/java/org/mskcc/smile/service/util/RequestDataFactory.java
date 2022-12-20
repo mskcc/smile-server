@@ -11,6 +11,7 @@ import java.util.Map;
 import org.mskcc.smile.model.RequestMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
+import org.mskcc.smile.model.Status;
 import org.mskcc.smile.model.igo.IgoRequest;
 import org.mskcc.smile.model.igo.IgoSampleManifest;
 
@@ -81,6 +82,17 @@ public class RequestDataFactory {
                 requestId.toString(),
                 mapper.writeValueAsString(requestMetadataMap),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        requestMetadata.setStatus(extractStatusFromJson(requestMetadataJson));
         return requestMetadata;
+    }
+
+    private static Status extractStatusFromJson(String inputJson)
+            throws JsonMappingException, JsonProcessingException {
+        Status status = new Status();
+        Map<String, Object> jsonMap = mapper.readValue(inputJson, Map.class);
+        if (jsonMap.containsKey("status")) {
+            status = mapper.convertValue(jsonMap.get("status"), Status.class);
+        }
+        return status;
     }
 }
