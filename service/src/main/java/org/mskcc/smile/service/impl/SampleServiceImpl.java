@@ -88,7 +88,7 @@ public class SampleServiceImpl implements SmileSampleService {
                         existingSample.getPatient().getSmilePatientId());
                 existingSample.setPatient(sample.getPatient());
             }
-
+            sampleRepository.updateRevisableBySampleId(existingSample.getSmileSampleId(), Boolean.TRUE);
             sampleRepository.save(existingSample);
             return existingSample;
         }
