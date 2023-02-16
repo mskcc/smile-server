@@ -123,4 +123,10 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
         + "WHERE ID(sm) = $smId "
         + "RETURN st")
     Status findStatusForSampleMetadataById(@Param("smId") Long smId);
+
+    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
+            + "SET s.revisable = $revisable "
+            + "RETURN s")
+    SmileSample updateRevisableBySampleId(@Param("smileSampleId") UUID smileSampleId,
+            @Param("revisable") Boolean revisable);
 }
