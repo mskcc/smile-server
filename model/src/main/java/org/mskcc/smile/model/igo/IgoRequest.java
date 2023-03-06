@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  *
  * @author ochoaa
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IgoRequest implements Serializable {
     private String requestId;
     private String projectId;

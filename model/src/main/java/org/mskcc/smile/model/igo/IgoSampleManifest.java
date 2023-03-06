@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  *
  * @author ochoaa
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IgoSampleManifest {
     private String igoId;
     private String cmoPatientId;
