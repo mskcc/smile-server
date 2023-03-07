@@ -91,7 +91,8 @@ public class RequestDataFactory {
         Status status = new Status();
         Map<String, Object> jsonMap = mapper.readValue(inputJson, Map.class);
         if (jsonMap.containsKey("status")) {
-            status = mapper.convertValue(jsonMap.get("status"), Status.class);
+            Map<String,Object> statusJsonMap = mapper.convertValue(jsonMap.get("status"), Map.class);
+            status = new Status(statusJsonMap);
         }
         return status;
     }

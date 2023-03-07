@@ -1,5 +1,6 @@
 package org.mskcc.smile.model.igo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author ochoaa
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IgoRequest implements Serializable {
     private String requestId;
     private String projectId;
