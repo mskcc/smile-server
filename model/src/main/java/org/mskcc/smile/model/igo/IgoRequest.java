@@ -1,11 +1,10 @@
 package org.mskcc.smile.model.igo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *
