@@ -68,6 +68,10 @@
         "recipe": null,
         "normalizedPatientId": "wrongValue",
         "sampleType": "wrongValue"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -123,6 +127,10 @@
         "recipe": null,
         "normalizedPatientId": "wrongValue",
         "sampleType": "wrongValue"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -178,6 +186,10 @@
         "recipe": "",
         "normalizedPatientId": "testingNormalizedPatientIdvalue",
         "sampleType": "wrongValue"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -233,6 +245,10 @@
         "sampleType": null,
         "normalizedPatientId": "wrongValue",
         "recipe": ""
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     }
   ],

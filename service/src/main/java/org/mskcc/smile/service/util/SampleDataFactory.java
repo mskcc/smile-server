@@ -46,10 +46,11 @@ public class SampleDataFactory {
      * @param requestId
      * @param sampleMetadata
      * @param isCmoRequest
+     * @param sampleStatus
      * @return SmileSample
      */
     public static SmileSample buildNewResearchSampleFromMetadata(String requestId,
-            SampleMetadata sampleMetadata, Boolean isCmoRequest) {
+            SampleMetadata sampleMetadata, Boolean isCmoRequest, Status sampleStatus) {
         sampleMetadata.setIgoRequestId(requestId);
         if (sampleMetadata.getImportDate() == null) {
             sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
@@ -58,6 +59,7 @@ public class SampleDataFactory {
         if (isCmoRequest != null) {
             sampleMetadata.addAdditionalProperty("isCmoSample", Boolean.TRUE.toString());
         }
+        sampleMetadata.setStatus(sampleStatus);
 
         SmileSample sample = new SmileSample();
         sample.addSampleMetadata(sampleMetadata);
@@ -80,13 +82,15 @@ public class SampleDataFactory {
      * @param requestId
      * @param igoSampleManifest
      * @param isCmoRequest
+     * @param sampleStatus
      * @return SmileSample
      * @throws JsonProcessingException
      */
     public static SmileSample buildNewResearchSampleFromMetadata(String requestId,
-            IgoSampleManifest igoSampleManifest, Boolean isCmoRequest) throws JsonProcessingException {
+            IgoSampleManifest igoSampleManifest, Boolean isCmoRequest, Status sampleStatus)
+            throws JsonProcessingException {
         SampleMetadata sampleMetadata = new SampleMetadata(igoSampleManifest);
-        return buildNewResearchSampleFromMetadata(requestId, sampleMetadata, null);
+        return buildNewResearchSampleFromMetadata(requestId, sampleMetadata, null, sampleStatus);
     }
 
     /**

@@ -219,7 +219,8 @@ public class SampleServiceImpl implements SmileSampleService {
             }
             LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
             SmileSample sample = SampleDataFactory.buildNewResearchSampleFromMetadata(
-                    sampleMetadata.getIgoRequestId(), sampleMetadata, request.getIsCmoRequest());
+                    sampleMetadata.getIgoRequestId(), sampleMetadata,
+                    request.getIsCmoRequest(), sampleMetadata.getStatus());
             saveSmileSample(sample);
             createSampleRequestRelationship(sample.getSmileSampleId(), request.getSmileRequestId());
             return Boolean.TRUE;

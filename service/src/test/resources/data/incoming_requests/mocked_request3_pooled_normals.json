@@ -75,6 +75,10 @@
         "sampleType": "Sorted Cells",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -137,6 +141,10 @@
         "sampleType": "Sorted Cells",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -199,6 +207,10 @@
         "sampleType": "Sorted Cells",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -261,6 +273,10 @@
         "sampleType": "Sorted Cells",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     }
   ],

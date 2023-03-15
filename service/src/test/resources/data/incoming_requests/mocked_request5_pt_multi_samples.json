@@ -69,6 +69,10 @@
         "sampleType": "Plasma",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "null"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -123,6 +127,10 @@
         "sampleType": "Plasma",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "null"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -177,6 +185,10 @@
         "sampleType": "Plasma",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "null"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -231,6 +243,10 @@
         "sampleType": "Plasma",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "null"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -285,6 +301,10 @@
         "sampleType": "Plasma",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "null"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -339,6 +359,10 @@
         "sampleType": "Plasma",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "null"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     }
   ],
