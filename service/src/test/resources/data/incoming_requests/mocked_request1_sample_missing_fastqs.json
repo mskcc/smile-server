@@ -68,6 +68,10 @@
         "recipe": "GENESET101_BAITS",
         "normalizedPatientId": "testingNormalizedPatientIdvalue",
         "sampleType": "PDX"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -123,6 +127,10 @@
         "recipe": "GENESET101_BAITS",
         "normalizedPatientId": "testingNormalizedPatientIdvalue",
         "sampleType": "Blood"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -174,6 +182,10 @@
         "recipe": "GENESET101_BAITS",
         "normalizedPatientId": "testingNormalizedPatientIdvalue",
         "sampleType": "PDX"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     },
     {
@@ -226,6 +238,10 @@
         "recipe": "GENESET101_BAITS",
         "normalizedPatientId": "testingNormalizedPatientIdvalue",
         "sampleType": "Blood"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     }
   ],

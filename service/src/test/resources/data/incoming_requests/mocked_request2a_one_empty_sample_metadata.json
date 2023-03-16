@@ -66,6 +66,10 @@
         "recipe": "",
         "normalizedPatientId": "",
         "sampleType": ""
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     }
   ],

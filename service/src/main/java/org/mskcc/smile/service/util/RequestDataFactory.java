@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.mskcc.smile.model.RequestMetadata;
@@ -54,15 +55,28 @@ public class RequestDataFactory {
     private static List<SmileSample> extractSmileSamplesFromIgoResponse(Object message)
             throws JsonProcessingException {
         Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        IgoSampleManifest[] samples = mapper.convertValue(map.get("samples"),
-                IgoSampleManifest[].class);
+        /// SAMPLE STATUS NOT GETTING SET HERE
+        List<Object> sampleManifests =
+                Arrays.asList(mapper.convertValue(map.get("samples"),
+                        Object[].class));
         String requestId = (String) map.get("requestId");
         Boolean isCmoRequest = (Boolean) map.get("isCmoRequest");
 
         List<SmileSample> requestSamplesList = new ArrayList<>();
-        for (IgoSampleManifest s: samples) {
+        for (Object s : sampleManifests) {
+            Map<String, Object> sampleMap = mapper.convertValue(s, Map.class);
+            Map<String, Object> sampleStatusMap = mapper.convertValue(
+                                    sampleMap.get("status"), Map.class);
+            Status sampleStatus = new Status(Boolean.valueOf(
+                                    sampleStatusMap.get("validationStatus").toString()),
+                                    sampleStatusMap.get("validationReport").toString());
+
+            IgoSampleManifest sampleManifest = mapper.convertValue(s,
+                                    IgoSampleManifest.class);
             SmileSample sample = SampleDataFactory
-                    .buildNewResearchSampleFromMetadata(requestId, s, isCmoRequest);
+                    .buildNewResearchSampleFromMetadata(requestId,
+                            sampleManifest, isCmoRequest, sampleStatus);
+
             requestSamplesList.add(sample);
         }
         return requestSamplesList;

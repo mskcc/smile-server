@@ -61,7 +61,9 @@ public class CorrectCmoPatientIdHandlerTest {
 
     /**
      * Persists the Mock Request data to the test database.
-     * @throws Exception
+     * @param requestRepository
+     * @param sampleRepository
+     * @param patientRepository
      */
     @Autowired
     public CorrectCmoPatientIdHandlerTest(SmileRequestRepository requestRepository,

@@ -77,6 +77,10 @@
         "sampleType": "Buffy Coat",
         "normalizedPatientId": "MRN_REDACTED",
         "recipe": "GENESET101_BAITS"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
       }
     }
   ],
