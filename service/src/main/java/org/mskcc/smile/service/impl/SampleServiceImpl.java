@@ -50,13 +50,15 @@ public class SampleServiceImpl implements SmileSampleService {
     @Transactional(rollbackFor = {Exception.class})
     public SmileSample saveSmileSample(SmileSample
             sample) throws Exception {
+        // sample to return
+        SmileSample toReturn;
         fetchAndLoadPatientDetails(sample);
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
         if (existingSample == null) {
             UUID newSampleId = sampleRepository.save(sample).getSmileSampleId();
             sample.setSmileSampleId(newSampleId);
-            return sample;
+            toReturn = sample;
         } else {
             // populate existing sample details and check if there are actual updates to persist
             getDetailedSmileSample(existingSample);
@@ -88,10 +90,12 @@ public class SampleServiceImpl implements SmileSampleService {
                         existingSample.getPatient().getSmilePatientId());
                 existingSample.setPatient(sample.getPatient());
             }
-            sampleRepository.updateRevisableBySampleId(existingSample.getSmileSampleId(), Boolean.TRUE);
             sampleRepository.save(existingSample);
-            return existingSample;
+            toReturn = existingSample;
         }
+        // update revisable to true for sample
+        sampleRepository.updateRevisableBySampleId(toReturn.getSmileSampleId(), Boolean.TRUE);
+        return toReturn;
     }
 
     /**
