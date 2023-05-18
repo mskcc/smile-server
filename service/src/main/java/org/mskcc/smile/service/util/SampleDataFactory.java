@@ -216,7 +216,7 @@ public class SampleDataFactory {
     }
 
     private static String resolveDmpGender(Integer dmpGender) {
-        return dmpGender.equals(0) ? "Male" : "Female";
+        return dmpGender.equals(1) ? "Male" : "Female";
     }
 
     private static Status extractStatusFromJson(String inputJson)

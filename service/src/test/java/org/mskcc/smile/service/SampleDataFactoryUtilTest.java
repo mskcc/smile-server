@@ -54,32 +54,32 @@ public class SampleDataFactoryUtilTest {
 
     private Map<String, SampleMetadata> initExpectedConvertedDmpSampleValues() {
         Map<String, SampleMetadata> map = new HashMap<>();
-        map.putAll(getSampleMetadataMapEntry("P-0000001-N01-IM3", "Normal", "Primary", "Male", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0000001-T01-IM3", "Tumor", "Metastasis", "Male", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0000002-N01-IM3", "Normal", "Primary", "Female", "2020"));
-        map.putAll(getSampleMetadataMapEntry("P-0000002-T01-IM3", "Tumor", "Primary", "Female", "2020"));
-        map.putAll(getSampleMetadataMapEntry("P-0000222-N01-IM3", "Normal", "Primary", "Female", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0000222-T01-IM3", "Tumor", "Primary", "Female", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0000333-N01-IM3", "Normal", "Primary", "Male", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0000333-T01-IM3", "Tumor", "Primary", "Male", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0004000-N01-IM3", "Normal", "Primary", "Male", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0004000-T01-IM3", "Tumor", "Primary", "Male", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0004444-N01-IM3", "Normal", "Primary", "Female", "2020"));
-        map.putAll(getSampleMetadataMapEntry("P-0007111-N01-IM3", "Normal", "Primary", "Male", "2017"));
-        map.putAll(getSampleMetadataMapEntry("P-0007111-T01-IM3", "Tumor", "Metastasis", "Male", "2017"));
-        map.putAll(getSampleMetadataMapEntry("P-0008999-N01-IM3", "Normal", "Primary", "Female", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-0008999-T01-IM3", "Tumor", "Primary", "Female", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-6660000-N01-IM3", "Normal", "Primary", "Female", "2020"));
-        map.putAll(getSampleMetadataMapEntry("P-7778999-N01-IM3", "Normal", "Primary", "Female", "2018"));
-        map.putAll(getSampleMetadataMapEntry("P-7778999-T01-IM3", "Tumor", "Primary", "Female", "2018"));
-        map.putAll(getSampleMetadataMapEntry("P-8882444-N01-IM3", "Normal", "Primary", "Male", "2018"));
-        map.putAll(getSampleMetadataMapEntry("P-8882444-T01-IM3", "Tumor", "Primary", "Male", "2018"));
-        map.putAll(getSampleMetadataMapEntry("P-9990000-N01-IM3", "Normal", "Primary", "Female", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-9990000-T01-IM3", "Tumor", "Metastasis", "Female", "2019"));
-        map.putAll(getSampleMetadataMapEntry("P-9992811-N01-IM3", "Normal", "Primary", "Male", "2018"));
-        map.putAll(getSampleMetadataMapEntry("P-9992811-T01-IM3", "Tumor", "Metastasis", "Male", "2018"));
-        map.putAll(getSampleMetadataMapEntry("P-9998808-N01-IM3", "Normal", "Primary", "Female", "2018"));
-        map.putAll(getSampleMetadataMapEntry("P-9998808-T01-IM3", "Tumor", "Primary", "Female", "2018"));
+        map.putAll(getSampleMetadataMapEntry("P-0000001-N01-IM3", "Normal", "Primary", "Female", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0000001-T01-IM3", "Tumor", "Metastasis", "Female", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0000002-N01-IM3", "Normal", "Primary", "Male", "2020"));
+        map.putAll(getSampleMetadataMapEntry("P-0000002-T01-IM3", "Tumor", "Primary", "Male", "2020"));
+        map.putAll(getSampleMetadataMapEntry("P-0000222-N01-IM3", "Normal", "Primary", "Male", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0000222-T01-IM3", "Tumor", "Primary", "Male", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0000333-N01-IM3", "Normal", "Primary", "Female", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0000333-T01-IM3", "Tumor", "Primary", "Female", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0004000-N01-IM3", "Normal", "Primary", "Female", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0004000-T01-IM3", "Tumor", "Primary", "Female", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0004444-N01-IM3", "Normal", "Primary", "Male", "2020"));
+        map.putAll(getSampleMetadataMapEntry("P-0007111-N01-IM3", "Normal", "Primary", "Female", "2017"));
+        map.putAll(getSampleMetadataMapEntry("P-0007111-T01-IM3", "Tumor", "Metastasis", "Female", "2017"));
+        map.putAll(getSampleMetadataMapEntry("P-0008999-N01-IM3", "Normal", "Primary", "Male", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-0008999-T01-IM3", "Tumor", "Primary", "Male", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-6660000-N01-IM3", "Normal", "Primary", "Male", "2020"));
+        map.putAll(getSampleMetadataMapEntry("P-7778999-N01-IM3", "Normal", "Primary", "Male", "2018"));
+        map.putAll(getSampleMetadataMapEntry("P-7778999-T01-IM3", "Tumor", "Primary", "Male", "2018"));
+        map.putAll(getSampleMetadataMapEntry("P-8882444-N01-IM3", "Normal", "Primary", "Female", "2018"));
+        map.putAll(getSampleMetadataMapEntry("P-8882444-T01-IM3", "Tumor", "Primary", "Female", "2018"));
+        map.putAll(getSampleMetadataMapEntry("P-9990000-N01-IM3", "Normal", "Primary", "Male", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-9990000-T01-IM3", "Tumor", "Metastasis", "Male", "2019"));
+        map.putAll(getSampleMetadataMapEntry("P-9992811-N01-IM3", "Normal", "Primary", "Female", "2018"));
+        map.putAll(getSampleMetadataMapEntry("P-9992811-T01-IM3", "Tumor", "Metastasis", "Female", "2018"));
+        map.putAll(getSampleMetadataMapEntry("P-9998808-N01-IM3", "Normal", "Primary", "Male", "2018"));
+        map.putAll(getSampleMetadataMapEntry("P-9998808-T01-IM3", "Tumor", "Primary", "Male", "2018"));
         return map;
     }
 
