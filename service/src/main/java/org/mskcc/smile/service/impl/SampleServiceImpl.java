@@ -213,7 +213,7 @@ public class SampleServiceImpl implements SmileSampleService {
                         sampleMetadata.getIgoRequestId(), sampleMetadata.getPrimaryId());
         // new samples may come from IGO_NEW_REQUEST which also invokes this method
         // so if a new sample is encountered we should persist it to the database
-        // a new sample without a existing request will not be persisted
+        // a new sample without an existing request will not be persisted
         if (existingSample == null) {
             SmileRequest request = requestService.getSmileRequestById(sampleMetadata.getIgoRequestId());
             if (request == null) {
@@ -247,8 +247,16 @@ public class SampleServiceImpl implements SmileSampleService {
             saveSmileSample(existingSample);
             return Boolean.TRUE;
         }
+        // if sample revisable is false then return true so that message handler
+        // publishes message downstream (allows dashboard to make changes to db directly
+        // without having to wait or poll for updates)
+        if (!existingSample.getRevisable()) {
+            sampleRepository.updateRevisableBySampleId(existingSample.getSmileSampleId(), Boolean.TRUE);
+            return Boolean.TRUE;
+        }
+        
         // no updates to persist to sample, log and return false
-        LOG.info("There are no updates to persist for research sample: "
+        LOG.info("There are no updates to persist for sample: "
                 + sampleMetadata.getPrimaryId());
         return Boolean.FALSE;
     }
