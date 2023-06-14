@@ -43,7 +43,7 @@ crdb.query_timeout_seconds=
 # new request topics
 num.new_request_handler_threads=
 igo.new_request_topic=
-consistency_check.new_request_topic=
+consumers.new_request_topic=
 
 # promoted request topics
 num.promoted_request_handler_threads=
