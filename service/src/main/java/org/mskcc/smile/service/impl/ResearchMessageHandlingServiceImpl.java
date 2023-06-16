@@ -38,8 +38,8 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
     @Value("${igo.promoted_request_topic}")
     private String IGO_PROMOTED_REQUEST_TOPIC;
 
-    @Value("${consistency_check.new_request_topic}")
-    private String CONSISTENCY_CHECK_NEW_REQUEST;
+    @Value("${consumers.new_request_topic}")
+    private String CONSUMERS_NEW_REQUEST;
 
     @Value("${consumers.promoted_request_topic}")
     private String CONSUMERS_PROMOTED_REQUEST_TOPIC;
@@ -129,14 +129,14 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                         if (existingRequest == null) {
                             LOG.info("Persisting new request: " + request.getIgoRequestId());
                             requestService.saveRequest(request);
-                            // publish saved request to consistency checker or promoted request topic
+                            // publish saved request to new request or promoted request topic
                             String requestJson = mapper.writeValueAsString(
                                     requestService.getPublishedSmileRequestById(request.getIgoRequestId()));
                             switch (smileRequestDest) {
                                 case NEW_REQUEST_DEST:
-                                    LOG.info("Publishing request to: " + CONSISTENCY_CHECK_NEW_REQUEST);
+                                    LOG.info("Publishing request to: " + CONSUMERS_NEW_REQUEST);
                                     messagingGateway.publish(request.getIgoRequestId(),
-                                            CONSISTENCY_CHECK_NEW_REQUEST, requestJson);
+                                            CONSUMERS_NEW_REQUEST, requestJson);
                                     break;
                                 case PROMOTED_REQUEST_DEST:
                                     LOG.info("Publishing request to: " + CONSUMERS_PROMOTED_REQUEST_TOPIC);
