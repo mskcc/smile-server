@@ -157,6 +157,9 @@ public class RequestServiceImpl implements SmileRequestService {
     @Override
     public PublishedSmileRequest getPublishedSmileRequestById(String requestId) throws Exception {
         SmileRequest request = getSmileRequestById(requestId);
+        if (request == null) {
+            return null;
+        }
 
         // for each smile sample get the latest version of its sample metadata
         List<PublishedSmileSample> samples = new ArrayList<>();
