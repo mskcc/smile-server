@@ -118,11 +118,11 @@ public class SampleController {
             @ApiParam(value = "input id to search with", required = true)
             @PathVariable String inputId) throws Exception {
         SmileSample smileSample = sampleService.getSampleByInputId(inputId);
-        PublishedSmileSample publishedSample = sampleService.getPublishedSmileSample(
-                smileSample.getSmileSampleId());
-        if (publishedSample == null) {
+        if (smileSample == null) {
             return requestNotFoundHandler("Sample not found by input id: " + inputId);
         }
+        PublishedSmileSample publishedSample = sampleService.getPublishedSmileSample(
+                smileSample.getSmileSampleId());
         return ResponseEntity.ok()
                 .headers(responseHeaders())
                 .body(publishedSample);
