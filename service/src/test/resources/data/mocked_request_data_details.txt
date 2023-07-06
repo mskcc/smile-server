@@ -26,5 +26,5 @@ mockRequest1SamplesMissingFastQs	incoming_requests/mocked_request1_sample_missin
 mockRequest1AllSamplesMissingFastQs	incoming_requests/mocked_request1_all_samples_missing_fastqs.json	Mock requset json with all samples missing fastqs
 mockRequest1eNullStringBaitSet	incoming_requests/mocked_request1e_null_string_baitset.json	Mock requset json with "null" baitset values
 mockIncomingRequest1JsonDataWithLibraryUpdate	incoming_requests/mocked_request1_complete_tumor_normal_updated_libraries.json	Mock incoming request json with 2 tumor samples and 2 matching normals. Updated libraries for one sample.
-mockRequest7SamplesMissingPids	incoming_requests/mocked_request7_samples_missing_pids.json	Mock request where all samples are missing CMO patient IDs.
+mockRequest7SamplesMissingPids	incoming_requests/mocked_request7_samples_missing_pids.json	Mock request where 3 of 4 samples are missing CMO patient IDs.
 mockValidatedRequest7SamplesMissingPids	other_mocked_data/mocked_validated_request7_samples_missing_pids.json	Request JSON after going through validation and sanity checks in request filter. Based on 'mockRequest7SamplesMissingPids'.

@@ -17,7 +17,69 @@
   "libraryType": "RNASeq-TruSeqPolyA",
   "isCmoRequest": true,
   "bicAnalysis": false,
-  "samples": [],
+  "samples": [
+    {
+      "igoId": "98765_X_2",
+      "cmoSampleName": "",
+      "sampleName": "KG944N",
+      "cmoSampleClass": "Normal",
+      "cmoPatientId": "C-X95687",
+      "investigatorSampleId": "KG944N",
+      "oncoTreeCode": null,
+      "tumorOrNormal": "Normal",
+      "tissueLocation": "",
+      "specimenType": "CellLine",
+      "sampleOrigin": "Cell Pellet",
+      "preservation": "Frozen",
+      "collectionYear": "",
+      "sex": "",
+      "species": "Human",
+      "tubeId": "KG944N",
+      "cfDNA2dBarcode": null,
+      "baitSet": "null",
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "RUNID_0456",
+              "flowCellId": "CELLID456",
+              "readLength": null,
+              "runDate": "2023-06-23",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG944N_IGO_98765_X_2/KG944N_IGO_98765_X_2_S12_L001_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG944N_IGO_98765_X_2/KG944N_IGO_98765_X_2_S12_L001_R2_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG944N_IGO_98765_X_2/KG944N_IGO_98765_X_2_S12_L002_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG944N_IGO_98765_X_2/KG944N_IGO_98765_X_2_S12_L002_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "cmoSampleIdFields": {
+        "naToExtract": "RNA",
+        "normalizedPatientId": "",
+        "sampleType": "RNA",
+        "recipe": "RNASeq_PolyA"
+      },
+      "igoComplete": true,
+      "status": {
+        "validationReport": {},
+        "validationStatus": true
+      }
+    }
+  ],
   "pooledNormals": null,
   "projectId": "98765",
   "status": {
@@ -277,6 +339,6 @@
         }
       ]
     },
-    "validationStatus": false
+    "validationStatus": true
   }
 }

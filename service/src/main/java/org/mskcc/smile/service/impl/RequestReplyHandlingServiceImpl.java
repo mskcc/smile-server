@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
@@ -211,8 +212,13 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             public void onMessage(Message msg, Object message) {
                 LOG.info("Received message on topic: " + PATIENT_SAMPLES_REQREPLY_TOPIC);
                 try {
-                    requestReplyHandlingServiceImpl.patientSamplesHandler(
-                            new String(msg.getData()), msg.getReplyTo());
+                    if (StringUtils.isBlank(new String(msg.getData()))) {
+                        LOG.error("Expected a patient ID but message received is empty: " + msg
+                                + " - message will not be added to request-reply queue");
+                    } else {
+                        requestReplyHandlingServiceImpl.patientSamplesHandler(
+                                new String(msg.getData()), msg.getReplyTo());
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
