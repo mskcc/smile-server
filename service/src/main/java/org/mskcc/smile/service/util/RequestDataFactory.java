@@ -55,7 +55,6 @@ public class RequestDataFactory {
     private static List<SmileSample> extractSmileSamplesFromIgoResponse(Object message)
             throws JsonProcessingException {
         Map<String, Object> map = mapper.readValue(message.toString(), Map.class);
-        /// SAMPLE STATUS NOT GETTING SET HERE
         List<Object> sampleManifests =
                 Arrays.asList(mapper.convertValue(map.get("samples"),
                         Object[].class));

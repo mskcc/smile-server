@@ -1,0 +1,282 @@
+{
+  "requestId": "98765_X",
+  "requestName": "RNASeq-TruSeqPolyA",
+  "recipe": "RNASeq_PolyA",
+  "projectManagerName": "",
+  "piEmail": "",
+  "labHeadName": "Dana Scully",
+  "labHeadEmail": "email@address.com",
+  "investigatorName": "Fox Mulder",
+  "investigatorEmail": "email@address.com",
+  "dataAnalystName": "",
+  "dataAnalystEmail": "",
+  "otherContactEmails": "email@address.com",
+  "dataAccessEmails": "",
+  "qcAccessEmails": "",
+  "strand": "stranded-reverse",
+  "libraryType": "RNASeq-TruSeqPolyA",
+  "isCmoRequest": true,
+  "bicAnalysis": false,
+  "samples": [],
+  "pooledNormals": null,
+  "projectId": "98765",
+  "status": {
+    "validationReport": {
+      "samples": [
+        {
+          "igoId": "98765_X_4",
+          "cmoSampleName": "",
+          "sampleName": "KG324li_base",
+          "cmoSampleClass": "Metastasis",
+          "cmoPatientId": "",
+          "investigatorSampleId": "KG324li_base",
+          "oncoTreeCode": "",
+          "tumorOrNormal": "Tumor",
+          "tissueLocation": "",
+          "specimenType": "CellLine",
+          "sampleOrigin": "Cell Pellet",
+          "preservation": "Frozen",
+          "collectionYear": "",
+          "sex": "",
+          "species": "Human",
+          "tubeId": "KG324li_base",
+          "cfDNA2dBarcode": null,
+          "baitSet": "null",
+          "qcReports": [],
+          "libraries": [
+            {
+              "barcodeId": null,
+              "barcodeIndex": null,
+              "libraryIgoId": null,
+              "libraryVolume": null,
+              "libraryConcentrationNgul": null,
+              "dnaInputNg": null,
+              "captureConcentrationNm": null,
+              "captureInputNg": null,
+              "captureName": null,
+              "runs": [
+                {
+                  "runMode": null,
+                  "runId": "RUNID_0456",
+                  "flowCellId": "CELLID456",
+                  "readLength": null,
+                  "runDate": "2023-06-23",
+                  "flowCellLanes": [],
+                  "fastqs": [
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG324li_base_IGO_98765_X_4/KG324li_base_IGO_98765_X_4_S14_L001_R1_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG324li_base_IGO_98765_X_4/KG324li_base_IGO_98765_X_4_S14_L001_R2_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG324li_base_IGO_98765_X_4/KG324li_base_IGO_98765_X_4_S14_L002_R1_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG324li_base_IGO_98765_X_4/KG324li_base_IGO_98765_X_4_S14_L002_R2_001.fastq.gz"
+                  ]
+                }
+              ]
+            }
+          ],
+          "cmoSampleIdFields": {
+            "naToExtract": "RNA",
+            "normalizedPatientId": "",
+            "sampleType": "RNA",
+            "recipe": "RNASeq_PolyA"
+          },
+          "igoComplete": true,
+          "status": {
+            "validationReport": {
+              "cmoPatientId": "missing"
+            },
+            "validationStatus": false
+          }
+        },
+        {
+          "igoId": "98765_X_3",
+          "cmoSampleName": "",
+          "sampleName": "KG090li_base",
+          "cmoSampleClass": "Metastasis",
+          "cmoPatientId": "",
+          "investigatorSampleId": "KG090li_base",
+          "oncoTreeCode": "",
+          "tumorOrNormal": "Tumor",
+          "tissueLocation": "",
+          "specimenType": "CellLine",
+          "sampleOrigin": "Cell Pellet",
+          "preservation": "Frozen",
+          "collectionYear": "",
+          "sex": "",
+          "species": "Human",
+          "tubeId": "KG090li_base",
+          "cfDNA2dBarcode": null,
+          "baitSet": "null",
+          "qcReports": [],
+          "libraries": [
+            {
+              "barcodeId": null,
+              "barcodeIndex": null,
+              "libraryIgoId": null,
+              "libraryVolume": null,
+              "libraryConcentrationNgul": null,
+              "dnaInputNg": null,
+              "captureConcentrationNm": null,
+              "captureInputNg": null,
+              "captureName": null,
+              "runs": [
+                {
+                  "runMode": null,
+                  "runId": "RUNID_0456",
+                  "flowCellId": "CELLID456",
+                  "readLength": null,
+                  "runDate": "2023-06-23",
+                  "flowCellLanes": [],
+                  "fastqs": [
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG090li_base_IGO_98765_X_3/KG090li_base_IGO_98765_X_3_S13_L001_R1_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG090li_base_IGO_98765_X_3/KG090li_base_IGO_98765_X_3_S13_L001_R2_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG090li_base_IGO_98765_X_3/KG090li_base_IGO_98765_X_3_S13_L002_R1_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG090li_base_IGO_98765_X_3/KG090li_base_IGO_98765_X_3_S13_L002_R2_001.fastq.gz"
+                  ]
+                }
+              ]
+            }
+          ],
+          "cmoSampleIdFields": {
+            "naToExtract": "RNA",
+            "normalizedPatientId": "",
+            "sampleType": "RNA",
+            "recipe": "RNASeq_PolyA"
+          },
+          "igoComplete": true,
+          "status": {
+            "validationReport": {
+              "cmoPatientId": "missing"
+            },
+            "validationStatus": false
+          }
+        },
+        {
+          "igoId": "98765_X_2",
+          "cmoSampleName": "",
+          "sampleName": "KG944N",
+          "cmoSampleClass": "Normal",
+          "cmoPatientId": "",
+          "investigatorSampleId": "KG944N",
+          "oncoTreeCode": null,
+          "tumorOrNormal": "Normal",
+          "tissueLocation": "",
+          "specimenType": "CellLine",
+          "sampleOrigin": "Cell Pellet",
+          "preservation": "Frozen",
+          "collectionYear": "",
+          "sex": "",
+          "species": "Human",
+          "tubeId": "KG944N",
+          "cfDNA2dBarcode": null,
+          "baitSet": "null",
+          "qcReports": [],
+          "libraries": [
+            {
+              "barcodeId": null,
+              "barcodeIndex": null,
+              "libraryIgoId": null,
+              "libraryVolume": null,
+              "libraryConcentrationNgul": null,
+              "dnaInputNg": null,
+              "captureConcentrationNm": null,
+              "captureInputNg": null,
+              "captureName": null,
+              "runs": [
+                {
+                  "runMode": null,
+                  "runId": "RUNID_0456",
+                  "flowCellId": "CELLID456",
+                  "readLength": null,
+                  "runDate": "2023-06-23",
+                  "flowCellLanes": [],
+                  "fastqs": [
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG944N_IGO_98765_X_2/KG944N_IGO_98765_X_2_S12_L001_R1_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG944N_IGO_98765_X_2/KG944N_IGO_98765_X_2_S12_L001_R2_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG944N_IGO_98765_X_2/KG944N_IGO_98765_X_2_S12_L002_R1_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG944N_IGO_98765_X_2/KG944N_IGO_98765_X_2_S12_L002_R2_001.fastq.gz"
+                  ]
+                }
+              ]
+            }
+          ],
+          "cmoSampleIdFields": {
+            "naToExtract": "RNA",
+            "normalizedPatientId": "",
+            "sampleType": "RNA",
+            "recipe": "RNASeq_PolyA"
+          },
+          "igoComplete": true,
+          "status": {
+            "validationReport": {
+              "cmoPatientId": "missing"
+            },
+            "validationStatus": false
+          }
+        },
+        {
+          "igoId": "98765_X_1",
+          "cmoSampleName": "",
+          "sampleName": "KG882N",
+          "cmoSampleClass": "Normal",
+          "cmoPatientId": "",
+          "investigatorSampleId": "KG882N",
+          "oncoTreeCode": null,
+          "tumorOrNormal": "Normal",
+          "tissueLocation": "",
+          "specimenType": "CellLine",
+          "sampleOrigin": "Cell Pellet",
+          "preservation": "Frozen",
+          "collectionYear": "",
+          "sex": "",
+          "species": "Human",
+          "tubeId": "KG882N",
+          "cfDNA2dBarcode": null,
+          "baitSet": "null",
+          "qcReports": [],
+          "libraries": [
+            {
+              "barcodeId": null,
+              "barcodeIndex": null,
+              "libraryIgoId": null,
+              "libraryVolume": null,
+              "libraryConcentrationNgul": null,
+              "dnaInputNg": null,
+              "captureConcentrationNm": null,
+              "captureInputNg": null,
+              "captureName": null,
+              "runs": [
+                {
+                  "runMode": null,
+                  "runId": "RUNID_0456",
+                  "flowCellId": "CELLID456",
+                  "readLength": null,
+                  "runDate": "2023-06-23",
+                  "flowCellLanes": [],
+                  "fastqs": [
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG882N_IGO_98765_X_1/KG882N_IGO_98765_X_1_S11_L001_R1_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG882N_IGO_98765_X_1/KG882N_IGO_98765_X_1_S11_L001_R2_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG882N_IGO_98765_X_1/KG882N_IGO_98765_X_1_S11_L002_R1_001.fastq.gz",
+                    "/igo/delivery/FASTQ/RUNID_0456/Project_98765_X/Sample_KG882N_IGO_98765_X_1/KG882N_IGO_98765_X_1_S11_L002_R2_001.fastq.gz"
+                  ]
+                }
+              ]
+            }
+          ],
+          "cmoSampleIdFields": {
+            "naToExtract": "RNA",
+            "normalizedPatientId": "",
+            "sampleType": "RNA",
+            "recipe": "RNASeq_PolyA"
+          },
+          "igoComplete": true,
+          "status": {
+            "validationReport": {
+              "cmoPatientId": "missing"
+            },
+            "validationStatus": false
+          }
+        }
+      ]
+    },
+    "validationStatus": false
+  }
+}

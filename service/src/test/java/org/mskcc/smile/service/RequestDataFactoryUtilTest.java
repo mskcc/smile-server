@@ -26,7 +26,7 @@ public class RequestDataFactoryUtilTest {
     @Test
     public void testResearchSamplesAndRequestDataLoading() throws Exception {
         for (Map.Entry<String, MockJsonTestData> entry : mockDataUtils.mockedRequestJsonDataMap.entrySet()) {
-            if (!entry.getKey().startsWith("mockIncoming")) {
+            if (!entry.getKey().startsWith("mockIncoming") && !entry.getKey().startsWith("mockValidated")) {
                 continue;
             }
             String jsonString = entry.getValue().getJsonString();
