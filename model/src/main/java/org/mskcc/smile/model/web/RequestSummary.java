@@ -15,7 +15,6 @@ public class RequestSummary implements Serializable {
     private UUID smileRequestId;
     private String projectId;
     private String requestId;
-    private String importDate;
 
     /**
      * RequestSummary default constructor.
@@ -27,13 +26,11 @@ public class RequestSummary implements Serializable {
      * @param smileRequestId
      * @param projectId
      * @param requestId
-     * @param importDate
      */
-    public RequestSummary(UUID smileRequestId, String projectId, String requestId, String importDate) {
+    public RequestSummary(UUID smileRequestId, String projectId, String requestId) {
         this.smileRequestId = smileRequestId;
         this.projectId = projectId;
         this.requestId = requestId;
-        this.importDate = importDate;
     }
 
     /**
@@ -44,7 +41,6 @@ public class RequestSummary implements Serializable {
         this.smileRequestId = UUID.fromString(values.get(0));
         this.projectId = values.get(1);
         this.requestId = values.get(2);
-        this.importDate = values.get(3);
     }
 
     public UUID getSmileRequestId() {
@@ -69,13 +65,5 @@ public class RequestSummary implements Serializable {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
-    }
-
-    public String getImportDate() {
-        return importDate;
-    }
-
-    public void setImportDate(String importDate) {
-        this.importDate = importDate;
     }
 }

@@ -36,7 +36,7 @@ public interface SmileRequestRepository extends Neo4jRepository<SmileRequest, Lo
 
     @Query("MATCH (r: Request)-[:HAS_METADATA]->(rm: RequestMetadata) "
             + "WHERE $dateRangeStart <= [rm][0].importDate <= $dateRangeEnd "
-            + "RETURN [r.smileRequestId, r.igoProjectId, r.igoRequestId, [rm][0].importDate]")
+            + "RETURN DISTINCT [r.smileRequestId, r.igoProjectId, r.igoRequestId]")
     List<List<String>> findRequestWithinDateRange(@Param("dateRangeStart") String startDate,
             @Param("dateRangeEnd") String endDate);
 }
