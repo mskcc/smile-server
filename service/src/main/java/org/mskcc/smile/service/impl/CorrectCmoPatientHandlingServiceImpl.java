@@ -1,6 +1,5 @@
 package org.mskcc.smile.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.nio.charset.StandardCharsets;
@@ -106,6 +105,8 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                         String oldCmoPtId = idCorrectionMap.get("oldId");
                         String newCmoPtId = idCorrectionMap.get("newId");
 
+                        // grab samples by old cmo patient id and new cmo patient id that
+                        // we are correcting or swapping to
                         List<SmileSample> samplesByOldCmoPatient =
                                 sampleService.getSamplesByCmoPatientId(oldCmoPtId);
                         List<SmileSample> samplesByNewCmoPatient =
@@ -192,26 +193,25 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
             public void onMessage(Message msg, Object message) {
                 LOG.info("Received message on topic: " + CORRECT_CMOPTID_TOPIC);
                 Map<String, String> incomingDataMap = new HashMap<>();
+                String oldCmoPatientId = null;
+                String newCmoPatientId = null;
                 try {
-                    // do not log contents of incoming message
                     String incomingDataString = mapper.readValue(
                             new String(msg.getData(), StandardCharsets.UTF_8),
                             String.class);
                     incomingDataMap = mapper.readValue(incomingDataString, Map.class);
-                } catch (JsonProcessingException e) {
-                    LOG.error("Error processing the incoming data map. "
-                            + "Refer to NATS logs for more details.");
+                    oldCmoPatientId = crdbMappingService.getCmoPatientIdByInputId(
+                                incomingDataMap.get("oldId"));
+                    newCmoPatientId = crdbMappingService.getCmoPatientIdByInputId(
+                                incomingDataMap.get("newId"));
+                } catch (Exception e) {
+                    LOG.error("Error parsing the incoming data map: ", e);
                 }
                 if (incomingDataMap.isEmpty()) {
                     LOG.error("Was not able to deserialize incoming message as instance of Map.class - "
                             + "please confirm manually that the expected message contents were published");
                 } else {
-                    String oldCmoPatientId = crdbMappingService.getCmoPatientIdByInputId(
-                            incomingDataMap.get("oldId"));
-                    String newCmoPatientId = crdbMappingService.getCmoPatientIdByInputId(
-                            incomingDataMap.get("newId"));
                     Boolean crdbMappingStatus = Boolean.TRUE;
-
                     // verify that old and new ids resolve to a valid cmo patient id in crdb service
                     if (oldCmoPatientId == null || oldCmoPatientId.isEmpty()) {
                         StringBuilder logMessage = new StringBuilder();
@@ -261,7 +261,6 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
             }
         });
     }
-
 
     @Override
     public void shutdown() throws Exception {

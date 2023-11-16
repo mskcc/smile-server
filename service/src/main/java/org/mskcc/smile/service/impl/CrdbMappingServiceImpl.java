@@ -48,7 +48,7 @@ public class CrdbMappingServiceImpl implements CrdbMappingService {
     }
 
     @Override
-    public String getCmoPatientIdByInputId(String inputId) {
+    public String getCmoPatientIdByInputId(String inputId) throws Exception {
         Callable<Object> task = new Callable<Object>() {
             @Override
             public Object call() {
@@ -57,7 +57,9 @@ public class CrdbMappingServiceImpl implements CrdbMappingService {
         };
         Object result = runQueryWithForcedTimeout(task);
         if (result != null) {
-            return result.toString();
+            ArrayList<Object> crdbValues = mapper.convertValue(result, ArrayList.class);
+            CrdbMappingModel r = new CrdbMappingModel(crdbValues);
+            return r.getCmoId().replace("\"", "");
         }
         return null;
     }

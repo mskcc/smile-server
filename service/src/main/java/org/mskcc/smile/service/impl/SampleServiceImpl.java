@@ -81,14 +81,29 @@ public class SampleServiceImpl implements SmileSampleService {
             if (!existingSample.getSampleClass().equals(sampleMetadata.getTumorOrNormal())) {
                 existingSample.setSampleClass(sampleMetadata.getTumorOrNormal());
             }
-            // determine where a patient swap is required also
+
+            // determine whether a patient swap is required also
             if (!sample.getPatient().getSmilePatientId().equals(
                     existingSample.getPatient().getSmilePatientId())) {
                 LOG.info("Updating sample-to-patient relationship and removing connection to patient: "
                         + existingSample.getPatient().getSmilePatientId());
                 sampleRepository.removeSamplePatientRelationship(existingSample.getSmileSampleId(),
                         existingSample.getPatient().getSmilePatientId());
-                existingSample.setPatient(sample.getPatient());
+                // merge aliases from existing patient to the patient we are swapping to
+                SmilePatient existingPatient = existingSample.getPatient();
+                SmilePatient patientToSwapTo = sample.getPatient();
+                Boolean updatedPatientAliases = Boolean.FALSE;
+                for (PatientAlias pa : existingPatient.getPatientAliases()) {
+                    if (!patientToSwapTo.hasPatientAlias(pa)) {
+                        patientToSwapTo.addPatientAlias(pa);
+                        updatedPatientAliases = Boolean.TRUE;
+                    }
+                }
+                // save updates to patient we are swapping to if applicable
+                if (updatedPatientAliases) {
+                    patientService.savePatientMetadata(patientToSwapTo);
+                }
+                existingSample.setPatient(patientToSwapTo);
             }
             sampleRepository.save(existingSample);
             toReturn = existingSample;
@@ -254,7 +269,7 @@ public class SampleServiceImpl implements SmileSampleService {
             sampleRepository.updateRevisableBySampleId(existingSample.getSmileSampleId(), Boolean.TRUE);
             return Boolean.TRUE;
         }
-        
+
         // no updates to persist to sample, log and return false
         LOG.info("There are no updates to persist for sample: "
                 + sampleMetadata.getPrimaryId());
@@ -361,7 +376,8 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public List<SmileSample> getSamplesByCmoPatientId(String cmoPatientId) throws Exception {
         List<SmileSample> samples = new ArrayList<>();
-        for (SmileSample sample: sampleRepository.findAllSamplesByCmoPatientId(cmoPatientId)) {
+        List<SmileSample> samplesFound = sampleRepository.findAllSamplesByCmoPatientId(cmoPatientId);
+        for (SmileSample sample: samplesFound) {
             samples.add(getDetailedSmileSample(sample));
         }
         return samples;
