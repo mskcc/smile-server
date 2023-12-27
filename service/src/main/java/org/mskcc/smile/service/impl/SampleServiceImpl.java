@@ -16,9 +16,11 @@ import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
+import org.mskcc.smile.model.internal.CrdbMappingModel;
 import org.mskcc.smile.model.web.PublishedSmileSample;
 import org.mskcc.smile.model.web.SmileSampleIdMapping;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
+import org.mskcc.smile.service.CrdbMappingService;
 import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
@@ -42,6 +44,10 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Autowired
     private SmilePatientService patientService;
+
+    @Autowired
+    private CrdbMappingService crdbMappingService;
+
 
     private static final Log LOG = LogFactory.getLog(SampleServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
@@ -149,6 +155,14 @@ public class SampleServiceImpl implements SmileSampleService {
     public SmileSample fetchAndLoadPatientDetails(SmileSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         SmilePatient patient = sample.getPatient();
+        if (!patient.hasPatientAlias("dmpId")) {
+            CrdbMappingModel result =
+                    crdbMappingService.getCrdbMappingModelByInputId(patient.getCmoPatientId().getValue());
+            if (result != null) {
+                PatientAlias alias = new PatientAlias(result.getDmpId(), "dmpId");
+                patient.addPatientAlias(alias);
+            }
+        }
 
         // handle the scenario where a patient node does not already exist in the database
         // to prevent any null pointer exceptions (a situation that had arose in some test dmp sample cases)

@@ -122,6 +122,24 @@ public class SmilePatient implements Serializable {
         return Boolean.FALSE;
     }
 
+    /**
+     * Determines whether Patient has a patient alias matching the namespace provided.
+     * @param patientAliasNamespace
+     * @return Boolean
+     */
+    public Boolean hasPatientAlias(String patientAliasNamespace) {
+        if (patientAliases == null) {
+            patientAliases = new ArrayList<>();
+            return Boolean.FALSE;
+        }
+        for (PatientAlias alias : patientAliases) {
+            if (alias.getNamespace().equalsIgnoreCase(patientAliasNamespace)) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
