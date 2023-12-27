@@ -67,7 +67,9 @@ public class CrdbMappingServiceImpl implements CrdbMappingService {
     @Override
     public CrdbMappingModel getCrdbMappingModelByInputId(String inputId) throws Exception {
         //Add check for if the input query starts with "C-" then remove it (replace with empty string)
-        inputId.replace("C-", "");
+        if (inputId.startsWith("C-")) {
+            inputId.replace("C-", "");
+        }
         Callable<Object> task = new Callable<Object>() {
             @Override
             public Object call() {
