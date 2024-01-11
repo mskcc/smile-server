@@ -48,7 +48,6 @@ public class SampleServiceImpl implements SmileSampleService {
     @Autowired
     private CrdbMappingService crdbMappingService;
 
-
     private static final Log LOG = LogFactory.getLog(SampleServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -166,13 +165,15 @@ public class SampleServiceImpl implements SmileSampleService {
 
         // handle the scenario where a patient node does not already exist in the database
         // to prevent any null pointer exceptions (a situation that had arose in some test dmp sample cases)
-        if (patientService.getPatientByCmoPatientId(
-               sample.getPatient().getCmoPatientId().getValue()) == null) {
+        if (patientService.getPatientByCmoPatientId(patient.getCmoPatientId().getValue()) == null) {
             patientService.savePatientMetadata(patient);
             sample.setPatient(patient);
         }
 
         // get patient by cmo id from latest sample metadata
+        // note: the patient according to the cmo id in the sample's latest metadata may
+        // not match the patient that is linked to an existing sample in the event
+        // that a patient swap is needed and is the reason for the incoming sample update
         SmilePatient patientByLatestCmoId = patientService.getPatientByCmoPatientId(
                 sampleMetadata.getCmoPatientId());
 
@@ -183,28 +184,8 @@ public class SampleServiceImpl implements SmileSampleService {
                     + "- confirm whether data construction and parsing is being handled correctly");
         }
 
-        // scenario that requires a patient swap and updating the sample-to-patient relationship
-        // in the database and removing the former sample-to-patient relationship
-        if (patientByLatestCmoId == null) {
-            SmilePatient newPatient = new SmilePatient(sampleMetadata.getCmoPatientId(), "cmoId");
-            //if this sample is a clinical sample, we would also need to add dmpId
-            if (sample.getSampleCategory().equals("clinical")) {
-                Matcher matcher = DMP_PATIENT_ID.matcher(sampleMetadata.getPrimaryId());
-                if (matcher.find()) {
-                    newPatient.addPatientAlias(new PatientAlias(matcher.group(), "dmpId"));
-                }
-            }
-            patientService.savePatientMetadata(newPatient);
-            sample.setPatient(newPatient);
-            // remove sample-to-patient relationship from former patient node
-            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(),
-                    patient.getSmilePatientId());
-            return sample;
-        }
-
-        // scenario where we are checking for an update to the existing patient, which is the same
-        // that already existing and is linked to the sample in the database but may contain updates
-        // (i.e., a new patient alias)
+        // scenario where we are checking for an update to the existing patient and is linked to the
+        // sample in the database but may contain updates (i.e., a new patient alias)
         if (patient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())) {
             // go through the new patient aliases and indicator for whether a
             // new patient alias was added to the existing patient
@@ -220,6 +201,26 @@ public class SampleServiceImpl implements SmileSampleService {
             } else {
                 sample.setPatient(patientByLatestCmoId);
             }
+            return sample;
+        }
+
+        // scenario that requires a patient swap and updating the sample-to-patient relationship
+        // in the database and removing the former sample-to-patient relationship
+        if (patientByLatestCmoId == null) {
+            SmilePatient newPatient = new SmilePatient(sampleMetadata.getCmoPatientId(), "cmoId");
+            //if this sample is a clinical sample, we would also need to add dmpId
+            if (sample.getSampleCategory().equals("clinical")
+                    && !sample.getPatient().hasPatientAlias("dmpId")) {
+                Matcher matcher = DMP_PATIENT_ID.matcher(sampleMetadata.getPrimaryId());
+                if (matcher.find()) {
+                    newPatient.addPatientAlias(new PatientAlias(matcher.group(), "dmpId"));
+                }
+            }
+            patientService.savePatientMetadata(newPatient);
+            sample.setPatient(newPatient);
+            // remove sample-to-patient relationship from former patient node
+            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(),
+                    patient.getSmilePatientId());
             return sample;
         }
 
