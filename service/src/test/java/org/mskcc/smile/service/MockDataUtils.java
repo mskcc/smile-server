@@ -27,17 +27,47 @@ public final class MockDataUtils {
             = "data/dmp_clinical/mocked_dmp_data_details.txt";
     private final String MOCKED_DMP_PATIENT_MAPPING_FILEPATH
             = "data/dmp_clinical/mocked_dmp_patient_mappings.txt";
+    private final String MOCKED_TEMPO_DATA_DETAILS_FILEPATH = "data/tempo/mocked_tempo_data_details.txt";
     private final String MOCKED_JSON_DATA_DIR = "data";
     private final ClassPathResource mockJsonTestDataResource = new ClassPathResource(MOCKED_JSON_DATA_DIR);
 
     // mocked data maps
     public Map<String, MockJsonTestData> mockedRequestJsonDataMap;
     public Map<String, MockJsonTestData> mockedDmpMetadataMap;
+    public Map<String, MockJsonTestData> mockedTempoDataMap;
     public Map<String, String> mockedDmpPatientMapping;
     public Map<String, String> mockedDmpSampleMapping;
 
     // expected patient-sample counts (research and clinical)
     public final Map<String, Integer> EXPECTED_PATIENT_SAMPLES_COUNT = initExpectedPatientSamplesCount();
+
+
+    /**
+     * Inits the mocked tempo data map.
+     * @throws IOException
+     */
+    @Autowired
+    public void mockedTempoDataMap() throws IOException {
+        this.mockedTempoDataMap = new HashMap<>();
+        ClassPathResource jsonDataDetailsResource =
+                new ClassPathResource(MOCKED_TEMPO_DATA_DETAILS_FILEPATH);
+        BufferedReader reader = new BufferedReader(new FileReader(jsonDataDetailsResource.getFile()));
+        List<String> columns = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split("\t");
+            if (columns.isEmpty()) {
+                columns = Arrays.asList(data);
+                continue;
+            }
+            String identifier = data[columns.indexOf("identifier")];
+            String filepath = data[columns.indexOf("filepath")];
+            String description = data[columns.indexOf("description")];
+            mockedTempoDataMap.put(identifier,
+                    createMockJsonTestData(identifier, filepath, description));
+        }
+        reader.close();
+    }
 
     /**
      * Inits the mocked dmp metadata map.

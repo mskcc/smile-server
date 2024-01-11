@@ -54,7 +54,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
     List<SmileSample> findMatchedNormalsByResearchSample(
             @Param("smileSample") SmileSample smileSample);
 
-    @Query("Match (r: Request {igoRequestId: $reqId})-[:HAS_SAMPLE]->"
+    @Query("MATCH (r: Request {igoRequestId: $reqId})-[:HAS_SAMPLE]->"
             + "(s: Sample) "
             + "RETURN s;")
     List<SmileSample> findResearchSamplesByRequest(@Param("reqId") String reqId);
@@ -129,4 +129,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "RETURN s")
     SmileSample updateRevisableBySampleId(@Param("smileSampleId") UUID smileSampleId,
             @Param("revisable") Boolean revisable);
+
+    @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) RETURN s")
+    SmileSample sampleExistsByPrimaryId(String primaryId);
 }

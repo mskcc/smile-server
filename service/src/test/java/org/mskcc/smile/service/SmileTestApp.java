@@ -13,6 +13,8 @@ import org.mskcc.smile.service.impl.RequestReplyHandlingServiceImpl;
 import org.mskcc.smile.service.impl.RequestServiceImpl;
 import org.mskcc.smile.service.impl.ResearchMessageHandlingServiceImpl;
 import org.mskcc.smile.service.impl.SampleServiceImpl;
+import org.mskcc.smile.service.impl.TempoMessageHandlingServiceImpl;
+import org.mskcc.smile.service.impl.TempoServiceImpl;
 import org.mskcc.smile.service.util.RequestStatusLogger;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -49,6 +51,11 @@ public class SmileTestApp {
         return new JsonComparatorImpl();
     }
 
+    @Bean
+    public TempoService tempoService() {
+        return new TempoServiceImpl();
+    }
+
     @MockBean
     public CrdbRepository crdbRepository;
 
@@ -75,5 +82,8 @@ public class SmileTestApp {
 
     @MockBean
     public RequestReplyHandlingServiceImpl requestReplyHandlingService;
+
+    @MockBean
+    public TempoMessageHandlingServiceImpl tempoMessageHandlingService;
 
 }
