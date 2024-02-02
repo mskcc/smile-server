@@ -131,5 +131,5 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             @Param("revisable") Boolean revisable);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) RETURN s")
-    SmileSample sampleExistsByPrimaryId(String primaryId);
+    SmileSample sampleExistsByPrimaryId(@Param("primaryId") String primaryId);
 }
