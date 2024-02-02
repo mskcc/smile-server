@@ -161,6 +161,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         Map<String, String> bamCompleteMap = mapper.readValue(bamCompleteJson, Map.class);
                     BamComplete bamComplete = new BamComplete(bamCompleteMap.get("timestamp"),
                             bamCompleteMap.get("status"));
+                    
+                    LOG.info("\n\nBAM complete object: " + bamComplete.toString());
                     String primaryId = bamCompleteMap.get("primaryId");
                     Map.Entry<String, BamComplete> eventData =
                             new AbstractMap.SimpleImmutableEntry<>(primaryId, bamComplete);
