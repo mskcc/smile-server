@@ -71,15 +71,11 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 try {
                     Entry<String, BamComplete> bcEvent = bamCompleteQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (bcEvent != null) {
-                        LOG.info("Event exists");
-
                         // first determine if sample exists by the provided primary id
                         String primaryId = bcEvent.getKey();
                         BamComplete bamComplete = bcEvent.getValue();
                         if (sampleService.sampleExistsByPrimaryId(primaryId)) {
                             // merge and/or create tempo bam complete event to sample
-                            LOG.info("Sample exists");
-
                             Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                             if (tempo == null
                                     || !tempo.hasBamCompleteEvent(bamComplete)) {
@@ -87,7 +83,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                         bamComplete);
                             }
                         } else {
-                            LOG.info("Sample does not exist");
+                            LOG.error("Sample with primary id: " + primaryId + " does not exist");
                         }
                     }
                 } catch (InterruptedException e) {
@@ -155,14 +151,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     String bamCompleteJson = mapper.readValue(
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
-
-                    LOG.info("bamCompleteJson: " + bamCompleteJson);
-
                         Map<String, String> bamCompleteMap = mapper.readValue(bamCompleteJson, Map.class);
                     BamComplete bamComplete = new BamComplete(bamCompleteMap.get("date"),
                             bamCompleteMap.get("status"));
-                    
-                    LOG.info("\n\nBAM complete object: " + bamComplete.toString());
                     String primaryId = bamCompleteMap.get("primaryId");
                     Map.Entry<String, BamComplete> eventData =
                             new AbstractMap.SimpleImmutableEntry<>(primaryId, bamComplete);
