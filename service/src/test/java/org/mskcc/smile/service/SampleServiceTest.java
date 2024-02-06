@@ -13,6 +13,7 @@ import org.mskcc.smile.model.dmp.DmpSampleMetadata;
 import org.mskcc.smile.persistence.neo4j.SmilePatientRepository;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
+import org.mskcc.smile.persistence.neo4j.TempoRepository;
 import org.mskcc.smile.service.util.RequestDataFactory;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class SampleServiceTest {
     @Autowired
     private SmilePatientService patientService;
 
+    @Autowired
+    private TempoService tempoService;
+
     @Container
     private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
@@ -64,6 +68,7 @@ public class SampleServiceTest {
     private final SmileRequestRepository requestRepository;
     private final SmileSampleRepository sampleRepository;
     private final SmilePatientRepository patientRepository;
+    private final TempoRepository tempoRepository;
 
     /**
      * Initializes the Neo4j repositories.
@@ -72,15 +77,20 @@ public class SampleServiceTest {
      * @param patientRepository
      * @param requestService
      * @param sampleService
+     * @param patientService
+     * @param tempoRepository
+     * @param tempoService
      */
     @Autowired
     public SampleServiceTest(SmileRequestRepository requestRepository,
             SmileSampleRepository sampleRepository, SmilePatientRepository patientRepository,
             SmileRequestService requestService, SmileSampleService sampleService,
-            SmilePatientService patientService) {
+            SmilePatientService patientService, TempoRepository tempoRepository, TempoService tempoService) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
+        this.tempoRepository = tempoRepository;
+        this.tempoService = tempoService;
     }
 
     /**
@@ -406,7 +416,7 @@ public class SampleServiceTest {
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
     }
-    
+
     /**
      * Tests if sampleMetadata with invalid updates are not persisted to database
      * @throws Exception
@@ -427,7 +437,7 @@ public class SampleServiceTest {
             }
         }
         Assertions.assertThat(updatedSample).isNotNull();
-        
+
         String invalidCollectionYear = "INVALID IGO UPDATE";
         SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
         updatedMetadata.setImportDate("2000-10-15");

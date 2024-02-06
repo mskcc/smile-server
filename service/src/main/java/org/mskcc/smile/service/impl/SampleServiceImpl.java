@@ -24,6 +24,7 @@ import org.mskcc.smile.service.CrdbMappingService;
 import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.TempoService;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,9 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Autowired
     private SmilePatientService patientService;
+
+    @Autowired
+    private TempoService tempoService;
 
     @Autowired
     private CrdbMappingService crdbMappingService;
@@ -407,6 +411,7 @@ public class SampleServiceImpl implements SmileSampleService {
         SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
         sample.setPatient(patient);
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getSmileSampleId()));
+        sample.setTempo(tempoService.getTempoDataBySampleId(sample));
         return sample;
     }
 
@@ -463,6 +468,11 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId) {
         sampleRepository.createSampleRequestRelationship(smileSampleId, smileRequestId);
+    }
+
+    @Override
+    public Boolean sampleExistsByPrimaryId(String primaryId) {
+        return (sampleRepository.sampleExistsByPrimaryId(primaryId) != null);
     }
 
     private List<SampleMetadata> getSampleMetadataWithStatus(List<SampleMetadata> smList) {
