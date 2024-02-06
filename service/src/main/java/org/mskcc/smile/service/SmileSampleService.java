@@ -34,4 +34,5 @@ public interface SmileSampleService {
     List<SmileSampleIdMapping> getSamplesByDate(String inputDate);
     SmileSample getSampleByInputId(String inputId);
     void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId);
+    Boolean sampleExistsByPrimaryId(String primaryId);
 }

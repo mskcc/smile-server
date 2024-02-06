@@ -75,3 +75,7 @@ smile.publishing_failures_filepath=
 
 # request handling failure filepath
 smile.request_handling_failures_filepath=
+
+# tempo topics
+num.tempo_msg_handler_threads=
+tempo.wes_bam_complete_topic=

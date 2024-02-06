@@ -8,6 +8,7 @@ import org.mskcc.smile.service.ClinicalMessageHandlingService;
 import org.mskcc.smile.service.CorrectCmoPatientHandlingService;
 import org.mskcc.smile.service.RequestReplyHandlingService;
 import org.mskcc.smile.service.ResearchMessageHandlingService;
+import org.mskcc.smile.service.TempoMessageHandlingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -50,6 +51,9 @@ public class SmileApp implements CommandLineRunner {
     private CorrectCmoPatientHandlingService correctCmoPatientHandlingService;
 
     @Autowired
+    private TempoMessageHandlingService tempoMessageHandlingService;
+
+    @Autowired
     private RequestReplyHandlingService requestReplyHandlingService;
 
     private Thread shutdownHook;
@@ -86,6 +90,7 @@ public class SmileApp implements CommandLineRunner {
             researchMessageHandlingService.initialize(messagingGateway);
             clinicalMessageHandlingService.initialize(messagingGateway);
             correctCmoPatientHandlingService.initialize(messagingGateway);
+            tempoMessageHandlingService.intialize(messagingGateway);
             smileAppClose.await();
         } catch (Exception e) {
             LOG.error("Encountered error during initialization", e);
@@ -102,6 +107,7 @@ public class SmileApp implements CommandLineRunner {
                         researchMessageHandlingService.shutdown();
                         clinicalMessageHandlingService.shutdown();
                         correctCmoPatientHandlingService.shutdown();
+                        tempoMessageHandlingService.shutdown();
                         messagingGateway.shutdown();
                     } catch (Exception e) {
                         LOG.error("Encountered error during shutdown process", e);
