@@ -13,13 +13,13 @@ import org.neo4j.ogm.annotation.NodeEntity;
 public class BamComplete {
     @Id @GeneratedValue
     private Long id;
-    private String timestamp;
+    private String date;
     private String status;
 
     public BamComplete() {}
 
-    public BamComplete(String timestamp, String status) {
-        this.timestamp = timestamp;
+    public BamComplete(String date, String status) {
+        this.date = date;
         this.status = status;
     }
 
@@ -32,11 +32,11 @@ public class BamComplete {
     }
 
     public String getDate() {
-        return timestamp;
+        return date;
     }
 
     public void setDate(String date) {
-        this.timestamp = date;
+        this.date = date;
     }
 
     public String getStatus() {

@@ -150,6 +150,6 @@ public class TempoServiceTest {
     private BamComplete getBamCompleteEventData(String dataIdentifier) throws JsonProcessingException {
         MockJsonTestData mockData = mockDataUtils.mockedTempoDataMap.get(dataIdentifier);
         Map<String, String> bamCompleteMap = mapper.readValue(mockData.getJsonString(), Map.class);
-        return new BamComplete(bamCompleteMap.get("timestamp"), bamCompleteMap.get("status"));
+        return new BamComplete(bamCompleteMap.get("date"), bamCompleteMap.get("status"));
     }
 }

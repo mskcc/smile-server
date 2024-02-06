@@ -159,7 +159,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     LOG.info("bamCompleteJson: " + bamCompleteJson);
 
                         Map<String, String> bamCompleteMap = mapper.readValue(bamCompleteJson, Map.class);
-                    BamComplete bamComplete = new BamComplete(bamCompleteMap.get("timestamp"),
+                    BamComplete bamComplete = new BamComplete(bamCompleteMap.get("date"),
                             bamCompleteMap.get("status"));
                     
                     LOG.info("\n\nBAM complete object: " + bamComplete.toString());
