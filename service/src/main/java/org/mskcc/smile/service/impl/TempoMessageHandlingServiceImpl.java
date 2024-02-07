@@ -146,6 +146,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     private void setupBamCompleteHandler(Gateway gateway,
             TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
         gateway.subscribe(TEMPO_WES_BAM_COMPLETE_TOPIC, Object.class, new MessageConsumer() {
+            @Override
             public void onMessage(Message msg, Object message) {
                 try {
                     String bamCompleteJson = mapper.readValue(
