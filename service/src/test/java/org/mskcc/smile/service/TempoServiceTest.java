@@ -49,7 +49,7 @@ public class TempoServiceTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Container
-    private static final Neo4jContainer databaseServer = new Neo4jContainer<>("neo4j:4.4")
+    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>()
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
 
     @TestConfiguration
