@@ -60,6 +60,11 @@ public class Tempo {
         bamCompleteEvents.add(bamComplete);
     }
 
+    /**
+     * Checks for bam complete event in list of existing bam events.
+     * @param bamComplete
+     * @return
+     */
     public Boolean hasBamCompleteEvent(BamComplete bamComplete) {
         if (bamCompleteEvents == null) {
             bamCompleteEvents = new ArrayList<>();
