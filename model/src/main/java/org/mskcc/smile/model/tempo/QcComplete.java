@@ -20,6 +20,13 @@ public class QcComplete {
 
     public QcComplete() {}
 
+    /**
+     * Basic QcComplete constructor.
+     * @param date
+     * @param result
+     * @param reason
+     * @param status
+     */
     public QcComplete(String date, String result, String reason, String status) {
         this.date = date;
         this.result = result;

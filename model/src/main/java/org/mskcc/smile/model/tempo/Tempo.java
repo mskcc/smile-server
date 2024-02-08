@@ -107,6 +107,11 @@ public class Tempo {
         qcCompleteEvents.add(qcComplete);
     }
 
+    /**
+     * Checks for qc complete event in existing event list.
+     * @param qcComplete
+     * @return
+     */
     public Boolean hasQcCompleteEvent(QcComplete qcComplete) {
         if (qcCompleteEvents == null) {
             qcCompleteEvents = new ArrayList<>();
