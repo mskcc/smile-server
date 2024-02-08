@@ -19,6 +19,8 @@ public class Tempo {
     private Long id;
     @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
     private List<BamComplete> bamCompleteEvents;
+    @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
+    private List<QcComplete> qcCompleteEvents;
     @Relationship(type = "HAS_TEMPO", direction = Relationship.INCOMING)
     private SmileSample sample;
 
@@ -68,6 +70,50 @@ public class Tempo {
         for (BamComplete event : bamCompleteEvents) {
             if (event.getDate().equalsIgnoreCase(bamComplete.getDate())
                     && event.getStatus().equalsIgnoreCase(bamComplete.getStatus())) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
+    }
+
+    /**
+     * Returns list of qc complete events.
+     * @return
+     */
+    public List<QcComplete> getQcCompleteEvents() {
+        if (qcCompleteEvents == null) {
+            qcCompleteEvents = new ArrayList<>();
+        }
+        return qcCompleteEvents;
+    }
+
+    public void setQcCompleteEvents(List<QcComplete> qcCompleteEvents) {
+        this.qcCompleteEvents = qcCompleteEvents;
+    }
+
+    /**
+     * Adds a qc complete event to list.
+     * @param qcComplete
+     */
+    public void addQcCompleteEvent(QcComplete qcComplete) {
+        if (qcCompleteEvents == null) {
+            qcCompleteEvents = new ArrayList<>();
+        }
+        qcCompleteEvents.add(qcComplete);
+    }
+
+    public Boolean hasQcCompleteEvent(QcComplete qcComplete) {
+        if (qcCompleteEvents == null) {
+            qcCompleteEvents = new ArrayList<>();
+        }
+        if (qcCompleteEvents.isEmpty()) {
+            return Boolean.FALSE;
+        }
+        for (QcComplete event : qcCompleteEvents) {
+            if (event.getDate().equalsIgnoreCase(qcComplete.getDate())
+                    && event.getStatus().equalsIgnoreCase(qcComplete.getStatus())
+                    && event.getReason().equalsIgnoreCase(qcComplete.getReason())
+                    && event.getResult().equalsIgnoreCase(qcComplete.getResult())) {
                 return Boolean.TRUE;
             }
         }
