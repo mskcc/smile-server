@@ -28,12 +28,12 @@ public interface TempoRepository extends Neo4jRepository<Tempo, Long> {
     List<BamComplete> findBamCompleteEventsByTempoId(@Param("tempoId") Long tempoId);
 
     @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(bc: BamComplete) "
-            + "RETURN bc ORDER BY bc.timestamp DESC LIMIT 1")
+            + "RETURN bc ORDER BY bc.date DESC LIMIT 1")
     BamComplete findLatestBamCompleteEventByTempoId(@Param("tempoId") Long tempoId);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
             + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
-            + "MERGE (t)-[:HAS_EVENT]->(bc: BamComplete {timestamp: $bcEvent.timestamp, "
+            + "MERGE (t)-[:HAS_EVENT]->(bc: BamComplete {date: $bcEvent.date, "
             + "status: $bcEvent.status}) WITH s,t,bc RETURN t")
     Tempo mergeBamCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
             @Param("bcEvent") BamComplete bcEvent);

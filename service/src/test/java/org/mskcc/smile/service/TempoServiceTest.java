@@ -49,7 +49,7 @@ public class TempoServiceTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Container
-    private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
+    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>()
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
 
     @TestConfiguration
@@ -150,6 +150,6 @@ public class TempoServiceTest {
     private BamComplete getBamCompleteEventData(String dataIdentifier) throws JsonProcessingException {
         MockJsonTestData mockData = mockDataUtils.mockedTempoDataMap.get(dataIdentifier);
         Map<String, String> bamCompleteMap = mapper.readValue(mockData.getJsonString(), Map.class);
-        return new BamComplete(bamCompleteMap.get("timestamp"), bamCompleteMap.get("status"));
+        return new BamComplete(bamCompleteMap.get("date"), bamCompleteMap.get("status"));
     }
 }
