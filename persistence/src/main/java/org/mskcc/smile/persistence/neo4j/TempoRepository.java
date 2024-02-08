@@ -3,6 +3,7 @@ package org.mskcc.smile.persistence.neo4j;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.smile.model.tempo.BamComplete;
+import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -27,9 +28,17 @@ public interface TempoRepository extends Neo4jRepository<Tempo, Long> {
             + "RETURN bc")
     List<BamComplete> findBamCompleteEventsByTempoId(@Param("tempoId") Long tempoId);
 
+    @Query("MATCH (t: Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(qc: QcComplete) "
+            + "RETURN qc")
+    List<QcComplete> findQcCompleteEventsByTempoId(@Param("tempoId") Long tempoId);
+
     @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(bc: BamComplete) "
             + "RETURN bc ORDER BY bc.date DESC LIMIT 1")
     BamComplete findLatestBamCompleteEventByTempoId(@Param("tempoId") Long tempoId);
+
+    @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(qc: QcComplete) "
+            + "RETURN qc ORDER BY qc.date DESC LIMIT 1")
+    QcComplete findLatestQcCompleteEventByTempoId(@Param("tempoId") Long tempoId);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
             + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
@@ -37,8 +46,11 @@ public interface TempoRepository extends Neo4jRepository<Tempo, Long> {
             + "status: $bcEvent.status}) WITH s,t,bc RETURN t")
     Tempo mergeBamCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
             @Param("bcEvent") BamComplete bcEvent);
-    
+
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
-    + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t " 
-    + "MERGE (t)-[:HAS_EVENT]->(qc: QcComplete {}) WITH s,t,qc RETURN t")
+            + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
+            + "MERGE (t)-[:HAS_EVENT]->(qc: QcComplete {date: $qcEvent.date, result: $qcEvent.result, "
+            + "reason: $qcEvent.reason, status: $qcEvent.status}) WITH s,t,qc RETURN t")
+    Tempo mergeQcCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
+            @Param("qcEvent") QcComplete qcEvent);
 }
