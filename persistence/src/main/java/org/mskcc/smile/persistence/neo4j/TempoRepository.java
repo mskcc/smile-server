@@ -32,10 +32,17 @@ public interface TempoRepository extends Neo4jRepository<Tempo, Long> {
     @Query("MATCH (t: Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(qc: QcComplete) "
             + "RETURN qc")
     List<QcComplete> findQcCompleteEventsByTempoId(@Param("tempoId") Long tempoId);
+    @Query("MATCH (t: Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(mc: MafComplete) "
+            + "RETURN mc")
+    List<MafComplete> findMafCompleteEventsByTempoId(@Param("tempoId") Long tempoId);
 
     @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(bc: BamComplete) "
             + "RETURN bc ORDER BY bc.date DESC LIMIT 1")
-    BamComplete findLatestBamCompleteEventByTempoId(@Param("tempoId") Long tempoId);
+    BamComplete findLatestBamCompleteEventByTempoId(@Param("tempoId") Long tempoId);        
+    
+    @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(mc: MafComplete) "
+            + "RETURN mc ORDER BY mc.date DESC LIMIT 1")
+    MafComplete findLatestMafCompleteEventByTempoId(@Param("tempoId") Long tempoId);
 
     @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(qc: QcComplete) "
             + "RETURN qc ORDER BY qc.date DESC LIMIT 1")
@@ -54,14 +61,6 @@ public interface TempoRepository extends Neo4jRepository<Tempo, Long> {
             + "reason: $qcEvent.reason, status: $qcEvent.status}) WITH s,t,qc RETURN t")
     Tempo mergeQcCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
             @Param("qcEvent") QcComplete qcEvent);
-
-    @Query("MATCH (t: Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(mc: MafComplete) "
-            + "RETURN mc")
-    List<MafComplete> findMafCompleteEventsByTempoId(@Param("tempoId") Long tempoId);
-
-    @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(mc: MafComplete) "
-            + "RETURN mc ORDER BY mc.date DESC LIMIT 1")
-    MafComplete findLatestMafCompleteEventByTempoId(@Param("tempoId") Long tempoId);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
             + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
