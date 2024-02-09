@@ -133,7 +133,7 @@ public class Tempo {
     }
 
     /**
-         * Returns list of maf complete events.
+     * Returns list of maf complete events.
      * @return
      */
     public List<MafComplete> getMafCompleteEvents() {

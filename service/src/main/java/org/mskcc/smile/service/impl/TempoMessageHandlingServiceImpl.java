@@ -18,8 +18,8 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.model.tempo.BamComplete;
-import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
+import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
@@ -185,7 +185,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 }
             }
         }
-
     }
 
     @Override
@@ -333,7 +332,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             }
         });
     }
-            
     
     private void setupMafCompleteHandler(Gateway gateway,
             TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
@@ -346,7 +344,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         String.class);
                     Map<String, String> mafCompleteMap = mapper.readValue(mafCompleteJson, Map.class);
                     MafComplete mafComplete = new MafComplete(mafCompleteMap.get("date"),
-                            mafCompleteMap.get("normal_primaryId"),
+                            mafCompleteMap.get("normalPrimaryId"),
                             mafCompleteMap.get("status"));
                     String primaryId = mafCompleteMap.get("primaryId");
                     Map.Entry<String, MafComplete> eventData =
