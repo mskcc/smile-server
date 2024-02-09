@@ -8,3 +8,8 @@ mockQcCompleteSampleB1	tempo/qc_complete_MOCKREQUEST1_B_1.json	Mocked QC complet
 mockQcCompleteSampleB2	tempo/qc_complete_MOCKREQUEST1_B_2.json	Mocked QC complete JSON for sample MOCKREQUEST1_B_2
 mockQcCompleteSampleB3	tempo/qc_complete_MOCKREQUEST1_B_3.json	Mocked QC complete JSON for sample MOCKREQUEST1_B_3
 mockQcCompleteSampleB4	tempo/qc_complete_MOCKREQUEST1_B_4.json	Mocked QC complete JSON for sample MOCKREQUEST1_B_4
+mockMafCompleteSampleB1	tempo/maf_complete_MOCKREQUEST1_B_1.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_1
+mockMafCompleteSampleB2	tempo/maf_complete_MOCKREQUEST1_B_2.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_2
+mockMafCompleteSampleB3	tempo/maf_complete_MOCKREQUEST1_B_3.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_3 with status FAIL
+mockMafCompleteSampleB4	tempo/maf_complete_MOCKREQUEST1_B_4.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_4
+mockMafCompleteSampleB3pass	tempo/maf_complete_MOCKREQUEST1_B_3_pass.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_3 with status PASS
