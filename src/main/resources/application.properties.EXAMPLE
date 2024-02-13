@@ -79,3 +79,4 @@ smile.request_handling_failures_filepath=
 # tempo topics
 num.tempo_msg_handler_threads=
 tempo.wes_bam_complete_topic=
+tempo.wes_qc_complete_topic=
