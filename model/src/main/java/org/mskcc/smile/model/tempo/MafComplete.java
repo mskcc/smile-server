@@ -6,7 +6,7 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 /**
- *
+ * Represents a MAF Complete entity.
  * @author qu8n
  */
 @NodeEntity
@@ -19,6 +19,12 @@ public class MafComplete {
 
     public MafComplete() {}
 
+    /**
+     * Constructor for MafComplete.
+     * @param date
+     * @param normalPrimaryId
+     * @param status
+     */
     public MafComplete(String date, String normalPrimaryId, String status) {
         this.date = date;
         this.normalPrimaryId = normalPrimaryId;
