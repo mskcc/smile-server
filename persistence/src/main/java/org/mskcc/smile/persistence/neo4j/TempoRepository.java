@@ -65,7 +65,8 @@ public interface TempoRepository extends Neo4jRepository<Tempo, Long> {
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
             + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
             + "MERGE (t)-[:HAS_EVENT]->(mc: MafComplete {date: $mcEvent.date, "
-            + "status: $mcEvent.status}) WITH s,t,mc RETURN t")
+            + "normalPrimaryId: $mcEvent.normalPrimaryId, status: $mcEvent.status}) " 
+            + "WITH s,t,mc RETURN t")
     Tempo mergeMafCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
             @Param("mcEvent") MafComplete mcEvent);
 }
