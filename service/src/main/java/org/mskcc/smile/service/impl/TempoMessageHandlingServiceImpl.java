@@ -346,7 +346,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         String.class);
                     Map<String, String> mafCompleteMap = mapper.readValue(mafCompleteJson, Map.class);
                     MafComplete mafComplete = new MafComplete(mafCompleteMap.get("date"),
-                            mafCompleteMap.get("normal_primaryId"),
+                            mafCompleteMap.get("normalPrimaryId"),
                             mafCompleteMap.get("status"));
                     String primaryId = mafCompleteMap.get("primaryId");
                     Map.Entry<String, MafComplete> eventData =
