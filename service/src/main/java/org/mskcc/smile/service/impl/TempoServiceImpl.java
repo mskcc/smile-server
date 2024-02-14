@@ -2,8 +2,8 @@ package org.mskcc.smile.service.impl;
 
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
-import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
+import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.persistence.neo4j.TempoRepository;
 import org.mskcc.smile.service.TempoService;
