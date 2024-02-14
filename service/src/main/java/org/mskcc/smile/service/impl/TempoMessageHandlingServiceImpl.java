@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.model.tempo.BamComplete;
+import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.service.SmileSampleService;
@@ -39,6 +40,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     @Value("${tempo.wes_qc_complete_topic}")
     private String TEMPO_WES_QC_COMPLETE_TOPIC;
 
+    @Value("${tempo.wes_maf_complete_topic}")
+    private String TEMPO_WES_MAF_COMPLETE_TOPIC;
+
     @Value("${num.tempo_msg_handler_threads}")
     private int NUM_TEMPO_MSG_HANDLERS;
 
@@ -59,9 +63,12 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<Map.Entry<String, BamComplete>>();
     private static final BlockingQueue<Map.Entry<String, QcComplete>> qcCompleteQueue =
             new LinkedBlockingQueue<Map.Entry<String, QcComplete>>();
+    private static final BlockingQueue<Map.Entry<String, MafComplete>> mafCompleteQueue =
+            new LinkedBlockingQueue<Map.Entry<String, MafComplete>>();
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
+    private static CountDownLatch mafCompleteHandlerShutdownLatch;
 
     private class BamCompleteHandler implements Runnable {
         final Phaser phaser;
@@ -90,7 +97,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                         bamComplete);
                             }
                         } else {
-                            LOG.error("Sample with primary id: " + primaryId + " does not exist");
+                            LOG.error("Sample with primary id " + primaryId + " does not exist");
                         }
                     }
                 } catch (InterruptedException e) {
@@ -141,12 +148,52 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
+    private class MafCompleteHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        MafCompleteHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    Entry<String, MafComplete> mcEvent = mafCompleteQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (mcEvent != null) {
+                        // first determine if sample exists by the provided primary id
+                        String primaryId = mcEvent.getKey();
+                        MafComplete mafComplete = mcEvent.getValue();
+                        if (sampleService.sampleExistsByPrimaryId(primaryId)) {
+                            // merge and/or create tempo maf complete event to sample
+                            Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
+                            if (tempo == null
+                                    || !tempo.hasMafCompleteEvent(mafComplete)) {
+                                tempoService.mergeMafCompleteEventBySamplePrimaryId(primaryId,
+                                        mafComplete);
+                            }
+                        } else {
+                            LOG.error("Sample with primary id " + primaryId + " does not exist");
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of MAF complete event", e);
+                }
+            }
+        }
+    }
+
     @Override
     public void intialize(Gateway gateway) throws Exception {
         if (!initialized) {
             messagingGateway = gateway;
             setupBamCompleteHandler(messagingGateway, this);
             setupQcCompleteHandler(messagingGateway, this);
+            setupMafCompleteHandler(messagingGateway, this);
             initializeMessageHandlers();
             initialized = true;
         } else {
@@ -181,6 +228,19 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     }
 
     @Override
+    public void mafCompleteHandler(Map.Entry<String, MafComplete> mcEvent) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            mafCompleteQueue.put(mcEvent);
+        } else {
+            LOG.error("Shutdown initiated, not accepting MAF event: " + mcEvent);
+            throw new IllegalStateException("Shutdown initiated, not handling any more TEMPO events");
+        }
+    }
+
+    @Override
     public void shutdown() throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
@@ -188,6 +248,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         exec.shutdownNow();
         bamCompleteHandlerShutdownLatch.await();
         qcCompleteHandlerShutdownLatch.await();
+        mafCompleteHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -211,6 +272,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new QcCompleteHandler(qcCompletePhaser));
         }
         qcCompletePhaser.arriveAndAwaitAdvance();
+        
+        // maf complete handler
+        mafCompleteHandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
+        final Phaser mafCompletePhaser = new Phaser();
+        mafCompletePhaser.register();
+        for (int lc = 0; lc < NUM_TEMPO_MSG_HANDLERS; lc++) {
+            mafCompletePhaser.register();
+            exec.execute(new MafCompleteHandler(mafCompletePhaser));
+        }
+        mafCompletePhaser.arriveAndAwaitAdvance();
     }
 
     private void setupBamCompleteHandler(Gateway gateway,
@@ -222,7 +293,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     String bamCompleteJson = mapper.readValue(
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
-                        Map<String, String> bamCompleteMap = mapper.readValue(bamCompleteJson, Map.class);
+                    Map<String, String> bamCompleteMap = mapper.readValue(bamCompleteJson, Map.class);
                     BamComplete bamComplete = new BamComplete(bamCompleteMap.get("date"),
                             bamCompleteMap.get("status"));
                     String primaryId = bamCompleteMap.get("primaryId");
@@ -257,6 +328,31 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of QC complete event: "
                             + TEMPO_WES_QC_COMPLETE_TOPIC, e);
+                }
+            }
+        });
+    }
+    
+    private void setupMafCompleteHandler(Gateway gateway,
+            TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
+        gateway.subscribe(TEMPO_WES_MAF_COMPLETE_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                try {
+                    String mafCompleteJson = mapper.readValue(
+                        new String(msg.getData(), StandardCharsets.UTF_8),
+                        String.class);
+                    Map<String, String> mafCompleteMap = mapper.readValue(mafCompleteJson, Map.class);
+                    MafComplete mafComplete = new MafComplete(mafCompleteMap.get("date"),
+                            mafCompleteMap.get("normalPrimaryId"),
+                            mafCompleteMap.get("status"));
+                    String primaryId = mafCompleteMap.get("primaryId");
+                    Map.Entry<String, MafComplete> eventData =
+                            new AbstractMap.SimpleImmutableEntry<>(primaryId, mafComplete);
+                    tempoMessageHandlingService.mafCompleteHandler(eventData);
+                } catch (Exception e) {
+                    LOG.error("Exception occurred during processing of MAF complete event: "
+                            + TEMPO_WES_MAF_COMPLETE_TOPIC, e);
                 }
             }
         });

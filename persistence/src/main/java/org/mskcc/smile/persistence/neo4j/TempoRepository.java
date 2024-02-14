@@ -3,6 +3,7 @@ package org.mskcc.smile.persistence.neo4j;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.smile.model.tempo.BamComplete;
+import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.springframework.data.neo4j.annotation.Query;
@@ -31,10 +32,17 @@ public interface TempoRepository extends Neo4jRepository<Tempo, Long> {
     @Query("MATCH (t: Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(qc: QcComplete) "
             + "RETURN qc")
     List<QcComplete> findQcCompleteEventsByTempoId(@Param("tempoId") Long tempoId);
+    @Query("MATCH (t: Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(mc: MafComplete) "
+            + "RETURN mc")
+    List<MafComplete> findMafCompleteEventsByTempoId(@Param("tempoId") Long tempoId);
 
     @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(bc: BamComplete) "
             + "RETURN bc ORDER BY bc.date DESC LIMIT 1")
-    BamComplete findLatestBamCompleteEventByTempoId(@Param("tempoId") Long tempoId);
+    BamComplete findLatestBamCompleteEventByTempoId(@Param("tempoId") Long tempoId);        
+    
+    @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(mc: MafComplete) "
+            + "RETURN mc ORDER BY mc.date DESC LIMIT 1")
+    MafComplete findLatestMafCompleteEventByTempoId(@Param("tempoId") Long tempoId);
 
     @Query("MATCH (t:Tempo) WHERE ID(t) = $tempoId MATCH (t)-[:HAS_EVENT]->(qc: QcComplete) "
             + "RETURN qc ORDER BY qc.date DESC LIMIT 1")
@@ -53,4 +61,12 @@ public interface TempoRepository extends Neo4jRepository<Tempo, Long> {
             + "reason: $qcEvent.reason, status: $qcEvent.status}) WITH s,t,qc RETURN t")
     Tempo mergeQcCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
             @Param("qcEvent") QcComplete qcEvent);
+
+    @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
+            + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
+            + "MERGE (t)-[:HAS_EVENT]->(mc: MafComplete {date: $mcEvent.date, "
+            + "normalPrimaryId: $mcEvent.normalPrimaryId, status: $mcEvent.status}) " 
+            + "WITH s,t,mc RETURN t")
+    Tempo mergeMafCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
+            @Param("mcEvent") MafComplete mcEvent);
 }

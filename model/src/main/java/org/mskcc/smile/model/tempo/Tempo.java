@@ -21,6 +21,8 @@ public class Tempo {
     private List<BamComplete> bamCompleteEvents;
     @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
     private List<QcComplete> qcCompleteEvents;
+    @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
+    private List<MafComplete> mafCompleteEvents;
     @Relationship(type = "HAS_TEMPO", direction = Relationship.INCOMING)
     private SmileSample sample;
 
@@ -124,6 +126,54 @@ public class Tempo {
                     && event.getStatus().equalsIgnoreCase(qcComplete.getStatus())
                     && event.getReason().equalsIgnoreCase(qcComplete.getReason())
                     && event.getResult().equalsIgnoreCase(qcComplete.getResult())) {
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
+    }
+
+    /**
+     * Returns list of maf complete events.
+     * @return
+     */
+    public List<MafComplete> getMafCompleteEvents() {
+        if (mafCompleteEvents == null) {
+            mafCompleteEvents = new ArrayList<>();
+        }
+        return mafCompleteEvents;
+    }
+
+    public void setMafCompleteEvents(List<MafComplete> mafCompleteEvents) {
+        this.mafCompleteEvents = mafCompleteEvents;
+    }
+
+    /**
+     * Adds a maf complete event to list.
+     * @param mafComplete
+     */
+    public void addMafCompleteEvent(MafComplete mafComplete) {
+        if (mafCompleteEvents == null) {
+            mafCompleteEvents = new ArrayList<>();
+        }
+        mafCompleteEvents.add(mafComplete);
+    }
+
+    /**
+     * Checks for maf complete event in list of existing maf events.
+     * @param mafComplete
+     * @return
+     */
+    public Boolean hasMafCompleteEvent(MafComplete mafComplete) {
+        if (mafCompleteEvents == null) {
+            mafCompleteEvents = new ArrayList<>();
+        }
+        if (mafCompleteEvents.isEmpty()) {
+            return Boolean.FALSE;
+        }
+        for (MafComplete event : mafCompleteEvents) {
+            if (event.getDate().equalsIgnoreCase(mafComplete.getDate())
+                    && event.getNormalPrimaryId().equalsIgnoreCase(mafComplete.getNormalPrimaryId())
+                    && event.getStatus().equalsIgnoreCase(mafComplete.getStatus())) {
                 return Boolean.TRUE;
             }
         }

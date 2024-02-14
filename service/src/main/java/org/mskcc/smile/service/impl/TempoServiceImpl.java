@@ -2,6 +2,7 @@ package org.mskcc.smile.service.impl;
 
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
+import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.persistence.neo4j.TempoRepository;
@@ -48,12 +49,19 @@ public class TempoServiceImpl implements TempoService {
         return getDetailedTempoData(tempo);
     }
 
+    @Override
+    public Tempo mergeMafCompleteEventBySamplePrimaryId(String primaryId, MafComplete mafCompleteEvent) {
+        Tempo tempo = tempoRepository.mergeMafCompleteEventBySamplePrimaryId(primaryId, mafCompleteEvent);
+        return getDetailedTempoData(tempo);
+    }
+
     private Tempo getDetailedTempoData(Tempo tempo) {
         if (tempo == null || tempo.getId() == null) {
             return null;
         }
         tempo.setBamCompleteEvents(tempoRepository.findBamCompleteEventsByTempoId(tempo.getId()));
         tempo.setQcCompleteEvents(tempoRepository.findQcCompleteEventsByTempoId(tempo.getId()));
+        tempo.setMafCompleteEvents(tempoRepository.findMafCompleteEventsByTempoId(tempo.getId()));
         return tempo;
     }
 }
