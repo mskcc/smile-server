@@ -185,7 +185,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 }
             }
         }
-
     }
 
     @Override
@@ -333,7 +332,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             }
         });
     }
-            
     
     private void setupMafCompleteHandler(Gateway gateway,
             TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
