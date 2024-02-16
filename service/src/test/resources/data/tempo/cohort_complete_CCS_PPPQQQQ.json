@@ -1,0 +1,26 @@
+{
+  "cohortId": "CCS_PPPQQQQ",
+  "date": "2022-11-12 21:59",
+  "type": "investigator",
+  "endUsers": [
+    "enduser1",
+    "enduser2"
+  ],
+  "pmUsers": [
+    "pmuser1",
+    "pmuser2"
+  ],
+  "projectTitle": "A title",
+  "projectSubtitle": "A longer description",
+  "samples": [
+    {
+      "primaryId": "MOCKREQUEST1_B_1",
+      "normalPrimaryId": "MOCKREQUEST1_B_2"
+    },
+    {
+      "primaryId": "MOCKREQUEST1_B_3",
+      "normalPrimaryId": "MOCKREQUEST1_B_4"
+    }
+  ],
+  "status": "PASS"
+}

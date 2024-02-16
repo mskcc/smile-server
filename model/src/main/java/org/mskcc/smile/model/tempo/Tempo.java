@@ -1,5 +1,6 @@
 package org.mskcc.smile.model.tempo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -14,7 +15,7 @@ import org.neo4j.ogm.annotation.Relationship;
  * @author ochoaa
  */
 @NodeEntity
-public class Tempo {
+public class Tempo implements Serializable {
     @Id @GeneratedValue
     private Long id;
     @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)

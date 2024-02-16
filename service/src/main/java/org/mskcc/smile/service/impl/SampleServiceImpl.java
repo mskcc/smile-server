@@ -475,6 +475,17 @@ public class SampleServiceImpl implements SmileSampleService {
         return (sampleRepository.sampleExistsByPrimaryId(primaryId) != null);
     }
 
+    @Override
+    public List<SmileSample> getSamplesByCohortId(String cohortId) throws Exception {
+        List<SmileSample> samples = sampleRepository.findSamplesByCohortId(cohortId);
+
+        List<SmileSample> detailedSamples = new ArrayList<>();        
+        for (SmileSample s: samples) {
+            detailedSamples.add(getDetailedSmileSample(s));
+        }
+        return detailedSamples;
+    }
+    
     private List<SampleMetadata> getSampleMetadataWithStatus(List<SampleMetadata> smList) {
         for (SampleMetadata sm : smList) {
             sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getId()));

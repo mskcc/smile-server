@@ -1,0 +1,18 @@
+package org.mskcc.smile.service;
+
+import java.util.List;
+import java.util.Set;
+import org.mskcc.smile.model.tempo.Cohort;
+import org.mskcc.smile.model.tempo.CohortComplete;
+
+/**
+ *
+ * @author ochoaa
+ */
+public interface CohortCompleteService {
+    Cohort saveCohort(Cohort cohort, Set<String> samplePrimaryIds) throws Exception;
+    Cohort getCohortByCohortId(String cohortId) throws Exception;
+    List<Cohort> getCohortsBySamplePrimaryId(String primaryId) throws Exception;
+    Boolean hasUpdates(Cohort cohort, CohortComplete newCohortComplete) throws Exception;
+    Cohort updateCohort(Cohort cohort) throws Exception;
+}

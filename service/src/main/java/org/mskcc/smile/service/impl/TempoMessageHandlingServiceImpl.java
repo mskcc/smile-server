@@ -4,8 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -18,9 +22,13 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.model.tempo.BamComplete;
+import org.mskcc.smile.model.tempo.Cohort;
+import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
+import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
+import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
 import org.mskcc.smile.service.TempoService;
@@ -43,6 +51,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     @Value("${tempo.wes_maf_complete_topic}")
     private String TEMPO_WES_MAF_COMPLETE_TOPIC;
 
+    @Value("${tempo.wes_cohort_complete_topic}")
+    private String TEMPO_WES_COHORT_COMPLETE_TOPIC;
+
     @Value("${num.tempo_msg_handler_threads}")
     private int NUM_TEMPO_MSG_HANDLERS;
 
@@ -51,6 +62,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     @Autowired
     private TempoService tempoService;
+
+    @Autowired
+    private CohortCompleteService cohortCompleteService;
 
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(TempoMessageHandlingServiceImpl.class);
@@ -65,10 +79,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<Map.Entry<String, QcComplete>>();
     private static final BlockingQueue<Map.Entry<String, MafComplete>> mafCompleteQueue =
             new LinkedBlockingQueue<Map.Entry<String, MafComplete>>();
+    private static final BlockingQueue<CohortCompleteJson> cohortCompleteQueue =
+            new LinkedBlockingQueue<CohortCompleteJson>();
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
     private static CountDownLatch mafCompleteHandlerShutdownLatch;
+    private static CountDownLatch cohortCompleteHandlerShutdownLatch;
 
     private class BamCompleteHandler implements Runnable {
         final Phaser phaser;
@@ -187,6 +204,56 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
+    private class CohortCompleteHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        CohortCompleteHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    CohortCompleteJson ccJson = cohortCompleteQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (ccJson != null) {
+                        // get Cohort by CohortID
+                        // add cohort complete to the Cohort
+                        // save changes to the cohort
+                        // cohorts are never redelivered. only updates to end users
+                        // (access) can change but associated cohort samples do not change
+                        Cohort cohort = new Cohort(ccJson);
+                        Cohort existingCohort =
+                                cohortCompleteService.getCohortByCohortId(ccJson.getCohortId());
+                        if (existingCohort == null) {
+                            // tumor-normal pairs are provided as map entries - this block
+                            // compiles them into a set list of strings
+                            Set<String> samplePrimaryIds = new HashSet<>();
+                            ccJson.getTumorNormalPairs().forEach((pairs) -> {
+                                pairs.entrySet().forEach((entry) -> {
+                                    samplePrimaryIds.add(entry.getValue());
+                                });
+                            });
+                            cohortCompleteService.saveCohort(cohort, samplePrimaryIds);
+                        } else if (cohortCompleteService.hasUpdates(existingCohort,
+                                cohort.getLatestCohortComplete())) {
+                            existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
+                            cohortCompleteService.updateCohort(existingCohort);
+                        } else {
+                            LOG.error("Cohort already exists and no new updates were received.");
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of Cohort complete event", e);
+                }
+            }
+        }
+    }
+
     @Override
     public void intialize(Gateway gateway) throws Exception {
         if (!initialized) {
@@ -194,6 +261,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             setupBamCompleteHandler(messagingGateway, this);
             setupQcCompleteHandler(messagingGateway, this);
             setupMafCompleteHandler(messagingGateway, this);
+            setupCohortCompleteHandler(messagingGateway, this);
             initializeMessageHandlers();
             initialized = true;
         } else {
@@ -241,6 +309,19 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     }
 
     @Override
+    public void cohortCompleteHandler(CohortCompleteJson cohortEvent) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            cohortCompleteQueue.put(cohortEvent);
+        } else {
+            LOG.error("Shutdown initiated, not accepting Cohort event: " + cohortEvent);
+            throw new IllegalStateException("Shutdown initiated, not handling any more TEMPO events");
+        }
+    }
+
+    @Override
     public void shutdown() throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
@@ -249,6 +330,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         bamCompleteHandlerShutdownLatch.await();
         qcCompleteHandlerShutdownLatch.await();
         mafCompleteHandlerShutdownLatch.await();
+        cohortCompleteHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -272,7 +354,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new QcCompleteHandler(qcCompletePhaser));
         }
         qcCompletePhaser.arriveAndAwaitAdvance();
-        
+
         // maf complete handler
         mafCompleteHandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
         final Phaser mafCompletePhaser = new Phaser();
@@ -282,6 +364,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new MafCompleteHandler(mafCompletePhaser));
         }
         mafCompletePhaser.arriveAndAwaitAdvance();
+
+        // cohort complete handler
+        cohortCompleteHandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
+        final Phaser cohortCompletePhaser = new Phaser();
+        cohortCompletePhaser.register();
+        for (int lc = 0; lc < NUM_TEMPO_MSG_HANDLERS; lc++) {
+            cohortCompletePhaser.register();
+            exec.execute(new CohortCompleteHandler(cohortCompletePhaser));
+        }
+        cohortCompletePhaser.arriveAndAwaitAdvance();
     }
 
     private void setupBamCompleteHandler(Gateway gateway,
@@ -332,7 +424,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             }
         });
     }
-    
+
     private void setupMafCompleteHandler(Gateway gateway,
             TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
         gateway.subscribe(TEMPO_WES_MAF_COMPLETE_TOPIC, Object.class, new MessageConsumer() {
@@ -353,6 +445,26 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of MAF complete event: "
                             + TEMPO_WES_MAF_COMPLETE_TOPIC, e);
+                }
+            }
+        });
+    }
+
+    private void setupCohortCompleteHandler(Gateway gateway,
+            TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
+        gateway.subscribe(TEMPO_WES_COHORT_COMPLETE_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                try {
+                    String cohortCompleteJson = mapper.readValue(
+                        new String(msg.getData(), StandardCharsets.UTF_8),
+                        String.class);
+                    CohortCompleteJson cohortCompleteData = mapper.readValue(cohortCompleteJson,
+                            CohortCompleteJson.class);
+                    tempoMessageHandlingService.cohortCompleteHandler(cohortCompleteData);
+                } catch (Exception e) {
+                    LOG.error("Exception occurred during processing of Cohort Complete event: "
+                            + TEMPO_WES_COHORT_COMPLETE_TOPIC, e);
                 }
             }
         });
