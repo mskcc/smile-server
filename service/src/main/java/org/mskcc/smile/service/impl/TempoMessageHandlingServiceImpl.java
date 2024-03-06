@@ -219,30 +219,24 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 try {
                     CohortCompleteJson ccJson = cohortCompleteQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (ccJson != null) {
-                        // get Cohort by CohortID
-                        // add cohort complete to the Cohort
-                        // save changes to the cohort
                         // cohorts are never redelivered. only updates to end users
                         // (access) can change but associated cohort samples do not change
                         Cohort cohort = new Cohort(ccJson);
                         Cohort existingCohort =
                                 cohortCompleteService.getCohortByCohortId(ccJson.getCohortId());
                         if (existingCohort == null) {
+                            LOG.info("Persisting new cohort: " + ccJson.getCohortId());
                             // tumor-normal pairs are provided as map entries - this block
                             // compiles them into a set list of strings
-                            Set<String> samplePrimaryIds = new HashSet<>();
-                            ccJson.getTumorNormalPairs().forEach((pairs) -> {
-                                pairs.entrySet().forEach((entry) -> {
-                                    samplePrimaryIds.add(entry.getValue());
-                                });
-                            });
-                            cohortCompleteService.saveCohort(cohort, samplePrimaryIds);
+                            cohortCompleteService.saveCohort(cohort, ccJson.getTumorNormalPairsAsSet());
                         } else if (cohortCompleteService.hasUpdates(existingCohort,
                                 cohort.getLatestCohortComplete())) {
+                            LOG.info("Received updates for cohort: " + ccJson.getCohortId());
                             existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
                             cohortCompleteService.updateCohort(existingCohort);
                         } else {
-                            LOG.error("Cohort already exists and no new updates were received.");
+                            LOG.error("Cohort " + ccJson.getCohortId()
+                                    + " already exists and no new updates were received.");
                         }
                     }
                 } catch (InterruptedException e) {

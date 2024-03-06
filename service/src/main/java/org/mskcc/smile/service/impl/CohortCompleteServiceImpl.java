@@ -60,7 +60,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     public Boolean hasUpdates(Cohort cohort, CohortComplete cohortComplete) throws Exception {
         String existingCohortComplete = mapper.writeValueAsString(cohort.getLatestCohortComplete());
         String currentCohortComplete = mapper.writeValueAsString(cohortComplete);
-        return !jsonComparator.isConsistent(existingCohortComplete, currentCohortComplete);
+        return !jsonComparator.isConsistentGenericComparison(existingCohortComplete, currentCohortComplete);
     }
 
     @Override

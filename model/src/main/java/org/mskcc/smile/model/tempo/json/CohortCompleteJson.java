@@ -3,8 +3,10 @@ package org.mskcc.smile.model.tempo.json;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -104,6 +106,20 @@ public class CohortCompleteJson implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    /**
+     * Returns a set of tumor and normal primary ids.
+     * @return
+     */
+    public Set<String> getTumorNormalPairsAsSet() {
+        Set<String> samplePrimaryIds = new HashSet<>();
+        tumorNormalPairs.forEach((pairs) -> {
+            pairs.entrySet().forEach((entry) -> {
+                samplePrimaryIds.add(entry.getValue());
+            });
+        });
+        return samplePrimaryIds;
     }
 
     @Override
