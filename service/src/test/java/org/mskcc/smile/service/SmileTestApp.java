@@ -6,6 +6,7 @@ import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.commons.impl.JsonComparatorImpl;
 import org.mskcc.smile.persistence.jpa.CrdbRepository;
 import org.mskcc.smile.service.impl.ClinicalMessageHandlingServiceImpl;
+import org.mskcc.smile.service.impl.CohortCompleteServiceImpl;
 import org.mskcc.smile.service.impl.CorrectCmoPatientHandlingServiceImpl;
 import org.mskcc.smile.service.impl.CrdbMappingServiceImpl;
 import org.mskcc.smile.service.impl.PatientServiceImpl;
@@ -54,6 +55,11 @@ public class SmileTestApp {
     @Bean
     public TempoService tempoService() {
         return new TempoServiceImpl();
+    }
+
+    @Bean
+    public CohortCompleteService cohortCompleteService() {
+        return new CohortCompleteServiceImpl();
     }
 
     @MockBean

@@ -1,5 +1,6 @@
 package org.mskcc.smile.model.tempo;
 
+import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -10,7 +11,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
  * @author ochoaa
  */
 @NodeEntity
-public class QcComplete {
+public class QcComplete implements Serializable {
     @Id @GeneratedValue
     private Long id;
     private String date;
