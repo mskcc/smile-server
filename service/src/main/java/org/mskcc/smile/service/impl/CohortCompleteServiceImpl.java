@@ -79,6 +79,4 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
                 cohortCompleteRepository.findCohortCompleteEventsByCohortId(cohort.getCohortId()));
         return cohort;
     }
-
-
 }
