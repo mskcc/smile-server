@@ -38,12 +38,12 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})"
             + "MATCH (s)<-[:IS_ALIAS]-(sa: SampleAlias)"
-            + "RETURN sa;")
+            + "RETURN sa")
     List<SampleAlias> findAllSampleAliases(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})"
             + "MATCH (s)-[:HAS_METADATA]->(sm: SampleMetadata)"
-            + "RETURN sm;")
+            + "RETURN sm")
     List<SampleMetadata> findAllSampleMetadataListBySampleId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSample.smileSampleId})"
@@ -56,7 +56,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (r: Request {igoRequestId: $reqId})-[:HAS_SAMPLE]->"
             + "(s: Sample) "
-            + "RETURN s;")
+            + "RETURN s")
     List<SmileSample> findResearchSamplesByRequest(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request {igoRequestId: $reqId}) "
@@ -104,7 +104,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "OR sa.value = $inputId "
             + "OR s.smileSampleId = $inputId "
             + "OR sm.cmoSampleName = $inputId "
-            + "RETURN s;")
+            + "RETURN s")
     SmileSample findSampleByInputId(@Param("inputId") String inputId);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
@@ -135,6 +135,6 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (c: Cohort {cohortId: $cohortId})-[:HAS_COHORT_SAMPLE]->"
             + "(s: Sample) "
-            + "RETURN s;")
+            + "RETURN s")
     List<SmileSample> findSamplesByCohortId(@Param("cohortId") String cohortId);
 }
