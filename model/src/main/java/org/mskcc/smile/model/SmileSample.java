@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.smile.model.tempo.Tempo;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -28,6 +29,8 @@ public class SmileSample implements Serializable {
     private SmilePatient patient;
     @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     private List<SampleMetadata> sampleMetadataList;
+    @Relationship(type = "HAS_TEMPO", direction = Relationship.OUTGOING)
+    private Tempo tempo;
     private String sampleClass;
     private String sampleCategory;
     private String datasource;
@@ -213,6 +216,14 @@ public class SmileSample implements Serializable {
 
     public void setRevisable(Boolean revisable) {
         this.revisable = revisable;
+    }
+
+    public Tempo getTempo() {
+        return tempo;
+    }
+
+    public void setTempo(Tempo tempo) {
+        this.tempo = tempo;
     }
 
     @Override

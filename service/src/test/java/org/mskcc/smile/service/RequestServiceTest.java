@@ -10,6 +10,7 @@ import org.mskcc.smile.model.web.RequestSummary;
 import org.mskcc.smile.persistence.neo4j.SmilePatientRepository;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
+import org.mskcc.smile.persistence.neo4j.TempoRepository;
 import org.mskcc.smile.service.util.RequestDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
@@ -36,8 +37,11 @@ public class RequestServiceTest {
     @Autowired
     private SmilePatientService patientService;
 
+    @Autowired
+    private TempoService tempoService;
+
     @Container
-    private static final Neo4jContainer databaseServer = new Neo4jContainer<>()
+    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>()
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
 
     @TestConfiguration
@@ -54,6 +58,7 @@ public class RequestServiceTest {
     private final SmileRequestRepository requestRepository;
     private final SmileSampleRepository sampleRepository;
     private final SmilePatientRepository patientRepository;
+    private final TempoRepository tempoRepository;
 
     /**
      * Initializes the Neo4j repositories.
@@ -62,15 +67,19 @@ public class RequestServiceTest {
      * @param patientRepository
      * @param requestService
      * @param sampleService
+     * @param patientService
+     * @param tempoRepository
+     * @param tempoService
      */
     @Autowired
     public RequestServiceTest(SmileRequestRepository requestRepository,
             SmileSampleRepository sampleRepository, SmilePatientRepository patientRepository,
             SmileRequestService requestService, SmileSampleService sampleService,
-            SmilePatientService patientService) {
+            SmilePatientService patientService, TempoRepository tempoRepository, TempoService tempoService) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
+        this.tempoRepository = tempoRepository;
     }
 
     /**
@@ -228,7 +237,7 @@ public class RequestServiceTest {
         Assertions.assertThat(sampleList.size()).isEqualTo(2);
 
     }
-    
+
     /**
      * Tests case where incoming request contains samples with
      * invalid metadata updates and should not be persisted.
@@ -238,20 +247,20 @@ public class RequestServiceTest {
     public void testInvaildIgoRequestUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         SmileRequest origRequest = requestService.getSmileRequestById(requestId);
-        
+
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
         SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
                 updatedRequestData.getJsonString());
-        
+
         Boolean hasUpdates = requestService.requestHasMetadataUpdates(origRequest.getLatestRequestMetadata(),
                 updatedRequest.getLatestRequestMetadata(), Boolean.TRUE);
         Assertions.assertThat(hasUpdates).isTrue();
-        
+
         requestService.saveRequest(updatedRequest);
         SmileRequest existingRequest = requestService.getSmileRequestById(requestId);
         Assertions.assertThat(existingRequest.getIsCmoRequest()).isTrue();
-        Assertions.assertThat(existingRequest.getQcAccessEmails()).isNotEqualTo("invalid-igo-update"); 
+        Assertions.assertThat(existingRequest.getQcAccessEmails()).isNotEqualTo("invalid-igo-update");
     }
 
     /**

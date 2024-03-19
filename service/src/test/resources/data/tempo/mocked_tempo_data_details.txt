@@ -1,0 +1,18 @@
+identifier	filepath	description
+mockBamCompleteSampleB1	tempo/bam_complete_MOCKREQUEST1_B_1.json	Mocked BAM complete JSON for sample MOCKREQUEST1_B_1
+mockBamCompleteSampleB2	tempo/bam_complete_MOCKREQUEST1_B_2.json	Mocked BAM complete JSON for sample MOCKREQUEST1_B_2
+mockBamCompleteSampleB3	tempo/bam_complete_MOCKREQUEST1_B_3.json	Mocked BAM complete JSON for sample MOCKREQUEST1_B_3 with status FAIL
+mockBamCompleteSampleB4	tempo/bam_complete_MOCKREQUEST1_B_4.json	Mocked BAM complete JSON for sample MOCKREQUEST1_B_4
+mockBamCompleteSampleB3pass	tempo/bam_complete_MOCKREQUEST1_B_3_pass.json	Mocked BAM complete JSON for sample MOCKREQUEST1_B_3 with status PASS
+mockQcCompleteSampleB1	tempo/qc_complete_MOCKREQUEST1_B_1.json	Mocked QC complete JSON for sample MOCKREQUEST1_B_1
+mockQcCompleteSampleB2	tempo/qc_complete_MOCKREQUEST1_B_2.json	Mocked QC complete JSON for sample MOCKREQUEST1_B_2
+mockQcCompleteSampleB3	tempo/qc_complete_MOCKREQUEST1_B_3.json	Mocked QC complete JSON for sample MOCKREQUEST1_B_3
+mockQcCompleteSampleB4	tempo/qc_complete_MOCKREQUEST1_B_4.json	Mocked QC complete JSON for sample MOCKREQUEST1_B_4
+mockMafCompleteSampleB1	tempo/maf_complete_MOCKREQUEST1_B_1.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_1
+mockMafCompleteSampleB2	tempo/maf_complete_MOCKREQUEST1_B_2.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_2
+mockMafCompleteSampleB3	tempo/maf_complete_MOCKREQUEST1_B_3.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_3 with status FAIL
+mockMafCompleteSampleB4	tempo/maf_complete_MOCKREQUEST1_B_4.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_4
+mockMafCompleteSampleB3pass	tempo/maf_complete_MOCKREQUEST1_B_3_pass.json	Mocked MAF complete JSON for sample MOCKREQUEST1_B_3 with status PASS
+mockCohortCompleteCCSPPPQQQQ	tempo/cohort_complete_CCS_PPPQQQQ.json	Mocked Cohort complete JSON with cohort ID CCS_PPPQQQQ. Has 4 samples associated with it.
+mockCohortCompleteCCSPPPQQQQ2	tempo/cohort_complete_CCS_PPPQQQQ_2.json	Mocked Cohort complete JSON with cohort ID CCS_PPPQQQQ_2. Has 2 samples associated with it.
+mockCohortCompleteCCSPPPQQQQUpdated	tempo/cohort_complete_CCS_PPPQQQQ_updated.json	Mocked updated Cohort complete JSON with cohort ID CCS_PPPQQQQ. Has 4 samples associated with it.
