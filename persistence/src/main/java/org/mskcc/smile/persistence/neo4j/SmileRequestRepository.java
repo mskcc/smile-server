@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SmileRequestRepository extends Neo4jRepository<SmileRequest, Long> {
-    @Query("MATCH (r: Request {igoRequestId: $reqId}) RETURN r;")
+    @Query("MATCH (r: Request {igoRequestId: $reqId}) RETURN r")
     SmileRequest findRequestById(@Param("reqId") String reqId);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSample.smileSampleId}) "
