@@ -1,6 +1,5 @@
 package org.mskcc.smile.service;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.smile.model.SampleMetadata;
@@ -26,7 +25,7 @@ public interface SmileSampleService {
     List<PublishedSmileSample> getPublishedSmileSamplesByCmoPatientId(String cmoPatientId)
             throws Exception;
     List<SmileSample> getSamplesByCmoPatientId(String cmoPatientId) throws Exception;
-    SmileSample getDetailedSmileSample(SmileSample sample) throws ParseException;
+    SmileSample getDetailedSmileSample(SmileSample sample) throws Exception;
     SmileSample getClinicalSampleByDmpId(String dmpId) throws Exception;
     List<SmileSample> getSamplesByCategoryAndCmoPatientId(String cmoPatientId,
             String sampleCategory) throws Exception;

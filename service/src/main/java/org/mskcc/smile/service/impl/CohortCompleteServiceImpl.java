@@ -11,6 +11,7 @@ import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
 import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +23,15 @@ import org.springframework.stereotype.Component;
 public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Autowired
     private JsonComparator jsonComparator;
+
     @Autowired
     private CohortCompleteRepository cohortCompleteRepository;
+
     @Autowired
     private SmileSampleService sampleService;
+
+    @Autowired
+    private TempoService tempoService;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -39,6 +45,10 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         for (String primaryId : samplePrimaryIds) {
             // confirm sample exists by primary id and then link to cohort
             if (sampleService.sampleExistsByPrimaryId(primaryId)) {
+                // init default tempo data for sample if sample does not already have tempo data
+                if (tempoService.getTempoDataBySamplePrimaryId(primaryId) == null) {
+                    tempoService.initAndSaveDefaultTempoData(primaryId);
+                }
                 cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryId);
             }
         }

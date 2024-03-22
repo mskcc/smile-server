@@ -165,6 +165,8 @@ public class TempoServiceTest {
         // and distinguishes them from other event types
         Tempo tempoAfterSave = tempoService.getTempoDataBySamplePrimaryId(igoId);
         Assertions.assertThat(tempoAfterSave.getMafCompleteEvents().size()).isEqualTo(1);
+        Assertions.assertThat(tempoAfterSave.getCustodianInformation()).isNotBlank();
+        Assertions.assertThat(tempoAfterSave.getAccessLevel()).isNotBlank();
     }
 
     @Test
@@ -176,6 +178,8 @@ public class TempoServiceTest {
         // and distinguishes them from other event types
         Tempo tempoAfterSave = tempoService.getTempoDataBySamplePrimaryId(igoId);
         Assertions.assertThat(tempoAfterSave.getQcCompleteEvents().size()).isEqualTo(1);
+        Assertions.assertThat(tempoAfterSave.getCustodianInformation()).isNotBlank();
+        Assertions.assertThat(tempoAfterSave.getAccessLevel()).isNotBlank();
     }
 
     @Test
