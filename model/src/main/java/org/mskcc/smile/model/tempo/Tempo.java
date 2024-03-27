@@ -18,6 +18,8 @@ import org.neo4j.ogm.annotation.Relationship;
 public class Tempo implements Serializable {
     @Id @GeneratedValue
     private Long id;
+    private String custodianInformation;
+    private String accessLevel;
     @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
     private List<BamComplete> bamCompleteEvents;
     @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
@@ -29,12 +31,32 @@ public class Tempo implements Serializable {
 
     public Tempo() {}
 
+    public Tempo(SmileSample sample) {
+        this.sample = sample;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCustodianInformation() {
+        return custodianInformation;
+    }
+
+    public void setCustodianInformation(String custodianInformation) {
+        this.custodianInformation = custodianInformation;
+    }
+
+    public String getAccessLevel() {
+        return accessLevel;
+    }
+
+    public void setAccessLevel(String accessLevel) {
+        this.accessLevel = accessLevel;
     }
 
     /**

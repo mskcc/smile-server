@@ -403,7 +403,7 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public SmileSample getDetailedSmileSample(SmileSample sample) throws ParseException {
+    public SmileSample getDetailedSmileSample(SmileSample sample) throws Exception {
         sample.setSampleMetadataList(getSampleMetadataWithStatus(
                 sampleRepository.findAllSampleMetadataListBySampleId(
                 sample.getSmileSampleId())));
