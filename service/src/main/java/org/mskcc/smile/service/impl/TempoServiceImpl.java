@@ -7,6 +7,7 @@ import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
+import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.persistence.neo4j.TempoRepository;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
@@ -51,6 +52,7 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Tempo getTempoDataBySampleId(SmileSample smileSample) throws Exception {
         Tempo tempo = tempoRepository.findTempoBySmileSampleId(smileSample.getSmileSampleId());
         if (tempo == null) {
@@ -60,6 +62,7 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Tempo getTempoDataBySamplePrimaryId(String primaryId) throws Exception {
         Tempo tempo = tempoRepository.findTempoBySamplePrimaryId(primaryId);
         if (tempo == null) {
@@ -69,6 +72,7 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Tempo mergeBamCompleteEventBySamplePrimaryId(String primaryId, BamComplete bamCompleteEvent)
             throws Exception {
         if (getTempoDataBySamplePrimaryId(primaryId) == null) {
@@ -79,6 +83,7 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Tempo mergeQcCompleteEventBySamplePrimaryId(String primaryId, QcComplete qcCompleteEvent)
             throws Exception {
         if (getTempoDataBySamplePrimaryId(primaryId) == null) {
@@ -89,6 +94,7 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Tempo mergeMafCompleteEventBySamplePrimaryId(String primaryId, MafComplete mafCompleteEvent)
             throws Exception {
         if (getTempoDataBySamplePrimaryId(primaryId) == null) {
@@ -99,6 +105,7 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Tempo initAndSaveDefaultTempoData(String primaryId) throws Exception {
         SmileSample sample = sampleService.getSampleByInputId(primaryId);
         Tempo tempo = new Tempo(sample);
@@ -119,5 +126,11 @@ public class TempoServiceImpl implements TempoService {
         tempo.setQcCompleteEvents(tempoRepository.findQcCompleteEventsByTempoId(tempo.getId()));
         tempo.setMafCompleteEvents(tempoRepository.findMafCompleteEventsByTempoId(tempo.getId()));
         return tempo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public void updateSampleBilling(SampleBillingJson billing) throws Exception {
+        tempoRepository.updateSampleBilling(billing);
     }
 }
