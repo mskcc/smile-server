@@ -28,6 +28,7 @@ import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
+import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
@@ -53,6 +54,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     @Value("${tempo.wes_cohort_complete_topic}")
     private String TEMPO_WES_COHORT_COMPLETE_TOPIC;
+
+    @Value("${tempo.sample_billing_topic}")
+    private String TEMPO_SAMPLE_BILLING_TOPIC;
 
     @Value("${num.tempo_msg_handler_threads}")
     private int NUM_TEMPO_MSG_HANDLERS;
@@ -81,11 +85,14 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<Map.Entry<String, MafComplete>>();
     private static final BlockingQueue<CohortCompleteJson> cohortCompleteQueue =
             new LinkedBlockingQueue<CohortCompleteJson>();
+    private static final BlockingQueue<SampleBillingJson> sampleBillingQueue =
+            new LinkedBlockingQueue<SampleBillingJson>();
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
     private static CountDownLatch mafCompleteHandlerShutdownLatch;
     private static CountDownLatch cohortCompleteHandlerShutdownLatch;
+    private static CountDownLatch sampleBillingHandlerShutdownLatch;
 
     private class BamCompleteHandler implements Runnable {
         final Phaser phaser;
@@ -248,6 +255,43 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
+    private class SampleBillingHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        SampleBillingHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    SampleBillingJson billing = sampleBillingQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (billing != null) {
+                        // this message is coming straight from the dashboard and should therefore always
+                        // have data for a valid sample that exists in the database
+                        // however this check is will make extra sure that the primary id received
+                        // in the nats message actually exists in the database before conducting
+                        // further operations in the db
+                        if (sampleService.sampleExistsByPrimaryId(billing.getPrimaryId())) {
+                            LOG.info("Updating billing information for sample: " + billing.getPrimaryId());
+                            tempoService.updateSampleBilling(billing);
+                        } else {
+                            LOG.error("Cannot update billing information for sample that does not exist: "
+                                    + billing.getPrimaryId());
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of sample billing data", e);
+                }
+            }
+        }
+    }
+
     @Override
     public void intialize(Gateway gateway) throws Exception {
         if (!initialized) {
@@ -256,6 +300,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             setupQcCompleteHandler(messagingGateway, this);
             setupMafCompleteHandler(messagingGateway, this);
             setupCohortCompleteHandler(messagingGateway, this);
+            setupSampleBillingHandler(messagingGateway, this);
             initializeMessageHandlers();
             initialized = true;
         } else {
@@ -316,6 +361,19 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     }
 
     @Override
+    public void sampleBillingHandler(SampleBillingJson billing) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            sampleBillingQueue.put(billing);
+        } else {
+            LOG.error("Shutdown initiated, not accepting billing event: " + billing);
+            throw new IllegalStateException("Shutdown initiated, not handling any more TEMPO events");
+        }
+    }
+
+    @Override
     public void shutdown() throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
@@ -325,6 +383,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         qcCompleteHandlerShutdownLatch.await();
         mafCompleteHandlerShutdownLatch.await();
         cohortCompleteHandlerShutdownLatch.await();
+        sampleBillingHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -368,6 +427,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new CohortCompleteHandler(cohortCompletePhaser));
         }
         cohortCompletePhaser.arriveAndAwaitAdvance();
+
+        // sample billing handler
+        sampleBillingHandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
+        final Phaser sampleBillingPhaser = new Phaser();
+        sampleBillingPhaser.register();
+        for (int lc = 0; lc < NUM_TEMPO_MSG_HANDLERS; lc++) {
+            sampleBillingPhaser.register();
+            exec.execute(new SampleBillingHandler(sampleBillingPhaser));
+        }
+        sampleBillingPhaser.arriveAndAwaitAdvance();
     }
 
     private void setupBamCompleteHandler(Gateway gateway,
@@ -459,6 +528,26 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of Cohort Complete event: "
                             + TEMPO_WES_COHORT_COMPLETE_TOPIC, e);
+                }
+            }
+        });
+    }
+
+    private void setupSampleBillingHandler(Gateway gateway,
+            TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
+        gateway.subscribe(TEMPO_SAMPLE_BILLING_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                try {
+                    String billingJson = mapper.readValue(
+                        new String(msg.getData(), StandardCharsets.UTF_8),
+                        String.class);
+                    SampleBillingJson billing = mapper.readValue(billingJson,
+                            SampleBillingJson.class);
+                    tempoMessageHandlingService.sampleBillingHandler(billing);
+                } catch (Exception e) {
+                    LOG.error("Exception occurred during processing of Cohort Complete event: "
+                            + TEMPO_SAMPLE_BILLING_TOPIC, e);
                 }
             }
         });

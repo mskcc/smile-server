@@ -6,6 +6,7 @@ import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
+import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 
 /**
  *
@@ -17,5 +18,6 @@ public interface TempoMessageHandlingService {
     void qcCompleteHandler(Map.Entry<String, QcComplete> bcEvent) throws Exception;
     void mafCompleteHandler(Map.Entry<String, MafComplete> mcEvent) throws Exception;
     void cohortCompleteHandler(CohortCompleteJson ccEvent) throws Exception;
+    void sampleBillingHandler(SampleBillingJson billing) throws Exception;
     void shutdown() throws Exception;
 }

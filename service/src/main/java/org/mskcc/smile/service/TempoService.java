@@ -5,6 +5,7 @@ import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
+import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 
 /**
  *
@@ -18,4 +19,5 @@ public interface TempoService {
     Tempo mergeQcCompleteEventBySamplePrimaryId(String primaryId, QcComplete qcComplete) throws Exception;
     Tempo mergeMafCompleteEventBySamplePrimaryId(String primaryId, MafComplete mafComplete) throws Exception;
     Tempo initAndSaveDefaultTempoData(String primaryId) throws Exception;
+    void updateSampleBilling(SampleBillingJson billing) throws Exception;
 }

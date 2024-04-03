@@ -20,6 +20,9 @@ public class Tempo implements Serializable {
     private Long id;
     private String custodianInformation;
     private String accessLevel;
+    private Boolean billed;
+    private String billedBy;
+    private String costCenter;
     @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
     private List<BamComplete> bamCompleteEvents;
     @Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
@@ -57,6 +60,30 @@ public class Tempo implements Serializable {
 
     public void setAccessLevel(String accessLevel) {
         this.accessLevel = accessLevel;
+    }
+
+    public Boolean getBilled() {
+        return billed;
+    }
+
+    public void setBilled(Boolean billed) {
+        this.billed = billed;
+    }
+
+    public String getBilledBy() {
+        return billedBy;
+    }
+
+    public void setBilledBy(String billedBy) {
+        this.billedBy = billedBy;
+    }
+
+    public String getCostCenter() {
+        return costCenter;
+    }
+
+    public void setCostCenter(String costCenter) {
+        this.costCenter = costCenter;
     }
 
     /**
