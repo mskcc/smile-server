@@ -35,6 +35,7 @@ import org.mskcc.smile.service.TempoMessageHandlingService;
 import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -117,8 +118,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                             if (tempo == null
                                     || !tempo.hasBamCompleteEvent(bamComplete)) {
-                                tempoService.mergeBamCompleteEventBySamplePrimaryId(primaryId,
+                                try {
+                                    tempoService.mergeBamCompleteEventBySamplePrimaryId(primaryId,
                                         bamComplete);
+                                } catch (IncorrectResultSizeDataAccessException e) {
+                                    LOG.error("Encountered error while persisting BAM complete "
+                                            + "event to database: " + bcEvent.toString(), e);
+                                }
                             }
                         } else {
                             LOG.error("Sample with primary id " + primaryId + " does not exist");
@@ -156,8 +162,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                             if (tempo == null
                                     || !tempo.hasQcCompleteEvent(qcComplete)) {
-                                tempoService.mergeQcCompleteEventBySamplePrimaryId(primaryId,
-                                        qcComplete);
+                                try {
+                                    tempoService.mergeQcCompleteEventBySamplePrimaryId(primaryId,
+                                            qcComplete);
+                                } catch (IncorrectResultSizeDataAccessException e) {
+                                    LOG.error("Encountered error while persisting QC complete "
+                                            + "event to database: " + qcEvent.toString(), e);
+                                }
                             }
                         } else {
                             LOG.error("Sample with primary id: " + primaryId + " does not exist");
@@ -195,8 +206,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                             if (tempo == null
                                     || !tempo.hasMafCompleteEvent(mafComplete)) {
-                                tempoService.mergeMafCompleteEventBySamplePrimaryId(primaryId,
-                                        mafComplete);
+                                try {
+                                    tempoService.mergeMafCompleteEventBySamplePrimaryId(primaryId,
+                                            mafComplete);
+                                } catch (IncorrectResultSizeDataAccessException e) {
+                                    LOG.error("Encountered error while persisting MAF complete "
+                                            + "event to database: " + mcEvent.toString(), e);
+                                }
                             }
                         } else {
                             LOG.error("Sample with primary id " + primaryId + " does not exist");
