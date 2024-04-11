@@ -52,7 +52,6 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
     public Tempo getTempoDataBySampleId(SmileSample smileSample) throws Exception {
         Tempo tempo = tempoRepository.findTempoBySmileSampleId(smileSample.getSmileSampleId());
         if (tempo == null) {
@@ -62,7 +61,6 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class})
     public Tempo getTempoDataBySamplePrimaryId(String primaryId) throws Exception {
         Tempo tempo = tempoRepository.findTempoBySamplePrimaryId(primaryId);
         if (tempo == null) {
