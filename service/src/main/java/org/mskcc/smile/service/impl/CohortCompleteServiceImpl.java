@@ -1,8 +1,10 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
@@ -41,7 +43,8 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     public Cohort saveCohort(Cohort cohort, Set<String> samplePrimaryIds) throws Exception {
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
-        // create cohort-smaple relationships
+        Set<String> unknownSamples = new HashSet<>(); // tracks unknown samples in smile
+        // create cohort-sample relationships
         for (String primaryId : samplePrimaryIds) {
             // confirm sample exists by primary id and then link to cohort
             if (sampleService.sampleExistsByPrimaryId(primaryId)) {
@@ -50,7 +53,20 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
                     tempoService.initAndSaveDefaultTempoData(primaryId);
                 }
                 cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryId);
+            } else {
+                unknownSamples.add(primaryId);
             }
+        }
+        // log and report unknown samples for reference
+        if (!unknownSamples.isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("Could not import ")
+                    .append(unknownSamples.size())
+                    .append(" samnples for cohort ")
+                    .append(cohort.getCohortId())
+                    .append(": ")
+                    .append(StringUtils.join(unknownSamples,", "));
+            LOG.warn(builder.toString());
         }
         return getCohortByCohortId(cohort.getCohortId());
     }
