@@ -17,6 +17,7 @@ import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.internal.CrdbMappingModel;
+import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.web.PublishedSmileSample;
 import org.mskcc.smile.model.web.SmileSampleIdMapping;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
@@ -27,6 +28,7 @@ import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -411,7 +413,22 @@ public class SampleServiceImpl implements SmileSampleService {
         SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
         sample.setPatient(patient);
         sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getSmileSampleId()));
-        sample.setTempo(tempoService.getTempoDataBySampleId(sample));
+        // not every sample is expected to have tempo data
+        try {
+            Tempo tempo = tempoService.getTempoDataBySampleId(sample);
+            sample.setTempo(tempo);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            if (e.getActualSize() < 0) {
+                LOG.warn("There is no TEMPO data for sample: " + sample.getPrimarySampleAlias());
+            } else {
+                StringBuilder b = new StringBuilder();
+                b.append("Error fetching TEMPO data for sample: ")
+                        .append(sample.getPrimarySampleAlias())
+                        .append(" - actual size '").append(e.getActualSize())
+                        .append("' does not match expected size '").append(e.getExpectedSize()).append("'");
+                LOG.error(b.toString(), e);
+            }
+        }
         return sample;
     }
 
@@ -479,13 +496,13 @@ public class SampleServiceImpl implements SmileSampleService {
     public List<SmileSample> getSamplesByCohortId(String cohortId) throws Exception {
         List<SmileSample> samples = sampleRepository.findSamplesByCohortId(cohortId);
 
-        List<SmileSample> detailedSamples = new ArrayList<>();        
+        List<SmileSample> detailedSamples = new ArrayList<>();
         for (SmileSample s: samples) {
             detailedSamples.add(getDetailedSmileSample(s));
         }
         return detailedSamples;
     }
-    
+
     private List<SampleMetadata> getSampleMetadataWithStatus(List<SampleMetadata> smList) {
         for (SampleMetadata sm : smList) {
             sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getId()));
