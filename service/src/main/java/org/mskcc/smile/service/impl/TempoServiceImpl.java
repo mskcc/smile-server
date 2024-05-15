@@ -39,13 +39,13 @@ public class TempoServiceImpl implements TempoService {
         // custodian information and data access level
         SmileSample sample = tempo.getSmileSample();
         SmileRequest request = requestService.getRequestBySample(sample);
-        String custodianInformation = Strings.isBlank(request.getPiEmail())
-                ? request.getInvestigatorEmail() : request.getPiEmail();
+        String custodianInformation = Strings.isBlank(request.getLabHeadName())
+                ? request.getLabHeadName() : request.getInvestigatorName();
         tempo.setCustodianInformation(custodianInformation);
 
         // if backfilling data then access level might already be present in incoming data
         if (Strings.isBlank(tempo.getAccessLevel())) {
-            tempo.setAccessLevel("MSKEmbargo");
+            tempo.setAccessLevel("MSK Embargo");
         }
 
         return tempoRepository.save(tempo);
