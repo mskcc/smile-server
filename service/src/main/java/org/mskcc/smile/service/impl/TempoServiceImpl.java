@@ -117,12 +117,12 @@ public class TempoServiceImpl implements TempoService {
     }
 
     private Tempo getDetailedTempoData(Tempo tempo) {
-        if (tempo == null || tempo.getId() == null) {
+        if (tempo == null || tempo.getSmileTempoId() == null) {
             return null;
         }
-        tempo.setBamCompleteEvents(tempoRepository.findBamCompleteEventsByTempoId(tempo.getId()));
-        tempo.setQcCompleteEvents(tempoRepository.findQcCompleteEventsByTempoId(tempo.getId()));
-        tempo.setMafCompleteEvents(tempoRepository.findMafCompleteEventsByTempoId(tempo.getId()));
+        tempo.setBamCompleteEvents(tempoRepository.findBamCompleteEventsByTempoId(tempo.getSmileTempoId()));
+        tempo.setQcCompleteEvents(tempoRepository.findQcCompleteEventsByTempoId(tempo.getSmileTempoId()));
+        tempo.setMafCompleteEvents(tempoRepository.findMafCompleteEventsByTempoId(tempo.getSmileTempoId()));
         return tempo;
     }
 
