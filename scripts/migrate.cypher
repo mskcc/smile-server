@@ -145,3 +145,8 @@ RETURN true
 MATCH (sm: SampleMetadata)
 CREATE (st: Status {validationStatus: true, validationReport: ""})<-[:HAS_STATUS]-(sm)
 RETURN true
+
+// add property "smileTempoId" to Tempo nodes
+MATCH (t: Tempo)
+SET t.smileTempoId = apoc.create.uuid()
+RETURN true

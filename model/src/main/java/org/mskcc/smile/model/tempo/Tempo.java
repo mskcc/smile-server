@@ -3,12 +3,16 @@ package org.mskcc.smile.model.tempo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.smile.model.SmileSample;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
+import org.neo4j.ogm.id.UuidStrategy;
+import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
 /**
  *
@@ -16,8 +20,9 @@ import org.neo4j.ogm.annotation.Relationship;
  */
 @NodeEntity
 public class Tempo implements Serializable {
-    @Id @GeneratedValue
-    private Long id;
+    @Id @GeneratedValue(strategy = UuidStrategy.class)
+    @Convert(UuidStringConverter.class)
+    private UUID smileTempoId;
     private String custodianInformation;
     private String accessLevel;
     private Boolean billed;
@@ -38,12 +43,12 @@ public class Tempo implements Serializable {
         this.sample = sample;
     }
 
-    public Long getId() {
-        return id;
+    public UUID getSmileTempoId() {
+        return smileTempoId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setSmileTempoId(UUID smileTempoId) {
+        this.smileTempoId = smileTempoId;
     }
 
     public String getCustodianInformation() {
