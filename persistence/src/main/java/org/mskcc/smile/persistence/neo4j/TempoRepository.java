@@ -74,6 +74,7 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $billing.primaryId}) "
             + "MATCH (s)-[:HAS_TEMPO]->(t: Tempo) "
             + "SET t.billed = $billing.billed, t.billedBy = $billing.billedBy, "
-            + "t.costCenter = $billing.costCenter")
+            + "t.costCenter = $billing.costCenter, t.custodianInformation = $billing.custodianInformation, "
+            + "t.accessLevel = $billing.accessLevel")
     void updateSampleBilling(@Param("billing") SampleBillingJson billing);
 }
