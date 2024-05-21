@@ -19,6 +19,10 @@ public class SampleBillingJson implements Serializable {
     private String billedBy;
     @JsonProperty("costCenter")
     private String costCenter;
+    @JsonProperty("custodianInformation")
+    private String custodianInformation;
+    @JsonProperty("accessLevel")
+    private String accessLevel;
 
     public SampleBillingJson() {}
 
@@ -52,6 +56,22 @@ public class SampleBillingJson implements Serializable {
 
     public void setCostCenter(String costCenter) {
         this.costCenter = costCenter;
+    }
+
+    public String getCustodianInformation() {
+        return custodianInformation;
+    }
+
+    public void setCustodianInformation(String custodianInformation) {
+        this.custodianInformation = custodianInformation;
+    }
+
+    public String getAccessLevel() {
+        return accessLevel;
+    }
+
+    public void setAccessLevel(String accessLevel) {
+        this.accessLevel = accessLevel;
     }
 
     @Override
