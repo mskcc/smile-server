@@ -36,18 +36,21 @@ public class TempoServiceImpl implements TempoService {
     @Transactional(rollbackFor = {Exception.class})
     public Tempo saveTempoData(Tempo tempo) throws Exception {
         // first instance of tempo data for a given sample means we need to resolve the
-        // custodian information and data access level
+        // custodian information and data access level only for non-normal samples
         SmileSample sample = tempo.getSmileSample();
-        SmileRequest request = requestService.getRequestBySample(sample);
-        String custodianInformation = Strings.isBlank(request.getLabHeadName())
-                ? request.getLabHeadName() : request.getInvestigatorName();
-        tempo.setCustodianInformation(custodianInformation);
 
-        // if backfilling data then access level might already be present in incoming data
-        if (Strings.isBlank(tempo.getAccessLevel())) {
-            tempo.setAccessLevel("MSK Embargo");
+        // if normal sample then do not init Tempo data with custodian information or access level
+        if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
+            SmileRequest request = requestService.getRequestBySample(sample);
+            String custodianInformation = Strings.isBlank(request.getLabHeadName())
+                    ? request.getLabHeadName() : request.getInvestigatorName();
+            tempo.setCustodianInformation(custodianInformation);
+
+            // if backfilling data then access level might already be present in incoming data
+            if (Strings.isBlank(tempo.getAccessLevel())) {
+                tempo.setAccessLevel("MSK Embargo");
+            }
         }
-
         return tempoRepository.save(tempo);
     }
 
@@ -107,12 +110,17 @@ public class TempoServiceImpl implements TempoService {
     public Tempo initAndSaveDefaultTempoData(String primaryId) throws Exception {
         SmileSample sample = sampleService.getSampleByInputId(primaryId);
         Tempo tempo = new Tempo(sample);
-        SmileRequest request = requestService.getRequestBySample(sample);
-        String custodianInformation = Strings.isBlank(request.getPiEmail())
-                ? request.getInvestigatorEmail() : request.getPiEmail();
-        // using default of MSKEmbargo since we're making a brand new tempo event
-        tempo.setCustodianInformation(custodianInformation);
-        tempo.setAccessLevel("MSKEmbargo");
+
+        // if sample is a normal sample then no need to set values for custodian
+        // information or access level. Normal samples do not require this info.
+        if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
+            SmileRequest request = requestService.getRequestBySample(sample);
+            String custodianInformation = Strings.isBlank(request.getPiEmail())
+                    ? request.getInvestigatorEmail() : request.getPiEmail();
+            // using default of MSKEmbargo since we're making a brand new tempo event
+            tempo.setCustodianInformation(custodianInformation);
+            tempo.setAccessLevel("MSK Embargo");
+        }
         return tempoRepository.save(tempo);
     }
 
