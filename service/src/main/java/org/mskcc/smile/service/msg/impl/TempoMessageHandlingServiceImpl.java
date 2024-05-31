@@ -1,4 +1,4 @@
-package org.mskcc.smile.service.impl;
+package org.mskcc.smile.service.msg.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
@@ -31,7 +31,7 @@ import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
-import org.mskcc.smile.service.TempoMessageHandlingService;
+import org.mskcc.smile.service.msg.TempoMessageHandlingService;
 import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

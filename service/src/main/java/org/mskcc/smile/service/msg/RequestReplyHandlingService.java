@@ -1,4 +1,4 @@
-package org.mskcc.smile.service;
+package org.mskcc.smile.service.msg;
 
 import org.mskcc.cmo.messaging.Gateway;
 

@@ -1,4 +1,4 @@
-package org.mskcc.smile.service.impl;
+package org.mskcc.smile.service.msg.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
@@ -21,7 +21,7 @@ import org.mskcc.smile.model.RequestMetadata;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
-import org.mskcc.smile.service.ResearchMessageHandlingService;
+import org.mskcc.smile.service.msg.ResearchMessageHandlingService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.util.RequestDataFactory;
