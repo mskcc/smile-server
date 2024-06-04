@@ -21,9 +21,10 @@ import org.mskcc.smile.model.RequestMetadata;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
-import org.mskcc.smile.service.msg.ResearchMessageHandlingService;
+import org.mskcc.smile.service.CmoLabelGeneratorService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.msg.ResearchMessageHandlingService;
 import org.mskcc.smile.service.util.RequestDataFactory;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +57,6 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
     @Value("${smile.cmo_sample_update_topic}")
     private String CMO_SAMPLE_UPDATE_TOPIC;
 
-    @Value("${request_reply.cmo_label_generator_topic}")
-    private String CMO_LABEL_GENERATOR_REQREPLY_TOPIC;
-
     @Value("${num.new_request_handler_threads}")
     private int NUM_NEW_REQUEST_HANDLERS;
 
@@ -70,6 +68,9 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
 
     @Autowired
     private SmileSampleService sampleService;
+
+    @Autowired
+    private CmoLabelGeneratorService cmoLabelGeneratorService;
 
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(ResearchMessageHandlingServiceImpl.class);
@@ -123,6 +124,9 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                 try {
                     SmileRequest request = requestQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (request != null) {
+                        // update request with cmo sample labels
+                        request = cmoLabelGeneratorService.addCmoSampleLabelsToRequestSamples(request);
+
                         SmileRequest existingRequest =
                                 requestService.getSmileRequestById(request.getIgoRequestId());
                         // save new request to database
@@ -229,14 +233,18 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                     Entry<Boolean, SampleMetadata> sampleMetadataEntry = researchSampleUpdateQueue.poll(
                             100, TimeUnit.MILLISECONDS);
                     if (sampleMetadataEntry != null) {
+                        // update sample metadata entry with new cmo sample label
+                        SampleMetadata sm = cmoLabelGeneratorService.updateCmoSampleLabel(
+                                sampleMetadataEntry.getValue());
+
                         // Boolean arg in updateSampleMetadata refers to fromLims
-                        if (sampleService.updateSampleMetadata(sampleMetadataEntry.getValue(),
+                        if (sampleService.updateSampleMetadata(sm,
                                 sampleMetadataEntry.getKey())) {
                             SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
-                                    sampleMetadataEntry.getValue().getIgoRequestId(),
-                                    sampleMetadataEntry.getValue().getPrimaryId());
+                                    sm.getIgoRequestId(),
+                                    sm.getPrimaryId());
                             LOG.info("Publishing sample-level metadata history for research sample: "
-                                    + sampleMetadataEntry.getValue().getPrimaryId());
+                                    + sm.getPrimaryId());
                             // publish sample-level metadata history to CMO_REQUEST_UPDATE_TOPIC
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(existingSample.getSampleMetadataList()));
