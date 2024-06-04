@@ -159,6 +159,22 @@ public class SmileSample implements Serializable {
     }
 
     /**
+     * Overrides the latest instance of SampleMetadata in sampleMetadataList with
+     * the provided sampleMetadata
+     * @param sampleMetadata
+     */
+    public void setLatestSampleMetadata(SampleMetadata sampleMetadata) {
+        if (sampleMetadataList != null && !sampleMetadataList.isEmpty()) {
+            if (sampleMetadataList.size() == 1) {
+                sampleMetadataList.set(0, sampleMetadata);
+            }
+            Collections.sort(sampleMetadataList);
+            int ind = sampleMetadataList.size() - 1;
+            sampleMetadataList.set(ind, sampleMetadata);
+        }
+    }
+
+    /**
      * Applies IGO LIMS updates for the following fields
      * @param sampleMetadata
      * @return

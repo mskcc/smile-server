@@ -218,6 +218,39 @@ public class TempoServiceTest {
         Assertions.assertThat(hasUpdates).isTrue();
     }
 
+    @Test
+    public void testNormalSampleTumorSampleTempoImportDefaults() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+
+        // sample MOCKREQUEST1_B_2 is "Normal" which should not have default values set to
+        // tempo.custodianInformation or tempo.accessLevel
+        String igoId2 = "MOCKREQUEST1_B_2";
+        Tempo tempo2 = new Tempo();
+        tempo2.addBamCompleteEvent(getBamCompleteEventData("mockBamCompleteSampleB2"));
+        SmileSample sample2 = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId2);
+        tempo2.setSmileSample(sample2); // this should link the tempo node to the correct sample node
+        tempoService.saveTempoData(tempo2);
+
+        // assert data persisted correctly
+        Tempo tempoAfterSave2 = tempoService.getTempoDataBySamplePrimaryId(igoId2);
+        Assertions.assertThat(tempoAfterSave2.getCustodianInformation()).isNullOrEmpty();
+        Assertions.assertThat(tempoAfterSave2.getAccessLevel()).isNullOrEmpty();
+
+        // sample MOCKREQUEST1_B_3 is "Tumor" which should have default values set to
+        // tempo.custodianInformation and tempo.accessLevel
+        String igoId3 = "MOCKREQUEST1_B_3";
+        Tempo tempo3 = new Tempo();
+        tempo3.addBamCompleteEvent(getBamCompleteEventData("mockBamCompleteSampleB3"));
+        SmileSample sample3 = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId3);
+        tempo3.setSmileSample(sample3); // this should link the tempo node to the correct sample node
+        tempoService.saveTempoData(tempo3);
+
+        // assert data persisted correctly
+        Tempo tempoAfterSave3 = tempoService.getTempoDataBySamplePrimaryId(igoId3);
+        Assertions.assertThat(tempoAfterSave3.getCustodianInformation()).isNotBlank();
+        Assertions.assertThat(tempoAfterSave3.getAccessLevel()).isNotBlank();
+    }
+
     private CohortCompleteJson getCohortEventData(String dataIdentifier) throws JsonProcessingException {
         MockJsonTestData mockData = mockDataUtils.mockedTempoDataMap.get(dataIdentifier);
         CohortCompleteJson cohortCompleteData = mapper.readValue(mockData.getJsonString(),
