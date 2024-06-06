@@ -150,3 +150,14 @@ RETURN true
 MATCH (t: Tempo)
 SET t.smileTempoId = apoc.create.uuid()
 RETURN true
+
+// flatten pmUsers and endUsers on CohortComplete nodes
+MATCH (cc:CohortComplete)
+WITH cc, REDUCE(x="", v IN cc.pmUsers | x + v + ", ") AS newPmUsers
+SET cc.pmUsers = LEFT(newPmUsers, SIZE(newPmUsers)-2)
+RETURN cc
+
+MATCH (cc:CohortComplete)
+WITH cc, REDUCE(x="", v IN cc.endUsers | x + v + ", ") AS newEndUsers
+SET cc.endUsers = LEFT(newEndUsers, SIZE(newEndUsers)-2)
+RETURN cc
