@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.smile.model.converter.ArrayStringConverter;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 /**
  *
@@ -23,7 +25,9 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
     private String date;
     private String status;
     private String type;
+    @Convert(ArrayStringConverter.class)
     private List<String> endUsers;
+    @Convert(ArrayStringConverter.class)
     private List<String> pmUsers;
     private String projectTitle;
     private String projectSubtitle;
