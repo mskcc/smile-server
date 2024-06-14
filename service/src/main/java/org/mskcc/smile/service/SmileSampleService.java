@@ -31,8 +31,8 @@ public interface SmileSampleService {
             String sampleCategory) throws Exception;
     void updateSamplePatientRelationship(UUID smileSampleId, UUID smilePatientId);
     List<SmileSampleIdMapping> getSamplesByDate(String inputDate);
-    SmileSample getSampleByInputId(String inputId);
+    SmileSample getSampleByInputId(String inputId) throws Exception;
     void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId);
-    Boolean sampleExistsByPrimaryId(String primaryId);
+    Boolean sampleExistsByInputId(String primaryId);
     List<SmileSample> getSamplesByCohortId(String cohortId)throws Exception;
 }

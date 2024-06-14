@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
+import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.Cohort;
 import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
@@ -40,21 +41,23 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     private static final Log LOG = LogFactory.getLog(CohortCompleteServiceImpl.class);
 
     @Override
-    public Cohort saveCohort(Cohort cohort, Set<String> samplePrimaryIds) throws Exception {
+    public Cohort saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
         Set<String> unknownSamples = new HashSet<>(); // tracks unknown samples in smile
         // create cohort-sample relationships
-        for (String primaryId : samplePrimaryIds) {
+        for (String sampleId : sampleIds) {
             // confirm sample exists by primary id and then link to cohort
-            if (sampleService.sampleExistsByPrimaryId(primaryId)) {
+            SmileSample sample = sampleService.getSampleByInputId(sampleId);
+            if (sample != null) {
+                String primaryId = sample.getPrimarySampleAlias();
                 // init default tempo data for sample if sample does not already have tempo data
                 if (tempoService.getTempoDataBySamplePrimaryId(primaryId) == null) {
                     tempoService.initAndSaveDefaultTempoData(primaryId);
                 }
                 cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryId);
             } else {
-                unknownSamples.add(primaryId);
+                unknownSamples.add(sampleId);
             }
         }
         // log and report unknown samples for reference
@@ -62,7 +65,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
             StringBuilder builder = new StringBuilder();
             builder.append("Could not import ")
                     .append(unknownSamples.size())
-                    .append(" samnples for cohort ")
+                    .append(" samples for cohort ")
                     .append(cohort.getCohortId())
                     .append(": ")
                     .append(StringUtils.join(unknownSamples,", "));

@@ -17,10 +17,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
 import org.mskcc.smile.model.tempo.CohortComplete;
@@ -111,9 +113,11 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     Entry<String, BamComplete> bcEvent = bamCompleteQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (bcEvent != null) {
                         // first determine if sample exists by the provided primary id
-                        String primaryId = bcEvent.getKey();
+                        String sampleId = bcEvent.getKey();
                         BamComplete bamComplete = bcEvent.getValue();
-                        if (sampleService.sampleExistsByPrimaryId(primaryId)) {
+                        SmileSample sample = sampleService.getSampleByInputId(sampleId);
+                        if (sample != null) {
+                            String primaryId = sample.getPrimarySampleAlias();
                             // merge and/or create tempo bam complete event to sample
                             Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                             if (tempo == null
@@ -127,7 +131,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                 }
                             }
                         } else {
-                            LOG.error("Sample with primary id " + primaryId + " does not exist");
+                            LOG.error("Sample does not exist by id: " + sampleId);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -155,9 +159,11 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     Entry<String, QcComplete> qcEvent = qcCompleteQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (qcEvent != null) {
                         // first determine if sample exists by the provided primary id
-                        String primaryId = qcEvent.getKey();
+                        String sampleId = qcEvent.getKey();
                         QcComplete qcComplete = qcEvent.getValue();
-                        if (sampleService.sampleExistsByPrimaryId(primaryId)) {
+                        SmileSample sample = sampleService.getSampleByInputId(sampleId);
+                        if (sample != null) {
+                            String primaryId = sample.getPrimarySampleAlias();
                             // merge and/or create tempo qc complete event to sample
                             Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                             if (tempo == null
@@ -171,7 +177,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                 }
                             }
                         } else {
-                            LOG.error("Sample with primary id: " + primaryId + " does not exist");
+                            LOG.error("Sample does not exist by id: " + sampleId);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -199,9 +205,21 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     Entry<String, MafComplete> mcEvent = mafCompleteQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (mcEvent != null) {
                         // first determine if sample exists by the provided primary id
-                        String primaryId = mcEvent.getKey();
+                        String sampleId = mcEvent.getKey();
                         MafComplete mafComplete = mcEvent.getValue();
-                        if (sampleService.sampleExistsByPrimaryId(primaryId)) {
+                        SmileSample sample = sampleService.getSampleByInputId(sampleId);
+                        if (sample != null) {
+                            String primaryId = sample.getPrimarySampleAlias();
+
+                            // resolve normal primary id since cmo sample id might have been provided
+                            // in the incoming NATS message from TEMPO - if sample does not exist then
+                            // simply keep the provided input id as is
+                            SmileSample normalSample
+                                    = sampleService.getSampleByInputId(mafComplete.getNormalPrimaryId());
+                            if (normalSample != null) {
+                                mafComplete.setNormalPrimaryId(normalSample.getPrimarySampleAlias());
+                            }
+
                             // merge and/or create tempo maf complete event to sample
                             Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                             if (tempo == null
@@ -215,7 +233,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                 }
                             }
                         } else {
-                            LOG.error("Sample with primary id " + primaryId + " does not exist");
+                            LOG.error("Sample does not exist by id: " + sampleId);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -288,11 +306,20 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     if (billing != null) {
                         // this message is coming straight from the dashboard and should therefore always
                         // have data for a valid sample that exists in the database
-                        // however this check is will make extra sure that the primary id received
+                        // however this check will make extra sure that the primary id received
                         // in the nats message actually exists in the database before conducting
                         // further operations in the db
-                        if (sampleService.sampleExistsByPrimaryId(billing.getPrimaryId())) {
-                            LOG.info("Updating billing information for sample: " + billing.getPrimaryId());
+                        SmileSample sample = sampleService.getSampleByInputId(billing.getPrimaryId());
+                        if (sample != null) {
+                            StringBuilder builder = new StringBuilder();
+                            builder.append("Updating billing information for sample: ")
+                                    .append(sample.getPrimarySampleAlias());
+                            if (!billing.getPrimaryId().equalsIgnoreCase(sample.getPrimarySampleAlias())) {
+                                builder.append(" (mapped from input id: ")
+                                        .append(billing.getPrimaryId())
+                                        .append(")");
+                            }
+                            LOG.info(builder.toString());
                             tempoService.updateSampleBilling(billing);
                         } else {
                             LOG.error("Cannot update billing information for sample that does not exist: "
@@ -465,11 +492,15 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
                     Map<String, String> bamCompleteMap = mapper.readValue(bamCompleteJson, Map.class);
+
+                    // resolve sample id, bam complete object
+                    String sampleId = ObjectUtils.firstNonNull(bamCompleteMap.get("primaryId"),
+                            bamCompleteMap.get("cmoSampleId"));
                     BamComplete bamComplete = new BamComplete(bamCompleteMap.get("date"),
                             bamCompleteMap.get("status"));
-                    String primaryId = bamCompleteMap.get("primaryId");
+
                     Map.Entry<String, BamComplete> eventData =
-                            new AbstractMap.SimpleImmutableEntry<>(primaryId, bamComplete);
+                            new AbstractMap.SimpleImmutableEntry<>(sampleId, bamComplete);
                     tempoMessageHandlingService.bamCompleteHandler(eventData);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of BAM complete event: "
@@ -489,12 +520,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
                         Map<String, String> qcCompleteMap = mapper.readValue(qcCompleteJson, Map.class);
+
+                        // resolve sample id, qc complete object
+                        String sampleId = ObjectUtils.firstNonNull(qcCompleteMap.get("primaryId"),
+                            qcCompleteMap.get("cmoSampleId"));
                         QcComplete qcComplete = new QcComplete(qcCompleteMap.get("date"),
                                 qcCompleteMap.get("result"), qcCompleteMap.get("reason"),
                                 qcCompleteMap.get("status"));
-                    String primaryId = qcCompleteMap.get("primaryId");
+
                     Map.Entry<String, QcComplete> eventData =
-                            new AbstractMap.SimpleImmutableEntry<>(primaryId, qcComplete);
+                            new AbstractMap.SimpleImmutableEntry<>(sampleId, qcComplete);
                     tempoMessageHandlingService.qcCompleteHandler(eventData);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of QC complete event: "
@@ -514,12 +549,18 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
                     Map<String, String> mafCompleteMap = mapper.readValue(mafCompleteJson, Map.class);
+
+                    // resolve sample id, normal ids, and maf complete object
+                    String sampleId = ObjectUtils.firstNonNull(mafCompleteMap.get("primaryId"),
+                            mafCompleteMap.get("cmoSampleId"));
+                    String normalSampleId = ObjectUtils.firstNonNull(mafCompleteMap.get("normalPrimaryId"),
+                            mafCompleteMap.get("normalCmoSampleId"));
                     MafComplete mafComplete = new MafComplete(mafCompleteMap.get("date"),
-                            mafCompleteMap.get("normalPrimaryId"),
+                            normalSampleId,
                             mafCompleteMap.get("status"));
-                    String primaryId = mafCompleteMap.get("primaryId");
+
                     Map.Entry<String, MafComplete> eventData =
-                            new AbstractMap.SimpleImmutableEntry<>(primaryId, mafComplete);
+                            new AbstractMap.SimpleImmutableEntry<>(sampleId, mafComplete);
                     tempoMessageHandlingService.mafCompleteHandler(eventData);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of MAF complete event: "

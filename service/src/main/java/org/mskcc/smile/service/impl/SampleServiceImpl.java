@@ -478,8 +478,12 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public SmileSample getSampleByInputId(String inputId) {
-        return sampleRepository.findSampleByInputId(inputId);
+    public SmileSample getSampleByInputId(String inputId) throws Exception {
+        SmileSample sample = sampleRepository.findSampleByInputId(inputId);
+        if (sample != null) {
+            return getDetailedSmileSample(sample);
+        }
+        return null;
     }
 
     @Override
@@ -488,8 +492,8 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public Boolean sampleExistsByPrimaryId(String primaryId) {
-        return (sampleRepository.sampleExistsByPrimaryId(primaryId) != null);
+    public Boolean sampleExistsByInputId(String inputId) {
+        return (sampleRepository.findSampleByInputId(inputId) != null);
     }
 
     @Override
