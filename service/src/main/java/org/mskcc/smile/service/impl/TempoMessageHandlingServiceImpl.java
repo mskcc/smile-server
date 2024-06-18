@@ -488,7 +488,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String bamCompleteJson = mapper.readValue(
+                    String bamCompleteJson = mapper.convertValue(
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
                     Map<String, String> bamCompleteMap = mapper.readValue(bamCompleteJson, Map.class);
@@ -516,7 +516,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String qcCompleteJson = mapper.readValue(
+                    String qcCompleteJson = mapper.convertValue(
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
                         Map<String, String> qcCompleteMap = mapper.readValue(qcCompleteJson, Map.class);
@@ -545,7 +545,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String mafCompleteJson = mapper.readValue(
+                    String mafCompleteJson = mapper.convertValue(
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
                     Map<String, String> mafCompleteMap = mapper.readValue(mafCompleteJson, Map.class);
@@ -576,7 +576,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String cohortCompleteJson = mapper.readValue(
+                    String cohortCompleteJson = mapper.convertValue(
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
                     CohortCompleteJson cohortCompleteData = mapper.readValue(cohortCompleteJson,
@@ -596,7 +596,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String billingJson = mapper.readValue(
+                    String billingJson = mapper.convertValue(
                         new String(msg.getData(), StandardCharsets.UTF_8),
                         String.class);
                     SampleBillingJson billing = mapper.readValue(billingJson,
