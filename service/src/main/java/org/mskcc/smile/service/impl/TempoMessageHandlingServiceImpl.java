@@ -1,5 +1,6 @@
 package org.mskcc.smile.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +36,7 @@ import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
 import org.mskcc.smile.service.TempoService;
+import org.mskcc.smile.service.util.NatsMsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -488,10 +490,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String bamCompleteJson = mapper.convertValue(
-                        new String(msg.getData(), StandardCharsets.UTF_8),
-                        String.class);
-                    Map<String, String> bamCompleteMap = mapper.readValue(bamCompleteJson, Map.class);
+                    LOG.info("Received message on topic: " + TEMPO_WES_BAM_COMPLETE_TOPIC);
+                    String bamCompleteJson = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (bamCompleteJson == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    System.out.println("Extracted message contents =\n\n" + bamCompleteJson + "\n\n");
+                    Map<String, String> bamCompleteMap =
+                            (Map<String, String>) NatsMsgUtil.convertObjectFromString(
+                                    bamCompleteJson, new TypeReference<Map<String, String>>() {});
 
                     // resolve sample id, bam complete object
                     String sampleId = ObjectUtils.firstNonNull(bamCompleteMap.get("primaryId"),
@@ -516,10 +524,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String qcCompleteJson = mapper.convertValue(
-                        new String(msg.getData(), StandardCharsets.UTF_8),
-                        String.class);
-                        Map<String, String> qcCompleteMap = mapper.readValue(qcCompleteJson, Map.class);
+                    LOG.info("Received message on topic: " + TEMPO_WES_QC_COMPLETE_TOPIC);
+                    String qcCompleteJson = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (qcCompleteJson == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    System.out.println("Extracted message contents =\n\n" + qcCompleteJson + "\n\n");
+                    Map<String, String> qcCompleteMap =
+                            (Map<String, String>) NatsMsgUtil.convertObjectFromString(
+                                    qcCompleteJson, new TypeReference<Map<String, String>>() {});
 
                         // resolve sample id, qc complete object
                         String sampleId = ObjectUtils.firstNonNull(qcCompleteMap.get("primaryId"),
@@ -545,10 +559,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String mafCompleteJson = mapper.convertValue(
-                        new String(msg.getData(), StandardCharsets.UTF_8),
-                        String.class);
-                    Map<String, String> mafCompleteMap = mapper.readValue(mafCompleteJson, Map.class);
+                    LOG.info("Received message on topic: " + TEMPO_WES_MAF_COMPLETE_TOPIC);
+                    String mafCompleteJson = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (mafCompleteJson == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    System.out.println("Extracted message contents =\n\n" + mafCompleteJson + "\n\n");
+                    Map<String, String> mafCompleteMap =
+                            (Map<String, String>) NatsMsgUtil.convertObjectFromString(
+                                    mafCompleteJson, new TypeReference<Map<String, String>>() {});
 
                     // resolve sample id, normal ids, and maf complete object
                     String sampleId = ObjectUtils.firstNonNull(mafCompleteMap.get("primaryId"),
@@ -576,11 +596,17 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String cohortCompleteJson = mapper.convertValue(
-                        new String(msg.getData(), StandardCharsets.UTF_8),
-                        String.class);
-                    CohortCompleteJson cohortCompleteData = mapper.readValue(cohortCompleteJson,
-                            CohortCompleteJson.class);
+                    LOG.info("Received message on topic: " + TEMPO_WES_COHORT_COMPLETE_TOPIC);
+                    String cohortCompleteJson = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (cohortCompleteJson == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    System.out.println("Extracted message contents =\n\n" + cohortCompleteJson + "\n\n");
+                    CohortCompleteJson cohortCompleteData =
+                            (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
+                                    cohortCompleteJson, new TypeReference<CohortCompleteJson>() {});
+
                     tempoMessageHandlingService.cohortCompleteHandler(cohortCompleteData);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of Cohort Complete event: "
@@ -596,11 +622,17 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String billingJson = mapper.convertValue(
-                        new String(msg.getData(), StandardCharsets.UTF_8),
-                        String.class);
-                    SampleBillingJson billing = mapper.readValue(billingJson,
-                            SampleBillingJson.class);
+                    LOG.info("Received message on topic: " + TEMPO_SAMPLE_BILLING_TOPIC);
+                    String billingJson = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (billingJson == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    System.out.println("Extracted message contents =\n\n" + billingJson + "\n\n");
+                    SampleBillingJson billing =
+                            (SampleBillingJson) NatsMsgUtil.convertObjectFromString(
+                                    billingJson, new TypeReference<SampleBillingJson>() {});
+
                     tempoMessageHandlingService.sampleBillingHandler(billing);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of Cohort Complete event: "
