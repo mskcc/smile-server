@@ -46,6 +46,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         cohortCompleteRepository.save(cohort);
         Set<String> unknownSamples = new HashSet<>(); // tracks unknown samples in smile
         // create cohort-sample relationships
+        LOG.info("Adding cohort-sample edges in database for " + sampleIds.size() + " samples...");
         for (String sampleId : sampleIds) {
             // confirm sample exists by primary id and then link to cohort
             SmileSample sample = sampleService.getSampleByInputId(sampleId);
