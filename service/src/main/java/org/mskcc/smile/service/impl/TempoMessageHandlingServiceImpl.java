@@ -3,11 +3,7 @@ package org.mskcc.smile.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,7 +22,6 @@ import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
-import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
@@ -273,10 +268,18 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             // compiles them into a set list of strings
                             cohortCompleteService.saveCohort(cohort, ccJson.getTumorNormalPairsAsSet());
                         } else if (cohortCompleteService.hasUpdates(existingCohort,
-                                cohort.getLatestCohortComplete())) {
+                                cohort)) {
                             LOG.info("Received updates for cohort: " + ccJson.getCohortId());
-                            existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
-                            cohortCompleteService.updateCohort(existingCohort);
+                            if (cohortCompleteService.hasCohortCompleteUpdates(existingCohort, cohort)) {
+                                existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
+                            }
+
+                            // new samples refer to samples that aren't yet linked to the given cohort
+                            Set<String> newSamples = ccJson.getTumorNormalPairsAsSet();
+                            newSamples.removeAll(existingCohort.getCohortSamplePrimaryIds());
+
+                            // persist updates to db
+                            cohortCompleteService.saveCohort(existingCohort, newSamples);
                         } else {
                             LOG.error("Cohort " + ccJson.getCohortId()
                                     + " already exists and no new updates were received.");

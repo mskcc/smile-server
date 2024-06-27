@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.SmileRequest;
@@ -103,8 +104,16 @@ public class TempoServiceTest {
         // mock request id: MOCKREQUEST1_B
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        SmileRequest request1 = RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
+        SmileRequest request1 =
+                RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
         requestService.saveRequest(request1);
+
+        // mock request id: 22022_BZ
+        MockJsonTestData request2bData = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest2bJsonDataMissing1N");
+        SmileRequest request2b =
+                RequestDataFactory.buildNewLimsRequestFromJson(request2bData.getJsonString());
+        requestService.saveRequest(request2b);
     }
 
     @Test
@@ -213,8 +222,7 @@ public class TempoServiceTest {
         CohortCompleteJson ccJsonUpdate = getCohortEventData("mockCohortCompleteCCSPPPQQQQUpdated");
 
         Cohort updatedCohort = new Cohort(ccJsonUpdate);
-        CohortComplete updatedCohortComplete = updatedCohort.getLatestCohortComplete();
-        Boolean hasUpdates = cohortCompleteService.hasUpdates(cohort, updatedCohortComplete);
+        Boolean hasUpdates = cohortCompleteService.hasUpdates(cohort, updatedCohort);
         Assertions.assertThat(hasUpdates).isTrue();
     }
 
@@ -249,6 +257,32 @@ public class TempoServiceTest {
         Tempo tempoAfterSave3 = tempoService.getTempoDataBySamplePrimaryId(igoId3);
         Assertions.assertThat(tempoAfterSave3.getCustodianInformation()).isNotBlank();
         Assertions.assertThat(tempoAfterSave3.getAccessLevel()).isNotBlank();
+    }
+
+    @Test
+    public void testCohortSampleListUpdate() throws Exception {
+        CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        cohortCompleteService.saveCohort(new Cohort(ccJson), ccJson.getTumorNormalPairsAsSet());
+        Cohort cohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertThat(cohort.getCohortSamplePrimaryIds().size()).isEqualTo(4);
+
+        CohortCompleteJson ccJsonUpdate =
+                getCohortEventData("mockCohortCompleteCCSPPPQQQQUpdatedSamplesOnly");
+        Assertions.assertThat(ccJsonUpdate.getTumorNormalPairsAsSet().size()).isEqualTo(6);
+
+        Cohort updatedCohort = new Cohort(ccJsonUpdate);
+        Boolean hasUpdates = cohortCompleteService.hasUpdates(cohort, updatedCohort);
+        Assertions.assertThat(hasUpdates).isTrue();
+
+        // verify there are 2 new samples getting added to the cohort
+        Set<String> newSamples = ccJsonUpdate.getTumorNormalPairsAsSet();
+        newSamples.removeAll(cohort.getCohortSamplePrimaryIds());
+        Assertions.assertThat(newSamples.size()).isEqualTo(2);
+
+        // save cohort and verify that it now has 6 samples instead of 4
+        cohortCompleteService.saveCohort(cohort, newSamples);
+        Cohort cohortAfterSave = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertThat(cohortAfterSave.getCohortSamplePrimaryIds().size()).isEqualTo(6);
     }
 
     private CohortCompleteJson getCohortEventData(String dataIdentifier) throws JsonProcessingException {

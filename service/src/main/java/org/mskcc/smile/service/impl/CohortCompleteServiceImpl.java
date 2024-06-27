@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.Cohort;
-import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
 import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
@@ -87,10 +86,20 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     }
 
     @Override
-    public Boolean hasUpdates(Cohort cohort, CohortComplete cohortComplete) throws Exception {
-        String existingCohortComplete = mapper.writeValueAsString(cohort.getLatestCohortComplete());
-        String currentCohortComplete = mapper.writeValueAsString(cohortComplete);
-        return !jsonComparator.isConsistentGenericComparison(existingCohortComplete, currentCohortComplete);
+    public Boolean hasUpdates(Cohort existingCohort, Cohort cohort) throws Exception {
+        // check cohort complete data for updates first
+        Boolean hasUpdates = hasCohortCompleteUpdates(existingCohort, cohort);
+        Set<String> newSamples = cohort.getCohortSamplePrimaryIds();
+        newSamples.removeAll(existingCohort.getCohortSamplePrimaryIds());
+        return (hasUpdates || !newSamples.isEmpty());
+    }
+
+    @Override
+    public Boolean hasCohortCompleteUpdates(Cohort existingCohort, Cohort cohort) throws Exception {
+        String existingCohortComplete = mapper.writeValueAsString(existingCohort.getLatestCohortComplete());
+        String currentCohortComplete = mapper.writeValueAsString(cohort.getLatestCohortComplete());
+        return !jsonComparator.isConsistentGenericComparison(existingCohortComplete,
+                currentCohortComplete);
     }
 
     @Override
