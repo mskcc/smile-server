@@ -419,7 +419,8 @@ public class SampleServiceImpl implements SmileSampleService {
             sample.setTempo(tempo);
         } catch (IncorrectResultSizeDataAccessException e) {
             if (e.getActualSize() < 0) {
-                LOG.warn("There is no TEMPO data for sample: " + sample.getPrimarySampleAlias());
+                LOG.warn("There is no TEMPO data for sample: " + sample.getPrimarySampleAlias()
+                        + " - TEMPO data will not be set for sample.");
             } else {
                 StringBuilder b = new StringBuilder();
                 b.append("Error fetching TEMPO data for sample: ")

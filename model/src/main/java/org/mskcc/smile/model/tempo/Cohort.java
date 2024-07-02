@@ -1,9 +1,12 @@
 package org.mskcc.smile.model.tempo;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
@@ -103,7 +106,7 @@ public class Cohort implements Serializable {
 
     /**
      * Returns latest cohort complete data.
-     * @return
+     * @return CohortComplete
      */
     public CohortComplete getLatestCohortComplete() {
         if (cohortCompleteList != null && !cohortCompleteList.isEmpty()) {
@@ -114,6 +117,22 @@ public class Cohort implements Serializable {
             return cohortCompleteList.get(cohortCompleteList.size() - 1);
         }
         return null;
+    }
+
+    /**
+     * Returns sample ids as set of strings.
+     * @return Set
+     * @throws ParseException
+     */
+    public Set<String> getCohortSamplePrimaryIds() throws ParseException {
+        if (cohortSamples == null) {
+            return new HashSet<>();
+        }
+        Set<String> sampleIds = new HashSet<>();
+        for (SmileSample sample : cohortSamples) {
+            sampleIds.add(sample.getPrimarySampleAlias());
+        }
+        return sampleIds;
     }
 
     @Override
