@@ -23,6 +23,8 @@ public class DmpSampleMetadata {
     private Integer cbxPatientId;
     @JsonProperty("cbx_sample_id")
     private Integer cbxSampleId;
+    @JsonProperty("ct")
+    private Integer ct;
     @JsonProperty("date_tumor_sequencing")
     private String dateTumorSequencing;
     @JsonProperty("linked_mskimpact_case")
@@ -101,6 +103,7 @@ public class DmpSampleMetadata {
      * @param alys2sampleId
      * @param cbxPatientId
      * @param cbxSampleId
+     * @param ct
      * @param dateTumorSequencing
      * @param linkedMskimpactCase
      * @param dmpAlysTaskId
@@ -137,7 +140,7 @@ public class DmpSampleMetadata {
      * @param standardCoverage
      */
     public DmpSampleMetadata(Integer alys2sampleId, Integer cbxPatientId,
-            Integer cbxSampleId, String dateTumorSequencing, String linkedMskimpactCase,
+            Integer cbxSampleId, Integer ct, String dateTumorSequencing, String linkedMskimpactCase,
             Integer dmpAlysTaskId, String dmpAlysTaskName, String dmpPatientId,
             String dmpSampleId, Integer dmpSampleSoId, Integer gender,
             String genePanel, Integer isMetastasis, String legacyPatientId,
@@ -153,6 +156,7 @@ public class DmpSampleMetadata {
         this.alys2sampleId = alys2sampleId;
         this.cbxPatientId = cbxPatientId;
         this.cbxSampleId = cbxSampleId;
+        this.ct = ct;
         this.dateTumorSequencing = dateTumorSequencing;
         this.dmpAlysTaskId = dmpAlysTaskId;
         this.dmpAlysTaskName = dmpAlysTaskName;
@@ -219,6 +223,14 @@ public class DmpSampleMetadata {
 
     public void setCbxSampleId(Integer cbxSampleId) {
         this.cbxSampleId = cbxSampleId;
+    }
+
+    public Integer getCt() {
+        return ct;
+    }
+
+    public void setCt(Integer ct) {
+        this.ct = ct;
     }
 
     public String getDateTumorSequencing() {
