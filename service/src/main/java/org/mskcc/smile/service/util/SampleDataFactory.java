@@ -166,6 +166,7 @@ public class SampleDataFactory {
                 resolveDmpSampleClass(dmpSampleMetadata.getDmpSampleId()));
         sampleMetadata.setSampleType(
                 resolveDmpSampleType(dmpSampleMetadata.getIsMetastasis()));
+        sampleMetadata.addAdditionalProperty("ct", String.valueOf(dmpSampleMetadata.getCt()));
         sampleMetadata.addAdditionalProperty("msi-comment",
                 dmpSampleMetadata.getMsiComment());
         sampleMetadata.addAdditionalProperty("msi-score",
