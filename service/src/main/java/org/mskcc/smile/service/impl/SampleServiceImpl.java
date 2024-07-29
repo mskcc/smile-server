@@ -254,7 +254,7 @@ public class SampleServiceImpl implements SmileSampleService {
             SmileRequest request = requestService.getSmileRequestById(sampleMetadata.getIgoRequestId());
             if (request == null) {
                 LOG.error("Failed to persist sample metadata updates, "
-                        + "request does not exist " + sampleMetadata.getIgoRequestId());
+                        + "request does not exist " + sampleMetadata.toString());
                 return Boolean.FALSE;
             }
             LOG.info("Persisting new sample to db: " + sampleMetadata.getPrimaryId());
