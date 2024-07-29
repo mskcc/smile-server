@@ -63,7 +63,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         // log and report unknown samples for reference
         if (!unknownSamples.isEmpty()) {
             StringBuilder builder = new StringBuilder();
-            builder.append("Could not import ")
+            builder.append("[TEMPO COHORT COMPLETE FAILED SAMPLES] Could not import ")
                     .append(unknownSamples.size())
                     .append(" samples for cohort ")
                     .append(cohort.getCohortId())
