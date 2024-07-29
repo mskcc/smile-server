@@ -123,12 +123,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                     tempoService.mergeBamCompleteEventBySamplePrimaryId(primaryId,
                                         bamComplete);
                                 } catch (IncorrectResultSizeDataAccessException e) {
-                                    LOG.error("Encountered error while persisting BAM complete "
-                                            + "event to database: " + bcEvent.toString(), e);
+                                    LOG.error("[TEMPO BAM COMPLETE ERROR] Encountered error while "
+                                            + "persisting BAM complete event to database: "
+                                            + bcEvent.toString(), e);
                                 }
                             }
                         } else {
-                            LOG.error("Sample does not exist by id: " + sampleId);
+                            LOG.error("[TEMPO BAM COMPLETE ERROR] Sample does not exist by id: " + sampleId);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -169,12 +170,12 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                     tempoService.mergeQcCompleteEventBySamplePrimaryId(primaryId,
                                             qcComplete);
                                 } catch (IncorrectResultSizeDataAccessException e) {
-                                    LOG.error("Encountered error while persisting QC complete "
-                                            + "event to database: " + qcEvent.toString(), e);
+                                    LOG.error("[TEMPO QC COMPLETE ERROR] Encountered error while persisting "
+                                            + "QC complete event to database: " + qcEvent.toString(), e);
                                 }
                             }
                         } else {
-                            LOG.error("Sample does not exist by id: " + sampleId);
+                            LOG.error("[TEMPO QC COMPLETE ERROR] Sample does not exist by id: " + sampleId);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -225,12 +226,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                     tempoService.mergeMafCompleteEventBySamplePrimaryId(primaryId,
                                             mafComplete);
                                 } catch (IncorrectResultSizeDataAccessException e) {
-                                    LOG.error("Encountered error while persisting MAF complete "
-                                            + "event to database: " + mcEvent.toString(), e);
+                                    LOG.error("[TEMPO MAF COMPLETE ERROR] Encountered error while "
+                                            + "persisting MAF complete event to database: "
+                                            + mcEvent.toString(), e);
                                 }
                             }
                         } else {
-                            LOG.error("Sample does not exist by id: " + sampleId);
+                            LOG.error("[TEMPO MAF COMPLETE ERROR] Sample does not exist by id: " + sampleId);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -327,8 +329,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             LOG.info(builder.toString());
                             tempoService.updateSampleBilling(billing);
                         } else {
-                            LOG.error("Cannot update billing information for sample that does not exist: "
-                                    + billing.getPrimaryId());
+                            LOG.error("[TEMPO SAMPLE BILLING ERROR] Cannot update billing information for "
+                                    + "sample that does not exist: " + billing.getPrimaryId());
                         }
                     }
                 } catch (InterruptedException e) {

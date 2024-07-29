@@ -27,7 +27,6 @@ import org.mskcc.smile.model.web.RequestSummary;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
-import org.mskcc.smile.service.util.RequestStatusLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,13 +46,7 @@ public class RequestServiceImpl implements SmileRequestService {
     @Autowired
     private SmileSampleService sampleService;
 
-    @Autowired
-    private RequestStatusLogger requestStatusLogger;
-
     private final DateFormat IMPORT_DATE_FORMATTER = initDateFormatter();
-    // 24 hours in milliseconds
-    private final Integer TIME_ADJ_24HOURS_MS = 24 * 60 * 60 * 1000;
-    private Map<String, Date> loggedExistingRequests = new HashMap<>();
     private static final Log LOG = LogFactory.getLog(RequestServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -79,7 +72,6 @@ public class RequestServiceImpl implements SmileRequestService {
             requestRepository.save(request);
             return Boolean.TRUE;
         }
-        logDuplicateRequest(request);
         return Boolean.FALSE;
     }
 
@@ -99,44 +91,14 @@ public class RequestServiceImpl implements SmileRequestService {
             StringBuilder builder = new StringBuilder();
             builder.append("Failed to update the Request-level metadata for request id: ")
                     .append(request.getIgoRequestId())
-                    .append("\n\tTotal versions of request metadata -->\n\t\t - before save: ")
+                    .append(" - Total versions of request metadata  - before save: ")
                     .append(currentMetadataList.size())
-                    .append("\n\t\t - after save: ")
+                    .append(" - after save: ")
                     .append(updatedMetadataList.size());
             LOG.error(builder.toString());
             return Boolean.FALSE;
         }
         return Boolean.TRUE;
-    }
-
-    /**
-     * Logs duplicate requests.
-     * @param request
-     * @throws IOException
-     */
-    private void logDuplicateRequest(SmileRequest request) throws IOException {
-        // if request has not been logged before then save request to request logger file
-        // otherwise check if new timestamp occurs within 24 hours since the last time
-        // the same request was seen. If it does not then save request to logger file
-        Date newTimestamp = new Date();
-        Boolean logRequest = Boolean.FALSE;
-        if (!loggedExistingRequests.containsKey(request.getIgoRequestId())) {
-            loggedExistingRequests.put(request.getIgoRequestId(), newTimestamp);
-            logRequest = Boolean.TRUE;
-        } else {
-            // check if new timestamp occurs within 24 hours of the reference timestamp
-            // if check does not pass then log the request to the logger file
-            Date referenceTimestamp = loggedExistingRequests.get(request.getIgoRequestId());
-            if (!timestampWithin24Hours(referenceTimestamp, newTimestamp)) {
-                logRequest = Boolean.TRUE;
-                loggedExistingRequests.put(request.getIgoRequestId(), newTimestamp);
-            }
-        }
-
-        if (logRequest) {
-            requestStatusLogger.logRequestStatus(request.getRequestJson(),
-                    RequestStatusLogger.StatusType.DUPLICATE_REQUEST);
-        }
     }
 
     @Override
@@ -196,20 +158,6 @@ public class RequestServiceImpl implements SmileRequestService {
         }
         LOG.warn("No updates to persist for request: " + existingRequest.getIgoRequestId());
         return Boolean.FALSE;
-    }
-
-    /**
-     * Returns true if new timestamp occurs within 24 hours of the reference timestamp.
-     * @param referenceTimestamp
-     * @param newTimestamp
-     * @return Boolean
-     */
-    private Boolean timestampWithin24Hours(Date referenceTimestamp, Date newTimestamp) {
-        // create reference timestamp shifted 24 hours in milliseconds
-        Calendar adjustedReferenceTimestamp = Calendar.getInstance();
-        adjustedReferenceTimestamp.setTime(referenceTimestamp);
-        adjustedReferenceTimestamp.add(Calendar.MILLISECOND, TIME_ADJ_24HOURS_MS);
-        return newTimestamp.before(adjustedReferenceTimestamp.getTime());
     }
 
     @Override
