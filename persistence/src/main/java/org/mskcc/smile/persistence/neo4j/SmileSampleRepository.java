@@ -104,6 +104,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "OR sa.value = $inputId "
             + "OR s.smileSampleId = $inputId "
             + "OR sm.cmoSampleName = $inputId "
+            + "OR sm.investigatorSampleId = $inputId "
             + "RETURN s")
     SmileSample findSampleByInputId(@Param("inputId") String inputId);
 
