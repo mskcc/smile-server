@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 @DataNeo4jTest
@@ -41,7 +42,7 @@ public class RequestServiceTest {
     private TempoService tempoService;
 
     @Container
-    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>()
+    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>(DockerImageName.parse("neo4j:5.19.0"))
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
 
     @TestConfiguration
