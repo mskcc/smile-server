@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.3.3.RELEASE</version>
+    <version>3.3.3</version>
   </parent>
 
   <repositories>
@@ -37,10 +37,10 @@
   </pluginRepositories>
 
   <properties>
-    <java.version>1.8</java.version>
-    <maven.compiler.version>1.8</maven.compiler.version>
-    <spring.version>5.2.6.RELEASE</spring.version>
-    <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
+    <java.version>21</java.version>
+    <maven.compiler.version>3.11.0</maven.compiler.version>
+    <spring.version>5.2.8.RELEASE</spring.version>
+    <spring.boot.version>3.3.3</spring.boot.version>
     <jackson.version>2.11.2</jackson.version>
     <neo4j-ogm.version>3.2.14</neo4j-ogm.version>
     <junitjupiter.version>5.3.2</junitjupiter.version>
@@ -128,6 +128,11 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>${spring.boot.version}</version>
     </dependency>
+    <!-- formerly javax persistence -->
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -166,10 +171,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>${maven.compiler.version}</version>
         <configuration>
-          <source>${maven.compiler.version}</source>
-          <target>${maven.compiler.version}</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
           <compilerArgument>-Xlint:deprecation</compilerArgument>
         </configuration>
       </plugin>

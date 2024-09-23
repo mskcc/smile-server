@@ -10,7 +10,7 @@ import java.util.Map;
 import org.mskcc.smile.model.web.PublishedSmileRequest;
 import org.mskcc.smile.model.web.RequestSummary;
 import org.mskcc.smile.service.SmileRequestService;
-import org.mskcc.smile.service.exception.SmileWebServiceException;
+import org.mskcc.smile.web.exception.SmileWebServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
