@@ -1,4 +1,4 @@
-package org.mskcc.smile.service.exception;
+package org.mskcc.smile.web.exception;
 
 import org.springframework.http.HttpStatus;
 
