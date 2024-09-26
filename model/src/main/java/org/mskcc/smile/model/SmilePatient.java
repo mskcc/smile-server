@@ -9,9 +9,14 @@ import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
-import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.id.UuidStrategy;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
+//import org.springframework.data.neo4j.core.schema.GeneratedValue;
+//import org.springframework.data.neo4j.core.schema.Id;
+//import org.springframework.data.neo4j.core.schema.Node;
+//import org.springframework.data.neo4j.core.schema.Relationship;
+//import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 /**
  *
@@ -19,13 +24,17 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
  */
 
 @NodeEntity(label = "Patient")
+//@Node("Patient")
 public class SmilePatient implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
+//    @Id @GeneratedValue(UUIDStringGenerator.class)
     @Convert(UuidStringConverter.class)
     private UUID smilePatientId;
-    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
+//    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.Direction.OUTGOING)
     private List<SmileSample> smileSampleList;
-    @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
+//    @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
+    @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.INCOMING)
     private List<PatientAlias>  patientAliases;
 
     public SmilePatient() {}

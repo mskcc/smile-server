@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.3.3.RELEASE</version>
+    <version>3.3.0</version>
   </parent>
 
   <repositories>
@@ -37,14 +37,14 @@
   </pluginRepositories>
 
   <properties>
-    <java.version>1.8</java.version>
-    <maven.compiler.version>1.8</maven.compiler.version>
-    <spring.version>5.2.6.RELEASE</spring.version>
-    <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
-    <jackson.version>2.11.2</jackson.version>
-    <neo4j-ogm.version>3.2.14</neo4j-ogm.version>
+    <java.version>17</java.version>
+    <maven.compiler.version>17</maven.compiler.version>
+    <spring.version>5.3.5.RELEASE</spring.version>
+    <spring.boot.version>3.3.0</spring.boot.version>
+    <jackson.version>2.17.2</jackson.version>
+    <neo4j-ogm.version>4.0.11</neo4j-ogm.version>
     <junitjupiter.version>5.3.2</junitjupiter.version>
-    <neo4j-java-driver.version>4.4.9</neo4j-java-driver.version>
+    <neo4j-java-driver.version>5.24.0</neo4j-java-driver.version>
     <testcontainers.version>1.17.0</testcontainers.version>
     <!-- smile messaging and shared entities dependency versions -->
     <smile_messaging_java.group>com.github.mskcc</smile_messaging_java.group>
@@ -128,6 +128,17 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>${spring.boot.version}</version>
     </dependency>
+    <!-- spring data neo4j -->
+<dependency>
+    <groupId>org.neo4j</groupId>
+    <artifactId>neo4j-ogm-spring-boot-starter</artifactId>
+    <version>1.1.0</version>
+</dependency>
+    <!-- formerly javax persistence -->
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -171,6 +182,7 @@
           <source>${maven.compiler.version}</source>
           <target>${maven.compiler.version}</target>
           <compilerArgument>-Xlint:deprecation</compilerArgument>
+          <compilerArgument>-parameters</compilerArgument>
         </configuration>
       </plugin>
       <!-- maven checkstyle plugin -->

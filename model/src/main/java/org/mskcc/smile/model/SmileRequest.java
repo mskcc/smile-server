@@ -17,15 +17,20 @@ import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
-import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.id.UuidStrategy;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
-
+//import org.springframework.data.neo4j.core.schema.GeneratedValue;
+//import org.springframework.data.neo4j.core.schema.Id;
+//import org.springframework.data.neo4j.core.schema.Node;
+//import org.springframework.data.neo4j.core.schema.Relationship;
+//import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 /**
  *
  * @author ochoaa
  */
 @NodeEntity(label = "Request")
+//@Node("Request")
 @JsonIgnoreProperties({"samples"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SmileRequest implements Serializable {
@@ -33,14 +38,18 @@ public class SmileRequest implements Serializable {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Id @GeneratedValue(strategy = UuidStrategy.class)
+//    @Id @GeneratedValue(UUIDStringGenerator.class)
     @Convert(UuidStringConverter.class)
     private UUID smileRequestId;
-    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
+//    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.Direction.OUTGOING)
     private List<SmileSample> smileSampleList;
-    @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
+//    @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
+    @Relationship(type = "HAS_REQUEST", direction = Relationship.Direction.INCOMING)
     private SmileProject smileProject;
     @JsonIgnore
-    @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
+//    @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_METADATA", direction = Relationship.Direction.OUTGOING)
     private List<RequestMetadata> requestMetadataList;
     @JsonIgnore
     private String namespace;

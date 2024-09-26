@@ -3,6 +3,9 @@ package org.mskcc.smile.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
+//import org.springframework.data.neo4j.core.schema.GeneratedValue;
+//import org.springframework.data.neo4j.core.schema.Id;
+//import org.springframework.data.neo4j.core.schema.Relationship;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.Relationship;
@@ -14,7 +17,8 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
     private String igoRequestId;
     private String requestMetadataJson;
     private String importDate;
-    @Relationship(type = "HAS_STATUS", direction = Relationship.OUTGOING)
+//    @Relationship(type = "HAS_STATUS", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_STATUS", direction = Relationship.Direction.OUTGOING)
     private Status status;
 
     /**

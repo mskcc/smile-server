@@ -1,8 +1,10 @@
 package org.mskcc.smile.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiOperation;
+//import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +25,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/")
-@Api(tags = "request-controller", description = "Request Controller")
+@Tag(name = "request-controller", description = "Request controller")
 @PropertySource("classpath:/maven.properties")
 public class RequestController {
 
@@ -49,12 +53,11 @@ public class RequestController {
      * @return ResponseEntity
      * @throws Exception
      */
-    @ApiOperation(value = "Returns a SmileRequest given a Request ID",
-        nickname = "fetchSmileRequestGET")
+    @Operation(description = "Returns a SmileRequest given a Request ID")
     @RequestMapping(value = "/request/{requestId}",
         method = RequestMethod.GET,
         produces = "application/json")
-    public ResponseEntity<PublishedSmileRequest> fetchSmileRequestGET(@ApiParam(value =
+    public ResponseEntity<PublishedSmileRequest> fetchSmileRequestGET(@Parameter(description =
         "Request ID to retrieve",
         required = true)
         @PathVariable String requestId) throws Exception {
@@ -74,13 +77,12 @@ public class RequestController {
      * @return ResponseEntity
      * @throws Exception
      */
-    @ApiOperation(value = "Returns a list of SmileRequest given a list of Request IDs.",
-        nickname = "fetchSmileRequestListPOST")
+    @Operation(description = "Returns a list of SmileRequest given a list of Request IDs.")
     @RequestMapping(value = "/request",
         method = RequestMethod.POST,
         produces = "application/json")
-    public ResponseEntity<List<PublishedSmileRequest>> fetchSmileRequestPOST(@ApiParam(value =
-        "List of Request IDs", required = true, allowMultiple = true)
+    public ResponseEntity<List<PublishedSmileRequest>> fetchSmileRequestPOST(@Parameter(description =
+        "List of Request IDs", required = true)
         @RequestBody List<String> requestIds) throws Exception {
         List<PublishedSmileRequest> requestList = new ArrayList<>();
         for (String requestId: requestIds) {
@@ -103,13 +105,12 @@ public class RequestController {
      * @return ResponseEntity
      * @throws Exception
      */
-    @ApiOperation(value = "Returns a list of request summaries or list of request IDs imported"
-            + "into the database within the provided date range.",
-            nickname = "fetchRequestListByImportDatePOST")
+    @Operation(description = "Returns a list of request summaries or list of request IDs imported"
+            + "into the database within the provided date range.")
     @RequestMapping(value = "/requestsByImportDate",
             method = RequestMethod.POST,
             produces = "application/json")
-    public ResponseEntity<Object> fetchRequestsByImportDatePOST(@ApiParam(value =
+    public ResponseEntity<Object> fetchRequestsByImportDatePOST(@Parameter(description =
             "JSON with 'startDate' (required) and 'endDate' (optional) to query for.", required = true)
             @RequestBody DateRange dateRange,  ReturnTypeDetails returnType) throws Exception {
         // get request summary for given date range

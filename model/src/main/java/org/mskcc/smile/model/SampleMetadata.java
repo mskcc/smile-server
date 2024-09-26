@@ -22,10 +22,15 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
+//import org.springframework.data.neo4j.core.schema.GeneratedValue;
+//import org.springframework.data.neo4j.core.schema.Id;
+//import org.springframework.data.neo4j.core.schema.Node;
+//import org.springframework.data.neo4j.core.schema.Relationship;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NodeEntity
+//@Node
 public class SampleMetadata implements Serializable, Comparable<SampleMetadata>, Cloneable {
     @Id @GeneratedValue
     @JsonIgnore
@@ -61,7 +66,8 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
     private Map<String, String> cmoSampleIdFields;
     @Convert(MapStringConverter.class)
     private Map<String, String> additionalProperties = new HashMap<>();
-    @Relationship(type = "HAS_STATUS", direction = Relationship.OUTGOING)
+//    @Relationship(type = "HAS_STATUS", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_STATUS", direction = Relationship.Direction.OUTGOING)
     private Status status;
 
     public SampleMetadata() {}

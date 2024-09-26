@@ -24,9 +24,11 @@ public class Cohort implements Serializable {
     @Id @GeneratedValue
     private Long id;
     private String cohortId;
-    @Relationship(type = "HAS_COHORT_COMPLETE", direction = Relationship.OUTGOING)
+//    @Relationship(type = "HAS_COHORT_COMPLETE", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_COHORT_COMPLETE", direction = Relationship.Direction.OUTGOING)
     private List<CohortComplete> cohortCompleteList;
-    @Relationship(type = "HAS_COHORT_SAMPLE", direction = Relationship.OUTGOING)
+//    @Relationship(type = "HAS_COHORT_SAMPLE", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_COHORT_SAMPLE", direction = Relationship.Direction.OUTGOING)
     private List<SmileSample> cohortSamples;
 
     public Cohort() {}
