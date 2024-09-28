@@ -1,19 +1,15 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
@@ -209,10 +205,10 @@ public class RequestServiceImpl implements SmileRequestService {
 
     @Override
     public List<RequestSummary> getRequestsByDate(String startDate, String endDate) throws Exception {
-        if (Strings.isNullOrEmpty(startDate)) {
+        if (StringUtils.isBlank(startDate)) {
             throw new RuntimeException("Start date " + startDate + " cannot be null or empty");
         }
-        if (Strings.isNullOrEmpty(endDate)) {
+        if (StringUtils.isBlank(endDate)) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDateTime now = LocalDateTime.now();
             endDate = dtf.format(now);
