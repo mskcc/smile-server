@@ -9,16 +9,26 @@ import org.mskcc.smile.persistence.neo4j.SmilePatientRepository;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
 import org.mskcc.smile.service.util.RequestDataFactory;
+import org.neo4j.driver.Driver;
+import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+//import org.springframework.transaction.ReactiveTransactionManager;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
+//import org.springframework.data.neo4j.core.ReactiveDatabaseSelectionProvider;
+//import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionManager;
+//import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+//import org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryConfigurationExtension;
+//import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.utility.DockerImageName;
 /**
  *
  * @author ochoaa
@@ -26,6 +36,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @DataNeo4jTest
 @Import(MockDataUtils.class)
+@Transactional(propagation = Propagation.NEVER)
 public class PatientServiceTest {
     @Autowired
     private MockDataUtils mockDataUtils;
@@ -40,7 +51,7 @@ public class PatientServiceTest {
     private SmilePatientService patientService;
 
     @Container
-    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>()
+    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>(DockerImageName.parse("neo4j:5.19.0"))
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
 
     @TestConfiguration
@@ -52,6 +63,18 @@ public class PatientServiceTest {
                     .credentials("neo4j", databaseServer.getAdminPassword())
                     .build();
         }
+            @Bean
+    public SessionFactory sessionFactory() {
+        // with domain entity base package(s)
+        return new SessionFactory(configuration(), "org.mskcc.smile.persistence");
+    }
+    // see: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.4.0-M2-Release-Notes#neo4j-1
+//    @Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
+//    public ReactiveTransactionManager reactiveTransactionManager(
+//            Driver driver,
+//            ReactiveDatabaseSelectionProvider databaseNameProvider) {
+//        return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
+//    }
     }
 
     private final SmileRequestRepository requestRepository;
