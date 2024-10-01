@@ -43,9 +43,9 @@
     <spring.boot.version>3.3.0</spring.boot.version>
     <jackson.version>2.17.2</jackson.version>
     <neo4j-ogm.version>4.0.11</neo4j-ogm.version>
-    <junitjupiter.version>5.3.2</junitjupiter.version>
+    <junitjupiter.version>5.9.1</junitjupiter.version>
     <neo4j-java-driver.version>5.24.0</neo4j-java-driver.version>
-    <testcontainers.version>1.17.0</testcontainers.version>
+    <testcontainers.version>1.20.1</testcontainers.version>
     <!-- smile messaging and shared entities dependency versions -->
     <smile_messaging_java.group>com.github.mskcc</smile_messaging_java.group>
     <smile_messaging_java.version>java-v21-beta-2</smile_messaging_java.version>
@@ -139,6 +139,12 @@
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
     </dependency>
+    
+    <!-- maybe -->
+<!--    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-neo4j</artifactId>
+    </dependency>-->
   </dependencies>
 
   <build>
