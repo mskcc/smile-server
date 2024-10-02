@@ -60,6 +60,7 @@ public class TempoServiceImpl implements TempoService {
         if (tempo == null) {
             return null;
         }
+        tempo.setSmileSample(smileSample);
         return getDetailedTempoData(tempo);
     }
 
@@ -69,7 +70,7 @@ public class TempoServiceImpl implements TempoService {
         if (tempo == null) {
             return null;
         }
-        return getDetailedTempoData(tempo);
+        return getDetailedTempoData(tempo, primaryId);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class TempoServiceImpl implements TempoService {
             initAndSaveDefaultTempoData(primaryId);
         }
         Tempo tempo = tempoRepository.mergeBamCompleteEventBySamplePrimaryId(primaryId, bamCompleteEvent);
-        return getDetailedTempoData(tempo);
+        return getDetailedTempoData(tempo, primaryId);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class TempoServiceImpl implements TempoService {
             initAndSaveDefaultTempoData(primaryId);
         }
         Tempo tempo = tempoRepository.mergeQcCompleteEventBySamplePrimaryId(primaryId, qcCompleteEvent);
-        return getDetailedTempoData(tempo);
+        return getDetailedTempoData(tempo, primaryId);
     }
 
     @Override
@@ -102,7 +103,7 @@ public class TempoServiceImpl implements TempoService {
             initAndSaveDefaultTempoData(primaryId);
         }
         Tempo tempo = tempoRepository.mergeMafCompleteEventBySamplePrimaryId(primaryId, mafCompleteEvent);
-        return getDetailedTempoData(tempo);
+        return getDetailedTempoData(tempo, primaryId);
     }
 
     @Override
@@ -124,7 +125,19 @@ public class TempoServiceImpl implements TempoService {
         return tempoRepository.save(tempo);
     }
 
-    private Tempo getDetailedTempoData(Tempo tempo) {
+    private Tempo getDetailedTempoData(Tempo tempo, String inputSampleId) throws Exception {
+        if (tempo == null || tempo.getSmileTempoId() == null) {
+            return null;
+        }
+        SmileSample sample = sampleService.getDetailedSampleByInputId(inputSampleId);
+        tempo.setSmileSample(sample);
+        tempo.setBamCompleteEvents(tempoRepository.findBamCompleteEventsByTempoId(tempo.getSmileTempoId()));
+        tempo.setQcCompleteEvents(tempoRepository.findQcCompleteEventsByTempoId(tempo.getSmileTempoId()));
+        tempo.setMafCompleteEvents(tempoRepository.findMafCompleteEventsByTempoId(tempo.getSmileTempoId()));
+        return tempo;
+    }
+
+    private Tempo getDetailedTempoData(Tempo tempo) throws Exception {
         if (tempo == null || tempo.getSmileTempoId() == null) {
             return null;
         }

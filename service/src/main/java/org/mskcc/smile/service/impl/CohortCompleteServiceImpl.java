@@ -48,7 +48,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         LOG.info("Adding cohort-sample edges in database for " + sampleIds.size() + " samples...");
         for (String sampleId : sampleIds) {
             // confirm sample exists by primary id and then link to cohort
-            SmileSample sample = sampleService.getSampleByInputId(sampleId);
+            SmileSample sample = sampleService.getDetailedSampleByInputId(sampleId);
             if (sample != null) {
                 String primaryId = sample.getPrimarySampleAlias();
                 // init default tempo data for sample if sample does not already have tempo data
@@ -113,9 +113,6 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         }
         // get cohort samples
         cohort.setCohortSamples(sampleService.getSamplesByCohortId(cohort.getCohortId()));
-        // get cohort complete events
-        cohort.setCohortCompleteList(
-                cohortCompleteRepository.findCohortCompleteEventsByCohortId(cohort.getCohortId()));
         return cohort;
     }
 }

@@ -25,7 +25,7 @@ public class Status implements Serializable {
 
     public Status() {
         this.validationStatus = Boolean.TRUE;
-        this.validationReport = "";
+        this.validationReport = "{}";
     }
 
     public Status(Boolean validationStatus,

@@ -35,12 +35,12 @@ public class SmileRequest implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID smileRequestId;
-    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.Direction.OUTGOING)
     private List<SmileSample> smileSampleList;
-    @Relationship(type = "HAS_REQUEST", direction = Relationship.INCOMING)
+    @Relationship(type = "HAS_REQUEST", direction = Relationship.Direction.INCOMING)
     private SmileProject smileProject;
     @JsonIgnore
-    @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_METADATA", direction = Relationship.Direction.OUTGOING)
     private List<RequestMetadata> requestMetadataList;
     @JsonIgnore
     private String namespace;
