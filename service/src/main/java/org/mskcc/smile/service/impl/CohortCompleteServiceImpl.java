@@ -113,9 +113,6 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         }
         // get cohort samples
         cohort.setCohortSamples(sampleService.getSamplesByCohortId(cohort.getCohortId()));
-        // get cohort complete events
-        cohort.setCohortCompleteList(
-                cohortCompleteRepository.findCohortCompleteEventsByCohortId(cohort.getCohortId()));
         return cohort;
     }
 }

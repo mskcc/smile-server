@@ -10,7 +10,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
  *
  * @author ochoaa
  */
-@NodeEntity
+@NodeEntity(label = "QcComplete")
 public class QcComplete implements Serializable {
     @Id @GeneratedValue
     private Long id;

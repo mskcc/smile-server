@@ -50,22 +50,22 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
     QcComplete findLatestQcCompleteEventByTempoId(@Param("smileTempoId") UUID smileTempoId);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
-            + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
-            + "MERGE (t)-[:HAS_EVENT]->(bc: BamComplete {date: $bcEvent.date, "
+            + "MERGE (s)-[ht:HAS_TEMPO]->(t: Tempo) WITH s,t "
+            + "MERGE (t)-[he:HAS_EVENT]->(bc: BamComplete {date: $bcEvent.date, "
             + "status: $bcEvent.status}) WITH s,t,bc RETURN t")
     Tempo mergeBamCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
             @Param("bcEvent") BamComplete bcEvent);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
-            + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
-            + "MERGE (t)-[:HAS_EVENT]->(qc: QcComplete {date: $qcEvent.date, result: $qcEvent.result, "
+            + "MERGE (s)-[ht:HAS_TEMPO]->(t: Tempo) WITH s,t "
+            + "MERGE (t)-[he:HAS_EVENT]->(qc: QcComplete {date: $qcEvent.date, result: $qcEvent.result, "
             + "reason: $qcEvent.reason, status: $qcEvent.status}) WITH s,t,qc RETURN t")
     Tempo mergeQcCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,
             @Param("qcEvent") QcComplete qcEvent);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
-            + "MERGE (s)-[:HAS_TEMPO]->(t: Tempo) WITH s,t "
-            + "MERGE (t)-[:HAS_EVENT]->(mc: MafComplete {date: $mcEvent.date, "
+            + "MERGE (s)-[ht:HAS_TEMPO]->(t: Tempo) WITH s,t "
+            + "MERGE (t)-[he:HAS_EVENT]->(mc: MafComplete {date: $mcEvent.date, "
             + "normalPrimaryId: $mcEvent.normalPrimaryId, status: $mcEvent.status}) "
             + "WITH s,t,mc RETURN t")
     Tempo mergeMafCompleteEventBySamplePrimaryId(@Param("primaryId") String primaryId,

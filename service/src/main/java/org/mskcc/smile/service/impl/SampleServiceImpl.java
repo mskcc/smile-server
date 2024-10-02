@@ -1,13 +1,12 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
@@ -17,7 +16,6 @@ import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.internal.CrdbMappingModel;
-import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.web.PublishedSmileSample;
 import org.mskcc.smile.model.web.SmileSampleIdMapping;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
@@ -28,7 +26,6 @@ import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +69,7 @@ public class SampleServiceImpl implements SmileSampleService {
             toReturn = sample;
         } else {
             // populate existing sample details and check if there are actual updates to persist
-            getDetailedSmileSample(existingSample);
+            existingSample = getSmileSample(existingSample.getSmileSampleId());
             SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
             SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
 
@@ -311,11 +308,13 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public SmileSample getSmileSample(UUID smileSampleId) throws Exception {
-        SmileSample sample = sampleRepository.findSampleById(smileSampleId);
+        SmileSample sample = sampleRepository.findSampleBySampleSmileId(smileSampleId);
         if (sample == null) {
             return null;
         }
-        return getDetailedSmileSample(sample);
+        SmilePatient patient = patientService.getPatientBySampleSmileId(smileSampleId);
+        sample.setPatient(patient);
+        return sample;
     }
 
     @Override
@@ -330,7 +329,7 @@ public class SampleServiceImpl implements SmileSampleService {
         if (sample == null) {
             return null;
         }
-        return getDetailedSmileSample(sample);
+        return getSmileSample(sample.getSmileSampleId());
     }
 
     @Override
@@ -344,8 +343,7 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public List<SampleMetadata> getResearchSampleMetadataHistoryByIgoId(String igoId) throws Exception {
-        return getSampleMetadataWithStatus(
-                sampleRepository.findSampleMetadataHistoryByNamespaceValue("igoId", igoId));
+        return sampleRepository.findSampleMetadataHistoryByNamespaceValue("igoId", igoId);
     }
 
     @Override
@@ -399,45 +397,16 @@ public class SampleServiceImpl implements SmileSampleService {
         List<SmileSample> samples = new ArrayList<>();
         List<SmileSample> samplesFound = sampleRepository.findAllSamplesByCmoPatientId(cmoPatientId);
         for (SmileSample sample: samplesFound) {
-            samples.add(getDetailedSmileSample(sample));
+            samples.add(getSmileSample(sample.getSmileSampleId()));
         }
         return samples;
-    }
-
-    @Override
-    public SmileSample getDetailedSmileSample(SmileSample sample) throws Exception {
-        sample.setSampleMetadataList(getSampleMetadataWithStatus(
-                sampleRepository.findAllSampleMetadataListBySampleId(
-                sample.getSmileSampleId())));
-        String cmoPatientId = sample.getLatestSampleMetadata().getCmoPatientId();
-        SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
-        sample.setPatient(patient);
-        sample.setSampleAliases(sampleRepository.findAllSampleAliases(sample.getSmileSampleId()));
-        // not every sample is expected to have tempo data
-        try {
-            Tempo tempo = tempoService.getTempoDataBySampleId(sample);
-            sample.setTempo(tempo);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            if (e.getActualSize() < 0) {
-                LOG.warn("There is no TEMPO data for sample: " + sample.getPrimarySampleAlias()
-                        + " - TEMPO data will not be set for sample.");
-            } else {
-                StringBuilder b = new StringBuilder();
-                b.append("Error fetching TEMPO data for sample: ")
-                        .append(sample.getPrimarySampleAlias())
-                        .append(" - actual size '").append(e.getActualSize())
-                        .append("' does not match expected size '").append(e.getExpectedSize()).append("'");
-                LOG.error(b.toString(), e);
-            }
-        }
-        return sample;
     }
 
     @Override
     public SmileSample getClinicalSampleByDmpId(String dmpId) throws Exception {
         SmileSample smileSample = sampleRepository.findSampleByPrimaryId(dmpId);
         if (smileSample != null) {
-            return getDetailedSmileSample(smileSample);
+            return getSmileSample(smileSample.getSmileSampleId());
         }
         return smileSample;
     }
@@ -448,7 +417,7 @@ public class SampleServiceImpl implements SmileSampleService {
         List<SmileSample> samples = new ArrayList<>();
         for (SmileSample sample: sampleRepository.findAllSamplesByCategoryAndCmoPatientId(cmoPatientId,
                 sampleCategory)) {
-            samples.add(getDetailedSmileSample(sample));
+            samples.add(getSmileSample(sample.getSmileSampleId()));
         }
         return samples;
     }
@@ -461,7 +430,7 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public List<SmileSampleIdMapping> getSamplesByDate(String importDate) {
-        if (Strings.isNullOrEmpty(importDate)) {
+        if (StringUtils.isBlank(importDate)) {
             throw new RuntimeException("Start date " + importDate + " cannot be null or empty");
         }
         // return latest sample metadata for each sample uuid returned
@@ -472,7 +441,6 @@ public class SampleServiceImpl implements SmileSampleService {
         List<SmileSampleIdMapping> sampleIdsList = new ArrayList<>();
         for (UUID smileSampleId : sampleIds) {
             SampleMetadata sm = sampleRepository.findLatestSampleMetadataBySmileId(smileSampleId);
-            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getId()));
             sampleIdsList.add(new SmileSampleIdMapping(smileSampleId, sm));
         }
         return sampleIdsList;
@@ -482,7 +450,7 @@ public class SampleServiceImpl implements SmileSampleService {
     public SmileSample getSampleByInputId(String inputId) throws Exception {
         SmileSample sample = sampleRepository.findSampleByInputId(inputId);
         if (sample != null) {
-            return getDetailedSmileSample(sample);
+            return getSmileSample(sample.getSmileSampleId());
         }
         return null;
     }
@@ -503,15 +471,8 @@ public class SampleServiceImpl implements SmileSampleService {
 
         List<SmileSample> detailedSamples = new ArrayList<>();
         for (SmileSample s: samples) {
-            detailedSamples.add(getDetailedSmileSample(s));
+            detailedSamples.add(getSmileSample(s.getSmileSampleId()));
         }
         return detailedSamples;
-    }
-
-    private List<SampleMetadata> getSampleMetadataWithStatus(List<SampleMetadata> smList) {
-        for (SampleMetadata sm : smList) {
-            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getId()));
-        }
-        return smList;
     }
 }

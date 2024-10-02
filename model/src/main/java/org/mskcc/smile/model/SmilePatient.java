@@ -23,9 +23,9 @@ public class SmilePatient implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID smilePatientId;
-    @Relationship(type = "HAS_SAMPLE", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_SAMPLE", direction = Relationship.Direction.OUTGOING)
     private List<SmileSample> smileSampleList;
-    @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
+    @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.INCOMING)
     private List<PatientAlias>  patientAliases;
 
     public SmilePatient() {}

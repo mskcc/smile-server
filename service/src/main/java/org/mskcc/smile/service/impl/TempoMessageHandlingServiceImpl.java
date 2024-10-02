@@ -137,6 +137,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of BAM complete event", e);
                 }
+                bamCompleteHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -183,6 +184,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of BAM complete event", e);
                 }
+                qcCompleteHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -240,6 +242,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of MAF complete event", e);
                 }
+                mafCompleteHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -292,6 +295,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of Cohort complete event", e);
                 }
+                cohortCompleteHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -338,6 +342,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of sample billing data", e);
                 }
+                sampleBillingHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -501,7 +506,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + bamCompleteJson + "\n\n");
                     Map<String, String> bamCompleteMap =
                             (Map<String, String>) NatsMsgUtil.convertObjectFromString(
                                     bamCompleteJson, new TypeReference<Map<String, String>>() {});
@@ -535,7 +539,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + qcCompleteJson + "\n\n");
                     Map<String, String> qcCompleteMap =
                             (Map<String, String>) NatsMsgUtil.convertObjectFromString(
                                     qcCompleteJson, new TypeReference<Map<String, String>>() {});
@@ -570,7 +573,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + mafCompleteJson + "\n\n");
                     Map<String, String> mafCompleteMap =
                             (Map<String, String>) NatsMsgUtil.convertObjectFromString(
                                     mafCompleteJson, new TypeReference<Map<String, String>>() {});
@@ -607,7 +609,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + cohortCompleteJson + "\n\n");
                     CohortCompleteJson cohortCompleteData =
                             (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
                                     cohortCompleteJson, new TypeReference<CohortCompleteJson>() {});
@@ -633,7 +634,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + billingJson + "\n\n");
                     SampleBillingJson billing =
                             (SampleBillingJson) NatsMsgUtil.convertObjectFromString(
                                     billingJson, new TypeReference<SampleBillingJson>() {});

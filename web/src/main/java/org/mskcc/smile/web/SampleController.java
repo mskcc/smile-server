@@ -1,8 +1,9 @@
 package org.mskcc.smile.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/")
-@Api(tags = "sample-controller", description = "Sample Controller")
+@Tag(name = "sample-controller", description = "Sample Controller")
 @PropertySource("classpath:/maven.properties")
 public class SampleController {
     @Value("${smile.schema_version}")
@@ -54,13 +55,13 @@ public class SampleController {
      * @return ResponseEntity
      * @throws Exception
      */
-    @ApiOperation(value = "Fetch SampleMetadata list by CMO Patient ID",
-        nickname = "fetchSampleMetadataListByCmoPatientIdGET")
+    @Operation(description = "Fetch SampleMetadata list by CMO Patient ID")
     @RequestMapping(value = "/samples/{cmoPatientId}",
         method = RequestMethod.GET,
         produces = "application/json")
     public ResponseEntity<List<PublishedSmileSample>> fetchSampleMetadataListByCmoPatientIdGET(
-            @ApiParam(value = "CMO Patient ID", required = true)
+            @Parameter(in = ParameterIn.PATH, description = "CMO Patient ID",
+                    name = "cmoPatientId", required = true)
             @PathVariable String cmoPatientId) throws Exception {
         List<PublishedSmileSample> samples = sampleService
                 .getPublishedSmileSamplesByCmoPatientId(cmoPatientId);
@@ -78,13 +79,13 @@ public class SampleController {
      * @return ResponseEntity
      * @throws Exception
      */
-    @ApiOperation(value = "Fetch SmileSampleIdMapping list by inputDate",
-        nickname = "fetchSmileSampleIdMappingListByInputDateGET")
+    @Operation(description = "Fetch SmileSampleIdMapping list by inputDate")
     @RequestMapping(value = "/samplesByDate/{importDate}",
         method = RequestMethod.GET,
         produces = "application/json")
     public ResponseEntity<List<SmileSampleIdMapping>> fetchSampleIdMappingsByInputDateGET(
-            @ApiParam(value = "Import date to search from", required = true)
+            @Parameter(in = ParameterIn.PATH, description = "Import date to search from",
+                    name = "importDate", required = true)
             @PathVariable String importDate) throws Exception {
         // validate input date string before submitting db query
         try {
@@ -109,13 +110,13 @@ public class SampleController {
      * @return ResponseEntity
      * @throws Exception
      */
-    @ApiOperation(value = "Fetch SmileSample by inputId",
-            nickname = "fetchSmileSampleByInputIdGET")
+    @Operation(description = "Fetch SmileSample by inputId")
     @RequestMapping(value = "/sampleById/{inputId}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<PublishedSmileSample> fetchSmileSampleByInputIdGET(
-            @ApiParam(value = "input id to search with", required = true)
+            @Parameter(in = ParameterIn.PATH, description = "input id to search with",
+                    name = "inputId", required = true)
             @PathVariable String inputId) throws Exception {
         SmileSample smileSample = sampleService.getSampleByInputId(inputId);
         if (smileSample == null) {
