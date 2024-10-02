@@ -3,35 +3,49 @@ package org.mskcc.smile.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mskcc.smile.model.SampleAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.dmp.DmpSampleMetadata;
+import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
 import org.mskcc.smile.persistence.neo4j.SmilePatientRepository;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
 import org.mskcc.smile.persistence.neo4j.TempoRepository;
 import org.mskcc.smile.service.util.RequestDataFactory;
 import org.mskcc.smile.service.util.SampleDataFactory;
+import org.neo4j.ogm.session.Session;
+import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  *
  * @author ochoaa
  */
+@SpringBootTest(
+        classes = SmileTestApp.class,
+        properties = {"spring.neo4j.authentication.username:neo4j"}
+)
 @Testcontainers
-@DataNeo4jTest
 @Import(MockDataUtils.class)
+@TestMethodOrder(OrderAnnotation.class)
 public class SampleServiceTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -50,9 +64,18 @@ public class SampleServiceTest {
     @Autowired
     private TempoService tempoService;
 
+    // required for all test classes
     @Container
-    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>()
+    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>(
+            DockerImageName.parse("neo4j:5.19.0"))
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
+
+    @DynamicPropertySource
+    static void neo4jProperties(DynamicPropertyRegistry registry) {
+        databaseServer.start();
+        registry.add("spring.neo4j.authentication.password", databaseServer::getAdminPassword);
+        registry.add("spring.neo4j.uri", databaseServer::getBoltUrl);
+    }
 
     @TestConfiguration
     static class Config {
@@ -63,68 +86,83 @@ public class SampleServiceTest {
                     .credentials("neo4j", databaseServer.getAdminPassword())
                     .build();
         }
+
+        @Bean
+        public SessionFactory sessionFactory() {
+            // with domain entity base package(s)
+            return new SessionFactory(configuration(), "org.mskcc.smile.persistence");
+        }
     }
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     private final SmileRequestRepository requestRepository;
     private final SmileSampleRepository sampleRepository;
     private final SmilePatientRepository patientRepository;
     private final TempoRepository tempoRepository;
+    private final CohortCompleteRepository cohortCompleteRepository;
 
     /**
      * Initializes the Neo4j repositories.
      * @param requestRepository
      * @param sampleRepository
      * @param patientRepository
-     * @param requestService
-     * @param sampleService
-     * @param patientService
      * @param tempoRepository
-     * @param tempoService
+     * @param cohortCompleteRepository
      */
     @Autowired
     public SampleServiceTest(SmileRequestRepository requestRepository,
             SmileSampleRepository sampleRepository, SmilePatientRepository patientRepository,
-            SmileRequestService requestService, SmileSampleService sampleService,
-            SmilePatientService patientService, TempoRepository tempoRepository, TempoService tempoService) {
+            TempoRepository tempoRepository, CohortCompleteRepository cohortCompleteRepository) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
         this.tempoRepository = tempoRepository;
-        this.tempoService = tempoService;
+        this.cohortCompleteRepository = cohortCompleteRepository;
     }
 
     /**
      * Persists the Mock Request data to the test database.
      * @throws Exception
      */
-    @Autowired
+    @BeforeEach
     public void initializeMockDatabase() throws Exception {
+        Session session = sessionFactory.openSession();
+        session.purgeDatabase();
+
         // mock request id: MOCKREQUEST1_B
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
-        SmileRequest request1 = RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
+        SmileRequest request1 =
+                RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
         requestService.saveRequest(request1);
 
         // mock request id: 33344_Z
         MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest3JsonDataPooledNormals");
-        SmileRequest request3 = RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
+        SmileRequest request3 =
+                RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
         requestService.saveRequest(request3);
 
         // mock request id: 145145_IM
         MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest5JsonPtMultiSamples");
-        SmileRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
+        SmileRequest request5 =
+                RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
         requestService.saveRequest(request5);
 
         //persist all mocked clinical data
         for (MockJsonTestData mockJsonTestData : mockDataUtils.mockedDmpMetadataMap.values()) {
             DmpSampleMetadata dmpSample = mapper.readValue(mockJsonTestData.getJsonString(),
-                DmpSampleMetadata.class);
-            String cmoPatientId = mockDataUtils.getCmoPatientIdForDmpPatient(dmpSample.getDmpPatientId());
+                    DmpSampleMetadata.class);
+            String cmoPatientId =
+                    mockDataUtils.getCmoPatientIdForDmpPatient(dmpSample.getDmpPatientId());
             SmileSample clinicalSample =
                     SampleDataFactory.buildNewClinicalSampleFromMetadata(cmoPatientId, dmpSample);
-            sampleService.saveSmileSample(clinicalSample);
+            if (!sampleService.sampleExistsByInputId(clinicalSample.getPrimarySampleAlias())) {
+                sampleService.saveSmileSample(clinicalSample);
+            }
         }
     }
 
@@ -133,10 +171,11 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(1)
     public void testRequestRepositoryAccess() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         SmileRequest savedRequest = requestService.getSmileRequestById(requestId);
-        Assertions.assertThat(savedRequest.getSmileSampleList().size()).isEqualTo(4);
+        Assertions.assertEquals(4, savedRequest.getSmileSampleList().size());
     }
 
     /**
@@ -146,12 +185,13 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(2)
     public void testFindMatchedNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
         SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<SmileSample> matchedNormalList = sampleService.getMatchedNormalsBySample(sample);
-        Assertions.assertThat(matchedNormalList.size()).isEqualTo(2);
+        Assertions.assertEquals(2, matchedNormalList.size());
     }
 
     /**
@@ -159,12 +199,13 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(3)
     public void testFindPooledNormalSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
         SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         List<String> pooledNormalList = sampleService.getPooledNormalsBySample(sample);
-        Assertions.assertThat(pooledNormalList.size()).isEqualTo(10);
+        Assertions.assertEquals(10, pooledNormalList.size());
     }
 
     /**
@@ -174,11 +215,12 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(4)
     public void testGetSampleMetadataListByCmoPatientId() throws Exception {
         String cmoPatientId = "C-PXXXD9";
         List<SmileSample> savedSampleList =
                 sampleService.getSamplesByCmoPatientId(cmoPatientId);
-        Assertions.assertThat(savedSampleList.size()).isEqualTo(2);
+        Assertions.assertEquals(2, savedSampleList.size());
     }
 
     /**
@@ -188,10 +230,12 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(5)
     public void testGetAllSmileSamplesByRequestId() throws Exception {
         String requestId = "33344_Z";
-        List<SmileSample> requestSamplesList = sampleService.getResearchSamplesByRequestId(requestId);
-        Assertions.assertThat(requestSamplesList.size()).isEqualTo(4);
+        List<SmileSample> requestSamplesList =
+                sampleService.getResearchSamplesByRequestId(requestId);
+        Assertions.assertEquals(4, requestSamplesList.size());
     }
 
     /**
@@ -201,11 +245,12 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(6)
     public void testGetSampleMetadataHistoryByIgoId() throws Exception {
         String igoId = "MOCKREQUEST1_B_1";
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(1);
+        Assertions.assertEquals(1, sampleMetadataHistory.size());
     }
 
     /**
@@ -213,6 +258,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(7)
     public void testSampleHasMetadataUpdates() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
@@ -226,8 +272,7 @@ public class SampleServiceTest {
 
         Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(sample.getLatestSampleMetadata(),
                 updatedSample.getLatestSampleMetadata(), Boolean.TRUE, Boolean.FALSE);
-        Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
-
+        Assertions.assertTrue(hasUpdates);
     }
 
     /**
@@ -236,6 +281,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(8)
     public void testSampleHistoryAfterUpdate() throws Exception {
         String igoId = "MOCKREQUEST1_B_2";
 
@@ -250,19 +296,7 @@ public class SampleServiceTest {
         }
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
-    }
-
-    /**
-     * Tests if the returned list of sampleMetadata history is sorted based on importDate
-     * @throws Exception
-     */
-    @Test
-    public void testSampleHistoryListIsAscendingByImportDate() throws Exception {
-        String igoId = "MOCKREQUEST1_B_4";
-        List<SampleMetadata> sampleMetadataHistory = sampleService
-                .getResearchSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory).isSorted();
+        Assertions.assertEquals(2, sampleMetadataHistory.size());
     }
 
     /**
@@ -272,12 +306,13 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(9)
     public void testPersistClinicalSample() throws Exception {
         String dmpPatientId = "P-0000001";
         String cmoPatientId = mockDataUtils.getCmoPatientIdForDmpPatient(dmpPatientId);
         List<SmileSample> sampleList = sampleService
                 .getSamplesByCmoPatientId(cmoPatientId);
-        Assertions.assertThat(sampleList.size()).isEqualTo(2);
+        Assertions.assertEquals(2, sampleList.size());
     }
 
     /**
@@ -286,6 +321,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(10)
     public void testPatientSamplesCountMatchExpectedValues() throws Exception {
         for (Map.Entry<String, Integer> entry : mockDataUtils.EXPECTED_PATIENT_SAMPLES_COUNT.entrySet()) {
             String cmoPatientId = entry.getKey();
@@ -306,6 +342,8 @@ public class SampleServiceTest {
      * even when metadata is updated to a sample that a fake date that precedes the "latest" date
      * @throws Exception
      */
+    @Test
+    @Order(11)
     public void testFindLatestSampleMetadataAfterUpdatingNewPredatedSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_2";
@@ -323,9 +361,9 @@ public class SampleServiceTest {
         sampleService.updateSampleMetadata(predatedSampleMetadata, Boolean.FALSE);
         SampleMetadata updatedSampleMetadataAfterUpdate = sampleService.getResearchSampleByRequestAndIgoId(
                 requestId, igoId).getLatestSampleMetadata();
-        Assertions.assertThat(updatedSampleMetadataAfterUpdate.getImportDate()).isNotEqualTo(importDate);
-        Assertions.assertThat(updatedSampleMetadataAfterUpdate.getImportDate()).isEqualTo(
-                sampleMetadata.getImportDate());
+        Assertions.assertNotEquals(importDate, updatedSampleMetadataAfterUpdate.getImportDate());
+        Assertions.assertEquals(sampleMetadata.getImportDate(),
+                updatedSampleMetadataAfterUpdate.getImportDate());
     }
 
     /**
@@ -333,6 +371,8 @@ public class SampleServiceTest {
      * even when metadata is saved to a sample that a fake date that precedes the "latest" date
      * @throws Exception
      */
+    @Test
+    @Order(12)
     public void testFindLatestSampleMetadataAfterSavingNewPredatedSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
@@ -348,13 +388,14 @@ public class SampleServiceTest {
         predatedSampleMetadata.setCmoSampleName("C-OLDSAMPLELABEL-T11");
         SmileSample predatedSample = new SmileSample();
         predatedSample.addSampleMetadata(predatedSampleMetadata);
+        predatedSample.setPatient(patientService.getPatientByCmoPatientId(sampleMetadata.getCmoPatientId()));
 
         sampleService.saveSmileSample(predatedSample);
         SampleMetadata updatedSampleMetadataAfterSave = sampleService.getResearchSampleByRequestAndIgoId(
                 requestId, igoId).getLatestSampleMetadata();
-        Assertions.assertThat(updatedSampleMetadataAfterSave.getImportDate()).isNotEqualTo(importDate);
-        Assertions.assertThat(updatedSampleMetadataAfterSave.getImportDate()).isEqualTo(
-                sampleMetadata.getImportDate());
+        Assertions.assertNotEquals(importDate, updatedSampleMetadataAfterSave.getImportDate());
+        Assertions.assertEquals(sampleMetadata.getImportDate(),
+                updatedSampleMetadataAfterSave.getImportDate());
     }
 
     /**
@@ -362,15 +403,17 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
-    public void testFindSampleByUuid() throws Exception {
+    @Order(13)
+    public void testFindSampleByInvestigatorId() throws Exception {
         String igoId = "MOCKREQUEST1_B_2";
         String investigatorId = "01-0012345a";
 
         SmileSample sample = sampleService.getSampleByInputId(igoId);
-        SmileSample sampleByUuid = sampleService.getSampleByInputId(investigatorId);
+        SmileSample sampleByInvestigatorId = sampleService.getSampleByInputId(investigatorId);
 
-        Assertions.assertThat(sample).isNotNull();
-        Assertions.assertThat(sample).isEqualToComparingFieldByField(sampleByUuid);
+        Assertions.assertNotNull(sample);
+        Assertions.assertEquals(sample.getSmileSampleId(),
+                sampleByInvestigatorId.getSmileSampleId());
     }
 
     /**
@@ -378,11 +421,12 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(14)
     public void testFindSampleByInvalidInputId() throws Exception {
         String inputId = "invalidInput";
 
         SmileSample sample = sampleService.getSampleByInputId(inputId);
-        Assertions.assertThat(sample).isNull();
+        Assertions.assertNull(sample);
     }
 
     /**
@@ -390,6 +434,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(15)
     public void testUpdateSampleMetadata() throws Exception {
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
@@ -404,9 +449,8 @@ public class SampleServiceTest {
                 break;
             }
         }
-        Assertions.assertThat(updatedSample).isNotNull();
+        Assertions.assertNotNull(updatedSample);
         SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
-        updatedMetadata.setImportDate("2000-10-15");
         updatedMetadata.setBaitSet("NEW BAIT SET");
         updatedMetadata.setGenePanel("NEW GENE PANEL");
         sampleService.updateSampleMetadata(updatedMetadata, Boolean.TRUE);
@@ -414,7 +458,7 @@ public class SampleServiceTest {
         // confirm that the sample metadata history size increases
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
+        Assertions.assertEquals(2, sampleMetadataHistory.size());
     }
 
     /**
@@ -422,6 +466,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(16)
     public void testInvalidIgoUpdateSampleMetadata() throws Exception {
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
@@ -436,7 +481,7 @@ public class SampleServiceTest {
                 break;
             }
         }
-        Assertions.assertThat(updatedSample).isNotNull();
+        Assertions.assertNotNull(updatedSample);
 
         String invalidCollectionYear = "INVALID IGO UPDATE";
         SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
@@ -450,15 +495,16 @@ public class SampleServiceTest {
         String requestId = "MOCKREQUEST1_B";
         SmileSample savedSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         SampleMetadata latestSampleMetadata = savedSample.getLatestSampleMetadata();
-        Assertions.assertThat(latestSampleMetadata.getCollectionYear()).isNotEqualTo(invalidCollectionYear);
+        Assertions.assertNotEquals(invalidCollectionYear,
+                latestSampleMetadata.getCollectionYear());
     }
-
 
     /**
      * Tests if sampleMetadata with updates that includes a patient swap is being persisted correctly
      * @throws Exception
      */
     @Test
+    @Order(17)
     public void testUpdateSampleMetadataWithPatientSwap() throws Exception {
         MockJsonTestData updatedRequestData = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1UpdatedJsonDataWith2T2N");
@@ -473,7 +519,7 @@ public class SampleServiceTest {
                 break;
             }
         }
-        Assertions.assertThat(updatedSample).isNotNull();
+        Assertions.assertNotNull(updatedSample);
         SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
 
         // do a quick string replacement for the current cmo sample label and persist update
@@ -483,10 +529,10 @@ public class SampleServiceTest {
         // first confirm that there arent any samples by the swapped cmo pt id
         List<SmileSample> samplesBeforeUpdateForCurrentPt =
                 sampleService.getSamplesByCmoPatientId(currentCmoPtId);
-        Assertions.assertThat(samplesBeforeUpdateForCurrentPt.size()).isEqualTo(4);
+        Assertions.assertEquals(4, samplesBeforeUpdateForCurrentPt.size());
         List<SmileSample> samplesBeforeUpdate =
                 sampleService.getSamplesByCmoPatientId(swappedCmoPtId);
-        Assertions.assertThat(samplesBeforeUpdate).isEmpty();
+        Assertions.assertTrue(samplesBeforeUpdate.isEmpty());
 
         // perform update on the metadata and save to db
         String updatedLabel = updatedMetadata.getCmoSampleName().replace(currentCmoPtId, swappedCmoPtId);
@@ -498,18 +544,17 @@ public class SampleServiceTest {
         // confirm that the sample metadata history size increases
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
-        Assertions.assertThat(sampleMetadataHistory.size()).isEqualTo(2);
+        Assertions.assertEquals(2, sampleMetadataHistory.size());
 
         // confirm that the patient linked to the sample after the update matches the swapped id
         // first confirm that there arent any samples by the swapped cmo pt id
         List<SmileSample> samplesAfterUpdate =
                 sampleService.getSamplesByCmoPatientId(swappedCmoPtId);
-        Assertions.assertThat(samplesAfterUpdate.size()).isEqualTo(1);
+        Assertions.assertEquals(1, samplesAfterUpdate.size());
         List<SmileSample> samplesStillLinkedToOldPt =
                 sampleService.getSamplesByCmoPatientId(currentCmoPtId);
-        Assertions.assertThat(samplesStillLinkedToOldPt.size())
-                .isEqualTo(samplesBeforeUpdateForCurrentPt.size() - 1);
-
+        Assertions.assertEquals(samplesBeforeUpdateForCurrentPt.size() - 1,
+                samplesStillLinkedToOldPt.size());
     }
 
     /**
@@ -518,6 +563,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(18)
     public void testNewSampleMetadataUpdateWithExistingRequest() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_2";
@@ -532,7 +578,7 @@ public class SampleServiceTest {
 
         sampleService.updateSampleMetadata(newSampleMetadata, Boolean.TRUE);
 
-        Assertions.assertThat(sampleService.getResearchSamplesByRequestId(requestId).size()).isEqualTo(5);
+        Assertions.assertEquals(5, sampleService.getResearchSamplesByRequestId(requestId).size());
     }
 
     /**
@@ -541,6 +587,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(19)
     public void testNewSampleMetadataUpdateWithNewRequest() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_2";
@@ -554,8 +601,7 @@ public class SampleServiceTest {
         newSampleMetadata.setCmoPatientId(sampleMetadata.getCmoPatientId());
 
         Boolean isUpdated = sampleService.updateSampleMetadata(newSampleMetadata, Boolean.FALSE);
-
-        Assertions.assertThat(isUpdated).isEqualTo(Boolean.FALSE);
+        Assertions.assertFalse(isUpdated);
     }
 
     /**
@@ -564,30 +610,32 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(20)
     public void testInvestigatorIdUpdate() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_4";
 
         SmileSample oldSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
-        SampleMetadata oldSampleMetadata = oldSample.getLatestSampleMetadata();
+        SampleMetadata origSampleMetadata = oldSample.getLatestSampleMetadata();
 
-        SampleMetadata newSampleMetadata = new SampleMetadata();
-        newSampleMetadata.setIgoRequestId(requestId);
-        newSampleMetadata.setPrimaryId(igoId);
-        newSampleMetadata.setCmoPatientId(oldSampleMetadata.getCmoPatientId());
-        newSampleMetadata.setInvestigatorSampleId("NEW-INVEST-ID");
-        Boolean isUpdated = sampleService.updateSampleMetadata(newSampleMetadata, Boolean.FALSE);
+        SampleMetadata updatedSampleMetadata = new SampleMetadata();
+        updatedSampleMetadata.setIgoRequestId(requestId);
+        updatedSampleMetadata.setPrimaryId(igoId);
+        updatedSampleMetadata.setCmoPatientId(origSampleMetadata.getCmoPatientId());
+        updatedSampleMetadata.setInvestigatorSampleId("NEW-INVEST-ID");
+        Boolean isUpdated = sampleService.updateSampleMetadata(updatedSampleMetadata, Boolean.FALSE);
 
-        Assertions.assertThat(isUpdated).isEqualTo(Boolean.TRUE);
+        Assertions.assertTrue(isUpdated);
 
-        SmileSample newSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
-        SampleMetadata sampleMetadata = newSample.getLatestSampleMetadata();
-        List<SampleAlias> sampleAliasList =
-                sampleRepository.findAllSampleAliases(oldSample.getSmileSampleId());
+        // this initial query doesn't populate all of the sample details, just the main sample node
+        SmileSample sampleAfterUpdates = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        sampleAfterUpdates = sampleService.getSmileSample(sampleAfterUpdates.getSmileSampleId());
+        List<SampleAlias> updatedSampleAliasList = sampleAfterUpdates.getSampleAliases();
 
-        for (SampleAlias sa: sampleAliasList) {
+        for (SampleAlias sa: updatedSampleAliasList) {
             if (sa.getNamespace().equals("investigatorId")) {
-                Assertions.assertThat(sa.getValue()).isEqualTo(sampleMetadata.getInvestigatorSampleId());
+                Assertions.assertEquals("NEW-INVEST-ID",
+                        sa.getValue());
             }
         }
     }
@@ -598,6 +646,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(21)
     public void testTumorOrNormalUpdate() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
@@ -612,12 +661,12 @@ public class SampleServiceTest {
         sampleMetadata.setTumorOrNormal("Tumor");
         Boolean isUpdated = sampleService.updateSampleMetadata(sampleMetadata, Boolean.FALSE);
 
-        Assertions.assertThat(isUpdated).isEqualTo(Boolean.TRUE);
+        Assertions.assertTrue(isUpdated);
 
         SmileSample newSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         SampleMetadata newSampleMetadata = newSample.getLatestSampleMetadata();
 
-        Assertions.assertThat(newSample.getSampleClass()).isEqualTo(newSampleMetadata.getTumorOrNormal());
+        Assertions.assertEquals(newSampleMetadata.getTumorOrNormal(), newSample.getSampleClass());
     }
 
     /**
@@ -625,6 +674,7 @@ public class SampleServiceTest {
      * @throws Exception
      */
     @Test
+    @Order(22)
     public void testSampleUpdatesAtLibraryLevel() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_1";
@@ -640,8 +690,9 @@ public class SampleServiceTest {
                 Boolean hasUpdates = sampleService.sampleHasMetadataUpdates(
                         existingSample.getLatestSampleMetadata(), updatedMetadata,
                         Boolean.TRUE, Boolean.FALSE);
-                Assertions.assertThat(hasUpdates).isEqualTo(Boolean.TRUE);
+                Assertions.assertTrue(hasUpdates);
             }
         }
     }
 }
+

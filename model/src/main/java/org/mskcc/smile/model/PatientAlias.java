@@ -12,7 +12,6 @@ import org.neo4j.ogm.annotation.Relationship;
  *
  * @author ochoaa
  */
-
 @NodeEntity
 public class PatientAlias implements Serializable {
     @Id @GeneratedValue
@@ -20,7 +19,7 @@ public class PatientAlias implements Serializable {
     private String value;
     private String namespace;
     @JsonIgnore
-    @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
+    @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.OUTGOING)
     private SmilePatient smilePatient;
 
     public PatientAlias() {}

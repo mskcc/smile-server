@@ -4,7 +4,7 @@ jobs:
   run_checkstyle:
     working_directory: /tmp/repos/smile-server
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2004:2024.05.1
     steps:
       - checkout
       - run:
@@ -19,7 +19,7 @@ jobs:
               git checkout ${SMILE_COMMONS_VERSION}
       - run:
           name: "Build project and run checkstyle plugin..."
-          command: mvn clean install
+          command: mvn clean install -Dspring.main.allow-circular-references=true
       - run:
           name: "Running checkstyle plugin..."
           command: mvn checkstyle:checkstyle

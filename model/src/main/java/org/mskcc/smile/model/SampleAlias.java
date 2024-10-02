@@ -7,11 +7,11 @@ import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
+
 /**
  * Node entity representing the linked sample entity from an external system.
  * @author ochoaa
  */
-
 @NodeEntity
 public class SampleAlias implements Serializable {
     @Id @GeneratedValue
@@ -19,7 +19,7 @@ public class SampleAlias implements Serializable {
     private String value;
     private String namespace;
     @JsonIgnore
-    @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
+    @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.OUTGOING)
     private SmileSample sampleMetadata;
 
     public SampleAlias() {}

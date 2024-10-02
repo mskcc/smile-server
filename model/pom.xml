@@ -12,11 +12,6 @@
   <dependencies>
     <!-- neo4j dependencies -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-neo4j</artifactId>
-      <version>${spring.boot.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.neo4j</groupId>
       <artifactId>neo4j-ogm</artifactId>
       <version>${neo4j-ogm.version}</version>

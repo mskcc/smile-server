@@ -1,8 +1,6 @@
 package org.mskcc.smile.persistence.neo4j;
 
-import java.util.List;
 import java.util.UUID;
-import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SmilePatient;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -15,31 +13,23 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SmilePatientRepository extends Neo4jRepository<SmilePatient, Long> {
-    @Query("MATCH (pa: PatientAlias)-[:IS_ALIAS]->(p: Patient {smilePatientId: $patient.smilePatientId}) "
-            + "RETURN pa")
-    List<PatientAlias> findPatientAliasesByPatient(@Param("patient") SmilePatient patient);
+    @Query("MATCH (s: Sample{smileSampleId: $smileSampleId})<-[hs:HAS_SAMPLE]-(p: Patient)"
+            + "<-[ia:IS_ALIAS]-(pa: PatientAlias) "
+            + "RETURN p, ia, pa")
+    SmilePatient findPatientBySampleSmileId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias {value: $cmoPatientId, namespace: 'cmoId'}) "
-            + " RETURN p")
+            + "MATCH (p)<-[ipa:IS_ALIAS]-(pa2: PatientAlias) "
+            + " RETURN p, ipa, pa2")
     SmilePatient findPatientByCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId);
 
-    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
-            + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "
-            + "RETURN p.smilePatientId")
-    UUID findPatientIdBySample(@Param("smileSampleId") UUID smileSampleId);
-
     @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias {value: $oldCmoId, namespace: 'cmoId'}) "
-            + "SET pa.value = $newCmoId "
-            + "RETURN p")
+            + "SET pa.value = $newCmoId WITH p "
+            + "MATCH (p)<-[ipa:IS_ALIAS]-(pa2: PatientAlias) "
+            + "RETURN p, ipa, pa2")
     SmilePatient updateCmoPatientIdInPatientNode(@Param("oldCmoId") String oldCmoId,
             @Param("newCmoId") String newCmoId);
-
-    @Query("MATCH (s: Sample)<-[:IS_ALIAS]-(sa: SampleAlias {value: $value, namespace: $namespace}) "
-            + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient) "
-            + "RETURN p")
-    SmilePatient findPatientByNamespaceValue(
-            @Param("namespace") String namespace, @Param("value") String value);
 
     @Query("MATCH (p: Patient {smilePatientId: $patient.smilePatientId})"
             + "<-[:IS_ALIAS]-(pa: PatientAlias) DETACH DELETE p, pa")

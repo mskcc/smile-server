@@ -5,39 +5,51 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.assertj.core.api.Assertions;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
-import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
+import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
 import org.mskcc.smile.persistence.neo4j.SmilePatientRepository;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
 import org.mskcc.smile.persistence.neo4j.TempoRepository;
 import org.mskcc.smile.service.util.RequestDataFactory;
+import org.neo4j.ogm.session.Session;
+import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  *
  * @author ochoaa
  */
+@SpringBootTest(
+        classes = SmileTestApp.class,
+        properties = {"spring.neo4j.authentication.username:neo4j"}
+)
 @Testcontainers
-@DataNeo4jTest
 @Import(MockDataUtils.class)
 public class TempoServiceTest {
+    private ObjectMapper mapper = new ObjectMapper();
+
     @Autowired
     private MockDataUtils mockDataUtils;
 
@@ -51,16 +63,23 @@ public class TempoServiceTest {
     private SmilePatientService patientService;
 
     @Autowired
-    private CohortCompleteService cohortCompleteService;
-
-    @Autowired
     private TempoService tempoService;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    private CohortCompleteService cohortCompleteService;
 
+    // required for all test classes
     @Container
-    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>()
+    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>(
+            DockerImageName.parse("neo4j:5.19.0"))
             .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
+
+    @DynamicPropertySource
+    static void neo4jProperties(DynamicPropertyRegistry registry) {
+        databaseServer.start();
+        registry.add("spring.neo4j.authentication.password", databaseServer::getAdminPassword);
+        registry.add("spring.neo4j.uri", databaseServer::getBoltUrl);
+    }
 
     @TestConfiguration
     static class Config {
@@ -71,12 +90,23 @@ public class TempoServiceTest {
                     .credentials("neo4j", databaseServer.getAdminPassword())
                     .build();
         }
+
+        @Bean
+        public SessionFactory sessionFactory() {
+            // with domain entity base package(s)
+            return new SessionFactory(configuration(), "org.mskcc.smile.persistence");
+        }
     }
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     private final SmileRequestRepository requestRepository;
     private final SmileSampleRepository sampleRepository;
     private final SmilePatientRepository patientRepository;
     private final TempoRepository tempoRepository;
+    private final CohortCompleteRepository cohortCompleteRepository;
+
 
     /**
      * Initializes the Neo4j repositories.
@@ -84,23 +114,28 @@ public class TempoServiceTest {
      * @param sampleRepository
      * @param patientRepository
      * @param tempoRepository
+     * @param cohortCompleteRepository
      */
     @Autowired
     public TempoServiceTest(SmileRequestRepository requestRepository,
             SmileSampleRepository sampleRepository, SmilePatientRepository patientRepository,
-            TempoRepository tempoRepository) {
+            TempoRepository tempoRepository, CohortCompleteRepository cohortCompleteRepository) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
         this.tempoRepository = tempoRepository;
+        this.cohortCompleteRepository = cohortCompleteRepository;
     }
 
     /**
      * Persists the Mock Request data to the test database.
      * @throws Exception
      */
-    @Autowired
+    @BeforeEach
     public void initializeMockDatabase() throws Exception {
+        Session session = sessionFactory.openSession();
+        session.purgeDatabase();
+
         // mock request id: MOCKREQUEST1_B
         MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest1JsonDataWith2T2N");
@@ -109,11 +144,25 @@ public class TempoServiceTest {
         requestService.saveRequest(request1);
 
         // mock request id: 22022_BZ
-        MockJsonTestData request2bData = mockDataUtils.mockedRequestJsonDataMap
+        MockJsonTestData request2Data = mockDataUtils.mockedRequestJsonDataMap
                 .get("mockIncomingRequest2bJsonDataMissing1N");
-        SmileRequest request2b =
-                RequestDataFactory.buildNewLimsRequestFromJson(request2bData.getJsonString());
-        requestService.saveRequest(request2b);
+        SmileRequest request2 =
+                RequestDataFactory.buildNewLimsRequestFromJson(request2Data.getJsonString());
+        requestService.saveRequest(request2);
+
+        // mock request id: 33344_Z
+        MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest3JsonDataPooledNormals");
+        SmileRequest request3 =
+                RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
+        requestService.saveRequest(request3);
+
+        // mock request id: 145145_IM
+        MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest5JsonPtMultiSamples");
+        SmileRequest request5 =
+                RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
+        requestService.saveRequest(request5);
     }
 
     @Test
@@ -130,12 +179,12 @@ public class TempoServiceTest {
 
         // confirm can be fetched in this direction (tempo node to sample)
         Tempo tempoAfterSave = tempoService.getTempoDataBySampleId(sample1);
-        Assertions.assertThat(tempoAfterSave).isNotNull();
+        Assertions.assertNotNull(tempoAfterSave);
 
         // confirm can get to tempo data from the sample node as well
         SmileSample sample1Updated = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         Tempo sampleTempoUpdated = sample1Updated.getTempo();
-        Assertions.assertThat(sampleTempoUpdated).isNotNull();
+        Assertions.assertNotNull(sampleTempoUpdated);
     }
 
     @Test
@@ -152,17 +201,17 @@ public class TempoServiceTest {
 
         // confirm can be fetched in this direction (tempo node to sample)
         Tempo tempoAfterSave = tempoService.getTempoDataBySampleId(sample3);
-        Assertions.assertThat(tempoAfterSave).isNotNull();
-        Assertions.assertThat(tempoAfterSave.getBamCompleteEvents().size()).isEqualTo(1);
+        Assertions.assertNotNull(tempoAfterSave);
+        Assertions.assertEquals(1, tempoAfterSave.getBamCompleteEvents().size());
 
         // mock a new bam complete event for sample, this time with status PASS
         tempoAfterSave.addBamCompleteEvent(getBamCompleteEventData("mockBamCompleteSampleB3pass"));
-        tempoService.saveTempoData(tempo3); // persist new bam complete event
+        tempoService.saveTempoData(tempoAfterSave); // persist new bam complete event
 
         // fetch updated tempo data for sample - there should be two
         // bam complete events after the second update
         Tempo tempoAfterSaveAgain = tempoService.getTempoDataBySampleId(sample3);
-        Assertions.assertThat(tempoAfterSaveAgain.getBamCompleteEvents().size()).isEqualTo(2);
+        Assertions.assertEquals(2, tempoAfterSaveAgain.getBamCompleteEvents().size());
     }
 
     @Test
@@ -173,9 +222,9 @@ public class TempoServiceTest {
         // confirming that the query does return the correct amount of specific events
         // and distinguishes them from other event types
         Tempo tempoAfterSave = tempoService.getTempoDataBySamplePrimaryId(igoId);
-        Assertions.assertThat(tempoAfterSave.getMafCompleteEvents().size()).isEqualTo(1);
-        Assertions.assertThat(tempoAfterSave.getCustodianInformation()).isNotBlank();
-        Assertions.assertThat(tempoAfterSave.getAccessLevel()).isNotBlank();
+        Assertions.assertEquals(1, tempoAfterSave.getMafCompleteEvents().size());
+        Assertions.assertTrue(!tempoAfterSave.getCustodianInformation().isBlank());
+        Assertions.assertTrue(!tempoAfterSave.getAccessLevel().isBlank());
     }
 
     @Test
@@ -186,9 +235,9 @@ public class TempoServiceTest {
         // confirming that the query does return the correct amount of specific events
         // and distinguishes them from other event types
         Tempo tempoAfterSave = tempoService.getTempoDataBySamplePrimaryId(igoId);
-        Assertions.assertThat(tempoAfterSave.getQcCompleteEvents().size()).isEqualTo(1);
-        Assertions.assertThat(tempoAfterSave.getCustodianInformation()).isNotBlank();
-        Assertions.assertThat(tempoAfterSave.getAccessLevel()).isNotBlank();
+        Assertions.assertEquals(1, tempoAfterSave.getQcCompleteEvents().size());
+        Assertions.assertTrue(!tempoAfterSave.getCustodianInformation().isBlank());
+        Assertions.assertTrue(!tempoAfterSave.getAccessLevel().isBlank());
     }
 
     @Test
@@ -197,11 +246,12 @@ public class TempoServiceTest {
         cohortCompleteService.saveCohort(new Cohort(ccJson), ccJson.getTumorNormalPairsAsSet());
         // cohort should have 4 samples linked to it
         Cohort cohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
-        Assertions.assertThat(cohort.getCohortSamples().size()).isEqualTo(4);
+        Assertions.assertEquals(4, cohort.getCohortSamples().size());
 
         // confirm we can get number of cohorts for a sample by primary id
-        List<Cohort> cohortsBySample = cohortCompleteService.getCohortsBySamplePrimaryId("MOCKREQUEST1_B_1");
-        Assertions.assertThat(cohortsBySample.size()).isEqualTo(1);
+        List<Cohort> cohortsBySample =
+                cohortCompleteService.getCohortsBySamplePrimaryId("MOCKREQUEST1_B_1");
+        Assertions.assertEquals(1, cohortsBySample.size());
 
         // save a new cohort with the same sample as above
         CohortCompleteJson ccJson2 = getCohortEventData("mockCohortCompleteCCSPPPQQQQ2");
@@ -210,7 +260,7 @@ public class TempoServiceTest {
         // sample should now have 2 cohorts linked to it
         List<Cohort> cohortsBySampleUpdated =
                 cohortCompleteService.getCohortsBySamplePrimaryId("MOCKREQUEST1_B_1");
-        Assertions.assertThat(cohortsBySampleUpdated.size()).isEqualTo(2);
+        Assertions.assertEquals(2, cohortsBySampleUpdated.size());
     }
 
     @Test
@@ -223,7 +273,7 @@ public class TempoServiceTest {
 
         Cohort updatedCohort = new Cohort(ccJsonUpdate);
         Boolean hasUpdates = cohortCompleteService.hasUpdates(cohort, updatedCohort);
-        Assertions.assertThat(hasUpdates).isTrue();
+        Assertions.assertTrue(hasUpdates);
     }
 
     @Test
@@ -241,8 +291,8 @@ public class TempoServiceTest {
 
         // assert data persisted correctly
         Tempo tempoAfterSave2 = tempoService.getTempoDataBySamplePrimaryId(igoId2);
-        Assertions.assertThat(tempoAfterSave2.getCustodianInformation()).isNullOrEmpty();
-        Assertions.assertThat(tempoAfterSave2.getAccessLevel()).isNullOrEmpty();
+        Assertions.assertTrue(StringUtils.isBlank(tempoAfterSave2.getCustodianInformation()));
+        Assertions.assertTrue(StringUtils.isBlank(tempoAfterSave2.getAccessLevel()));
 
         // sample MOCKREQUEST1_B_3 is "Tumor" which should have default values set to
         // tempo.custodianInformation and tempo.accessLevel
@@ -255,8 +305,8 @@ public class TempoServiceTest {
 
         // assert data persisted correctly
         Tempo tempoAfterSave3 = tempoService.getTempoDataBySamplePrimaryId(igoId3);
-        Assertions.assertThat(tempoAfterSave3.getCustodianInformation()).isNotBlank();
-        Assertions.assertThat(tempoAfterSave3.getAccessLevel()).isNotBlank();
+        Assertions.assertTrue(!tempoAfterSave3.getCustodianInformation().isBlank());
+        Assertions.assertTrue(!tempoAfterSave3.getAccessLevel().isBlank());
     }
 
     @Test
@@ -264,25 +314,25 @@ public class TempoServiceTest {
         CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
         cohortCompleteService.saveCohort(new Cohort(ccJson), ccJson.getTumorNormalPairsAsSet());
         Cohort cohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
-        Assertions.assertThat(cohort.getCohortSamplePrimaryIds().size()).isEqualTo(4);
+        Assertions.assertEquals(4, cohort.getCohortSamplePrimaryIds().size());
 
         CohortCompleteJson ccJsonUpdate =
                 getCohortEventData("mockCohortCompleteCCSPPPQQQQUpdatedSamplesOnly");
-        Assertions.assertThat(ccJsonUpdate.getTumorNormalPairsAsSet().size()).isEqualTo(6);
+        Assertions.assertEquals(6, ccJsonUpdate.getTumorNormalPairsAsSet().size());
 
         Cohort updatedCohort = new Cohort(ccJsonUpdate);
         Boolean hasUpdates = cohortCompleteService.hasUpdates(cohort, updatedCohort);
-        Assertions.assertThat(hasUpdates).isTrue();
+        Assertions.assertTrue(hasUpdates);
 
         // verify there are 2 new samples getting added to the cohort
         Set<String> newSamples = ccJsonUpdate.getTumorNormalPairsAsSet();
         newSamples.removeAll(cohort.getCohortSamplePrimaryIds());
-        Assertions.assertThat(newSamples.size()).isEqualTo(2);
+        Assertions.assertEquals(2, newSamples.size());
 
         // save cohort and verify that it now has 6 samples instead of 4
         cohortCompleteService.saveCohort(cohort, newSamples);
         Cohort cohortAfterSave = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
-        Assertions.assertThat(cohortAfterSave.getCohortSamplePrimaryIds().size()).isEqualTo(6);
+        Assertions.assertEquals(6, cohortAfterSave.getCohortSamplePrimaryIds().size());
     }
 
     private CohortCompleteJson getCohortEventData(String dataIdentifier) throws JsonProcessingException {

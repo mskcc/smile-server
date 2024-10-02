@@ -1,7 +1,7 @@
 package org.mskcc.smile.service;
 
 import java.util.Map;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,7 +15,10 @@ import org.springframework.context.annotation.Import;
  *
  * @author ochoaa
  */
-@SpringBootTest
+@SpringBootTest(
+        classes = SmileTestApp.class,
+        properties = {"spring.neo4j.authentication.username:neo4j"}
+)
 @Import(MockDataUtils.class)
 public class CrdbMappingServiceTest {
     @Autowired
@@ -55,8 +58,7 @@ public class CrdbMappingServiceTest {
      */
     @Test
     public void testMadeUpDmpIdThrowsNullPointerException() {
-        Assertions.assertThat(crdbMappingService.getCmoPatientIdbyDmpId("MADEUPVALUE"))
-                .isNull();
+        Assertions.assertNull(crdbMappingService.getCmoPatientIdbyDmpId("MADEUPVALUE"));
     }
 
     /**
@@ -67,7 +69,7 @@ public class CrdbMappingServiceTest {
         for (Map.Entry<String, String> entry : mockDataUtils.mockedDmpPatientMapping.entrySet()) {
             String dmpId = entry.getKey();
             String cmoId = entry.getValue();
-            Assertions.assertThat(crdbMappingService.getCmoPatientIdbyDmpId(dmpId)).isEqualTo(cmoId);
+            Assertions.assertEquals(crdbMappingService.getCmoPatientIdbyDmpId(dmpId), cmoId);
         }
     }
 
@@ -77,8 +79,7 @@ public class CrdbMappingServiceTest {
      */
     @Test
     public void testCmoIdToCrdbModelMapping() throws Exception {
-        Assertions.assertThat(crdbMappingService.getCrdbMappingModelByInputId("C-KXXL3J"))
-                .isNotNull();
+        Assertions.assertNotNull(crdbMappingService.getCrdbMappingModelByInputId("C-KXXL3J"));
     }
 
     /**
@@ -87,8 +88,8 @@ public class CrdbMappingServiceTest {
      */
     @Test
     public void testCmoIdToCrdbModelMappingValues() throws Exception {
-        Assertions.assertThat((crdbMappingService.getCrdbMappingModelByInputId("C-XXA40X")).getDmpId())
-                .isEqualTo("P-0004000");
+        Assertions.assertEquals("P-0004000",
+                crdbMappingService.getCrdbMappingModelByInputId("C-XXA40X").getDmpId());
     }
 
     /**
@@ -97,7 +98,7 @@ public class CrdbMappingServiceTest {
      */
     @Test
     public void testDmpIdToCrdbModelMappingValues() throws Exception {
-        Assertions.assertThat((crdbMappingService.getCrdbMappingModelByInputId("P-0000222")).getCmoId())
-                .isEqualTo("C-FFX222");
+        Assertions.assertEquals("C-FFX222",
+                crdbMappingService.getCrdbMappingModelByInputId("P-0000222").getCmoId());
     }
 }
