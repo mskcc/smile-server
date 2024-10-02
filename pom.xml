@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.3.3.RELEASE</version>
+    <version>3.3.0</version>
   </parent>
 
   <repositories>
@@ -37,21 +37,21 @@
   </pluginRepositories>
 
   <properties>
-    <java.version>1.8</java.version>
-    <maven.compiler.version>1.8</maven.compiler.version>
-    <spring.version>5.2.6.RELEASE</spring.version>
-    <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
-    <jackson.version>2.11.2</jackson.version>
-    <neo4j-ogm.version>3.2.14</neo4j-ogm.version>
-    <junitjupiter.version>5.3.2</junitjupiter.version>
-    <neo4j-java-driver.version>4.4.9</neo4j-java-driver.version>
-    <testcontainers.version>1.17.0</testcontainers.version>
+    <java.version>21</java.version>
+    <maven.compiler.version>3.11.0</maven.compiler.version>
+    <spring.version>5.3.5.RELEASE</spring.version>
+    <spring.boot.version>3.3.0</spring.boot.version>
+    <jackson.version>2.17.2</jackson.version>
+    <neo4j-ogm.version>4.0.11</neo4j-ogm.version>
+    <junitjupiter.version>5.9.1</junitjupiter.version>
+    <neo4j-java-driver.version>5.24.0</neo4j-java-driver.version>
+    <testcontainers.version>1.20.1</testcontainers.version>
     <!-- smile messaging and shared entities dependency versions -->
     <smile_messaging_java.group>com.github.mskcc</smile_messaging_java.group>
-    <smile_messaging_java.version>1.4.1.RELEASE</smile_messaging_java.version>
+    <smile_messaging_java.version>java-v21-beta-2</smile_messaging_java.version>
     <!-- smile commons centralized config properties -->
     <smile_commons.group>com.github.mskcc</smile_commons.group>
-    <smile_commons.version>1.4.1.RELEASE</smile_commons.version>
+    <smile_commons.version>java-v21-beta-2</smile_commons.version>
     <!-- smile expected schema version -->
     <smile.schema_version>v2.3</smile.schema_version>
   </properties>
@@ -76,14 +76,14 @@
       <version>${spring.boot.version}</version>
     </dependency>
     <!-- testing -->
-    <dependency>
+<!--    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <version>${spring.boot.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
     <!-- neo4j testing -->
-    <dependency>
+<!--    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>${junitjupiter.version}</version>
@@ -100,17 +100,17 @@
       <artifactId>neo4j</artifactId>
       <version>${testcontainers.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>${testcontainers.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.neo4j.driver</groupId>
       <artifactId>neo4j-java-driver</artifactId>
@@ -128,6 +128,28 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <version>${spring.boot.version}</version>
     </dependency>
+    <!-- spring data neo4j -->
+<dependency>
+    <groupId>org.neo4j</groupId>
+    <artifactId>neo4j-ogm-spring-boot-starter</artifactId>
+    <version>1.1.0</version>
+</dependency>
+    <!-- formerly javax persistence -->
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
+    
+    <!-- maybe -->
+<!--    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-neo4j</artifactId>
+    </dependency>-->
+<!--    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-neo4j</artifactId>
+      <version>${spring.boot.version}</version>
+    </dependency>-->
   </dependencies>
 
   <build>
@@ -166,11 +188,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>${maven.compiler.version}</version>
         <configuration>
-          <source>${maven.compiler.version}</source>
-          <target>${maven.compiler.version}</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
           <compilerArgument>-Xlint:deprecation</compilerArgument>
+          <compilerArgument>-parameters</compilerArgument>
         </configuration>
       </plugin>
       <!-- maven checkstyle plugin -->

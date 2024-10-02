@@ -1,5 +1,6 @@
 package org.mskcc.smile.persistence.neo4j;
 
+//import org.springframework.data.neo4j.repository.query.Query;
 import java.util.List;
 import java.util.UUID;
 import org.mskcc.smile.model.SampleAlias;
@@ -121,9 +122,10 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             @Param("smileRequestId") UUID smileRequestId);
 
     @Query("MATCH (sm: SampleMetadata)-[:HAS_STATUS]->(st: Status) "
-        + "WHERE ID(sm) = $smId "
-        + "RETURN st")
-    Status findStatusForSampleMetadataById(@Param("smId") Long smId);
+        + "WHERE sm.primaryId = $primaryId AND sm.importDate = $importDate "
+        + "RETURN st LIMIT 1")
+    Status findStatusForSampleMetadataById(@Param("primaryId") String primaryId,
+            @Param("importDate") String importDate);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
             + "SET s.revisable = $revisable "

@@ -7,13 +7,20 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
+//import org.springframework.data.neo4j.core.schema.GeneratedValue;
+//import org.springframework.data.neo4j.core.schema.Id;
+//import org.springframework.data.neo4j.core.schema.Node;
+//import org.springframework.data.neo4j.core.schema.Relationship;
+//import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 @NodeEntity(label = "Project")
+//@Node("Project")
 public class SmileProject implements Serializable {
     @Id
     private String igoProjectId;
     private String namespace;
-    @Relationship(type = "HAS_REQUEST", direction = Relationship.OUTGOING)
+    //@Relationship(type = "HAS_REQUEST", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_REQUEST", direction = Relationship.Direction.OUTGOING)
     private List<SmileRequest> requestList;
 
     public SmileProject() {}

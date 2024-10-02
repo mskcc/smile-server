@@ -1,5 +1,9 @@
 package org.mskcc.smile.model;
 
+//import org.springframework.data.neo4j.core.schema.GeneratedValue;
+//import org.springframework.data.neo4j.core.schema.Id;
+//import org.springframework.data.neo4j.core.schema.Node;
+//import org.springframework.data.neo4j.core.schema.Relationship;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -14,13 +18,15 @@ import org.neo4j.ogm.annotation.Relationship;
  */
 
 @NodeEntity
+//@Node
 public class PatientAlias implements Serializable {
     @Id @GeneratedValue
     private Long id;
     private String value;
     private String namespace;
     @JsonIgnore
-    @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
+    //@Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
+    @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.OUTGOING)
     private SmilePatient smilePatient;
 
     public PatientAlias() {}

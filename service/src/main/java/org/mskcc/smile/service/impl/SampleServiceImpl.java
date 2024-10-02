@@ -1,13 +1,12 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
@@ -461,7 +460,7 @@ public class SampleServiceImpl implements SmileSampleService {
 
     @Override
     public List<SmileSampleIdMapping> getSamplesByDate(String importDate) {
-        if (Strings.isNullOrEmpty(importDate)) {
+        if (StringUtils.isBlank(importDate)) {
             throw new RuntimeException("Start date " + importDate + " cannot be null or empty");
         }
         // return latest sample metadata for each sample uuid returned
@@ -472,7 +471,8 @@ public class SampleServiceImpl implements SmileSampleService {
         List<SmileSampleIdMapping> sampleIdsList = new ArrayList<>();
         for (UUID smileSampleId : sampleIds) {
             SampleMetadata sm = sampleRepository.findLatestSampleMetadataBySmileId(smileSampleId);
-            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getId()));
+            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getPrimaryId(),
+                    sm.getImportDate()));
             sampleIdsList.add(new SmileSampleIdMapping(smileSampleId, sm));
         }
         return sampleIdsList;
@@ -510,7 +510,8 @@ public class SampleServiceImpl implements SmileSampleService {
 
     private List<SampleMetadata> getSampleMetadataWithStatus(List<SampleMetadata> smList) {
         for (SampleMetadata sm : smList) {
-            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getId()));
+            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getPrimaryId(),
+                    sm.getImportDate()));
         }
         return smList;
     }
