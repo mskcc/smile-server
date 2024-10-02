@@ -19,7 +19,7 @@ public class SmileProject implements Serializable {
     @Id
     private String igoProjectId;
     private String namespace;
-//    @Relationship(type = "HAS_REQUEST", direction = Relationship.OUTGOING)
+    //@Relationship(type = "HAS_REQUEST", direction = Relationship.OUTGOING)
     @Relationship(type = "HAS_REQUEST", direction = Relationship.Direction.OUTGOING)
     private List<SmileRequest> requestList;
 

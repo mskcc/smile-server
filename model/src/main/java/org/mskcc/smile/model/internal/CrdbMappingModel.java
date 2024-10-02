@@ -2,10 +2,10 @@ package org.mskcc.smile.model.internal;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.Serializable;
-import java.util.ArrayList;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import java.io.Serializable;
+import java.util.ArrayList;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @Entity

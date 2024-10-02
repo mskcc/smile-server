@@ -1,5 +1,5 @@
 package org.mskcc.smile.service;
-//
+
 ////import com.fasterxml.jackson.databind.ObjectMapper;
 ////import java.util.List;
 ////import java.util.Map;
@@ -24,7 +24,7 @@ package org.mskcc.smile.service;
 ////import org.testcontainers.containers.Neo4jContainer;
 ////import org.testcontainers.junit.jupiter.Container;
 ////import org.testcontainers.junit.jupiter.Testcontainers;
-//
+
 ///**
 // *
 // * @author ochoaa
@@ -85,7 +85,8 @@ public class SampleServiceTest {
 //    public SampleServiceTest(SmileRequestRepository requestRepository,
 //            SmileSampleRepository sampleRepository, SmilePatientRepository patientRepository,
 //            SmileRequestService requestService, SmileSampleService sampleService,
-//            SmilePatientService patientService, TempoRepository tempoRepository, TempoService tempoService) {
+//            SmilePatientService patientService, TempoRepository tempoRepository,
+//    TempoService tempoService) {
 //        this.requestRepository = requestRepository;
 //        this.sampleRepository = sampleRepository;
 //        this.patientRepository = patientRepository;
@@ -102,26 +103,30 @@ public class SampleServiceTest {
 //        // mock request id: MOCKREQUEST1_B
 //        MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest1JsonDataWith2T2N");
-//        SmileRequest request1 = RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
+//        SmileRequest request1 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
 //        requestService.saveRequest(request1);
 //
 //        // mock request id: 33344_Z
 //        MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest3JsonDataPooledNormals");
-//        SmileRequest request3 = RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
+//        SmileRequest request3 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
 //        requestService.saveRequest(request3);
 //
 //        // mock request id: 145145_IM
 //        MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest5JsonPtMultiSamples");
-//        SmileRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
+//        SmileRequest request5 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
 //        requestService.saveRequest(request5);
 //
 //        //persist all mocked clinical data
 //        for (MockJsonTestData mockJsonTestData : mockDataUtils.mockedDmpMetadataMap.values()) {
 //            DmpSampleMetadata dmpSample = mapper.readValue(mockJsonTestData.getJsonString(),
 //                DmpSampleMetadata.class);
-//            String cmoPatientId = mockDataUtils.getCmoPatientIdForDmpPatient(dmpSample.getDmpPatientId());
+//            String cmoPatientId =
+//    mockDataUtils.getCmoPatientIdForDmpPatient(dmpSample.getDmpPatientId());
 //            SmileSample clinicalSample =
 //                    SampleDataFactory.buildNewClinicalSampleFromMetadata(cmoPatientId, dmpSample);
 //            sampleService.saveSmileSample(clinicalSample);
@@ -190,7 +195,8 @@ public class SampleServiceTest {
 //    @Test
 //    public void testGetAllSmileSamplesByRequestId() throws Exception {
 //        String requestId = "33344_Z";
-//        List<SmileSample> requestSamplesList = sampleService.getResearchSamplesByRequestId(requestId);
+//        List<SmileSample> requestSamplesList =
+//    sampleService.getResearchSamplesByRequestId(requestId);
 //        Assertions.assertThat(requestSamplesList.size()).isEqualTo(4);
 //    }
 //
@@ -450,7 +456,8 @@ public class SampleServiceTest {
 //        String requestId = "MOCKREQUEST1_B";
 //        SmileSample savedSample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
 //        SampleMetadata latestSampleMetadata = savedSample.getLatestSampleMetadata();
-//        Assertions.assertThat(latestSampleMetadata.getCollectionYear()).isNotEqualTo(invalidCollectionYear);
+//        Assertions.assertThat(
+//    latestSampleMetadata.getCollectionYear()).isNotEqualTo(invalidCollectionYear);
 //    }
 //
 //

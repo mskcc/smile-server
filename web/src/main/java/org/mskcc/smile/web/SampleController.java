@@ -63,7 +63,8 @@ public class SampleController {
         method = RequestMethod.GET,
         produces = "application/json")
     public ResponseEntity<List<PublishedSmileSample>> fetchSampleMetadataListByCmoPatientIdGET(
-            @Parameter(in = ParameterIn.PATH, description = "CMO Patient ID", name = "cmoPatientId", required = true)
+            @Parameter(in = ParameterIn.PATH, description = "CMO Patient ID",
+                    name = "cmoPatientId", required = true)
             @PathVariable String cmoPatientId) throws Exception {
         List<PublishedSmileSample> samples = sampleService
                 .getPublishedSmileSamplesByCmoPatientId(cmoPatientId);
@@ -86,7 +87,8 @@ public class SampleController {
         method = RequestMethod.GET,
         produces = "application/json")
     public ResponseEntity<List<SmileSampleIdMapping>> fetchSampleIdMappingsByInputDateGET(
-            @Parameter(in = ParameterIn.PATH, description = "Import date to search from", name = "importDate", required = true)
+            @Parameter(in = ParameterIn.PATH, description = "Import date to search from",
+                    name = "importDate", required = true)
             @PathVariable String importDate) throws Exception {
         // validate input date string before submitting db query
         try {
@@ -116,7 +118,8 @@ public class SampleController {
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<PublishedSmileSample> fetchSmileSampleByInputIdGET(
-            @Parameter(in = ParameterIn.PATH, description = "input id to search with", name = "inputId", required = true)
+            @Parameter(in = ParameterIn.PATH, description = "input id to search with",
+                    name = "inputId", required = true)
             @PathVariable String inputId) throws Exception {
         SmileSample smileSample = sampleService.getSampleByInputId(inputId);
         if (smileSample == null) {

@@ -13,8 +13,8 @@ import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
-import org.neo4j.ogm.id.UuidStrategy;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
+import org.neo4j.ogm.id.UuidStrategy;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
 //import org.springframework.data.neo4j.core.schema.GeneratedValue;
 //import org.springframework.data.neo4j.core.schema.Id;
@@ -27,19 +27,19 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SmileSample implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
-//    @Id @GeneratedValue(UUIDStringGenerator.class)
+    //@Id @GeneratedValue(UUIDStringGenerator.class)
     @Convert(UuidStringConverter.class)
     private UUID smileSampleId;
-//    @Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
+    //@Relationship(type = "IS_ALIAS", direction = Relationship.INCOMING)
     @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.INCOMING)
     private List<SampleAlias> sampleAliases;
-//    @Relationship(type = "HAS_SAMPLE", direction = Relationship.INCOMING)
+    //@Relationship(type = "HAS_SAMPLE", direction = Relationship.INCOMING)
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.Direction.INCOMING)
     private SmilePatient patient;
-//    @Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
+    //@Relationship(type = "HAS_METADATA", direction = Relationship.OUTGOING)
     @Relationship(type = "HAS_METADATA", direction = Relationship.Direction.OUTGOING)
     private List<SampleMetadata> sampleMetadataList;
-//    @Relationship(type = "HAS_TEMPO", direction = Relationship.OUTGOING)
+    //@Relationship(type = "HAS_TEMPO", direction = Relationship.OUTGOING)
     @Relationship(type = "HAS_TEMPO", direction = Relationship.Direction.OUTGOING)
     private Tempo tempo;
     private String sampleClass;

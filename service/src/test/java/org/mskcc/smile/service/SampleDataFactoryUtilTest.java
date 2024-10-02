@@ -1,5 +1,5 @@
 package org.mskcc.smile.service;
-//
+
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import java.util.HashMap;
 //import java.util.Map;
@@ -11,7 +11,7 @@ package org.mskcc.smile.service;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.context.annotation.Import;
-//
+
 ///**
 // *
 // * @author ochoaa
@@ -46,7 +46,8 @@ public class SampleDataFactoryUtilTest {
 //                    || !sampleMetadata.getSampleType().equals(expected.getSampleType())
 //                    || !sampleMetadata.getSex().equals(expected.getSex())
 //                    || !sampleMetadata.getTumorOrNormal().equals(expected.getTumorOrNormal())) {
-//                Assert.fail("Resolved values in dmp sample " + dmpSample.getDmpSampleId() + " do not match "
+//                Assert.fail("Resolved values in dmp sample "
+//+ dmpSample.getDmpSampleId() + " do not match "
 //                        + "expected values in: " + expected.toString());
 //            }
 //        }

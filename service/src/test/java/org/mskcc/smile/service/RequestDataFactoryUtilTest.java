@@ -1,5 +1,5 @@
 package org.mskcc.smile.service;
-//
+
 //import java.util.Map;
 //import org.junit.jupiter.api.Test;
 //import org.mskcc.smile.model.SmileRequest;
@@ -7,7 +7,7 @@ package org.mskcc.smile.service;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.context.annotation.Import;
-//
+
 ///**
 // *
 // * @author ochoaa
@@ -25,8 +25,10 @@ public class RequestDataFactoryUtilTest {
 //     */
 //    @Test
 //    public void testResearchSamplesAndRequestDataLoading() throws Exception {
-//        for (Map.Entry<String, MockJsonTestData> entry : mockDataUtils.mockedRequestJsonDataMap.entrySet()) {
-//            if (!entry.getKey().startsWith("mockIncoming") && !entry.getKey().startsWith("mockValidated")) {
+//        for (Map.Entry<String, MockJsonTestData> entry :
+//    mockDataUtils.mockedRequestJsonDataMap.entrySet()) {
+//            if (!entry.getKey().startsWith("mockIncoming")
+//&& !entry.getKey().startsWith("mockValidated")) {
 //                continue;
 //            }
 //            String jsonString = entry.getValue().getJsonString();

@@ -51,7 +51,8 @@ public class PatientServiceTest {
 //    private SmilePatientService patientService;
 //
 //    @Container
-//    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>(DockerImageName.parse("neo4j:5.19.0"))
+//    private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>
+//    (DockerImageName.parse("neo4j:5.19.0"))
 //            .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
 //
 //    @TestConfiguration
@@ -104,19 +105,22 @@ public class PatientServiceTest {
 //        // mock request id: MOCKREQUEST1_B
 //        MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest1JsonDataWith2T2N");
-//        SmileRequest request1 = RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
+//        SmileRequest request1 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
 //        requestService.saveRequest(request1);
 //
 //        // mock request id: 33344_Z
 //        MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest3JsonDataPooledNormals");
-//        SmileRequest request3 = RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
+//        SmileRequest request3 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
 //        requestService.saveRequest(request3);
 //
 //        // mock request id: 145145_IM
 //        MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest5JsonPtMultiSamples");
-//        SmileRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
+//        SmileRequest request5 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
 //        requestService.saveRequest(request5);
 //    }
 //

@@ -1,5 +1,5 @@
 package org.mskcc.smile.service;
-//
+
 //import com.fasterxml.jackson.core.JsonProcessingException;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import java.util.List;
@@ -29,7 +29,7 @@ package org.mskcc.smile.service;
 //import org.testcontainers.containers.Neo4jContainer;
 //import org.testcontainers.junit.jupiter.Container;
 //import org.testcontainers.junit.jupiter.Testcontainers;
-//
+
 ///**
 // *
 // * @author ochoaa
@@ -200,7 +200,8 @@ public class TempoServiceTest {
 //        Assertions.assertThat(cohort.getCohortSamples().size()).isEqualTo(4);
 //
 //        // confirm we can get number of cohorts for a sample by primary id
-//        List<Cohort> cohortsBySample = cohortCompleteService.getCohortsBySamplePrimaryId("MOCKREQUEST1_B_1");
+//        List<Cohort> cohortsBySample =
+//    cohortCompleteService.getCohortsBySamplePrimaryId("MOCKREQUEST1_B_1");
 //        Assertions.assertThat(cohortsBySample.size()).isEqualTo(1);
 //
 //        // save a new cohort with the same sample as above

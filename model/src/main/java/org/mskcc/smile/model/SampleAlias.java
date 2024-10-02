@@ -24,7 +24,7 @@ public class SampleAlias implements Serializable {
     private String value;
     private String namespace;
     @JsonIgnore
-//    @Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
+    //@Relationship(type = "IS_ALIAS", direction = Relationship.OUTGOING)
     @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.OUTGOING)
     private SmileSample sampleMetadata;
 

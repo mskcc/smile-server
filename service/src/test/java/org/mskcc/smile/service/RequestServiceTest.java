@@ -1,5 +1,5 @@
 package org.mskcc.smile.service;
-//
+
 //import java.util.List;
 //import org.assertj.core.api.Assertions;
 //import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ package org.mskcc.smile.service;
 //import org.testcontainers.containers.Neo4jContainer;
 //import org.testcontainers.junit.jupiter.Container;
 //import org.testcontainers.junit.jupiter.Testcontainers;
-//
+
 //@Testcontainers
 //@DataNeo4jTest
 //@Import(MockDataUtils.class)
@@ -75,7 +75,8 @@ public class RequestServiceTest {
 //    public RequestServiceTest(SmileRequestRepository requestRepository,
 //            SmileSampleRepository sampleRepository, SmilePatientRepository patientRepository,
 //            SmileRequestService requestService, SmileSampleService sampleService,
-//            SmilePatientService patientService, TempoRepository tempoRepository, TempoService tempoService) {
+//            SmilePatientService patientService, TempoRepository tempoRepository,
+//    TempoService tempoService) {
 //        this.requestRepository = requestRepository;
 //        this.sampleRepository = sampleRepository;
 //        this.patientRepository = patientRepository;
@@ -91,19 +92,22 @@ public class RequestServiceTest {
 //        // mock request id: MOCKREQUEST1_B
 //        MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest1JsonDataWith2T2N");
-//        SmileRequest request1 = RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
+//        SmileRequest request1 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
 //        requestService.saveRequest(request1);
 //
 //        // mock request id: 33344_Z
 //        MockJsonTestData request3Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest3JsonDataPooledNormals");
-//        SmileRequest request3 = RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
+//        SmileRequest request3 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request3Data.getJsonString());
 //        requestService.saveRequest(request3);
 //
 //        // mock request id: 145145_IM
 //        MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest5JsonPtMultiSamples");
-//        SmileRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
+//        SmileRequest request5 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
 //        requestService.saveRequest(request5);
 //    }
 //
@@ -253,7 +257,8 @@ public class RequestServiceTest {
 //        SmileRequest updatedRequest = RequestDataFactory.buildNewLimsRequestFromJson(
 //                updatedRequestData.getJsonString());
 //
-//        Boolean hasUpdates = requestService.requestHasMetadataUpdates(origRequest.getLatestRequestMetadata(),
+//        Boolean hasUpdates =
+//    requestService.requestHasMetadataUpdates(origRequest.getLatestRequestMetadata(),
 //                updatedRequest.getLatestRequestMetadata(), Boolean.TRUE);
 //        Assertions.assertThat(hasUpdates).isTrue();
 //

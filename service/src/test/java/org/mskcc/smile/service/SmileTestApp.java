@@ -1,5 +1,5 @@
 package org.mskcc.smile.service;
-//
+
 //import org.mskcc.cmo.messaging.Gateway;
 //import org.mskcc.cmo.messaging.utils.SSLUtils;
 //import org.mskcc.smile.commons.JsonComparator;
@@ -21,7 +21,7 @@ package org.mskcc.smile.service;
 //import org.springframework.boot.test.mock.mockito.MockBean;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-//
+
 ///**
 // *
 // * @author ochoaa

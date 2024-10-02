@@ -83,12 +83,14 @@ public class CorrectCmoPatientIdHandlerTest {
 //        // mock request id: MOCKREQUEST1_B
 //        MockJsonTestData request1Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest1JsonDataWith2T2N");
-//        SmileRequest request1 = RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
+//        SmileRequest request1 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request1Data.getJsonString());
 //        requestService.saveRequest(request1);
 //        // mock request id: 145145_IM
 //        MockJsonTestData request5Data = mockDataUtils.mockedRequestJsonDataMap
 //                .get("mockIncomingRequest5JsonPtMultiSamples");
-//        SmileRequest request5 = RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
+//        SmileRequest request5 =
+//    RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
 //        requestService.saveRequest(request5);
 //    }
 //

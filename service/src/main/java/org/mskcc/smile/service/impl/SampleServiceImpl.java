@@ -471,7 +471,8 @@ public class SampleServiceImpl implements SmileSampleService {
         List<SmileSampleIdMapping> sampleIdsList = new ArrayList<>();
         for (UUID smileSampleId : sampleIds) {
             SampleMetadata sm = sampleRepository.findLatestSampleMetadataBySmileId(smileSampleId);
-            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getPrimaryId(), sm.getImportDate()));
+            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getPrimaryId(),
+                    sm.getImportDate()));
             sampleIdsList.add(new SmileSampleIdMapping(smileSampleId, sm));
         }
         return sampleIdsList;
@@ -509,7 +510,8 @@ public class SampleServiceImpl implements SmileSampleService {
 
     private List<SampleMetadata> getSampleMetadataWithStatus(List<SampleMetadata> smList) {
         for (SampleMetadata sm : smList) {
-            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getPrimaryId(), sm.getImportDate()));
+            sm.setStatus(sampleRepository.findStatusForSampleMetadataById(sm.getPrimaryId(),
+                    sm.getImportDate()));
         }
         return smList;
     }
