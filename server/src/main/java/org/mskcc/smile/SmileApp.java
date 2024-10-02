@@ -28,7 +28,6 @@ import org.springframework.stereotype.Controller;
         "org.mskcc.smile.commons.*", "org.mskcc.smile.*"})
 @Controller
 @EnableCaching
-//@Import(SmileConfiguration.class)
 public class SmileApp implements CommandLineRunner {
     private static final Log LOG = LogFactory.getLog(SmileApp.class);
 

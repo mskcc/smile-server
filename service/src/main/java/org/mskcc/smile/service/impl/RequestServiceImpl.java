@@ -79,10 +79,10 @@ public class RequestServiceImpl implements SmileRequestService {
         // is compare the size of the current request metadata history and
         // compare the size after the update?
         List<RequestMetadata> currentMetadataList = requestRepository
-                .findRequestMetadataHistoryById(request.getIgoRequestId());
+                .findRequestMetadataHistoryByRequestId(request.getIgoRequestId());
         requestRepository.save(request);
         List<RequestMetadata> updatedMetadataList = requestRepository
-                .findRequestMetadataHistoryById(request.getIgoRequestId());
+                .findRequestMetadataHistoryByRequestId(request.getIgoRequestId());
         if (updatedMetadataList.size() != (currentMetadataList.size() + 1)) {
             StringBuilder builder = new StringBuilder();
             builder.append("Failed to update the Request-level metadata for request id: ")
@@ -105,7 +105,7 @@ public class RequestServiceImpl implements SmileRequestService {
         }
         // get request metadata and sample metadata for request if exists
         List<RequestMetadata> requestMetadataList =
-                getRequestMetadataWithStatus(requestId);
+                requestRepository.findRequestMetadataHistoryByRequestId(requestId);
         request.setRequestMetadataList(requestMetadataList);
         List<SmileSample> smileSampleList = sampleService.getResearchSamplesByRequestId(requestId);
         request.setSmileSampleList(smileSampleList);
@@ -228,7 +228,7 @@ public class RequestServiceImpl implements SmileRequestService {
 
     @Override
     public List<RequestMetadata> getRequestMetadataHistory(String reqId) {
-        return requestRepository.findRequestMetadataHistoryById(reqId);
+        return requestRepository.findRequestMetadataHistoryByRequestId(reqId);
     }
 
     @Override
@@ -256,15 +256,5 @@ public class RequestServiceImpl implements SmileRequestService {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setLenient(Boolean.FALSE);
         return df;
-    }
-
-    private List<RequestMetadata> getRequestMetadataWithStatus(String requestId) {
-        List<RequestMetadata> requestMetadataList =
-                requestRepository.findRequestMetadataHistoryById(requestId);
-        // attach status to request metadata
-        for (RequestMetadata rm: requestMetadataList) {
-            rm.setStatus(requestRepository.findStatusForRequestMetadataById(rm.getId()));
-        }
-        return requestMetadataList;
     }
 }

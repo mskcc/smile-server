@@ -18,7 +18,7 @@ import org.neo4j.ogm.typeconversion.UuidStringConverter;
  *
  * @author ochoaa
  */
-@NodeEntity
+@NodeEntity(label = "Tempo")
 public class Tempo implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
@@ -28,16 +28,12 @@ public class Tempo implements Serializable {
     private Boolean billed;
     private String billedBy;
     private String costCenter;
-    //@Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
     @Relationship(type = "HAS_EVENT", direction = Relationship.Direction.OUTGOING)
     private List<BamComplete> bamCompleteEvents;
-    //@Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
     @Relationship(type = "HAS_EVENT", direction = Relationship.Direction.OUTGOING)
     private List<QcComplete> qcCompleteEvents;
-    //@Relationship(type = "HAS_EVENT", direction = Relationship.OUTGOING)
     @Relationship(type = "HAS_EVENT", direction = Relationship.Direction.OUTGOING)
     private List<MafComplete> mafCompleteEvents;
-    //@Relationship(type = "HAS_TEMPO", direction = Relationship.INCOMING)
     @Relationship(type = "HAS_TEMPO", direction = Relationship.Direction.INCOMING)
     private SmileSample sample;
 
