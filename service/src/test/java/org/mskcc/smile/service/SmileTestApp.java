@@ -29,7 +29,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 @SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging",
         "org.mskcc.smile.commons.*", "org.mskcc.smile.*"})
 @EntityScan(basePackages = "org.mskcc.smile.model")
-@EnableNeo4jRepositories(basePackages = "org.mskcc.smile.persistence")
+@EnableNeo4jRepositories(basePackages = "org.mskcc.smile.persistence.neo4j")
 public class SmileTestApp {
     @Bean
     public SmileRequestService requestService() {
@@ -89,3 +89,4 @@ public class SmileTestApp {
     public TempoMessageHandlingServiceImpl tempoMessageHandlingService;
 
 }
+

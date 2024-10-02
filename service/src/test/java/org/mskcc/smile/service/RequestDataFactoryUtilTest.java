@@ -12,7 +12,10 @@ import org.springframework.context.annotation.Import;
  *
  * @author ochoaa
  */
-@SpringBootTest
+@SpringBootTest(
+        classes = SmileTestApp.class,
+        properties = {"spring.neo4j.authentication.username:neo4j"}
+)
 @Import(MockDataUtils.class)
 public class RequestDataFactoryUtilTest {
     @Autowired
@@ -25,8 +28,10 @@ public class RequestDataFactoryUtilTest {
      */
     @Test
     public void testResearchSamplesAndRequestDataLoading() throws Exception {
-        for (Map.Entry<String, MockJsonTestData> entry : mockDataUtils.mockedRequestJsonDataMap.entrySet()) {
-            if (!entry.getKey().startsWith("mockIncoming") && !entry.getKey().startsWith("mockValidated")) {
+        for (Map.Entry<String, MockJsonTestData> entry :
+                mockDataUtils.mockedRequestJsonDataMap.entrySet()) {
+            if (!entry.getKey().startsWith("mockIncoming")
+                    && !entry.getKey().startsWith("mockValidated")) {
                 continue;
             }
             String jsonString = entry.getValue().getJsonString();
@@ -34,3 +39,4 @@ public class RequestDataFactoryUtilTest {
         }
     }
 }
+

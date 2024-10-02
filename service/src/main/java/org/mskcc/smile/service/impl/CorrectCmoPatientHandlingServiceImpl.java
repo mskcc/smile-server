@@ -20,6 +20,7 @@ import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileSample;
+import org.mskcc.smile.model.Status;
 import org.mskcc.smile.service.CorrectCmoPatientHandlingService;
 import org.mskcc.smile.service.CrdbMappingService;
 import org.mskcc.smile.service.SmilePatientService;
@@ -117,6 +118,7 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                         for (SmileSample sample : samplesByOldCmoPatient) {
                             SampleMetadata updatedMetadata = sample.getLatestSampleMetadata();
                             updatedMetadata.setCmoPatientId(newCmoPtId);
+                            updatedMetadata.setStatus(new Status());
 
                             // research samples need a new label as well
                             if (sample.getSampleCategory().equals("research")) {

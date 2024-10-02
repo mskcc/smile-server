@@ -61,7 +61,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
     private Map<String, String> cmoSampleIdFields;
     @Convert(MapStringConverter.class)
     private Map<String, String> additionalProperties = new HashMap<>();
-    @Relationship(type = "HAS_STATUS", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_STATUS", direction = Relationship.Direction.OUTGOING)
     private Status status;
 
     public SampleMetadata() {}
