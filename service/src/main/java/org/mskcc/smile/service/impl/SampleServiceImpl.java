@@ -60,7 +60,7 @@ public class SampleServiceImpl implements SmileSampleService {
             sample) throws Exception {
         // sample to return
         SmileSample toReturn;
-        fetchAndLoadPatientDetails(sample);
+        sample = fetchAndLoadPatientDetails(sample);
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
         if (existingSample == null) {
@@ -69,6 +69,7 @@ public class SampleServiceImpl implements SmileSampleService {
             toReturn = sample;
         } else {
             // populate existing sample details and check if there are actual updates to persist
+            // note that a patient swap may have happened already at this point
             existingSample = getSmileSample(existingSample.getSmileSampleId());
             SampleMetadata existingMetadata = existingSample.getLatestSampleMetadata();
             SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
@@ -169,7 +170,7 @@ public class SampleServiceImpl implements SmileSampleService {
         // handle the scenario where a patient node does not already exist in the database
         // to prevent any null pointer exceptions (a situation that had arose in some test dmp sample cases)
         if (patientService.getPatientByCmoPatientId(patient.getCmoPatientId().getValue()) == null) {
-            patientService.savePatientMetadata(patient);
+            patient = patientService.savePatientMetadata(patient);
             sample.setPatient(patient);
         }
 
@@ -200,7 +201,8 @@ public class SampleServiceImpl implements SmileSampleService {
                 }
             }
             if (patientUpdated) {
-                sample.setPatient(patientService.savePatientMetadata(patientByLatestCmoId));
+                patientByLatestCmoId = patientService.savePatientMetadata(patientByLatestCmoId);
+                sample.setPatient(patientByLatestCmoId);
             } else {
                 sample.setPatient(patientByLatestCmoId);
             }
@@ -219,11 +221,8 @@ public class SampleServiceImpl implements SmileSampleService {
                     newPatient.addPatientAlias(new PatientAlias(matcher.group(), "dmpId"));
                 }
             }
-            patientService.savePatientMetadata(newPatient);
+            newPatient = patientService.savePatientMetadata(newPatient);
             sample.setPatient(newPatient);
-            // remove sample-to-patient relationship from former patient node
-            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(),
-                    patient.getSmilePatientId());
             return sample;
         }
 
@@ -232,8 +231,6 @@ public class SampleServiceImpl implements SmileSampleService {
         // and the former sample-to-patient relationship needs to be removed
         if (!patient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())) {
             sample.setPatient(patientByLatestCmoId);
-            sampleRepository.removeSamplePatientRelationship(sample.getSmileSampleId(),
-                    patient.getSmilePatientId());
             return sample;
 
         }

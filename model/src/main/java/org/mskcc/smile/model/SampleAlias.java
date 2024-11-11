@@ -1,12 +1,10 @@
 package org.mskcc.smile.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
 
 /**
  * Node entity representing the linked sample entity from an external system.
@@ -18,9 +16,6 @@ public class SampleAlias implements Serializable {
     private Long id;
     private String value;
     private String namespace;
-    @JsonIgnore
-    @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.OUTGOING)
-    private SmileSample sampleMetadata;
 
     public SampleAlias() {}
 
@@ -48,14 +43,6 @@ public class SampleAlias implements Serializable {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
-    }
-
-    public SmileSample getSampleMetadata() {
-        return sampleMetadata;
-    }
-
-    public void setSampleMetadata(SmileSample sampleMetadata) {
-        this.sampleMetadata = sampleMetadata;
     }
 
     @Override

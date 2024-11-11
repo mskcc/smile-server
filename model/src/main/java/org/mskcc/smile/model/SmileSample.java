@@ -167,6 +167,9 @@ public class SmileSample implements Serializable {
         SampleMetadata latestSampleMetadata = getLatestSampleMetadata();
 
         latestSampleMetadata.setId(null);
+        // prevent having multiple sample metdata nodes pointing to the same status node
+        latestSampleMetadata.setStatus(sampleMetadata.getStatus());
+        // apply updates from igo data received
         latestSampleMetadata.setCmoPatientId(sampleMetadata.getCmoPatientId());
         latestSampleMetadata.setInvestigatorSampleId(sampleMetadata.getInvestigatorSampleId());
         latestSampleMetadata.setSampleName(sampleMetadata.getSampleName());

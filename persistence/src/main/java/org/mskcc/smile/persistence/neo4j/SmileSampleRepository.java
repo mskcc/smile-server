@@ -16,9 +16,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID> {
-    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[hsm:HAS_METADATA]->(sm: SampleMetadata)"
-            + "-[hss:HAS_STATUS]->(ss: Status) "
+    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[hsm:HAS_METADATA]->(sm: SampleMetadata) "
             + "MATCH (s)<-[isa:IS_ALIAS]-(sa: SampleAlias) "
+            + "OPTIONAL MATCH (sm)-[hss:HAS_STATUS]->(ss: Status) "
             + "OPTIONAL MATCH (s)-[ht:HAS_TEMPO]->(t: Tempo) "
             + "OPTIONAL MATCH (t)-[hbe:HAS_EVENT]->(bc: BamComplete) "
             + "OPTIONAL MATCH (t)-[hqe:HAS_EVENT]->(qc: QcComplete) "
@@ -30,8 +30,8 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "RETURN s")
     SmileSample findSampleByPrimaryId(@Param("primaryId") String primaryId);
 
-    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})"
-            + "MATCH (s)-[:HAS_METADATA]->(sm: SampleMetadata)-[hs:HAS_STATUS]->(ss: Status) "
+    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata) "
+            + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
             + "RETURN sm, hs, ss")
     List<SampleMetadata> findAllSampleMetadataListBySampleId(@Param("smileSampleId") UUID smileSampleId);
 
@@ -69,7 +69,8 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (sa :SampleAlias {value:$value, namespace: $namespace})"
             + "-[:IS_ALIAS]->(s: Sample)"
-            + "-[:HAS_METADATA]->(sm: SampleMetadata)-[hs:HAS_STATUS]->(ss: Status) "
+            + "-[:HAS_METADATA]->(sm: SampleMetadata) "
+            + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
             + "RETURN sm, hs, ss")
     List<SampleMetadata> findSampleMetadataHistoryByNamespaceValue(
             @Param("namespace") String namespace, @Param("value") String value);
@@ -84,8 +85,8 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "WHERE sm.importDate >= $inputDate RETURN DISTINCT s.smileSampleId")
     List<UUID> findSamplesByLatestImportDate(@Param("inputDate") String inputDate);
 
-    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata)"
-            + "-[hs:HAS_STATUS]->(ss: Status) "
+    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata) "
+            + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
             + "RETURN sm, hs, ss ORDER BY sm.importDate DESC LIMIT 1")
     SampleMetadata findLatestSampleMetadataBySmileId(@Param("smileSampleId") UUID smileSampleId);
 
