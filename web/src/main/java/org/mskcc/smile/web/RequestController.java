@@ -3,7 +3,9 @@ package org.mskcc.smile.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,6 +169,12 @@ public class RequestController {
         }
 
         String getEndDate() {
+            if (endDate == null || endDate.isEmpty()) {
+                // set end date to today's date
+                SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                return dt.format(date);
+            }
             return endDate;
         }
 
