@@ -25,12 +25,12 @@ public interface SmileSampleService {
     List<PublishedSmileSample> getPublishedSmileSamplesByCmoPatientId(String cmoPatientId)
             throws Exception;
     List<SmileSample> getSamplesByCmoPatientId(String cmoPatientId) throws Exception;
-    SmileSample getDetailedSmileSample(SmileSample sample) throws Exception;
     SmileSample getClinicalSampleByDmpId(String dmpId) throws Exception;
     List<SmileSample> getSamplesByCategoryAndCmoPatientId(String cmoPatientId,
             String sampleCategory) throws Exception;
     void updateSamplePatientRelationship(UUID smileSampleId, UUID smilePatientId);
     List<SmileSampleIdMapping> getSamplesByDate(String inputDate);
+    SmileSample getDetailedSampleByInputId(String inputId) throws Exception;
     SmileSample getSampleByInputId(String inputId) throws Exception;
     void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId);
     Boolean sampleExistsByInputId(String primaryId);

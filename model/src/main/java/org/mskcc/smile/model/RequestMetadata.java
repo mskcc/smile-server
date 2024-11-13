@@ -14,7 +14,7 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
     private String igoRequestId;
     private String requestMetadataJson;
     private String importDate;
-    @Relationship(type = "HAS_STATUS", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_STATUS", direction = Relationship.Direction.OUTGOING)
     private Status status;
 
     /**

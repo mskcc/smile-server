@@ -1,8 +1,6 @@
 package org.mskcc.smile.service.impl;
 
-import java.util.List;
 import java.util.UUID;
-import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.persistence.neo4j.SmilePatientRepository;
 import org.mskcc.smile.service.SmilePatientService;
@@ -26,17 +24,7 @@ public class PatientServiceImpl implements SmilePatientService {
 
     @Override
     public SmilePatient getPatientByCmoPatientId(String cmoPatientId) {
-        SmilePatient patient = patientRepository.findPatientByCmoPatientId(cmoPatientId);
-        if (patient != null) {
-            List<PatientAlias> aliases = patientRepository.findPatientAliasesByPatient(patient);
-            patient.setPatientAliases(aliases);
-        }
-        return patient;
-    }
-
-    @Override
-    public UUID getPatientIdBySample(UUID smileSampleId) {
-        return patientRepository.findPatientIdBySample(smileSampleId);
+        return patientRepository.findPatientByCmoPatientId(cmoPatientId);
     }
 
     @Override
@@ -52,5 +40,10 @@ public class PatientServiceImpl implements SmilePatientService {
     @Transactional(rollbackFor = {Exception.class})
     public void deletePatient(SmilePatient patient) {
         patientRepository.deletePatientAndAliases(patient);
+    }
+
+    @Override
+    public SmilePatient getPatientBySampleSmileId(UUID smileSampleId) {
+        return patientRepository.findPatientBySampleSmileId(smileSampleId);
     }
 }
