@@ -3,7 +3,7 @@ package org.mskcc.smile.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.dmp.DmpSampleMetadata;
@@ -11,17 +11,24 @@ import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  *
  * @author ochoaa
  */
-@SpringBootTest
+@SpringBootTest(
+        classes = SmileTestApp.class,
+        properties = {"spring.neo4j.authentication.username:neo4j"}
+)
+@Testcontainers
 @Import(MockDataUtils.class)
 public class SampleDataFactoryUtilTest {
     private final ObjectMapper mapper = new ObjectMapper();
+
     @Autowired
     private MockDataUtils mockDataUtils;
+
     private Map<String, SampleMetadata> expectedConvertedDmpSampleValues
             = initExpectedConvertedDmpSampleValues();
 
@@ -46,8 +53,9 @@ public class SampleDataFactoryUtilTest {
                     || !sampleMetadata.getSampleType().equals(expected.getSampleType())
                     || !sampleMetadata.getSex().equals(expected.getSex())
                     || !sampleMetadata.getTumorOrNormal().equals(expected.getTumorOrNormal())) {
-                Assert.fail("Resolved values in dmp sample " + dmpSample.getDmpSampleId() + " do not match "
-                        + "expected values in: " + expected.toString());
+                Assertions.fail("Resolved values in dmp sample "
+                        + dmpSample.getDmpSampleId() + " do not match "
+                        + expected.toString());
             }
         }
     }
@@ -98,3 +106,4 @@ public class SampleDataFactoryUtilTest {
         return map;
     }
 }
+

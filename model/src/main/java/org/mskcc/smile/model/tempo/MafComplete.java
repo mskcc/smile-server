@@ -10,7 +10,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
  * Represents a MAF Complete entity.
  * @author qu8n
  */
-@NodeEntity
+@NodeEntity(label = "MafComplete")
 public class MafComplete implements Serializable {
     @Id @GeneratedValue
     private Long id;

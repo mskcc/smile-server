@@ -13,7 +13,7 @@ public class SmileProject implements Serializable {
     @Id
     private String igoProjectId;
     private String namespace;
-    @Relationship(type = "HAS_REQUEST", direction = Relationship.OUTGOING)
+    @Relationship(type = "HAS_REQUEST", direction = Relationship.Direction.OUTGOING)
     private List<SmileRequest> requestList;
 
     public SmileProject() {}
@@ -73,5 +73,4 @@ public class SmileProject implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-
 }

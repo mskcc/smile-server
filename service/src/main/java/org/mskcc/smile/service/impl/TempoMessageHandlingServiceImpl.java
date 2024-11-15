@@ -112,7 +112,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         // first determine if sample exists by the provided primary id
                         String sampleId = bcEvent.getKey();
                         BamComplete bamComplete = bcEvent.getValue();
-                        SmileSample sample = sampleService.getSampleByInputId(sampleId);
+                        SmileSample sample = sampleService.getDetailedSampleByInputId(sampleId);
                         if (sample != null) {
                             String primaryId = sample.getPrimarySampleAlias();
                             // merge and/or create tempo bam complete event to sample
@@ -137,6 +137,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of BAM complete event", e);
                 }
+                bamCompleteHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -159,7 +160,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         // first determine if sample exists by the provided primary id
                         String sampleId = qcEvent.getKey();
                         QcComplete qcComplete = qcEvent.getValue();
-                        SmileSample sample = sampleService.getSampleByInputId(sampleId);
+                        SmileSample sample = sampleService.getDetailedSampleByInputId(sampleId);
                         if (sample != null) {
                             String primaryId = sample.getPrimarySampleAlias();
                             // merge and/or create tempo qc complete event to sample
@@ -183,6 +184,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of BAM complete event", e);
                 }
+                qcCompleteHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -205,15 +207,15 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         // first determine if sample exists by the provided primary id
                         String sampleId = mcEvent.getKey();
                         MafComplete mafComplete = mcEvent.getValue();
-                        SmileSample sample = sampleService.getSampleByInputId(sampleId);
+                        SmileSample sample = sampleService.getDetailedSampleByInputId(sampleId);
                         if (sample != null) {
                             String primaryId = sample.getPrimarySampleAlias();
 
                             // resolve normal primary id since cmo sample id might have been provided
                             // in the incoming NATS message from TEMPO - if sample does not exist then
                             // simply keep the provided input id as is
-                            SmileSample normalSample
-                                    = sampleService.getSampleByInputId(mafComplete.getNormalPrimaryId());
+                            SmileSample normalSample = sampleService
+                                    .getDetailedSampleByInputId(mafComplete.getNormalPrimaryId());
                             if (normalSample != null) {
                                 mafComplete.setNormalPrimaryId(normalSample.getPrimarySampleAlias());
                             }
@@ -240,6 +242,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of MAF complete event", e);
                 }
+                mafCompleteHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -292,6 +295,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of Cohort complete event", e);
                 }
+                cohortCompleteHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -316,7 +320,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         // however this check will make extra sure that the primary id received
                         // in the nats message actually exists in the database before conducting
                         // further operations in the db
-                        SmileSample sample = sampleService.getSampleByInputId(billing.getPrimaryId());
+                        SmileSample sample = sampleService.getDetailedSampleByInputId(billing.getPrimaryId());
                         if (sample != null) {
                             StringBuilder builder = new StringBuilder();
                             builder.append("Updating billing information for sample: ")
@@ -338,6 +342,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of sample billing data", e);
                 }
+                sampleBillingHandlerShutdownLatch.countDown();
             }
         }
     }
@@ -501,7 +506,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + bamCompleteJson + "\n\n");
                     Map<String, String> bamCompleteMap =
                             (Map<String, String>) NatsMsgUtil.convertObjectFromString(
                                     bamCompleteJson, new TypeReference<Map<String, String>>() {});
@@ -535,7 +539,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + qcCompleteJson + "\n\n");
                     Map<String, String> qcCompleteMap =
                             (Map<String, String>) NatsMsgUtil.convertObjectFromString(
                                     qcCompleteJson, new TypeReference<Map<String, String>>() {});
@@ -570,7 +573,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + mafCompleteJson + "\n\n");
                     Map<String, String> mafCompleteMap =
                             (Map<String, String>) NatsMsgUtil.convertObjectFromString(
                                     mafCompleteJson, new TypeReference<Map<String, String>>() {});
@@ -607,7 +609,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + cohortCompleteJson + "\n\n");
                     CohortCompleteJson cohortCompleteData =
                             (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
                                     cohortCompleteJson, new TypeReference<CohortCompleteJson>() {});
@@ -633,7 +634,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    System.out.println("Extracted message contents =\n\n" + billingJson + "\n\n");
                     SampleBillingJson billing =
                             (SampleBillingJson) NatsMsgUtil.convertObjectFromString(
                                     billingJson, new TypeReference<SampleBillingJson>() {});

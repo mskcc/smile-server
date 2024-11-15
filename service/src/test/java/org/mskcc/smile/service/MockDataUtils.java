@@ -41,7 +41,6 @@ public final class MockDataUtils {
     // expected patient-sample counts (research and clinical)
     public final Map<String, Integer> EXPECTED_PATIENT_SAMPLES_COUNT = initExpectedPatientSamplesCount();
 
-
     /**
      * Inits the mocked tempo data map.
      * @throws IOException
