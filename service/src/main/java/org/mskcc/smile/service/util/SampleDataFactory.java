@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleAlias;
 import org.mskcc.smile.model.SampleMetadata;
@@ -28,6 +31,8 @@ public class SampleDataFactory {
     private static final Pattern DMP_NORMAL_REGEX = Pattern.compile("P-\\d*-N\\d*-.*$");
     private static final SimpleDateFormat DMP_DATE_TUMOR_SEQ_FORMAT =
             new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss zzz");
+    private static final Log LOG = LogFactory.getLog(SampleDataFactory.class);
+
     private static Map<Integer, String> dmpClinicalMetastasisValuesMap
             = initDmpClinicalMetastasisValuesMap();
 
@@ -188,11 +193,18 @@ public class SampleDataFactory {
         return sampleMetadata;
     }
 
-    private static String resolveDmpCollectionYear(String dmpDateTumorSequencing) throws ParseException {
-        Date dmpDateSequenced = DMP_DATE_TUMOR_SEQ_FORMAT.parse(dmpDateTumorSequencing);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dmpDateSequenced);
-        return String.valueOf(calendar.get(Calendar.YEAR));
+    private static String resolveDmpCollectionYear(String dmpDateTumorSequencing) {
+        try {
+            Date dmpDateSequenced = DMP_DATE_TUMOR_SEQ_FORMAT.parse(dmpDateTumorSequencing);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(dmpDateSequenced);
+            return String.valueOf(calendar.get(Calendar.YEAR));
+        } catch (ParseException e) {
+            LOG.error("Could not resolve DMP tumor sequencing date into value for sample metadata "
+                    + "'collection year': " + dmpDateTumorSequencing + " - returning empty string "
+                            + "since collection year isn't an essential field.", e);
+            return "";
+        }
     }
 
     private static String resolveDmpSampleType(Integer isMetastasis) {
