@@ -28,3 +28,5 @@ mockRequest1eNullStringBaitSet	incoming_requests/mocked_request1e_null_string_ba
 mockIncomingRequest1JsonDataWithLibraryUpdate	incoming_requests/mocked_request1_complete_tumor_normal_updated_libraries.json	Mock incoming request json with 2 tumor samples and 2 matching normals. Updated libraries for one sample.
 mockRequest7SamplesMissingPids	incoming_requests/mocked_request7_samples_missing_pids.json	Mock request where 3 of 4 samples are missing CMO patient IDs.
 mockValidatedRequest7SamplesMissingPids	other_mocked_data/mocked_validated_request7_samples_missing_pids.json	Request JSON after going through validation and sanity checks in request filter. Based on 'mockRequest7SamplesMissingPids'.
+mockIncomingRequest8DupCmoLabels	incoming_requests/mocked_request8_duplicate_cmo_labels.json	Mock incoming request json with 2 normals with the same CMO labels.
+mockPublishedRequest8DupCmoLabels	published_requests/outgoing_mocked_request8_duplicate_cmo_labels.json	Mock request json with 2 normals with the same CMO labels.

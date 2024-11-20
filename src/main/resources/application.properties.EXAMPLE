@@ -66,6 +66,7 @@ consumers.dmp_sample_update_topic=
 request_reply.patient_samples_topic=
 request_reply.crdb_mapping_topic=
 request_reply.cmo_label_generator_topic=
+request_reply.samples_by_cmo_label_topic=
 
 # cmo patient id correction topics
 smile.correct_cmoptid_topic=

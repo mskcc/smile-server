@@ -36,7 +36,9 @@ public class SmileSample implements Serializable {
     private String datasource;
     private Boolean revisable;
 
-    public SmileSample() {}
+    public SmileSample() {
+        this.revisable = Boolean.TRUE;
+    }
 
     public UUID getSmileSampleId() {
         return smileSampleId;

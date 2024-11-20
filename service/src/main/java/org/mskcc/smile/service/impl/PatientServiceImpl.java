@@ -17,9 +17,8 @@ public class PatientServiceImpl implements SmilePatientService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public SmilePatient savePatientMetadata(SmilePatient patient) {
-        SmilePatient result = patientRepository.save(patient);
-        patient.setSmilePatientId(result.getSmilePatientId());
-        return patient;
+        UUID smilePatientId = patientRepository.save(patient).getSmilePatientId();
+        return patientRepository.findPatientByPatientSmileId(smilePatientId);
     }
 
     @Override

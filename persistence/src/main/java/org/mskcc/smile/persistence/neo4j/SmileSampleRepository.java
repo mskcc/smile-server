@@ -26,9 +26,13 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "RETURN s, hsm, sm, hss, ss, isa, sa, ht, t, hbe, bc, hqe, qc, hme, mc")
     SmileSample findSampleBySampleSmileId(@Param("smileSampleId") UUID smileSampleId);
 
-    @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId})"
+    @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
             + "RETURN s")
     SmileSample findSampleByPrimaryId(@Param("primaryId") String primaryId);
+
+    @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {cmoSampleName: $cmoSampleName}) "
+            + "RETURN s")
+    List<SmileSample> findSamplesByCmoSampleName(@Param("cmoSampleName") String cmoSampleName);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "

@@ -61,6 +61,7 @@ public class SampleServiceImpl implements SmileSampleService {
         // sample to return
         SmileSample toReturn;
         sample = fetchAndLoadPatientDetails(sample);
+
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
         if (existingSample == null) {
@@ -110,7 +111,7 @@ public class SampleServiceImpl implements SmileSampleService {
                 }
                 // save updates to patient we are swapping to if applicable
                 if (updatedPatientAliases) {
-                    patientService.savePatientMetadata(patientToSwapTo);
+                    patientToSwapTo = patientService.savePatientMetadata(patientToSwapTo);
                 }
                 existingSample.setPatient(patientToSwapTo);
             }
@@ -169,7 +170,9 @@ public class SampleServiceImpl implements SmileSampleService {
 
         // handle the scenario where a patient node does not already exist in the database
         // to prevent any null pointer exceptions (a situation that had arose in some test dmp sample cases)
-        if (patientService.getPatientByCmoPatientId(patient.getCmoPatientId().getValue()) == null) {
+        SmilePatient patientByPatientCmoId
+                = patientService.getPatientByCmoPatientId(patient.getCmoPatientId().getValue());
+        if (patientByPatientCmoId == null) {
             patient = patientService.savePatientMetadata(patient);
             sample.setPatient(patient);
         }
@@ -190,7 +193,8 @@ public class SampleServiceImpl implements SmileSampleService {
 
         // scenario where we are checking for an update to the existing patient and is linked to the
         // sample in the database but may contain updates (i.e., a new patient alias)
-        if (patient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())) {
+        if (patient.getCmoPatientId().getValue().equals(sampleMetadata.getCmoPatientId())
+                && patientByLatestCmoId != null) {
             // go through the new patient aliases and indicator for whether a
             // new patient alias was added to the existing patient
             Boolean patientUpdated = Boolean.FALSE;
@@ -476,5 +480,25 @@ public class SampleServiceImpl implements SmileSampleService {
             detailedSamples.add(getSmileSample(s.getSmileSampleId()));
         }
         return detailedSamples;
+    }
+
+    @Override
+    public List<SmileSample> getSamplesByCmoSampleName(String cmoSampleName) throws Exception {
+        List<SmileSample> samples = sampleRepository.findSamplesByCmoSampleName(cmoSampleName);
+        if  (samples == null) {
+            return new ArrayList<>();
+        }
+
+        List<SmileSample> toReturn = new ArrayList<>();
+        for (SmileSample s : samples) {
+            SampleMetadata sm = sampleRepository.findLatestSampleMetadataBySmileId(s.getSmileSampleId());
+            // ignore cases where latest sample metadata does not match the cmo sample name we're looking for
+            if (!sm.getCmoSampleName().equals(cmoSampleName)) {
+                continue;
+            }
+            SmileSample detailedSample = getSmileSample(s.getSmileSampleId());
+            toReturn.add(detailedSample);
+        }
+        return toReturn;
     }
 }

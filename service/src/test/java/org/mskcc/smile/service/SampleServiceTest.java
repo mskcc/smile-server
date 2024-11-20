@@ -152,6 +152,12 @@ public class SampleServiceTest {
                 RequestDataFactory.buildNewLimsRequestFromJson(request5Data.getJsonString());
         requestService.saveRequest(request5);
 
+        // mock request id: MOCKREQUEST8_D
+        MockJsonTestData request8Data = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest8DupCmoLabels");
+        SmileRequest request8 = RequestDataFactory.buildNewLimsRequestFromJson(request8Data.getJsonString());
+        requestService.saveRequest(request8);
+
         //persist all mocked clinical data
         for (MockJsonTestData mockJsonTestData : mockDataUtils.mockedDmpMetadataMap.values()) {
             DmpSampleMetadata dmpSample = mapper.readValue(mockJsonTestData.getJsonString(),
@@ -693,6 +699,19 @@ public class SampleServiceTest {
                 Assertions.assertTrue(hasUpdates);
             }
         }
+    }
+
+    /**
+     * Test just confirms that we can fetch all samples given a CMO label.
+     * - these samples are from mocked request MOCKREQUEST8_D
+     * @throws Exception
+     */
+    @Test
+    @Order(23)
+    public void testDuplicateCmoSampleLabels() throws Exception {
+        String cmoLabel = "C-MP636AP-N001-d";
+        List<SmileSample> samplesMatchingLabels = sampleService.getSamplesByCmoSampleName(cmoLabel);
+        Assertions.assertEquals(2, samplesMatchingLabels.size());
     }
 }
 
