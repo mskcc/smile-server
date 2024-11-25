@@ -31,6 +31,9 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
     @Value("${request_reply.patient_samples_topic}")
     private String PATIENT_SAMPLES_REQREPLY_TOPIC;
 
+    @Value("${request_reply.samples_by_cmo_label_topic}")
+    private String SAMPLES_BY_CMO_LABEL_REQREPLY_TOPIC;
+
     @Value("${request_reply.crdb_mapping_topic}")
     private String CRDB_MAPPING_REQREPLY_TOPIC;
 
@@ -49,9 +52,12 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
     private static final ExecutorService exec = Executors.newCachedThreadPool();
     private static final BlockingQueue<ReplyInfo> patientSamplesReqReplyQueue =
         new LinkedBlockingQueue<ReplyInfo>();
+    private static final BlockingQueue<ReplyInfo> samplesByCmoLabelReqReplyQueue =
+        new LinkedBlockingQueue<ReplyInfo>();
     private static final BlockingQueue<ReplyInfo> crdbMappingReqReplyQueue =
         new LinkedBlockingQueue<ReplyInfo>();
     private static CountDownLatch patientSamplesHandlerShutdownLatch;
+    private static CountDownLatch samplesByCmoLabelHandlerShutdownLatch;
     private static CountDownLatch crdbMappingHandlerShutdownLatch;
     private static Gateway messagingGateway;
 
@@ -115,6 +121,45 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
     }
 
+    private class SamplesByCmoLabelReqReplyHandler implements Runnable {
+
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        SamplesByCmoLabelReqReplyHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    // reply info request message contains cmo sample label
+                    ReplyInfo replyInfo = samplesByCmoLabelReqReplyQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (replyInfo != null) {
+                        List<SmileSample> matchingSamples =
+                                sampleService.getSamplesByCmoSampleName(replyInfo.getRequestMessage());
+                        List<SampleMetadata> sampleMetadataList = new ArrayList<>();
+                        for (SmileSample sample : matchingSamples) {
+                            sampleMetadataList.add(sample.getLatestSampleMetadata());
+                        }
+                        messagingGateway.replyPublish(replyInfo.getReplyTo(),
+                                mapper.writeValueAsString(sampleMetadataList));
+                    }
+                    if (interrupted && samplesByCmoLabelReqReplyQueue.isEmpty()) {
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during request handling", e);
+                }
+            }
+            samplesByCmoLabelHandlerShutdownLatch.countDown();
+        }
+    }
+
     private class CrdbMappingReqReplyHandler implements Runnable {
 
         final Phaser phaser;
@@ -159,6 +204,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         if (!initialized) {
             messagingGateway = gateway;
             setupPatientSamplesHandler(messagingGateway, this);
+            setupSamplesByCmoLabelHandler(messagingGateway, this);
             setupCrdbMappingHandler(messagingGateway, this);
             initializeRequestReplyHandlers();
             initialized = true;
@@ -177,6 +223,19 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         } else {
             LOG.error("Shutdown initiated, not accepting PatientIds: " + patientId);
             throw new IllegalStateException("Shutdown initiated, not handling any more patientIds");
+        }
+    }
+
+    @Override
+    public void samplesByCmoLabelHandler(String cmoLabel, String replyTo) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            samplesByCmoLabelReqReplyQueue.put(new ReplyInfo(cmoLabel, replyTo));
+        } else {
+            LOG.error("Shutdown initiated, not accepting CMO label req-reply: " + cmoLabel);
+            throw new IllegalStateException("Shutdown initiated, not handling any more CMO labels");
         }
     }
 
@@ -200,6 +259,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
         exec.shutdownNow();
         patientSamplesHandlerShutdownLatch.await();
+        samplesByCmoLabelHandlerShutdownLatch.await();
         crdbMappingHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
@@ -217,6 +277,28 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
                                 + " - message will not be added to request-reply queue");
                     } else {
                         requestReplyHandlingServiceImpl.patientSamplesHandler(
+                                new String(msg.getData()), msg.getReplyTo());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void setupSamplesByCmoLabelHandler(Gateway gateway,
+            RequestReplyHandlingServiceImpl requestReplyHandlingServiceImpl)
+            throws Exception {
+        gateway.replySub(SAMPLES_BY_CMO_LABEL_REQREPLY_TOPIC, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                LOG.info("Received message on topic: " + SAMPLES_BY_CMO_LABEL_REQREPLY_TOPIC);
+                try {
+                    if (StringUtils.isBlank(new String(msg.getData()))) {
+                        LOG.error("Expected a CMO label but message received is empty: " + msg
+                                + " - message will not be added to request-reply queue");
+                    } else {
+                        requestReplyHandlingServiceImpl.samplesByCmoLabelHandler(
                                 new String(msg.getData()), msg.getReplyTo());
                     }
                 } catch (Exception e) {
@@ -253,6 +335,15 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
         patientSamplesPhaser.arriveAndAwaitAdvance();
 
+        samplesByCmoLabelHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
+        final Phaser samplesByCmoLabelPhaser = new Phaser();
+        samplesByCmoLabelPhaser.register();
+        for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
+            samplesByCmoLabelPhaser.register();
+            exec.execute(new SamplesByCmoLabelReqReplyHandler(samplesByCmoLabelPhaser));
+        }
+        samplesByCmoLabelPhaser.arriveAndAwaitAdvance();
+
         crdbMappingHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
         final Phaser crdbMappingPhaser = new Phaser();
         crdbMappingPhaser.register();
@@ -262,5 +353,4 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
         crdbMappingPhaser.arriveAndAwaitAdvance();
     }
-
 }
