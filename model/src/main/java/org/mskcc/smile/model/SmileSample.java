@@ -166,30 +166,28 @@ public class SmileSample implements Serializable {
      * @throws java.text.ParseException
      */
     public void applyIgoLimsUpdates(SampleMetadata sampleMetadata) throws ParseException {
+        // this is the metadata with the igo overrides to apply
         SampleMetadata latestSampleMetadata = getLatestSampleMetadata();
 
-        latestSampleMetadata.setId(null);
-        // prevent having multiple sample metdata nodes pointing to the same status node
-        latestSampleMetadata.setStatus(sampleMetadata.getStatus());
-        // apply updates from igo data received
-        latestSampleMetadata.setCmoPatientId(sampleMetadata.getCmoPatientId());
-        latestSampleMetadata.setInvestigatorSampleId(sampleMetadata.getInvestigatorSampleId());
-        latestSampleMetadata.setSampleName(sampleMetadata.getSampleName());
-        latestSampleMetadata.setCmoInfoIgoId(sampleMetadata.getCmoInfoIgoId());
-        latestSampleMetadata.setOncotreeCode(sampleMetadata.getOncotreeCode());
-        latestSampleMetadata.setTubeId(sampleMetadata.getTubeId());
-        latestSampleMetadata.setSpecies(sampleMetadata.getSpecies());
-        latestSampleMetadata.setSex(sampleMetadata.getSex());
-        latestSampleMetadata.setTumorOrNormal(sampleMetadata.getTumorOrNormal());
-        latestSampleMetadata.setSampleType(sampleMetadata.getSampleType());
-        latestSampleMetadata.setPreservation(sampleMetadata.getPreservation());
-        latestSampleMetadata.setSampleClass(sampleMetadata.getSampleClass());
-        latestSampleMetadata.setSampleOrigin(sampleMetadata.getSampleOrigin());
-        latestSampleMetadata.setTissueLocation(sampleMetadata.getTissueLocation());
-        latestSampleMetadata.setGenePanel(sampleMetadata.getGenePanel());
-        latestSampleMetadata.setIgoComplete(sampleMetadata.getIgoComplete());
-        latestSampleMetadata.setBaitSet(sampleMetadata.getBaitSet());
-        addSampleMetadata(latestSampleMetadata);
+        sampleMetadata.setId(null);
+        sampleMetadata.setCmoPatientId(latestSampleMetadata.getCmoPatientId());
+        sampleMetadata.setInvestigatorSampleId(latestSampleMetadata.getInvestigatorSampleId());
+        sampleMetadata.setSampleName(latestSampleMetadata.getSampleName());
+        sampleMetadata.setCmoInfoIgoId(latestSampleMetadata.getCmoInfoIgoId());
+        sampleMetadata.setOncotreeCode(latestSampleMetadata.getOncotreeCode());
+        sampleMetadata.setTubeId(latestSampleMetadata.getTubeId());
+        sampleMetadata.setSpecies(latestSampleMetadata.getSpecies());
+        sampleMetadata.setSex(latestSampleMetadata.getSex());
+        sampleMetadata.setTumorOrNormal(latestSampleMetadata.getTumorOrNormal());
+        sampleMetadata.setSampleType(latestSampleMetadata.getSampleType());
+        sampleMetadata.setPreservation(latestSampleMetadata.getPreservation());
+        sampleMetadata.setSampleClass(latestSampleMetadata.getSampleClass());
+        sampleMetadata.setSampleOrigin(latestSampleMetadata.getSampleOrigin());
+        sampleMetadata.setTissueLocation(latestSampleMetadata.getTissueLocation());
+        sampleMetadata.setGenePanel(latestSampleMetadata.getGenePanel());
+        sampleMetadata.setIgoComplete(latestSampleMetadata.getIgoComplete());
+        sampleMetadata.setBaitSet(latestSampleMetadata.getBaitSet());
+        addSampleMetadata(sampleMetadata);
     }
 
     public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
