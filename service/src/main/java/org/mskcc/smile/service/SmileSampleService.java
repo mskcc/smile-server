@@ -36,4 +36,5 @@ public interface SmileSampleService {
     Boolean sampleExistsByInputId(String primaryId);
     List<SmileSample> getSamplesByCohortId(String cohortId) throws Exception;
     List<SmileSample> getSamplesByCmoSampleName(String cmoSampleName) throws Exception;
+    List<SmileSample> getSamplesByAltId(String altId) throws Exception;
 }
