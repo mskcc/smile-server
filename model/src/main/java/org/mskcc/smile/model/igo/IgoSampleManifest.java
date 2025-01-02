@@ -16,6 +16,7 @@ public class IgoSampleManifest {
     private String cmoPatientId;
     private String cmoSampleName;
     private String sampleName;
+    private String altid;
     private String baitSet;
     private String cfDNA2dBarcode;
     private String cmoInfoIgoId;
@@ -68,6 +69,14 @@ public class IgoSampleManifest {
 
     public void setSampleName(String sampleName) {
         this.sampleName = sampleName;
+    }
+
+    public String getAltid() {
+        return altid;
+    }
+
+    public void setAltid(String altid) {
+        this.altid = altid;
     }
 
     public String getBaitSet() {
