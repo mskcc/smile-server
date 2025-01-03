@@ -1,6 +1,6 @@
 {
   "requestId": "MOCKREQUEST9_D",
-  "recipe": "GENESET101_BAITS",
+  "recipe": "HC_IMPACT",
   "projectManagerName": "Bar, Foo",
   "piEmail": "request8pi@mskcc.org",
   "labHeadName": "Foo Bar",
@@ -62,13 +62,13 @@
       "specimenType": "PDX",
       "sampleOrigin": "Tissue",
       "tissueLocation": "",
-      "baitSet": "GENESET101_BAITS",
+      "baitSet": "IMPACT505_BAITS",
       "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
         "sampleType": "Tissue",
         "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
+        "recipe": "HC_IMPACT"
       },
       "status": {
         "validationStatus": true,
@@ -122,13 +122,13 @@
       "specimenType": "Blood",
       "sampleOrigin": "Whole Blood",
       "tissueLocation": "",
-      "baitSet": "GENESET101_BAITS",
+      "baitSet": "IDT_Exome_v2_FP_BAITS",
       "igoComplete": true,
       "cmoSampleIdFields": {
         "naToExtract": "",
         "sampleType": "Whole Blood",
         "normalizedPatientId": "MRN_REDACTED",
-        "recipe": "GENESET101_BAITS"
+        "recipe": "WES_Human"
       },
       "status": {
         "validationStatus": true,
