@@ -16,7 +16,7 @@
   "bicAnalysis": false,
   "samples": [
     {
-      "altId": "AB9-ABC",
+      "altid": "AB9-ABC",
       "cmoSampleName": "",
       "sampleName": "XXX002_P3_12345_L1",
       "cmoSampleClass": "Primary",
@@ -76,7 +76,7 @@
       }
     },
     {
-      "altId": "AB9-ABC",
+      "altid": "AB9-ABC",
       "cmoSampleName": "",
       "sampleName": "01-0012345a",
       "cmoSampleClass": "Normal",
