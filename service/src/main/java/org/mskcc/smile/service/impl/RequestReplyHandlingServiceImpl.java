@@ -34,6 +34,9 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
     @Value("${request_reply.samples_by_cmo_label_topic}")
     private String SAMPLES_BY_CMO_LABEL_REQREPLY_TOPIC;
 
+    @Value("${request_reply.samples_by_alt_id_topic}")
+    private String SAMPLES_BY_ALT_ID_REQREPLY_TOPIC;
+
     @Value("${request_reply.crdb_mapping_topic}")
     private String CRDB_MAPPING_REQREPLY_TOPIC;
 
@@ -54,10 +57,13 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         new LinkedBlockingQueue<ReplyInfo>();
     private static final BlockingQueue<ReplyInfo> samplesByCmoLabelReqReplyQueue =
         new LinkedBlockingQueue<ReplyInfo>();
+    private static final BlockingQueue<ReplyInfo> samplesByAltIdReqReplyQueue =
+        new LinkedBlockingQueue<ReplyInfo>();
     private static final BlockingQueue<ReplyInfo> crdbMappingReqReplyQueue =
         new LinkedBlockingQueue<ReplyInfo>();
     private static CountDownLatch patientSamplesHandlerShutdownLatch;
     private static CountDownLatch samplesByCmoLabelHandlerShutdownLatch;
+    private static CountDownLatch samplesByAltIdHandlerShutdownLatch;
     private static CountDownLatch crdbMappingHandlerShutdownLatch;
     private static Gateway messagingGateway;
 
@@ -160,6 +166,45 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         }
     }
 
+    private class SamplesByAltIdReqReplyHandler implements Runnable {
+
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        SamplesByAltIdReqReplyHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    // reply info request message contains cmo sample label
+                    ReplyInfo replyInfo = samplesByAltIdReqReplyQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (replyInfo != null) {
+                        List<SmileSample> matchingSamples =
+                                sampleService.getSamplesByAltId(replyInfo.getRequestMessage());
+                        List<SampleMetadata> sampleMetadataList = new ArrayList<>();
+                        for (SmileSample sample : matchingSamples) {
+                            sampleMetadataList.add(sample.getLatestSampleMetadata());
+                        }
+                        messagingGateway.replyPublish(replyInfo.getReplyTo(),
+                                mapper.writeValueAsString(sampleMetadataList));
+                    }
+                    if (interrupted && samplesByAltIdReqReplyQueue.isEmpty()) {
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during request handling", e);
+                }
+            }
+            samplesByAltIdHandlerShutdownLatch.countDown();
+        }
+    }
+
     private class CrdbMappingReqReplyHandler implements Runnable {
 
         final Phaser phaser;
@@ -205,6 +250,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             messagingGateway = gateway;
             setupPatientSamplesHandler(messagingGateway, this);
             setupSamplesByCmoLabelHandler(messagingGateway, this);
+            setupSamplesByAltIdHandler(messagingGateway, this);
             setupCrdbMappingHandler(messagingGateway, this);
             initializeRequestReplyHandlers();
             initialized = true;
@@ -236,6 +282,19 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         } else {
             LOG.error("Shutdown initiated, not accepting CMO label req-reply: " + cmoLabel);
             throw new IllegalStateException("Shutdown initiated, not handling any more CMO labels");
+        }
+    }
+
+    @Override
+    public void samplesByAltIdHandler(String altId, String replyTo) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            samplesByAltIdReqReplyQueue.put(new ReplyInfo(altId, replyTo));
+        } else {
+            LOG.error("Shutdown initiated, not accepting alt ID req-reply: " + altId);
+            throw new IllegalStateException("Shutdown initiated, not handling any more alt IDs");
         }
     }
 
@@ -308,6 +367,28 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         });
     }
 
+    private void setupSamplesByAltIdHandler(Gateway gateway,
+            RequestReplyHandlingServiceImpl requestReplyHandlingServiceImpl)
+            throws Exception {
+        gateway.replySub(SAMPLES_BY_ALT_ID_REQREPLY_TOPIC, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                LOG.info("Received message on topic: " + SAMPLES_BY_ALT_ID_REQREPLY_TOPIC);
+                try {
+                    if (StringUtils.isBlank(new String(msg.getData()))) {
+                        LOG.error("Expected an alt ID but message received is empty: " + msg
+                                + " - message will not be added to request-reply queue");
+                    } else {
+                        requestReplyHandlingServiceImpl.samplesByAltIdHandler(
+                                new String(msg.getData()), msg.getReplyTo());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     private void setupCrdbMappingHandler(Gateway gateway,
             RequestReplyHandlingServiceImpl requestReplyHandlingServiceImpl)
             throws Exception {
@@ -343,6 +424,15 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             exec.execute(new SamplesByCmoLabelReqReplyHandler(samplesByCmoLabelPhaser));
         }
         samplesByCmoLabelPhaser.arriveAndAwaitAdvance();
+
+        samplesByAltIdHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
+        final Phaser samplesByAltIdPhaser = new Phaser();
+        samplesByAltIdPhaser.register();
+        for (int lc = 0; lc < NUM_NEW_REQUEST_HANDLERS; lc++) {
+            samplesByAltIdPhaser.register();
+            exec.execute(new SamplesByAltIdReqReplyHandler(samplesByAltIdPhaser));
+        }
+        samplesByAltIdPhaser.arriveAndAwaitAdvance();
 
         crdbMappingHandlerShutdownLatch = new CountDownLatch(NUM_NEW_REQUEST_HANDLERS);
         final Phaser crdbMappingPhaser = new Phaser();

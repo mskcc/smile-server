@@ -30,3 +30,5 @@ mockRequest7SamplesMissingPids	incoming_requests/mocked_request7_samples_missing
 mockValidatedRequest7SamplesMissingPids	other_mocked_data/mocked_validated_request7_samples_missing_pids.json	Request JSON after going through validation and sanity checks in request filter. Based on 'mockRequest7SamplesMissingPids'.
 mockIncomingRequest8DupCmoLabels	incoming_requests/mocked_request8_duplicate_cmo_labels.json	Mock incoming request json with 2 normals with the same CMO labels.
 mockPublishedRequest8DupCmoLabels	published_requests/outgoing_mocked_request8_duplicate_cmo_labels.json	Mock request json with 2 normals with the same CMO labels.
+mockIncomingRequest9DupAltIds	incoming_requests/mocked_request9_duplicate_alt_ids.json	Mock incoming request json with 2 different samples with the same alt ID.
+mockPublishedRequest9DupAltIds	published_requests/outgoing_mocked_request9_duplicate_alt_ids.json	Mock request json with 2 different samples with the same alt ID.

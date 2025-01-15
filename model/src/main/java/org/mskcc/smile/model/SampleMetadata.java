@@ -96,6 +96,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
         this.qcReports =  igoSampleManifest.getQcReports();
         this.libraries = igoSampleManifest.getLibraries();
         this.cmoSampleIdFields = igoSampleManifest.getCmoSampleIdFields();
+        addAdditionalProperty("altId", igoSampleManifest.getAltid());
     }
 
     /**
@@ -378,6 +379,10 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
 
     public void addAdditionalProperty(String property, String value) {
         this.additionalProperties.put(property, value);
+    }
+
+    public String getAdditionalProperty(String property) {
+        return additionalProperties.get(property);
     }
 
     public Status getStatus() {

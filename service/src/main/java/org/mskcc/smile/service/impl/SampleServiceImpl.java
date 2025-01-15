@@ -501,4 +501,26 @@ public class SampleServiceImpl implements SmileSampleService {
         }
         return toReturn;
     }
+
+    @Override
+    public List<SmileSample> getSamplesByAltId(String altId) throws Exception {
+        // alt id is stored in the sample metadata 'additionalProperties' map which
+        // is stored in the database as a string so the query needs to specify the
+        // altId property name as well: "altId":"<altId>"
+        String altIdSearchTerm = new StringBuilder("\"altId\":\"")
+                .append(altId)
+                .append("\"").toString();
+
+        List<SmileSample> samples = sampleRepository.findSamplesByAltId(altIdSearchTerm);
+        if  (samples == null) {
+            return new ArrayList<>();
+        }
+
+        List<SmileSample> toReturn = new ArrayList<>();
+        for (SmileSample s : samples) {
+            SmileSample detailedSample = getSmileSample(s.getSmileSampleId());
+            toReturn.add(detailedSample);
+        }
+        return toReturn;
+    }
 }
