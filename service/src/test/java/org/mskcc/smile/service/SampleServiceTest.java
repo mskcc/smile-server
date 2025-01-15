@@ -158,6 +158,12 @@ public class SampleServiceTest {
         SmileRequest request8 = RequestDataFactory.buildNewLimsRequestFromJson(request8Data.getJsonString());
         requestService.saveRequest(request8);
 
+        // mock request id: MOCKREQUEST9_D
+        MockJsonTestData request9Data = mockDataUtils.mockedRequestJsonDataMap
+                .get("mockIncomingRequest9DupAltIds");
+        SmileRequest request9 = RequestDataFactory.buildNewLimsRequestFromJson(request9Data.getJsonString());
+        requestService.saveRequest(request9);
+
         //persist all mocked clinical data
         for (MockJsonTestData mockJsonTestData : mockDataUtils.mockedDmpMetadataMap.values()) {
             DmpSampleMetadata dmpSample = mapper.readValue(mockJsonTestData.getJsonString(),
@@ -713,5 +719,12 @@ public class SampleServiceTest {
         List<SmileSample> samplesMatchingLabels = sampleService.getSamplesByCmoSampleName(cmoLabel);
         Assertions.assertEquals(2, samplesMatchingLabels.size());
     }
-}
 
+    @Test
+    @Order(24)
+    public void testDuplicateAltIds() throws Exception {
+        String altId = "AB9-ABC";
+        List<SmileSample> samplesMatchingAltIds = sampleService.getSamplesByAltId(altId);
+        Assertions.assertEquals(2, samplesMatchingAltIds.size());
+    }
+}
