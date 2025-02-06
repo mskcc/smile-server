@@ -7,14 +7,18 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.smile.commons.JsonComparator;
+import org.mskcc.smile.commons.generated.Smile.TempoSample;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.Cohort;
+import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
 import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,8 +39,11 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Autowired
     private TempoService tempoService;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    @Value("${tempo.release-samples}")
+    private String TEMPO_RELEASE_SAMPLES_TOPIC;
 
+    private ObjectMapper mapper = new ObjectMapper();
+    private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(CohortCompleteServiceImpl.class);
 
     @Override
@@ -44,6 +51,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
         Set<String> unknownSamples = new HashSet<>(); // tracks unknown samples in smile
+        Set<TempoSample> tempoSamples = new HashSet<>(); // tracks known samples for publishing to cBioPortal
         // create cohort-sample relationships
         LOG.info("Adding cohort-sample edges in database for " + sampleIds.size() + " samples...");
         for (String sampleId : sampleIds) {
@@ -51,11 +59,20 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
             SmileSample sample = sampleService.getDetailedSampleByInputId(sampleId);
             if (sample != null) {
                 String primaryId = sample.getPrimarySampleAlias();
+                Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                 // init default tempo data for sample if sample does not already have tempo data
-                if (tempoService.getTempoDataBySamplePrimaryId(primaryId) == null) {
-                    tempoService.initAndSaveDefaultTempoData(primaryId);
+                if (tempo == null) {
+                    tempo = tempoService.initAndSaveDefaultTempoData(primaryId);
                 }
                 cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryId);
+                // build tempo sample object for publishing to cBioPortal
+                TempoSample tempoSample = TempoSample.newBuilder()
+                    .setPrimaryId(primaryId)
+                    .setCmoSampleName(sample.getLatestSampleMetadata().getCmoSampleName())
+                    .setAccessLevel(tempo.getAccessLevel())
+                    .setCustodianInformation(tempo.getCustodianInformation())
+                    .build();
+                tempoSamples.add(tempoSample);
             } else {
                 unknownSamples.add(sampleId);
             }
