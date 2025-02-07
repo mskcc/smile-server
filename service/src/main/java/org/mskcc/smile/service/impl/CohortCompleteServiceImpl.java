@@ -41,7 +41,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Autowired
     private TempoService tempoService;
 
-    @Value("${tempo.release-samples}")
+    @Value("${tempo.release_samples_topic}")
     private String TEMPO_RELEASE_SAMPLES_TOPIC;
 
     private ObjectMapper mapper = new ObjectMapper();
