@@ -277,6 +277,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             // tumor-normal pairs are provided as map entries - this block
                             // compiles them into a set list of strings
                             cohortCompleteService.saveCohort(cohort, ccJson.getTumorNormalPairsAsSet());
+
+                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet());
                         } else if (cohortCompleteService.hasUpdates(existingCohort,
                                 cohort)) {
                             LOG.info("Received updates for cohort: " + ccJson.getCohortId());
@@ -290,43 +292,11 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
                             // persist updates to db
                             cohortCompleteService.saveCohort(existingCohort, newSamples);
+
+                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet());
                         } else {
                             LOG.error("Cohort " + ccJson.getCohortId()
                                     + " already exists and no new updates were received.");
-                        }
-
-                        // TODO: turn this into a function inside this file and call it after each .saveCohort()
-                        Set<TempoSample> tempoSamples = new HashSet<>(); // tracks known samples for publishing to cBioPortal
-                        Set<String> tumorPrimaryIds = ccJson.getTumorPrimaryIdsAsSet();
-                        for (String primaryId : tumorPrimaryIds) {
-                            // confirm sample exists by primary id
-                            SmileSample sample = sampleService.getDetailedSampleByInputId(primaryId);
-                            if (sample != null) {
-                                Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
-                                if (tempo != null) {
-                                    // build tempo sample object for publishing to cBioPortal
-                                    TempoSample tempoSample = TempoSample.newBuilder()
-                                        .setPrimaryId(primaryId)
-                                        .setCmoSampleName(sample.getLatestSampleMetadata().getCmoSampleName())
-                                        .setAccessLevel(tempo.getAccessLevel())
-                                        .setCustodianInformation(tempo.getCustodianInformation())
-                                        .build();
-                                    tempoSamples.add(tempoSample);
-                                }
-                            }
-                        }
-                        // build and publish the sample update message to cBioPortal
-                        if (!tempoSamples.isEmpty()) {
-                            TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
-                                .addAllTempoSamples(tempoSamples)
-                                .build();
-                            try {
-                                String messageAsJsonString = JsonFormat.printer().print(tempoSampleUpdateMessage);
-                                LOG.info("Publishing TEMPO samples to cBioPortal: " + messageAsJsonString);
-                                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, messageAsJsonString);
-                            } catch (Exception e) {
-                                LOG.error("Failed to publish TEMPO samples to cBioPortal: " + e.getMessage());
-                            }
                         }
                     }
                 } catch (InterruptedException e) {
@@ -383,6 +353,53 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 }
                 sampleBillingHandlerShutdownLatch.countDown();
             }
+        }
+    }
+
+    private void publishTempoSamplesToCBioPortal(Set<String> tumorPrimaryIds) {
+        try {
+            Set<TempoSample> tempoSamples = new HashSet<>(); // valid samples to publish to cBioPortal
+            for (String primaryId : tumorPrimaryIds) {
+                try {
+                    // confirm sample exists by primary id
+                    SmileSample sample = sampleService.getDetailedSampleByInputId(primaryId);
+                    if (sample == null) {
+                        LOG.error("Sample not found with primary ID: " + primaryId);
+                        continue;
+                    }
+                    // confirm tempo data exists by primary id
+                    Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
+                    if (tempo == null) {
+                        LOG.error("Tempo data not found for sample with primary ID: " + primaryId);
+                        continue;
+                    }
+                    // build tempo sample object for publishing to cBioPortal
+                    TempoSample tempoSample = TempoSample.newBuilder()
+                        .setPrimaryId(primaryId)
+                        .setCmoSampleName(sample.getLatestSampleMetadata().getCmoSampleName())
+                        .setAccessLevel(tempo.getAccessLevel())
+                        .setCustodianInformation(tempo.getCustodianInformation())
+                        .build();
+                    tempoSamples.add(tempoSample);
+                } catch (Exception e) {
+                    LOG.error("Error processing tumor sample with primary ID: " + primaryId, e);
+                    continue;
+                }
+            }
+
+            // bundle together all valid tempo samples and publish to cBioPortal
+            if (!tempoSamples.isEmpty()) {
+                TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
+                    .addAllTempoSamples(tempoSamples)
+                    .build();
+                String messageAsJsonString = JsonFormat.printer().print(tempoSampleUpdateMessage);
+                LOG.info("Publishing TEMPO samples to cBioPortal: " + messageAsJsonString);
+                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, messageAsJsonString);
+            } else {
+                LOG.warn("No valid TEMPO samples to publish to cBioPortal");
+            }
+        } catch (Exception e) {
+            LOG.error("Error during publishing of TEMPO samples to cBioPortal", e);
         }
     }
 
