@@ -1,0 +1,207 @@
+{
+  "requestId": "45102",
+  "requestName": "UserLibrary",
+  "recipe": "ChIPSeq",
+  "projectManagerName": "",
+  "piEmail": "",
+  "labHeadName": "John Smith",
+  "labHeadEmail": "smithj@address.org",
+  "investigatorName": "Llama Pajama",
+  "investigatorEmail": "llamap@address.org",
+  "dataAnalystName": "",
+  "dataAnalystEmail": "",
+  "otherContactEmails": "othercontact@mail.com",
+  "dataAccessEmails": "othecontact@mail.com",
+  "qcAccessEmails": "othercontact@mail.com",
+  "strand": null,
+  "libraryType": null,
+  "isCmoRequest": false,
+  "bicAnalysis": false,
+  "samples": [
+    {
+      "igoId": "45102_3",
+      "altid": "ABC-123",
+      "cmoSampleName": "",
+      "sampleName": "IP90",
+      "cmoSampleClass": "",
+      "cmoPatientId": "",
+      "investigatorSampleId": "IP90",
+      "oncoTreeCode": null,
+      "tumorOrNormal": "Normal",
+      "tissueLocation": "",
+      "specimenType": "",
+      "sampleOrigin": "",
+      "preservation": "",
+      "collectionYear": "",
+      "sex": "",
+      "species": "Mouse",
+      "tubeId": "",
+      "cfDNA2dBarcode": null,
+      "baitSet": "null",
+      "estimatedPurity": null,
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "INTRN_8989",
+              "flowCellId": "KLMDTRE5",
+              "readLength": null,
+              "runDate": "2023-10-04",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/Project_45102/Sample_IP90_IGO_45102_3/IP90_IGO_45102_3_S3_L001_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/Project_45102/Sample_IP90_IGO_45102_3/IP90_IGO_45102_3_S3_L001_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "",
+        "sampleType": "DNA Library",
+        "recipe": "ChIPSeq"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
+      }
+    },
+    {
+      "igoId": "45102_1",
+      "altid": "AC9-G4R",
+      "cmoSampleName": "",
+      "sampleName": "PL92",
+      "cmoSampleClass": "",
+      "cmoPatientId": "",
+      "investigatorSampleId": "PL92",
+      "oncoTreeCode": null,
+      "tumorOrNormal": "Normal",
+      "tissueLocation": "",
+      "specimenType": "",
+      "sampleOrigin": "",
+      "preservation": "",
+      "collectionYear": "",
+      "sex": "",
+      "species": "Mouse",
+      "tubeId": "",
+      "cfDNA2dBarcode": null,
+      "baitSet": "null",
+      "estimatedPurity": null,
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "INTRN_8989",
+              "flowCellId": "KLMDTRE5",
+              "readLength": null,
+              "runDate": "2023-10-04",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/Project_45102/Sample_PL92_IGO_45102_1/PL92_IGO_45102_1_S1_L001_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/Project_45102/Sample_PL92_IGO_45102_1/PL92_IGO_45102_1_S1_L001_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "",
+        "sampleType": "DNA Library",
+        "recipe": "ChIPSeq"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
+      }
+    },
+    {
+      "igoId": "45102_2",
+      "altid": "ALP-PP2",
+      "cmoSampleName": "",
+      "sampleName": "TN34",
+      "cmoSampleClass": "",
+      "cmoPatientId": "",
+      "investigatorSampleId": "TN34",
+      "oncoTreeCode": null,
+      "tumorOrNormal": "Normal",
+      "tissueLocation": "",
+      "specimenType": "",
+      "sampleOrigin": "",
+      "preservation": "",
+      "collectionYear": "",
+      "sex": "",
+      "species": "Mouse",
+      "tubeId": "",
+      "cfDNA2dBarcode": null,
+      "baitSet": "null",
+      "estimatedPurity": null,
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "INTRN_8989",
+              "flowCellId": "KLMDTRE5",
+              "readLength": null,
+              "runDate": "2023-10-04",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/Project_45102/Sample_TN34_IGO_45102_2/TN34_IGO_45102_2_S2_L001_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/Project_45102/Sample_TN34_IGO_45102_2/TN34_IGO_45102_2_S2_L001_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "igoComplete": true,
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "",
+        "sampleType": "DNA Library",
+        "recipe": "ChIPSeq"
+      },
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
+      }
+    }
+  ],
+  "pooledNormals": null,
+  "projectId": "45102"
+}

@@ -220,7 +220,7 @@ public class RequestServiceTest {
 
         // requestAfterInitialUpdates will have this new version of metadata and will be
         // referenced again below
-        requestService.updateRequestMetadata(updatedRequest.getLatestRequestMetadata(), Boolean.TRUE);
+        requestService.updateRequestMetadata(updatedRequest.getLatestRequestMetadata(), Boolean.FALSE);
         Assertions.assertEquals(2, requestService.getRequestMetadataHistory(requestId).size());
 
         // now load instance of RequestMetadata ONLY from the mocked data object
@@ -307,7 +307,7 @@ public class RequestServiceTest {
 
         Boolean hasUpdates =
                 requestService.requestHasMetadataUpdates(origRequest.getLatestRequestMetadata(),
-                        updatedRequest.getLatestRequestMetadata(), Boolean.TRUE);
+                        updatedRequest.getLatestRequestMetadata(), Boolean.FALSE);
         Assertions.assertTrue(hasUpdates);
 
         requestService.saveRequest(updatedRequest);

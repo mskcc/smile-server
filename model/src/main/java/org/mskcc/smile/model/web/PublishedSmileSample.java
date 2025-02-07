@@ -72,8 +72,8 @@ public class PublishedSmileSample {
         this.cmoSampleName = latestSampleMetadata.getCmoSampleName();
         this.sampleName = latestSampleMetadata.getSampleName();
         this.sampleType = latestSampleMetadata.getSampleType();
+        // leaving this here in case this field ends up supporting non-cmo patient ids instead
         this.cmoPatientId = latestSampleMetadata.getCmoPatientId();
-        this.smilePatientId = smileSample.getPatient().getSmilePatientId();
         this.primaryId = latestSampleMetadata.getPrimaryId();
         this.investigatorSampleId = latestSampleMetadata.getInvestigatorSampleId();
         this.species = latestSampleMetadata.getSpecies();
@@ -96,9 +96,12 @@ public class PublishedSmileSample {
         this.libraries = latestSampleMetadata.getLibraries();
         this.sampleAliases = smileSample.getSampleAliases();
         this.cmoSampleIdFields = latestSampleMetadata.getCmoSampleIdFields();
-        this.patientAliases = smileSample.getPatient().getPatientAliases();
         this.additionalProperties = latestSampleMetadata.getAdditionalProperties();
         this.status = latestSampleMetadata.getStatus();
+        if (smileSample.getPatient() != null) {
+            this.smilePatientId = smileSample.getPatient().getSmilePatientId();
+            this.patientAliases = smileSample.getPatient().getPatientAliases();
+        }
     }
 
     public UUID getSmileSampleId() {

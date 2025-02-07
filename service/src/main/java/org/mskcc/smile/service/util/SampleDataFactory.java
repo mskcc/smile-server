@@ -62,22 +62,28 @@ public class SampleDataFactory {
         }
         sampleMetadata.addAdditionalProperty("igoRequestId", requestId);
         if (isCmoRequest != null) {
-            sampleMetadata.addAdditionalProperty("isCmoSample", Boolean.TRUE.toString());
+            sampleMetadata.addAdditionalProperty("isCmoSample", String.valueOf(isCmoRequest));
         }
         sampleMetadata.setStatus(sampleStatus);
 
         SmileSample sample = new SmileSample();
         sample.addSampleMetadata(sampleMetadata);
         sample.setSampleCategory("research");
+        sample.setDatasource("igo");
         sample.setSampleClass(sampleMetadata.getTumorOrNormal());
         sample.addSampleAlias(new SampleAlias(sampleMetadata.getPrimaryId(), "igoId"));
-        sample.addSampleAlias(new SampleAlias(
-                sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
-        sample.setDatasource("igo");
+        if (!StringUtils.isBlank(sampleMetadata.getInvestigatorSampleId())) {
+            sample.addSampleAlias(
+                    new SampleAlias(sampleMetadata.getInvestigatorSampleId(), "investigatorId"));
+        }
 
-        SmilePatient patient = new SmilePatient();
-        patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
-        sample.setPatient(patient);
+        // only create patient-sample relationship if the request is cmo and the patient id is non-empty
+        if (isCmoRequest != null && !StringUtils.isBlank(sampleMetadata.getCmoPatientId())) {
+            SmilePatient patient = new SmilePatient();
+            patient.addPatientAlias(new PatientAlias(sampleMetadata.getCmoPatientId(), "cmoId"));
+            sample.setPatient(patient);
+        }
+
         return sample;
     }
 
@@ -95,7 +101,7 @@ public class SampleDataFactory {
             IgoSampleManifest igoSampleManifest, Boolean isCmoRequest, Status sampleStatus)
             throws JsonProcessingException {
         SampleMetadata sampleMetadata = new SampleMetadata(igoSampleManifest);
-        return buildNewResearchSampleFromMetadata(requestId, sampleMetadata, null, sampleStatus);
+        return buildNewResearchSampleFromMetadata(requestId, sampleMetadata, isCmoRequest, sampleStatus);
     }
 
     /**

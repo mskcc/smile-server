@@ -1,0 +1,272 @@
+{
+  "smileRequestId": "9921fa52-c37e-4223-8f28-483eb58ef19d",
+  "igoProjectId": "45102",
+  "igoRequestId": "45102",
+  "genePanel": "ChIPSeq",
+  "projectManagerName": "",
+  "piEmail": "",
+  "labHeadName": "John Smith",
+  "labHeadEmail": "smithj@address.org",
+  "investigatorName": "Llama Pajama",
+  "investigatorEmail": "llamap@address.org",
+  "dataAnalystName": "",
+  "dataAnalystEmail": "",
+  "otherContactEmails": "othercontact@mail.com",
+  "dataAccessEmails": "othecontact@mail.com",
+  "qcAccessEmails": "othercontact@mail.com",
+  "strand": null,
+  "libraryType": null,
+  "isCmoRequest": false,
+  "bicAnalysis": false,
+  "status": {
+    "validationStatus": true,
+    "validationReport": "{}"
+  },
+  "requestJson": "{\"requestId\":\"45102\",\"projectId\":\"45102\",\"dataAccessEmails\":\"othecontact@mail.com\",\"dataAnalystEmail\":\"\",\"dataAnalystName\":\"\",\"investigatorEmail\":\"llamap@address.org\",\"investigatorName\":\"Llama Pajama\",\"labHeadEmail\":\"smithj@address.org\",\"labHeadName\":\"John Smith\",\"libraryType\":null,\"otherContactEmails\":\"othercontact@mail.com\",\"piEmail\":\"\",\"projectManagerName\":\"\",\"qcAccessEmails\":\"othercontact@mail.com\",\"recipe\":\"ChIPSeq\",\"strand\":null,\"deliveryDate\":null,\"bicAnalysis\":false,\"isCmoRequest\":false,\"samples\":[{\"igoId\":\"45102_3\",\"cmoPatientId\":\"\",\"cmoSampleName\":\"\",\"sampleName\":\"IP90\",\"altid\":\"ABC-123\",\"baitSet\":\"null\",\"cfDNA2dBarcode\":null,\"cmoInfoIgoId\":null,\"cmoSampleClass\":\"\",\"collectionYear\":\"\",\"investigatorSampleId\":\"IP90\",\"oncoTreeCode\":null,\"preservation\":\"\",\"sampleOrigin\":\"\",\"sex\":\"\",\"species\":\"Mouse\",\"specimenType\":\"\",\"tissueLocation\":\"\",\"tubeId\":\"\",\"tumorOrNormal\":\"Normal\",\"igoComplete\":true,\"qcReports\":[],\"libraries\":[{\"barcodeId\":null,\"barcodeIndex\":null,\"libraryIgoId\":null,\"libraryVolume\":null,\"libraryConcentrationNgul\":null,\"dnaInputNg\":null,\"captureConcentrationNm\":null,\"captureInputNg\":null,\"captureName\":null,\"runs\":[{\"runMode\":null,\"runId\":\"INTRN_8989\",\"flowCellId\":\"KLMDTRE5\",\"readLength\":null,\"runDate\":\"2023-10-04\",\"flowCellLanes\":[],\"fastqs\":[\"/igo/delivery/FASTQ/Project_45102/Sample_IP90_IGO_45102_3/IP90_IGO_45102_3_S3_L001_R1_001.fastq.gz\",\"/igo/delivery/FASTQ/Project_45102/Sample_IP90_IGO_45102_3/IP90_IGO_45102_3_S3_L001_R2_001.fastq.gz\"]}]}],\"cmoSampleIdFields\":{\"naToExtract\":\"\",\"normalizedPatientId\":\"\",\"sampleType\":\"DNA Library\",\"recipe\":\"ChIPSeq\"}},{\"igoId\":\"45102_1\",\"cmoPatientId\":\"\",\"cmoSampleName\":\"\",\"sampleName\":\"PL92\",\"altid\":\"AC9-G4R\",\"baitSet\":\"null\",\"cfDNA2dBarcode\":null,\"cmoInfoIgoId\":null,\"cmoSampleClass\":\"\",\"collectionYear\":\"\",\"investigatorSampleId\":\"PL92\",\"oncoTreeCode\":null,\"preservation\":\"\",\"sampleOrigin\":\"\",\"sex\":\"\",\"species\":\"Mouse\",\"specimenType\":\"\",\"tissueLocation\":\"\",\"tubeId\":\"\",\"tumorOrNormal\":\"Normal\",\"igoComplete\":true,\"qcReports\":[],\"libraries\":[{\"barcodeId\":null,\"barcodeIndex\":null,\"libraryIgoId\":null,\"libraryVolume\":null,\"libraryConcentrationNgul\":null,\"dnaInputNg\":null,\"captureConcentrationNm\":null,\"captureInputNg\":null,\"captureName\":null,\"runs\":[{\"runMode\":null,\"runId\":\"INTRN_8989\",\"flowCellId\":\"KLMDTRE5\",\"readLength\":null,\"runDate\":\"2023-10-04\",\"flowCellLanes\":[],\"fastqs\":[\"/igo/delivery/FASTQ/Project_45102/Sample_PL92_IGO_45102_1/PL92_IGO_45102_1_S1_L001_R1_001.fastq.gz\",\"/igo/delivery/FASTQ/Project_45102/Sample_PL92_IGO_45102_1/PL92_IGO_45102_1_S1_L001_R2_001.fastq.gz\"]}]}],\"cmoSampleIdFields\":{\"naToExtract\":\"\",\"normalizedPatientId\":\"\",\"sampleType\":\"DNA Library\",\"recipe\":\"ChIPSeq\"}},{\"igoId\":\"45102_2\",\"cmoPatientId\":\"\",\"cmoSampleName\":\"\",\"sampleName\":\"TN34\",\"altid\":\"ALP-PP2\",\"baitSet\":\"null\",\"cfDNA2dBarcode\":null,\"cmoInfoIgoId\":null,\"cmoSampleClass\":\"\",\"collectionYear\":\"\",\"investigatorSampleId\":\"TN34\",\"oncoTreeCode\":null,\"preservation\":\"\",\"sampleOrigin\":\"\",\"sex\":\"\",\"species\":\"Mouse\",\"specimenType\":\"\",\"tissueLocation\":\"\",\"tubeId\":\"\",\"tumorOrNormal\":\"Normal\",\"igoComplete\":true,\"qcReports\":[],\"libraries\":[{\"barcodeId\":null,\"barcodeIndex\":null,\"libraryIgoId\":null,\"libraryVolume\":null,\"libraryConcentrationNgul\":null,\"dnaInputNg\":null,\"captureConcentrationNm\":null,\"captureInputNg\":null,\"captureName\":null,\"runs\":[{\"runMode\":null,\"runId\":\"INTRN_8989\",\"flowCellId\":\"KLMDTRE5\",\"readLength\":null,\"runDate\":\"2023-10-04\",\"flowCellLanes\":[],\"fastqs\":[\"/igo/delivery/FASTQ/Project_45102/Sample_TN34_IGO_45102_2/TN34_IGO_45102_2_S2_L001_R1_001.fastq.gz\",\"/igo/delivery/FASTQ/Project_45102/Sample_TN34_IGO_45102_2/TN34_IGO_45102_2_S2_L001_R2_001.fastq.gz\"]}]}],\"cmoSampleIdFields\":{\"naToExtract\":\"\",\"normalizedPatientId\":\"\",\"sampleType\":\"DNA Library\",\"recipe\":\"ChIPSeq\"}}],\"pooledNormals\":[]}",
+  "pooledNormals": [],
+  "samples": [
+    {
+      "smileSampleId": "8b6a09da-6eb1-4e6b-891b-1a75b0307969",
+      "smilePatientId": null,
+      "primaryId": "45102_1",
+      "cmoPatientId": "",
+      "cmoSampleName": "",
+      "sampleName": "PL92",
+      "cmoInfoIgoId": null,
+      "investigatorSampleId": "PL92",
+      "importDate": "2025-02-07",
+      "sampleType": "",
+      "oncotreeCode": null,
+      "collectionYear": "",
+      "tubeId": "",
+      "cfDNA2dBarcode": null,
+      "species": "Mouse",
+      "sex": "",
+      "tumorOrNormal": "Normal",
+      "preservation": "",
+      "sampleClass": "",
+      "sampleOrigin": "",
+      "tissueLocation": "",
+      "genePanel": "ChIPSeq",
+      "baitSet": "null",
+      "datasource": "igo",
+      "igoComplete": true,
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "",
+        "sampleType": "DNA Library",
+        "recipe": "ChIPSeq"
+      },
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "INTRN_8989",
+              "flowCellId": "KLMDTRE5",
+              "readLength": null,
+              "runDate": "2023-10-04",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/Project_45102/Sample_PL92_IGO_45102_1/PL92_IGO_45102_1_S1_L001_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/Project_45102/Sample_PL92_IGO_45102_1/PL92_IGO_45102_1_S1_L001_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "sampleAliases": [
+        {
+          "value": "PL92",
+          "namespace": "investigatorId"
+        },
+        {
+          "value": "45102_1",
+          "namespace": "igoId"
+        }
+      ],
+      "patientAliases": null,
+      "additionalProperties": {
+        "isCmoSample": "false",
+        "altId": "AC9-G4R",
+        "igoRequestId": "45102"
+      }
+    },
+    {
+      "smileSampleId": "f2b4ec52-32d1-4ffa-b5af-4149848aa373",
+      "smilePatientId": null,
+      "primaryId": "45102_3",
+      "cmoPatientId": "",
+      "cmoSampleName": "",
+      "sampleName": "IP90",
+      "cmoInfoIgoId": null,
+      "investigatorSampleId": "IP90",
+      "importDate": "2025-02-07",
+      "sampleType": "",
+      "oncotreeCode": null,
+      "collectionYear": "",
+      "tubeId": "",
+      "cfDNA2dBarcode": null,
+      "species": "Mouse",
+      "sex": "",
+      "tumorOrNormal": "Normal",
+      "preservation": "",
+      "sampleClass": "",
+      "sampleOrigin": "",
+      "tissueLocation": "",
+      "genePanel": "ChIPSeq",
+      "baitSet": "null",
+      "datasource": "igo",
+      "igoComplete": true,
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "",
+        "sampleType": "DNA Library",
+        "recipe": "ChIPSeq"
+      },
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "INTRN_8989",
+              "flowCellId": "KLMDTRE5",
+              "readLength": null,
+              "runDate": "2023-10-04",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/Project_45102/Sample_IP90_IGO_45102_3/IP90_IGO_45102_3_S3_L001_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/Project_45102/Sample_IP90_IGO_45102_3/IP90_IGO_45102_3_S3_L001_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "sampleAliases": [
+        {
+          "value": "45102_3",
+          "namespace": "igoId"
+        },
+        {
+          "value": "IP90",
+          "namespace": "investigatorId"
+        }
+      ],
+      "patientAliases": null,
+      "additionalProperties": {
+        "isCmoSample": "false",
+        "altId": "ABC-123",
+        "igoRequestId": "45102"
+      }
+    },
+    {
+      "smileSampleId": "ea0fd7f6-0597-4dc3-89ea-4644eca61cd8",
+      "smilePatientId": null,
+      "primaryId": "45102_2",
+      "cmoPatientId": "",
+      "cmoSampleName": "",
+      "sampleName": "TN34",
+      "cmoInfoIgoId": null,
+      "investigatorSampleId": "TN34",
+      "importDate": "2025-02-07",
+      "sampleType": "",
+      "oncotreeCode": null,
+      "collectionYear": "",
+      "tubeId": "",
+      "cfDNA2dBarcode": null,
+      "species": "Mouse",
+      "sex": "",
+      "tumorOrNormal": "Normal",
+      "preservation": "",
+      "sampleClass": "",
+      "sampleOrigin": "",
+      "tissueLocation": "",
+      "genePanel": "ChIPSeq",
+      "baitSet": "null",
+      "datasource": "igo",
+      "igoComplete": true,
+      "status": {
+        "validationStatus": true,
+        "validationReport": "{}"
+      },
+      "cmoSampleIdFields": {
+        "naToExtract": "",
+        "normalizedPatientId": "",
+        "sampleType": "DNA Library",
+        "recipe": "ChIPSeq"
+      },
+      "qcReports": [],
+      "libraries": [
+        {
+          "barcodeId": null,
+          "barcodeIndex": null,
+          "libraryIgoId": null,
+          "libraryVolume": null,
+          "libraryConcentrationNgul": null,
+          "dnaInputNg": null,
+          "captureConcentrationNm": null,
+          "captureInputNg": null,
+          "captureName": null,
+          "runs": [
+            {
+              "runMode": null,
+              "runId": "INTRN_8989",
+              "flowCellId": "KLMDTRE5",
+              "readLength": null,
+              "runDate": "2023-10-04",
+              "flowCellLanes": [],
+              "fastqs": [
+                "/igo/delivery/FASTQ/Project_45102/Sample_TN34_IGO_45102_2/TN34_IGO_45102_2_S2_L001_R1_001.fastq.gz",
+                "/igo/delivery/FASTQ/Project_45102/Sample_TN34_IGO_45102_2/TN34_IGO_45102_2_S2_L001_R2_001.fastq.gz"
+              ]
+            }
+          ]
+        }
+      ],
+      "sampleAliases": [
+        {
+          "value": "45102_2",
+          "namespace": "igoId"
+        },
+        {
+          "value": "TN34",
+          "namespace": "investigatorId"
+        }
+      ],
+      "patientAliases": null,
+      "additionalProperties": {
+        "isCmoSample": "false",
+        "altId": "ALP-PP2",
+        "igoRequestId": "45102"
+      }
+    }
+  ]
+}

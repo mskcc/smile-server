@@ -14,6 +14,8 @@ import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.dmp.DmpSampleMetadata;
+import org.mskcc.smile.model.web.PublishedSmileRequest;
+import org.mskcc.smile.model.web.PublishedSmileSample;
 import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
 import org.mskcc.smile.persistence.neo4j.SmilePatientRepository;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
@@ -176,6 +178,13 @@ public class SampleServiceTest {
                 sampleService.saveSmileSample(clinicalSample);
             }
         }
+
+        // save mock non-cmo request: 45102
+        MockJsonTestData nonCmoRequestData
+                = mockDataUtils.mockedRequestJsonDataMap.get("mockNonCmoRequest45102");
+        SmileRequest nonCmoRequest
+                = RequestDataFactory.buildNewLimsRequestFromJson(nonCmoRequestData.getJsonString());
+        requestService.saveRequest(nonCmoRequest);
     }
 
     /**
@@ -726,5 +735,22 @@ public class SampleServiceTest {
         String altId = "AB9-ABC";
         List<SmileSample> samplesMatchingAltIds = sampleService.getSamplesByAltId(altId);
         Assertions.assertEquals(2, samplesMatchingAltIds.size());
+    }
+
+    @Test
+    @Order(25)
+    public void testNonCmoRequest() throws Exception {
+        String nonCmoRequestId = "45102";
+        SmileRequest request = requestService.getSmileRequestById(nonCmoRequestId);
+        List<SmileSample> samples = request.getSmileSampleList();
+        Assertions.assertEquals(3, samples.size());
+        for (SmileSample s : samples) {
+            Assertions.assertNull(s.getPatient());
+        }
+
+        PublishedSmileRequest r = requestService.getPublishedSmileRequestById(nonCmoRequestId);
+        for (PublishedSmileSample s : r.getSamples()) {
+            Assertions.assertNull(s.getSmilePatientId());
+        }
     }
 }
