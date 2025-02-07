@@ -1,6 +1,7 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.protobuf.util.JsonFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.commons.generated.Smile.TempoSample;
+import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.Cohort;
 import org.mskcc.smile.model.tempo.Tempo;
@@ -77,6 +79,20 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
                 unknownSamples.add(sampleId);
             }
         }
+        // build and publish the sample update message to cBioPortal
+        if (!tempoSamples.isEmpty()) {
+            TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
+                .addAllTempoSamples(tempoSamples)
+                .build();
+            try {
+                String messageAsJsonString = JsonFormat.printer().print(tempoSampleUpdateMessage);
+                LOG.info("Publishing TEMPO samples to cBioPortal: " + messageAsJsonString);
+                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, messageAsJsonString);
+            } catch (Exception e) {
+                LOG.error("Failed to publish TEMPO samples to cBioPortal: " + e.getMessage());
+            }
+        }
+
         // log and report unknown samples for reference
         if (!unknownSamples.isEmpty()) {
             StringBuilder builder = new StringBuilder();
