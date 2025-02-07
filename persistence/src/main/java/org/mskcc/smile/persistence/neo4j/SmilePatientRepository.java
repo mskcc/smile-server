@@ -17,7 +17,7 @@ public interface SmilePatientRepository extends Neo4jRepository<SmilePatient, Lo
             + "RETURN p, ia, pa")
     SmilePatient findPatientByPatientSmileId(@Param("smilePatientId") UUID smileSampleId);
 
-    @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})<-[hs:HAS_SAMPLE]-(p: Patient)"
+    @Query("OPTIONAL MATCH (s: Sample {smileSampleId: $smileSampleId})<-[hs:HAS_SAMPLE]-(p: Patient)"
             + "<-[ia:IS_ALIAS]-(pa: PatientAlias) "
             + "RETURN p, hs, ia, pa")
     SmilePatient findPatientBySampleSmileId(@Param("smileSampleId") UUID smileSampleId);

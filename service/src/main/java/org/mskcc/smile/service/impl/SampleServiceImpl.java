@@ -60,7 +60,9 @@ public class SampleServiceImpl implements SmileSampleService {
             sample) throws Exception {
         // sample to return
         SmileSample toReturn;
-        sample = fetchAndLoadPatientDetails(sample);
+        if (sample.getPatient() != null) {
+            sample = fetchAndLoadPatientDetails(sample);
+        }
 
         SmileSample existingSample =
                 sampleRepository.findSampleByPrimaryId(sample.getPrimarySampleAlias());
@@ -93,8 +95,9 @@ public class SampleServiceImpl implements SmileSampleService {
             }
 
             // determine whether a patient swap is required also
-            if (!sample.getPatient().getSmilePatientId().equals(
-                    existingSample.getPatient().getSmilePatientId())) {
+            if ((sample.getPatient() != null && existingSample.getPatient() != null)
+                    && !sample.getPatient().getSmilePatientId().equals(
+                            existingSample.getPatient().getSmilePatientId())) {
                 LOG.info("Updating sample-to-patient relationship and removing connection to patient: "
                         + existingSample.getPatient().getSmilePatientId());
                 sampleRepository.removeSamplePatientRelationship(existingSample.getSmileSampleId(),
@@ -115,6 +118,7 @@ public class SampleServiceImpl implements SmileSampleService {
                 }
                 existingSample.setPatient(patientToSwapTo);
             }
+
             sampleRepository.save(existingSample);
             toReturn = existingSample;
         }

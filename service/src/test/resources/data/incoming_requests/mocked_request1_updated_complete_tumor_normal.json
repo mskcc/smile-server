@@ -1,19 +1,19 @@
 {
   "requestId": "MOCKREQUEST1_B",
-  "recipe": "GENESET101",
+  "recipe": "UPDATED_GENESET",
   "projectManagerName": "Bar, Foo",
-  "piEmail": "request1pi@mskcc.org",
+  "piEmail": "new_request1pi@mskcc.org",
   "labHeadName": "Foo Bar",
-  "labHeadEmail": "request1pi@mskcc.org",
+  "labHeadEmail": "UPDATED_request1pi@mskcc.org",
   "investigatorName": "John Smith",
   "investigatorEmail": "NEWINVESTIGATOREMAIL@mskcc.org",
   "dataAnalystName": "Poin Dexter",
   "dataAnalystEmail": "dexterp@mskcc.org",
   "otherContactEmails": "dexterp@mskcc.org",
-  "dataAccessEmails": "",
+  "dataAccessEmails": "someaccesemaillist",
   "qcAccessEmails": "invalid-igo-update",
-  "isCmoRequest": false,
-  "bicAnalysis": false,
+  "isCmoRequest": true,
+  "bicAnalysis": true,
   "samples": [
     {
       "cmoSampleName": "C-MP789JR-X001-d",
@@ -258,11 +258,7 @@
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG_S86_R1_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_AMBIGUOUS_TTAGGCTG_S86_R2_001.fastq.gz",
     "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG_S147_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG_S147_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG_S196_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_GENESET101_TTAGGCTG_S196_R2_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT/MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT_S61_R1_001.fastq.gz",
-    "/FASTQ/Project_POOLEDNORMALS/Sample_MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT/MOUSEPOOLEDNORMAL_IGO_AMBIGUOUS_GGCGTCAT_S61_R2_001.fastq.gz"
+    "/FASTQ/Project_POOLEDNORMALS/Sample_FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG/FROZENPOOLEDNORMAL_IGO_HEMESET_v1_TTAGGCTG_S147_R2_001.fastq.gz"
   ],
   "projectId": "MOCKREQUEST1"
 }
