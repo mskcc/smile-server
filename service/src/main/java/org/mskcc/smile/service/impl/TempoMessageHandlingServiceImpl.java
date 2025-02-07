@@ -2,11 +2,14 @@ package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.protobuf.util.JsonFormat;
 import io.nats.client.Message;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.smile.commons.generated.Smile.TempoSample;
+import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
@@ -57,6 +62,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     @Value("${tempo.sample_billing_topic}")
     private String TEMPO_SAMPLE_BILLING_TOPIC;
+
+    @Value("${tempo.release_samples_topic}")
+    private String TEMPO_RELEASE_SAMPLES_TOPIC;
 
     @Value("${num.tempo_msg_handler_threads}")
     private int NUM_TEMPO_MSG_HANDLERS;
@@ -288,6 +296,40 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         } else {
                             LOG.error("Cohort " + ccJson.getCohortId()
                                     + " already exists and no new updates were received.");
+                        }
+
+                        // TODO: turn this into a function inside this file and call it after each .saveCohort()
+                        Set<TempoSample> tempoSamples = new HashSet<>(); // tracks known samples for publishing to cBioPortal
+                        Set<String> tumorPrimaryIds = ccJson.getTumorPrimaryIdsAsSet();
+                        for (String primaryId : tumorPrimaryIds) {
+                            // confirm sample exists by primary id
+                            SmileSample sample = sampleService.getDetailedSampleByInputId(primaryId);
+                            if (sample != null) {
+                                Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
+                                if (tempo != null) {
+                                    // build tempo sample object for publishing to cBioPortal
+                                    TempoSample tempoSample = TempoSample.newBuilder()
+                                        .setPrimaryId(primaryId)
+                                        .setCmoSampleName(sample.getLatestSampleMetadata().getCmoSampleName())
+                                        .setAccessLevel(tempo.getAccessLevel())
+                                        .setCustodianInformation(tempo.getCustodianInformation())
+                                        .build();
+                                    tempoSamples.add(tempoSample);
+                                }
+                            }
+                        }
+                        // build and publish the sample update message to cBioPortal
+                        if (!tempoSamples.isEmpty()) {
+                            TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
+                                .addAllTempoSamples(tempoSamples)
+                                .build();
+                            try {
+                                String messageAsJsonString = JsonFormat.printer().print(tempoSampleUpdateMessage);
+                                LOG.info("Publishing TEMPO samples to cBioPortal: " + messageAsJsonString);
+                                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, messageAsJsonString);
+                            } catch (Exception e) {
+                                LOG.error("Failed to publish TEMPO samples to cBioPortal: " + e.getMessage());
+                            }
                         }
                     }
                 } catch (InterruptedException e) {

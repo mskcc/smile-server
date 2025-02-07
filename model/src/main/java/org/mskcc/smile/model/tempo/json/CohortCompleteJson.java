@@ -122,6 +122,23 @@ public class CohortCompleteJson implements Serializable {
         return samplePrimaryIds;
     }
 
+    /**
+     * Returns a set of tumor primary ids.
+     * @return
+     */
+    public Set<String> getTumorPrimaryIdsAsSet() {
+        Set<String> primaryIds = new HashSet<>();
+        if (tumorNormalPairs != null) {
+            for (Map<String, String> pair : tumorNormalPairs) {
+                String primaryId = pair.get("primaryId");
+                if (primaryId != null) {
+                    primaryIds.add(primaryId);
+                }
+            }
+        }
+        return primaryIds;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
