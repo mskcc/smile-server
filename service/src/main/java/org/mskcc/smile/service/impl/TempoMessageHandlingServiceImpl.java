@@ -373,12 +373,23 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Tempo data not found for sample with primary ID: " + primaryId);
                         continue;
                     }
-                    // build tempo sample object for publishing to cBioPortal
+                    // validate access level and custodian information before building tempo sample
+                    String accessLevel = tempo.getAccessLevel();
+                    String custodianInfo = tempo.getCustodianInformation();
+                    if (accessLevel == null || accessLevel.trim().isEmpty()) {
+                        LOG.error("Invalid access level for sample with primary ID: " + primaryId);
+                        continue;
+                    }
+                    if (custodianInfo == null || custodianInfo.trim().isEmpty()) {
+                        LOG.error("Invalid custodian information for sample with primary ID: " + primaryId);
+                        continue;
+                    }
+                    // build tempo sample object
                     TempoSample tempoSample = TempoSample.newBuilder()
                         .setPrimaryId(primaryId)
                         .setCmoSampleName(sample.getLatestSampleMetadata().getCmoSampleName())
-                        .setAccessLevel(tempo.getAccessLevel())
-                        .setCustodianInformation(tempo.getCustodianInformation())
+                        .setAccessLevel(accessLevel)
+                        .setCustodianInformation(custodianInfo)
                         .build();
                     tempoSamples.add(tempoSample);
                 } catch (Exception e) {
