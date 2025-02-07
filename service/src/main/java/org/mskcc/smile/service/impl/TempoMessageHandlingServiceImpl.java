@@ -1,7 +1,6 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.util.JsonFormat;
 import io.nats.client.Message;
 import java.util.AbstractMap;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -80,7 +78,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(TempoMessageHandlingServiceImpl.class);
-    private final ObjectMapper mapper = new ObjectMapper();
 
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
