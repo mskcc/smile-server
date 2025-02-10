@@ -360,7 +360,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     // TODO: move this function to TempoService and TempoServiceImpl? (except for the publish part)
     // TODO: break this up into smaller functions?
-    private void publishTempoSamplesToCBioPortal(Set<String> tumorPrimaryIds) {
+    private void publishTempoSamplesToCBioPortal(Set<String> tumorPrimaryIds) throws Exception {
         // validate and build tempo samples to publish to cBioPortal
         Set<TempoSample> validTempoSamples = new HashSet<>();
         for (String primaryId : tumorPrimaryIds) {
