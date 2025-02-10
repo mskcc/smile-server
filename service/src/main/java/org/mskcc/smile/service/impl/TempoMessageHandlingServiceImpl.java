@@ -358,61 +358,63 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
+    // TODO: move this function to TempoService and TempoServiceImpl? (except for the publish part)
+    // TODO: break this up into smaller functions?
     private void publishTempoSamplesToCBioPortal(Set<String> tumorPrimaryIds) {
-        try {
-            Set<TempoSample> tempoSamples = new HashSet<>(); // valid samples to publish to cBioPortal
-            for (String primaryId : tumorPrimaryIds) {
-                try {
-                    // confirm sample exists by primary id
-                    SmileSample sample = sampleService.getDetailedSampleByInputId(primaryId);
-                    if (sample == null) {
-                        LOG.error("Sample not found with primary ID: " + primaryId);
-                        continue;
-                    }
-                    // confirm tempo data exists by primary id
-                    Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
-                    if (tempo == null) {
-                        LOG.error("Tempo data not found for sample with primary ID: " + primaryId);
-                        continue;
-                    }
-                    // validate access level and custodian information before building tempo sample
-                    String accessLevel = tempo.getAccessLevel();
-                    String custodianInfo = tempo.getCustodianInformation();
-                    if (accessLevel == null || accessLevel.trim().isEmpty()) {
-                        LOG.error("Invalid access level for sample with primary ID: " + primaryId);
-                        continue;
-                    }
-                    if (custodianInfo == null || custodianInfo.trim().isEmpty()) {
-                        LOG.error("Invalid custodian information for sample with primary ID: " + primaryId);
-                        continue;
-                    }
-                    // build tempo sample object
-                    TempoSample tempoSample = TempoSample.newBuilder()
-                        .setPrimaryId(primaryId)
-                        .setCmoSampleName(sample.getLatestSampleMetadata().getCmoSampleName())
-                        .setAccessLevel(accessLevel)
-                        .setCustodianInformation(custodianInfo)
-                        .build();
-                    tempoSamples.add(tempoSample);
-                } catch (Exception e) {
-                    LOG.error("Error processing tumor sample with primary ID: " + primaryId, e);
+        // validate and build tempo samples to publish to cBioPortal
+        Set<TempoSample> validTempoSamples = new HashSet<>();
+        for (String primaryId : tumorPrimaryIds) {
+            try {
+                // confirm sample exists by primary id
+                SmileSample sample = sampleService.getDetailedSampleByInputId(primaryId);
+                if (sample == null) {
+                    LOG.error("Sample not found with primary ID: " + primaryId);
                     continue;
                 }
-            }
-
-            // bundle together all valid tempo samples and publish to cBioPortal
-            if (!tempoSamples.isEmpty()) {
-                TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
-                    .addAllTempoSamples(tempoSamples)
+                // confirm tempo data exists by primary id
+                Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
+                if (tempo == null) {
+                    LOG.error("Tempo data not found for sample with primary ID: " + primaryId);
+                    continue;
+                }
+                // validate access level and custodian information before building tempo sample
+                String accessLevel = tempo.getAccessLevel();
+                String custodianInfo = tempo.getCustodianInformation();
+                if (accessLevel == null || accessLevel.trim().isEmpty()) {
+                    LOG.error("Invalid access level for sample with primary ID: " + primaryId);
+                    continue;
+                }
+                if (custodianInfo == null || custodianInfo.trim().isEmpty()) {
+                    LOG.error("Invalid custodian information for sample with primary ID: " + primaryId);
+                    continue;
+                }
+                // build tempo sample object
+                TempoSample tempoSample = TempoSample.newBuilder()
+                    .setPrimaryId(primaryId)
+                    .setCmoSampleName(sample.getLatestSampleMetadata().getCmoSampleName())
+                    .setAccessLevel(accessLevel)
+                    .setCustodianInformation(custodianInfo)
                     .build();
+                validTempoSamples.add(tempoSample);
+            } catch (Exception e) {
+                LOG.error("Error building to publish to cBioPortal of sample: " + primaryId, e);
+                continue;
+            }
+        }
+        // bundle together all valid tempo samples and publish to cBioPortal
+        if (!validTempoSamples.isEmpty()) {
+            TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
+                .addAllTempoSamples(validTempoSamples)
+                .build();
+            try {
                 String messageAsJsonString = JsonFormat.printer().print(tempoSampleUpdateMessage);
                 LOG.info("Publishing TEMPO samples to cBioPortal: " + messageAsJsonString);
                 messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, messageAsJsonString);
-            } else {
-                LOG.warn("No valid TEMPO samples to publish to cBioPortal");
+            } catch (Exception e) {
+                LOG.error("Error publishing TEMPO samples to cBioPortal", e);
             }
-        } catch (Exception e) {
-            LOG.error("Error during publishing of TEMPO samples to cBioPortal", e);
+        } else {
+            LOG.warn("No valid TEMPO samples to publish to cBioPortal");
         }
     }
 
