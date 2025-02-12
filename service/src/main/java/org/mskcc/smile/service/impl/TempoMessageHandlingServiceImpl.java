@@ -359,8 +359,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
-    // TODO: move this function to TempoService and TempoServiceImpl? (except for the publish part)
-    // TODO: break this up into smaller functions?
     private void publishTempoSamplesToCBioPortal(Set<String> tumorPrimaryIds) throws Exception {
         // validate and build tempo samples to publish to cBioPortal
         Set<TempoSample> validTempoSamples = new HashSet<>();
@@ -375,12 +373,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 // validate props before building tempo sample
                 String cmoSampleName = sampleService.getCmoSampleNameByPrimaryId(primaryId);
                 if (cmoSampleName == null) {
-                    // unlike accessLevel and custodianInformation, we'ok with sending samples without cmoSampleName
-                    // but we need to safeguard against null values to avoid NPEs when building the tempo sample
+                    // we'ok with publishing without a valid cmoSampleName, but we need to avoid NPEs
+                    // when building the tempo sample
                     cmoSampleName = "";
                 }
                 String accessLevel = tempo.getAccessLevel();
                 if (StringUtils.isBlank(accessLevel)) {
+                    // TODO: instead of skipping, calculate the accessLevel value based on the embargoDate
                     LOG.error("Invalid access level for sample with primary ID: " + primaryId);
                     continue;
                 }
