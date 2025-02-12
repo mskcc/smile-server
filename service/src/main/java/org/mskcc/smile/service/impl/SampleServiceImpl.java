@@ -527,4 +527,9 @@ public class SampleServiceImpl implements SmileSampleService {
         }
         return toReturn;
     }
+
+    @Override
+    public String getCmoSampleNameByPrimaryId(String primaryId) {
+        return sampleRepository.findCmoSampleNameByPrimaryId(primaryId);
+    }
 }

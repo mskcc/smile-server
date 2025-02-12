@@ -366,25 +366,25 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         Set<TempoSample> validTempoSamples = new HashSet<>();
         for (String primaryId : tumorPrimaryIds) {
             try {
-                // confirm sample exists by primary id
-                SmileSample sample = sampleService.getDetailedSampleByInputId(primaryId);
-                if (sample == null) {
-                    LOG.error("Sample not found with primary ID: " + primaryId);
-                    continue;
-                }
                 // confirm tempo data exists by primary id
                 Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                 if (tempo == null) {
                     LOG.error("Tempo data not found for sample with primary ID: " + primaryId);
                     continue;
                 }
-                // validate access level and custodian information before building tempo sample
+                // validate props before building tempo sample
+                String cmoSampleName = sampleService.getCmoSampleNameByPrimaryId(primaryId);
+                if (cmoSampleName == null) {
+                    // unlike accessLevel and custodianInformation, we'ok with sending samples without cmoSampleName
+                    // but we need to safeguard against null values to avoid NPEs when building the tempo sample
+                    cmoSampleName = "";
+                }
                 String accessLevel = tempo.getAccessLevel();
-                String custodianInformation = tempo.getCustodianInformation();
                 if (StringUtils.isBlank(accessLevel)) {
                     LOG.error("Invalid access level for sample with primary ID: " + primaryId);
                     continue;
                 }
+                String custodianInformation = tempo.getCustodianInformation();
                 if (StringUtils.isBlank(custodianInformation)) {
                     LOG.error("Invalid custodian information for sample with primary ID: " + primaryId);
                     continue;
@@ -392,7 +392,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 // build tempo sample object
                 TempoSample tempoSample = TempoSample.newBuilder()
                     .setPrimaryId(primaryId)
-                    .setCmoSampleName(sample.getLatestSampleMetadata().getCmoSampleName())
+                    .setCmoSampleName(cmoSampleName)
                     .setAccessLevel(accessLevel)
                     .setCustodianInformation(custodianInformation)
                     .build();
