@@ -367,25 +367,23 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 // confirm tempo data exists by primary id
                 Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
                 if (tempo == null) {
-                    LOG.error("Tempo data not found for sample with primary ID: " + primaryId);
+                    LOG.error("Tempo data not found for sample with Primary ID " + primaryId);
                     continue;
                 }
                 // validate props before building tempo sample
                 String cmoSampleName = sampleService.getCmoSampleNameByPrimaryId(primaryId);
-                if (cmoSampleName == null) {
-                    // we'ok with publishing without a valid cmoSampleName, but we need to avoid NPEs
-                    // when building the tempo sample
-                    cmoSampleName = "";
+                if (StringUtils.isBlank(cmoSampleName)) {
+                    LOG.error("Invalid CMO Sample Name for sample with Primary ID " + primaryId);
+                    continue;
                 }
                 String accessLevel = tempo.getAccessLevel();
                 if (StringUtils.isBlank(accessLevel)) {
-                    // TODO: instead of skipping, calculate the accessLevel value based on the embargoDate
-                    LOG.error("Invalid access level for sample with primary ID: " + primaryId);
+                    LOG.error("Invalid Access Level for sample with Primary ID " + primaryId);
                     continue;
                 }
                 String custodianInformation = tempo.getCustodianInformation();
                 if (StringUtils.isBlank(custodianInformation)) {
-                    LOG.error("Invalid custodian information for sample with primary ID: " + primaryId);
+                    LOG.error("Invalid Custodian Information for sample with Primary ID " + primaryId);
                     continue;
                 }
                 // build tempo sample object
