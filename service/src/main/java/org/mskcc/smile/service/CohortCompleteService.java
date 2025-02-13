@@ -16,5 +16,5 @@ public interface CohortCompleteService {
     Boolean hasCohortCompleteUpdates(Cohort existingCohort, Cohort cohort)
             throws Exception;
     Cohort updateCohort(Cohort cohort) throws Exception;
-    public String getInitialRunDateBySamplePrimaryId(String primaryId) throws Exception;
+    public String getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception;
 }

@@ -28,7 +28,7 @@ public class Tempo implements Serializable {
     private Boolean billed;
     private String billedBy;
     private String costCenter;
-    private String initialRunDate;
+    private String initialPipelineRunDate;
     private String embargoDate;
     @Relationship(type = "HAS_EVENT", direction = Relationship.Direction.OUTGOING)
     private List<BamComplete> bamCompleteEvents;
@@ -93,12 +93,12 @@ public class Tempo implements Serializable {
         this.costCenter = costCenter;
     }
 
-    public String getInitialRunDate() {
-        return initialRunDate;
+    public String getInitialPipelineRunDate() {
+        return initialPipelineRunDate;
     }
 
-    public void setInitialRunDate(String initialRunDate) {
-        this.initialRunDate = initialRunDate;
+    public void setInitialPipelineRunDate(String initialPipelineRunDate) {
+        this.initialPipelineRunDate = initialPipelineRunDate;
     }
 
     public String getEmbargoDate() {
