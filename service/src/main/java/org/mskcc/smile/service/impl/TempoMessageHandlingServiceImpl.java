@@ -2,8 +2,10 @@ package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.protobuf.util.JsonFormat;
 import io.nats.client.Message;
 import java.util.AbstractMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -14,11 +16,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.smile.commons.generated.Smile.TempoSample;
+import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
@@ -57,6 +62,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     @Value("${tempo.sample_billing_topic}")
     private String TEMPO_SAMPLE_BILLING_TOPIC;
+
+    @Value("${tempo.release_samples_topic}")
+    private String TEMPO_RELEASE_SAMPLES_TOPIC;
 
     @Value("${num.tempo_msg_handler_threads}")
     private int NUM_TEMPO_MSG_HANDLERS;
@@ -272,6 +280,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             // tumor-normal pairs are provided as map entries - this block
                             // compiles them into a set list of strings
                             cohortCompleteService.saveCohort(cohort, ccJson.getTumorNormalPairsAsSet());
+
+                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet());
                         } else if (cohortCompleteService.hasUpdates(existingCohort,
                                 cohort)) {
                             LOG.info("Received updates for cohort: " + ccJson.getCohortId());
@@ -285,6 +295,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
                             // persist updates to db
                             cohortCompleteService.saveCohort(existingCohort, newSamples);
+
+                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet());
                         } else {
                             LOG.error("Cohort " + ccJson.getCohortId()
                                     + " already exists and no new updates were received.");
@@ -344,6 +356,63 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 }
                 sampleBillingHandlerShutdownLatch.countDown();
             }
+        }
+    }
+
+    private void publishTempoSamplesToCBioPortal(Set<String> tumorPrimaryIds) throws Exception {
+        // validate and build tempo samples to publish to cBioPortal
+        Set<TempoSample> validTempoSamples = new HashSet<>();
+        for (String primaryId : tumorPrimaryIds) {
+            try {
+                // confirm tempo data exists by primary id
+                Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
+                if (tempo == null) {
+                    LOG.error("Tempo data not found for sample with Primary ID " + primaryId);
+                    continue;
+                }
+                // validate props before building tempo sample
+                String cmoSampleName = sampleService.getCmoSampleNameByPrimaryId(primaryId);
+                if (StringUtils.isBlank(cmoSampleName)) {
+                    LOG.error("Invalid CMO Sample Name for sample with Primary ID " + primaryId);
+                    continue;
+                }
+                String accessLevel = tempo.getAccessLevel();
+                if (StringUtils.isBlank(accessLevel)) {
+                    LOG.error("Invalid Access Level for sample with Primary ID " + primaryId);
+                    continue;
+                }
+                String custodianInformation = tempo.getCustodianInformation();
+                if (StringUtils.isBlank(custodianInformation)) {
+                    LOG.error("Invalid Custodian Information for sample with Primary ID " + primaryId);
+                    continue;
+                }
+                // build tempo sample object
+                TempoSample tempoSample = TempoSample.newBuilder()
+                    .setPrimaryId(primaryId)
+                    .setCmoSampleName(cmoSampleName)
+                    .setAccessLevel(accessLevel)
+                    .setCustodianInformation(custodianInformation)
+                    .build();
+                validTempoSamples.add(tempoSample);
+            } catch (Exception e) {
+                LOG.error("Error building to publish to cBioPortal of sample: " + primaryId, e);
+                continue;
+            }
+        }
+        // bundle together all valid tempo samples and publish to cBioPortal
+        if (!validTempoSamples.isEmpty()) {
+            TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
+                .addAllTempoSamples(validTempoSamples)
+                .build();
+            try {
+                String messageAsJsonString = JsonFormat.printer().print(tempoSampleUpdateMessage);
+                LOG.info("Publishing TEMPO samples to cBioPortal: " + messageAsJsonString);
+                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, messageAsJsonString);
+            } catch (Exception e) {
+                LOG.error("Error publishing TEMPO samples to cBioPortal", e);
+            }
+        } else {
+            LOG.warn("No valid TEMPO samples to publish to cBioPortal");
         }
     }
 

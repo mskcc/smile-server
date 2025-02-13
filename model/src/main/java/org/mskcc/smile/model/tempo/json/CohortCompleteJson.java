@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -120,6 +121,23 @@ public class CohortCompleteJson implements Serializable {
             });
         });
         return samplePrimaryIds;
+    }
+
+    /**
+     * Returns a set of tumor primary ids.
+     * @return
+     */
+    public Set<String> getTumorPrimaryIdsAsSet() {
+        Set<String> primaryIds = new HashSet<>();
+        if (tumorNormalPairs != null) {
+            for (Map<String, String> pair : tumorNormalPairs) {
+                String primaryId = pair.get("primaryId");
+                if (!StringUtils.isBlank(primaryId)) {
+                    primaryIds.add(primaryId);
+                }
+            }
+        }
+        return primaryIds;
     }
 
     @Override

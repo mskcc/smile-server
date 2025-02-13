@@ -130,4 +130,8 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "(s: Sample) "
             + "RETURN s")
     List<SmileSample> findSamplesByCohortId(@Param("cohortId") String cohortId);
+
+    @Query("MATCH (sm:SampleMetadata {primaryId: $primaryId})"
+            + "RETURN sm.cmoSampleName ORDER BY sm.importDate DESC LIMIT 1")
+    String findCmoSampleNameByPrimaryId(@Param("primaryId") String primaryId);
 }
