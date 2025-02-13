@@ -1,6 +1,9 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -119,5 +122,13 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Override
     public String getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
         return cohortCompleteRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
+    }
+
+    @Override
+    public String calculateEmbargoDate(String initialPipelineRunDate) throws Exception {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime dateTime = LocalDateTime.parse(initialPipelineRunDate, formatter);
+        LocalDateTime newDateTime = dateTime.plusDays(547);
+        return newDateTime.format(formatter);
     }
 }
