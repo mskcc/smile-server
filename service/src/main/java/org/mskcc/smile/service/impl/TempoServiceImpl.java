@@ -129,6 +129,9 @@ public class TempoServiceImpl implements TempoService {
                     .getInitialPipelineRunDateBySamplePrimaryId(primaryId);
             tempo.setInitialPipelineRunDate(initialPipelineRunDate);
 
+            String embargoDate = cohortCompleteService.calculateEmbargoDate(primaryId);
+            tempo.setEmbargoDate(embargoDate);
+
             tempo.setAccessLevel("MSK Embargo");
         }
         return tempoRepository.save(tempo);
