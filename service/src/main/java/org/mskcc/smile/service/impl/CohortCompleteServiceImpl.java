@@ -1,7 +1,6 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -41,6 +40,12 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     private ObjectMapper mapper = new ObjectMapper();
 
     private static final Log LOG = LogFactory.getLog(CohortCompleteServiceImpl.class);
+
+    private static final String RUN_DATE_FORMAT = "yyyy-MM-dd HH:mm";
+
+    // approximate number of days to add to the initial pipeline run date to calculate the embargo date.
+    // we use days instead of the 18 months to avoid issues with months of different lengths.
+    private static final int EMBARGO_PERIOD_DAYS = 547;
 
     @Override
     public Cohort saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
@@ -121,14 +126,22 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
 
     @Override
     public String getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
-        return cohortCompleteRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
+        String initialPipelineRunDate = cohortCompleteRepository
+            .findInitialPipelineRunDateBySamplePrimaryId(primaryId);
+        return convertRunDateToIsoFormat(initialPipelineRunDate);
+    }
+
+    @Override
+    public String convertRunDateToIsoFormat(String runDate) throws Exception {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(RUN_DATE_FORMAT);
+        LocalDateTime dateTime = LocalDateTime.parse(runDate, formatter);
+        return dateTime.format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
     @Override
     public String calculateEmbargoDate(String initialPipelineRunDate) throws Exception {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         LocalDateTime dateTime = LocalDateTime.parse(initialPipelineRunDate, formatter);
-        LocalDateTime newDateTime = dateTime.plusDays(547);
-        return newDateTime.format(formatter);
+        return dateTime.plusDays(EMBARGO_PERIOD_DAYS).format(formatter);
     }
 }
