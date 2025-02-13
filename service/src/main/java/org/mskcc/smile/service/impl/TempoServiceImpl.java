@@ -9,6 +9,7 @@ import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.persistence.neo4j.TempoRepository;
+import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
@@ -31,6 +32,9 @@ public class TempoServiceImpl implements TempoService {
 
     @Autowired
     private SmileRequestService requestService;
+
+    @Autowired
+    private CohortCompleteService cohortCompleteService;
 
     @Override
     @Transactional(rollbackFor = {Exception.class})

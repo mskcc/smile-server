@@ -115,4 +115,9 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         cohort.setCohortSamples(sampleService.getSamplesByCohortId(cohort.getCohortId()));
         return cohort;
     }
+
+    @Override
+    public String getInitialRunDateBySamplePrimaryId(String primaryId) throws Exception {
+        return cohortCompleteRepository.findInitialRunDateBySamplePrimaryId(primaryId);
+    }
 }
