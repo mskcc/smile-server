@@ -124,6 +124,11 @@ public class TempoServiceImpl implements TempoService {
                     ? request.getInvestigatorEmail() : request.getPiEmail();
             // using default of MSKEmbargo since we're making a brand new tempo event
             tempo.setCustodianInformation(custodianInformation);
+
+            String initialPipelineRunDate = cohortCompleteService
+                    .getInitialPipelineRunDateBySamplePrimaryId(primaryId);
+            tempo.setInitialPipelineRunDate(initialPipelineRunDate);
+
             tempo.setAccessLevel("MSK Embargo");
         }
         return tempoRepository.save(tempo);
