@@ -17,5 +17,6 @@ public interface CohortCompleteService {
             throws Exception;
     Cohort updateCohort(Cohort cohort) throws Exception;
     String getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception;
+    String convertRunDateToIsoFormat(String runDate) throws Exception;
     String calculateEmbargoDate(String initialPipelineRunDate) throws Exception;
 }
