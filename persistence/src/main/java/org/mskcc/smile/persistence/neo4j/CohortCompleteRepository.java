@@ -34,5 +34,5 @@ public interface CohortCompleteRepository extends Neo4jRepository<Cohort, Long> 
     @Query("MATCH (cc:CohortComplete)<-[:HAS_COHORT_COMPLETE]-(c:Cohort)-[:HAS_COHORT_SAMPLE]->"
             + "(s:Sample)-[:HAS_METADATA]->(sm: SampleMetadata{primaryId: $primaryId}) "
             + "RETURN cc.date ORDER BY cc.date ASC LIMIT 1")
-    String findInitialRunDateBySamplePrimaryId(@Param("primaryId") String primaryId);
+    String findInitialPipelineRunDateBySamplePrimaryId(@Param("primaryId") String primaryId);
 }

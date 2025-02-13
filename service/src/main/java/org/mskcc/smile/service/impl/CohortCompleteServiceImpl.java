@@ -117,7 +117,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     }
 
     @Override
-    public String getInitialRunDateBySamplePrimaryId(String primaryId) throws Exception {
-        return cohortCompleteRepository.findInitialRunDateBySamplePrimaryId(primaryId);
+    public String getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
+        return cohortCompleteRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
     }
 }
