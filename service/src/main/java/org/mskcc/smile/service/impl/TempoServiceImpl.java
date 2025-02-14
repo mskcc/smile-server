@@ -1,5 +1,7 @@
 package org.mskcc.smile.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.apache.logging.log4j.util.Strings;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
@@ -35,6 +37,10 @@ public class TempoServiceImpl implements TempoService {
 
     @Autowired
     private CohortCompleteService cohortCompleteService;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final String ACCESS_LEVEL_EMBARGO = "MSK Embargo";
+    private static final String ACCESS_LEVEL_PUBLIC = "MSK Public";
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
@@ -120,19 +126,21 @@ public class TempoServiceImpl implements TempoService {
         // information or access level. Normal samples do not require this info.
         if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
             SmileRequest request = requestService.getRequestBySample(sample);
+
             String custodianInformation = Strings.isBlank(request.getPiEmail())
                     ? request.getInvestigatorEmail() : request.getPiEmail();
-            // using default of MSKEmbargo since we're making a brand new tempo event
             tempo.setCustodianInformation(custodianInformation);
 
-            String initialPipelineRunDate = cohortCompleteService
+            LocalDateTime initialPipelineRunDate = cohortCompleteService
                     .getInitialPipelineRunDateBySamplePrimaryId(primaryId);
-            tempo.setInitialPipelineRunDate(initialPipelineRunDate);
+            tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
 
-            String embargoDate = cohortCompleteService.calculateEmbargoDate(primaryId);
-            tempo.setEmbargoDate(embargoDate);
+            LocalDateTime embargoDate = cohortCompleteService.calculateEmbargoDate(initialPipelineRunDate);
+            tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
 
-            tempo.setAccessLevel("MSK Embargo");
+            String accessLevel = embargoDate.isAfter(LocalDateTime.now())
+                    ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
+            tempo.setAccessLevel(accessLevel);
         }
         return tempoRepository.save(tempo);
     }
