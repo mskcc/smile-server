@@ -133,14 +133,18 @@ public class TempoServiceImpl implements TempoService {
 
             LocalDateTime initialPipelineRunDate = cohortCompleteService
                     .getInitialPipelineRunDateBySamplePrimaryId(primaryId);
-            tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
-
-            LocalDateTime embargoDate = cohortCompleteService.calculateEmbargoDate(initialPipelineRunDate);
-            tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
-
-            String accessLevel = embargoDate.isAfter(LocalDateTime.now())
-                    ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
-            tempo.setAccessLevel(accessLevel);
+            if (initialPipelineRunDate != null) {
+                tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
+                LocalDateTime embargoDate = cohortCompleteService.calculateEmbargoDate(initialPipelineRunDate);
+                tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
+                String accessLevel = embargoDate.isAfter(LocalDateTime.now())
+                        ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
+                tempo.setAccessLevel(accessLevel);
+            } else {
+                tempo.setInitialPipelineRunDate("");
+                tempo.setEmbargoDate("");
+                tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
+            }
         }
         return tempoRepository.save(tempo);
     }
