@@ -41,12 +41,6 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
 
     private static final Log LOG = LogFactory.getLog(CohortCompleteServiceImpl.class);
 
-    private static final String RUN_DATE_FORMAT = "yyyy-MM-dd HH:mm";
-
-    // approximate number of days to add to the initial pipeline run date to calculate the embargo date.
-    // we use days instead of the 18 months to avoid issues with months of different lengths.
-    private static final int EMBARGO_PERIOD_DAYS = 547;
-
     @Override
     public Cohort saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
         // persist new cohort complete event to the db
@@ -122,21 +116,5 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         // get cohort samples
         cohort.setCohortSamples(sampleService.getSamplesByCohortId(cohort.getCohortId()));
         return cohort;
-    }
-
-    @Override
-    public LocalDateTime getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
-        String dateString = cohortCompleteRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
-        if (dateString == null) {
-            LOG.warn("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
-            return null;
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(RUN_DATE_FORMAT);
-        return LocalDateTime.parse(dateString, formatter);
-    }
-
-    @Override
-    public LocalDateTime calculateEmbargoDate(LocalDateTime initialPipelineRunDate) throws Exception {
-        return initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
     }
 }

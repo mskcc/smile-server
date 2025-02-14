@@ -11,13 +11,14 @@ import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.persistence.neo4j.TempoRepository;
-import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -35,12 +36,15 @@ public class TempoServiceImpl implements TempoService {
     @Autowired
     private SmileRequestService requestService;
 
-    @Autowired
-    private CohortCompleteService cohortCompleteService;
-
+    private static final Log LOG = LogFactory.getLog(TempoServiceImpl.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final String RUN_DATE_FORMAT = "yyyy-MM-dd HH:mm";
     private static final String ACCESS_LEVEL_EMBARGO = "MSK Embargo";
     private static final String ACCESS_LEVEL_PUBLIC = "MSK Public";
+    // approximate number of days to add to the initial pipeline run date to calculate the embargo date.
+    // we use days instead of the 18 months to avoid issues with months of different lengths.
+    private static final int EMBARGO_PERIOD_DAYS = 547;
+
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
@@ -131,11 +135,10 @@ public class TempoServiceImpl implements TempoService {
                     ? request.getInvestigatorEmail() : request.getPiEmail();
             tempo.setCustodianInformation(custodianInformation);
 
-            LocalDateTime initialPipelineRunDate = cohortCompleteService
-                    .getInitialPipelineRunDateBySamplePrimaryId(primaryId);
+            LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
             if (initialPipelineRunDate != null) {
                 tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
-                LocalDateTime embargoDate = cohortCompleteService.calculateEmbargoDate(initialPipelineRunDate);
+                LocalDateTime embargoDate = calculateEmbargoDate(initialPipelineRunDate);
                 tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
                 String accessLevel = embargoDate.isAfter(LocalDateTime.now())
                         ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
@@ -175,5 +178,19 @@ public class TempoServiceImpl implements TempoService {
     @Transactional(rollbackFor = {Exception.class})
     public void updateSampleBilling(SampleBillingJson billing) throws Exception {
         tempoRepository.updateSampleBilling(billing);
+    }
+
+    private LocalDateTime getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
+        String dateString = tempoRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
+        if (dateString == null) {
+            LOG.warn("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
+            return null;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(RUN_DATE_FORMAT);
+        return LocalDateTime.parse(dateString, formatter);
+    }
+
+    private LocalDateTime calculateEmbargoDate(LocalDateTime initialPipelineRunDate) throws Exception {
+        return initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
     }
 }
