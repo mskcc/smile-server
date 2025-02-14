@@ -125,23 +125,14 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     }
 
     @Override
-    public String getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
-        String initialPipelineRunDate = cohortCompleteRepository
-            .findInitialPipelineRunDateBySamplePrimaryId(primaryId);
-        return convertRunDateToIsoFormat(initialPipelineRunDate);
-    }
-
-    @Override
-    public String convertRunDateToIsoFormat(String runDate) throws Exception {
+    public LocalDateTime getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
+        String dateString = cohortCompleteRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(RUN_DATE_FORMAT);
-        LocalDateTime dateTime = LocalDateTime.parse(runDate, formatter);
-        return dateTime.format(DateTimeFormatter.ISO_DATE_TIME);
+        return LocalDateTime.parse(dateString, formatter);
     }
 
     @Override
-    public String calculateEmbargoDate(String initialPipelineRunDate) throws Exception {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        LocalDateTime dateTime = LocalDateTime.parse(initialPipelineRunDate, formatter);
-        return dateTime.plusDays(EMBARGO_PERIOD_DAYS).format(formatter);
+    public LocalDateTime calculateEmbargoDate(LocalDateTime initialPipelineRunDate) throws Exception {
+        return initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
     }
 }

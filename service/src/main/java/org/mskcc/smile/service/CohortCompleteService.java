@@ -1,5 +1,6 @@
 package org.mskcc.smile.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import org.mskcc.smile.model.tempo.Cohort;
@@ -16,7 +17,6 @@ public interface CohortCompleteService {
     Boolean hasCohortCompleteUpdates(Cohort existingCohort, Cohort cohort)
             throws Exception;
     Cohort updateCohort(Cohort cohort) throws Exception;
-    String getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception;
-    String convertRunDateToIsoFormat(String runDate) throws Exception;
-    String calculateEmbargoDate(String initialPipelineRunDate) throws Exception;
+    LocalDateTime getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception;
+    LocalDateTime calculateEmbargoDate(LocalDateTime initialPipelineRunDate) throws Exception;
 }
