@@ -127,6 +127,10 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Override
     public LocalDateTime getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
         String dateString = cohortCompleteRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
+        if (dateString == null) {
+            LOG.warn("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(RUN_DATE_FORMAT);
         return LocalDateTime.parse(dateString, formatter);
     }
