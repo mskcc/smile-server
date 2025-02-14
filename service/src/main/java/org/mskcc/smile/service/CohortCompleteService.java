@@ -17,6 +17,4 @@ public interface CohortCompleteService {
     Boolean hasCohortCompleteUpdates(Cohort existingCohort, Cohort cohort)
             throws Exception;
     Cohort updateCohort(Cohort cohort) throws Exception;
-    LocalDateTime getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception;
-    LocalDateTime calculateEmbargoDate(LocalDateTime initialPipelineRunDate) throws Exception;
 }
