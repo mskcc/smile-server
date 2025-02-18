@@ -50,39 +50,12 @@ public class TempoServiceImpl implements TempoService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public Tempo saveTempoData(Tempo tempo) throws Exception {
-        // first instance of tempo data for a given sample means we need to resolve the
-        // custodian information and data access level only for non-normal samples
         SmileSample sample = tempo.getSmileSample();
 
-        // if normal sample then do not init Tempo data with custodian information or access level
+        // if sample is a normal sample then no need to set values for custodian
+        // information or access level. Normal samples do not require this info.
         if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
-            SmileRequest request = requestService.getRequestBySample(sample);
-
-            String custodianInformation = Strings.isBlank(request.getLabHeadName())
-                    ? request.getLabHeadName() : request.getInvestigatorName();
-            tempo.setCustodianInformation(custodianInformation);
-
-            String primaryId = sample.getPrimarySampleAlias();
-            LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
-            if (initialPipelineRunDate != null) {
-                LocalDateTime embargoDate = initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
-                tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
-                tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
-                // only update access level if it is not already set from backfilling
-                if (StringUtils.isEmpty(tempo.getAccessLevel())) {
-                    String accessLevel = embargoDate.isAfter(LocalDateTime.now())
-                            ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
-                    tempo.setAccessLevel(accessLevel);
-                }
-            } else {
-                // explicitly set dates to empty strings if no initial pipeline run date is found
-                tempo.setInitialPipelineRunDate("");
-                tempo.setEmbargoDate("");
-                // only update access level if it is not already set from backfilling
-                if (StringUtils.isEmpty(tempo.getAccessLevel())) {
-                    tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
-                }
-            }
+            populateTempoData(sample, tempo);
         }
         return tempoRepository.save(tempo);
     }
@@ -148,26 +121,7 @@ public class TempoServiceImpl implements TempoService {
         // if sample is a normal sample then no need to set values for custodian
         // information or access level. Normal samples do not require this info.
         if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
-            SmileRequest request = requestService.getRequestBySample(sample);
-
-            String custodianInformation = Strings.isBlank(request.getLabHeadName())
-                    ? request.getLabHeadName() : request.getInvestigatorName();
-            tempo.setCustodianInformation(custodianInformation);
-
-            LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
-            if (initialPipelineRunDate != null) {
-                LocalDateTime embargoDate = initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
-                String accessLevel = embargoDate.isAfter(LocalDateTime.now())
-                        ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
-                tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
-                tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
-                tempo.setAccessLevel(accessLevel);
-            } else {
-                // explicitly set dates to empty strings if no initial pipeline run date is found
-                tempo.setInitialPipelineRunDate("");
-                tempo.setEmbargoDate("");
-                tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
-            }
+            populateTempoData(sample, tempo);
         }
         return tempoRepository.save(tempo);
     }
@@ -208,5 +162,36 @@ public class TempoServiceImpl implements TempoService {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(RUN_DATE_FORMAT);
         return LocalDateTime.parse(dateString, formatter);
+    }
+
+    private void populateTempoData(SmileSample sample, Tempo tempo) throws Exception {
+        SmileRequest request = requestService.getRequestBySample(sample);
+
+        String custodianInformation = Strings.isBlank(request.getLabHeadName())
+                ? request.getLabHeadName() : request.getInvestigatorName();
+        tempo.setCustodianInformation(custodianInformation);
+
+        String primaryId = sample.getPrimarySampleAlias();
+        LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
+
+        if (initialPipelineRunDate != null) {
+            tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
+            LocalDateTime embargoDate = initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
+            tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
+            // only update access level if it is not already set from backfilling
+            if (StringUtils.isEmpty(tempo.getAccessLevel())) {
+                String accessLevel = embargoDate.isAfter(LocalDateTime.now())
+                        ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
+                tempo.setAccessLevel(accessLevel);
+            }
+        } else {
+            // explicitly set dates to empty strings if no initial pipeline run date is found
+            tempo.setInitialPipelineRunDate("");
+            tempo.setEmbargoDate("");
+            // only update access level if it is not already set from backfilling
+            if (StringUtils.isEmpty(tempo.getAccessLevel())) {
+                tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
+            }
+        }
     }
 }
