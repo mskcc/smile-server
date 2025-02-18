@@ -17,6 +17,7 @@ import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -137,13 +138,14 @@ public class TempoServiceImpl implements TempoService {
 
             LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
             if (initialPipelineRunDate != null) {
-                tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
-                LocalDateTime embargoDate = calculateEmbargoDate(initialPipelineRunDate);
-                tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
+                LocalDateTime embargoDate = initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
                 String accessLevel = embargoDate.isAfter(LocalDateTime.now())
                         ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
+                tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
+                tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
                 tempo.setAccessLevel(accessLevel);
             } else {
+                // explicitly set dates to empty strings if no initial pipeline run date is found
                 tempo.setInitialPipelineRunDate("");
                 tempo.setEmbargoDate("");
                 tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
@@ -182,15 +184,11 @@ public class TempoServiceImpl implements TempoService {
 
     private LocalDateTime getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
         String dateString = tempoRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
-        if (dateString == null) {
+        if (StringUtils.isEmpty(dateString)) {
             LOG.warn("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
             return null;
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(RUN_DATE_FORMAT);
         return LocalDateTime.parse(dateString, formatter);
-    }
-
-    private LocalDateTime calculateEmbargoDate(LocalDateTime initialPipelineRunDate) throws Exception {
-        return initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
     }
 }
