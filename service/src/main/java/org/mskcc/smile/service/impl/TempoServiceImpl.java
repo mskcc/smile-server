@@ -42,9 +42,7 @@ public class TempoServiceImpl implements TempoService {
     private static final String RUN_DATE_FORMAT = "yyyy-MM-dd HH:mm";
     private static final String ACCESS_LEVEL_EMBARGO = "MSK Embargo";
     private static final String ACCESS_LEVEL_PUBLIC = "MSK Public";
-    // approximate number of days to add to the initial pipeline run date to calculate the embargo date.
-    // we use days instead of the 18 months to avoid issues with months of different lengths.
-    private static final int EMBARGO_PERIOD_DAYS = 547;
+    private static final int EMBARGO_PERIOD_MONTHS = 18;
 
 
     @Override
@@ -176,7 +174,7 @@ public class TempoServiceImpl implements TempoService {
 
         if (initialPipelineRunDate != null) {
             tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
-            LocalDateTime embargoDate = initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
+            LocalDateTime embargoDate = initialPipelineRunDate.plusMonths(EMBARGO_PERIOD_MONTHS);
             tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
             // only update access level if it is not already set from backfilling
             if (StringUtils.isEmpty(tempo.getAccessLevel())) {
