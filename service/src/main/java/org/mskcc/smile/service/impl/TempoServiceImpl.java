@@ -61,9 +61,26 @@ public class TempoServiceImpl implements TempoService {
                     ? request.getLabHeadName() : request.getInvestigatorName();
             tempo.setCustodianInformation(custodianInformation);
 
-            // if backfilling data then access level might already be present in incoming data
-            if (Strings.isBlank(tempo.getAccessLevel())) {
-                tempo.setAccessLevel("MSK Embargo");
+            String primaryId = sample.getPrimarySampleAlias();
+            LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
+            if (initialPipelineRunDate != null) {
+                LocalDateTime embargoDate = initialPipelineRunDate.plusDays(EMBARGO_PERIOD_DAYS);
+                tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
+                tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
+                // only update access level if it is not already set from backfilling
+                if (StringUtils.isEmpty(tempo.getAccessLevel())) {
+                    String accessLevel = embargoDate.isAfter(LocalDateTime.now())
+                            ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
+                    tempo.setAccessLevel(accessLevel);
+                }
+            } else {
+                // explicitly set dates to empty strings if no initial pipeline run date is found
+                tempo.setInitialPipelineRunDate("");
+                tempo.setEmbargoDate("");
+                // only update access level if it is not already set from backfilling
+                if (StringUtils.isEmpty(tempo.getAccessLevel())) {
+                    tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
+                }
             }
         }
         return tempoRepository.save(tempo);
