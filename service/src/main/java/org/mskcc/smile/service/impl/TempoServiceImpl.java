@@ -57,6 +57,7 @@ public class TempoServiceImpl implements TempoService {
         // if normal sample then do not init Tempo data with custodian information or access level
         if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
             SmileRequest request = requestService.getRequestBySample(sample);
+
             String custodianInformation = Strings.isBlank(request.getLabHeadName())
                     ? request.getLabHeadName() : request.getInvestigatorName();
             tempo.setCustodianInformation(custodianInformation);
@@ -149,8 +150,8 @@ public class TempoServiceImpl implements TempoService {
         if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
             SmileRequest request = requestService.getRequestBySample(sample);
 
-            String custodianInformation = Strings.isBlank(request.getPiEmail())
-                    ? request.getInvestigatorEmail() : request.getPiEmail();
+            String custodianInformation = Strings.isBlank(request.getLabHeadName())
+                    ? request.getLabHeadName() : request.getInvestigatorName();
             tempo.setCustodianInformation(custodianInformation);
 
             LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
