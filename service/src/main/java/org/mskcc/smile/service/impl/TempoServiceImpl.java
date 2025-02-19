@@ -1,5 +1,6 @@
 package org.mskcc.smile.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.StringUtils;
@@ -151,14 +152,15 @@ public class TempoServiceImpl implements TempoService {
         tempoRepository.updateSampleBilling(billing);
     }
 
-    private LocalDateTime getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
+    private LocalDate getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
         String dateString = tempoRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
         if (StringUtils.isEmpty(dateString)) {
             LOG.warn("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
             return null;
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(dateString, formatter);
+        DateTimeFormatter runDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime initialPipelineRunDate = LocalDateTime.parse(dateString, runDateFormat);
+        return initialPipelineRunDate.toLocalDate(); // return date only
     }
 
     private void populateTempoData(SmileSample sample, Tempo tempo) throws Exception {
@@ -169,15 +171,16 @@ public class TempoServiceImpl implements TempoService {
 
         String accessLevel = tempo.getAccessLevel();
         String primaryId = sample.getPrimarySampleAlias();
-        LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
+        LocalDate initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
 
         if (initialPipelineRunDate != null) {
-            LocalDateTime embargoDate = initialPipelineRunDate.plusMonths(EMBARGO_PERIOD_MONTHS);
+            LocalDate embargoDate = initialPipelineRunDate.plusMonths(EMBARGO_PERIOD_MONTHS);
             tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
             tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
             if (!sampleIsMarkedAsPublic(accessLevel)) {
-                tempo.setAccessLevel(embargoDate.isAfter(LocalDateTime.now())
-                        ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC);
+                // we release the sample the day after the embargo ends (confirmed with PMs)
+                tempo.setAccessLevel(LocalDate.now().isAfter(embargoDate)
+                        ? ACCESS_LEVEL_PUBLIC : ACCESS_LEVEL_EMBARGO);
             }
         } else {
             // explicitly set dates to empty strings if no initial pipeline run date is found
