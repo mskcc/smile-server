@@ -2,6 +2,9 @@ package org.mskcc.smile.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.util.Strings;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
@@ -17,9 +20,6 @@ import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -39,7 +39,6 @@ public class TempoServiceImpl implements TempoService {
 
     private static final Log LOG = LogFactory.getLog(TempoServiceImpl.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
-    private static final String RUN_DATE_FORMAT = "yyyy-MM-dd HH:mm";
     private static final String ACCESS_LEVEL_EMBARGO = "MSK Embargo";
     private static final String ACCESS_LEVEL_PUBLIC = "MSK Public";
     private static final int EMBARGO_PERIOD_MONTHS = 18;
@@ -158,38 +157,50 @@ public class TempoServiceImpl implements TempoService {
             LOG.warn("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
             return null;
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(RUN_DATE_FORMAT);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return LocalDateTime.parse(dateString, formatter);
     }
 
     private void populateTempoData(SmileSample sample, Tempo tempo) throws Exception {
         SmileRequest request = requestService.getRequestBySample(sample);
-
         String custodianInformation = Strings.isBlank(request.getLabHeadName())
                 ? request.getLabHeadName() : request.getInvestigatorName();
         tempo.setCustodianInformation(custodianInformation);
 
+        String accessLevel = tempo.getAccessLevel();
         String primaryId = sample.getPrimarySampleAlias();
         LocalDateTime initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
 
         if (initialPipelineRunDate != null) {
-            tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
             LocalDateTime embargoDate = initialPipelineRunDate.plusMonths(EMBARGO_PERIOD_MONTHS);
+            tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
             tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
-            // only update access level if it is not already set from backfilling
-            if (StringUtils.isEmpty(tempo.getAccessLevel())) {
-                String accessLevel = embargoDate.isAfter(LocalDateTime.now())
-                        ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC;
-                tempo.setAccessLevel(accessLevel);
+            if (!sampleIsMarkedAsPublic(accessLevel)) {
+                tempo.setAccessLevel(embargoDate.isAfter(LocalDateTime.now())
+                        ? ACCESS_LEVEL_EMBARGO : ACCESS_LEVEL_PUBLIC);
             }
         } else {
             // explicitly set dates to empty strings if no initial pipeline run date is found
             tempo.setInitialPipelineRunDate("");
             tempo.setEmbargoDate("");
-            // only update access level if it is not already set from backfilling
-            if (StringUtils.isEmpty(tempo.getAccessLevel())) {
+            if (!sampleIsMarkedAsPublic(accessLevel)) {
                 tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
             }
         }
+    }
+
+    /**
+     * Check whether the sample's access level indicates that it is marked as public.
+     * Applicable values are often "MSK Public" or "Published (PMID <PubMed ID>)".
+     * "MSK Public" can be set dynamically as well as manually assighed by the PMs based on
+     * who paid for the sequencing.
+     *
+    */
+    private Boolean sampleIsMarkedAsPublic(String accessLevel) {
+        if (StringUtils.isEmpty(accessLevel)) {
+            return false;
+        }
+        String accessLevelLower = accessLevel.toLowerCase();
+        return accessLevelLower.contains("public") || accessLevelLower.contains("publish");
     }
 }
