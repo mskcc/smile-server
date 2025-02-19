@@ -1,6 +1,7 @@
 package org.mskcc.smile.persistence.jpa;
 
 import org.mskcc.smile.model.internal.CrdbMappingModel;
+import org.mskcc.smile.model.web.CrdbCrosswalkTriplet;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,8 @@ public interface CrdbRepository extends CrudRepository<CrdbMappingModel, Long> {
             nativeQuery = true)
     Object getCmoPatientIdByInputId(@Param("inputId") String inputId);
     // another query option
+    @Query(value = "SELECT CMO_ID, DMP_ID, PT_MRN "
+           + "FROM CRDB_CMO_LOJ_DMP_MAP WHERE :inputId IN (DMP_ID, PT_MRN, CMO_ID)",
+           nativeQuery = true)
+    Object getCrdbCrosswalkTripletByInputId(@Param("inputId") String inputId);
 }
