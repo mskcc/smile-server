@@ -277,6 +277,22 @@ public class TempoServiceTest {
     }
 
     @Test
+    public void testPopulatingTempoDataNoInitialRunDate() throws Exception {
+        // using a tumor sample to trigger population of tempo data
+        String igoId = "MOCKREQUEST1_B_3";
+        String requestId = "MOCKREQUEST1_B";
+        SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+
+        Tempo tempo = new Tempo();
+        tempo.setSmileSample(sample);
+        Tempo savedTempo = tempoService.saveTempoData(tempo);
+
+        Assertions.assertEquals("MSK Embargo", savedTempo.getAccessLevel());
+        Assertions.assertEquals("", savedTempo.getInitialPipelineRunDate());
+        Assertions.assertEquals("", savedTempo.getEmbargoDate());
+    }
+
+    @Test
     public void testNormalSampleTumorSampleTempoImportDefaults() throws Exception {
         String requestId = "MOCKREQUEST1_B";
 
