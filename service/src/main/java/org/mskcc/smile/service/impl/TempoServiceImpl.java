@@ -191,7 +191,7 @@ public class TempoServiceImpl implements TempoService {
 
     /**
      * Check whether the sample's access level indicates that it is marked as public.
-     * Applicable values are often "MSK Public" or "Published (PMID <PubMed ID>)".
+     * Applicable values are often "MSK Public" or "Published (PMID 12345678)".
      * "MSK Public" can be set dynamically as well as manually assighed by the PMs based on
      * who paid for the sequencing.
      *
