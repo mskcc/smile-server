@@ -2,7 +2,6 @@ package org.mskcc.smile.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -324,9 +323,9 @@ public class TempoServiceTest {
 
         // assert that access level is set appropriately based on embargo date
         if (embargoDate.isAfter(LocalDate.now())) {
-                Assertions.assertEquals("MSK Embargo", savedTempo.getAccessLevel());
+            Assertions.assertEquals("MSK Embargo", savedTempo.getAccessLevel());
         } else {
-                Assertions.assertEquals("MSK Public", savedTempo.getAccessLevel());
+            Assertions.assertEquals("MSK Public", savedTempo.getAccessLevel());
         }
     }
 
