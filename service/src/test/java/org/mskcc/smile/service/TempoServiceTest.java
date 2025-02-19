@@ -2,6 +2,9 @@ package org.mskcc.smile.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -290,6 +293,41 @@ public class TempoServiceTest {
         Assertions.assertEquals("MSK Embargo", savedTempo.getAccessLevel());
         Assertions.assertEquals("", savedTempo.getInitialPipelineRunDate());
         Assertions.assertEquals("", savedTempo.getEmbargoDate());
+    }
+
+    @Test
+    public void testPopulatingTempoDataWithInitialRunDate() throws Exception {
+        // using a tumor sample to trigger population of tempo data
+        String igoId = "MOCKREQUEST1_B_1";
+        String requestId = "MOCKREQUEST1_B";
+        SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+
+        // save a cohort complete event to establish an initial pipeline run date
+        CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        cohortCompleteService.saveCohort(new Cohort(ccJson), ccJson.getTumorNormalPairsAsSet());
+
+        Tempo tempo = new Tempo();
+        tempo.setSmileSample(sample);
+        Tempo savedTempo = tempoService.saveTempoData(tempo);
+
+        // assert that custodian information is set
+        Assertions.assertFalse(savedTempo.getCustodianInformation().isEmpty());
+
+        // assert that initial pipeline run date is set
+        Assertions.assertFalse(savedTempo.getInitialPipelineRunDate().isEmpty());
+
+        // assert that embargo date is set to 18 months after initial pipeline run date
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+        LocalDate initialPipelineRunDate = LocalDate.parse(savedTempo.getInitialPipelineRunDate(), formatter);
+        LocalDate embargoDate = LocalDate.parse(savedTempo.getEmbargoDate(), formatter);
+        Assertions.assertEquals(initialPipelineRunDate.plusMonths(18), embargoDate);
+
+        // assert that access level is set appropriately based on embargo date
+        if (embargoDate.isAfter(LocalDate.now())) {
+                Assertions.assertEquals("MSK Embargo", savedTempo.getAccessLevel());
+        } else {
+                Assertions.assertEquals("MSK Public", savedTempo.getAccessLevel());
+        }
     }
 
     @Test
