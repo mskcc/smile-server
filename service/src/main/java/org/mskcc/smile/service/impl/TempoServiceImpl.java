@@ -192,7 +192,7 @@ public class TempoServiceImpl implements TempoService {
     /**
      * Check whether the sample's access level indicates that it is marked as public.
      * Applicable values are often "MSK Public" or "Published (PMID 12345678)".
-     * "MSK Public" can be set dynamically as well as manually assighed by the PMs based on
+     * "MSK Public" can be set dynamically as well as manually assigned by the PMs based on
      * who paid for the sequencing.
      *
     */
@@ -201,6 +201,7 @@ public class TempoServiceImpl implements TempoService {
             return false;
         }
         String accessLevelLower = accessLevel.toLowerCase();
-        return accessLevelLower.contains("public") || accessLevelLower.contains("publish");
+        return accessLevelLower.contains("public") || accessLevelLower.contains("publish")
+            || accessLevelLower.contains("pmid");
     }
 }
