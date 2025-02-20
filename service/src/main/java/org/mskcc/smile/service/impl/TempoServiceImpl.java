@@ -201,7 +201,7 @@ public class TempoServiceImpl implements TempoService {
     */
     private Boolean sampleIsMarkedAsPublic(String accessLevel) {
         if (StringUtils.isEmpty(accessLevel)) {
-            return false;
+            return Boolean.FALSE;
         }
         String accessLevelLower = accessLevel.toLowerCase();
         return accessLevelLower.contains("public") || accessLevelLower.contains("publish")

@@ -309,24 +309,15 @@ public class TempoServiceTest {
         tempo.setSmileSample(sample);
         Tempo savedTempo = tempoService.saveTempoData(tempo);
 
-        // assert that custodian information is set
-        Assertions.assertFalse(savedTempo.getCustodianInformation().isEmpty());
-
-        // assert that initial pipeline run date is set
-        Assertions.assertFalse(savedTempo.getInitialPipelineRunDate().isEmpty());
-
+        // assert data persisted correctly
+        Assertions.assertEquals("John Smith", savedTempo.getCustodianInformation());
+        Assertions.assertEquals("2022-11-12", savedTempo.getInitialPipelineRunDate());
+        Assertions.assertEquals("MSK Public", savedTempo.getAccessLevel());
         // assert that embargo date is set to 18 months after initial pipeline run date
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
         LocalDate initialPipelineRunDate = LocalDate.parse(savedTempo.getInitialPipelineRunDate(), formatter);
         LocalDate embargoDate = LocalDate.parse(savedTempo.getEmbargoDate(), formatter);
         Assertions.assertEquals(initialPipelineRunDate.plusMonths(18), embargoDate);
-
-        // assert that access level is set appropriately based on embargo date
-        if (embargoDate.isAfter(LocalDate.now())) {
-            Assertions.assertEquals("MSK Embargo", savedTempo.getAccessLevel());
-        } else {
-            Assertions.assertEquals("MSK Public", savedTempo.getAccessLevel());
-        }
     }
 
     @Test
