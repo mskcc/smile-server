@@ -1,5 +1,11 @@
 package org.mskcc.smile.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.util.Strings;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
@@ -32,24 +38,22 @@ public class TempoServiceImpl implements TempoService {
     @Autowired
     private SmileRequestService requestService;
 
+    private static final Log LOG = LogFactory.getLog(TempoServiceImpl.class);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final String ACCESS_LEVEL_EMBARGO = "MSK Embargo";
+    private static final String ACCESS_LEVEL_PUBLIC = "MSK Public";
+    private static final int EMBARGO_PERIOD_MONTHS = 18;
+
+
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public Tempo saveTempoData(Tempo tempo) throws Exception {
-        // first instance of tempo data for a given sample means we need to resolve the
-        // custodian information and data access level only for non-normal samples
         SmileSample sample = tempo.getSmileSample();
 
-        // if normal sample then do not init Tempo data with custodian information or access level
+        // if sample is a normal sample then no need to set values for custodian
+        // information or access level. Normal samples do not require this info.
         if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
-            SmileRequest request = requestService.getRequestBySample(sample);
-            String custodianInformation = Strings.isBlank(request.getLabHeadName())
-                    ? request.getLabHeadName() : request.getInvestigatorName();
-            tempo.setCustodianInformation(custodianInformation);
-
-            // if backfilling data then access level might already be present in incoming data
-            if (Strings.isBlank(tempo.getAccessLevel())) {
-                tempo.setAccessLevel("MSK Embargo");
-            }
+            populateTempoData(sample, tempo);
         }
         return tempoRepository.save(tempo);
     }
@@ -115,12 +119,7 @@ public class TempoServiceImpl implements TempoService {
         // if sample is a normal sample then no need to set values for custodian
         // information or access level. Normal samples do not require this info.
         if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
-            SmileRequest request = requestService.getRequestBySample(sample);
-            String custodianInformation = Strings.isBlank(request.getPiEmail())
-                    ? request.getInvestigatorEmail() : request.getPiEmail();
-            // using default of MSKEmbargo since we're making a brand new tempo event
-            tempo.setCustodianInformation(custodianInformation);
-            tempo.setAccessLevel("MSK Embargo");
+            populateTempoData(sample, tempo);
         }
         return tempoRepository.save(tempo);
     }
@@ -151,5 +150,61 @@ public class TempoServiceImpl implements TempoService {
     @Transactional(rollbackFor = {Exception.class})
     public void updateSampleBilling(SampleBillingJson billing) throws Exception {
         tempoRepository.updateSampleBilling(billing);
+    }
+
+    private LocalDate getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
+        String dateString = tempoRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
+        if (StringUtils.isEmpty(dateString)) {
+            LOG.warn("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
+            return null;
+        }
+        DateTimeFormatter runDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime initialPipelineRunDate = LocalDateTime.parse(dateString, runDateFormat);
+        return initialPipelineRunDate.toLocalDate(); // return date only
+    }
+
+    private void populateTempoData(SmileSample sample, Tempo tempo) throws Exception {
+        SmileRequest request = requestService.getRequestBySample(sample);
+        String custodianInformation = Strings.isBlank(request.getLabHeadName())
+                ? request.getLabHeadName() : request.getInvestigatorName();
+        tempo.setCustodianInformation(custodianInformation);
+
+        String accessLevel = tempo.getAccessLevel();
+        String primaryId = sample.getPrimarySampleAlias();
+        LocalDate initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
+
+        if (initialPipelineRunDate != null) {
+            LocalDate embargoDate = initialPipelineRunDate.plusMonths(EMBARGO_PERIOD_MONTHS);
+            tempo.setInitialPipelineRunDate(initialPipelineRunDate.format(DATE_FORMATTER));
+            tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
+            if (!sampleIsMarkedAsPublic(accessLevel)) {
+                // we release the sample the day after the embargo ends (confirmed with PMs)
+                tempo.setAccessLevel(LocalDate.now().isAfter(embargoDate)
+                        ? ACCESS_LEVEL_PUBLIC : ACCESS_LEVEL_EMBARGO);
+            }
+        } else {
+            // explicitly set dates to empty strings if no initial pipeline run date is found
+            tempo.setInitialPipelineRunDate("");
+            tempo.setEmbargoDate("");
+            if (!sampleIsMarkedAsPublic(accessLevel)) {
+                tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
+            }
+        }
+    }
+
+    /**
+     * Check whether the sample's access level indicates that it is marked as public.
+     * Applicable values are often "MSK Public" or "Published (PMID 12345678)".
+     * "MSK Public" can be set dynamically as well as manually assigned by the PMs based on
+     * who paid for the sequencing.
+     *
+    */
+    private Boolean sampleIsMarkedAsPublic(String accessLevel) {
+        if (StringUtils.isEmpty(accessLevel)) {
+            return Boolean.FALSE;
+        }
+        String accessLevelLower = accessLevel.toLowerCase();
+        return accessLevelLower.contains("public") || accessLevelLower.contains("publish")
+            || accessLevelLower.contains("pmid");
     }
 }
