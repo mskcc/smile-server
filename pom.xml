@@ -49,10 +49,10 @@
     <testcontainers.version>1.20.1</testcontainers.version>
     <!-- smile messaging and shared entities dependency versions -->
     <smile_messaging_java.group>com.github.mskcc</smile_messaging_java.group>
-    <smile_messaging_java.version>2.0.4.RELEASE</smile_messaging_java.version>
+    <smile_messaging_java.version>2.0.5.RELEASE</smile_messaging_java.version>
     <!-- smile commons centralized config properties -->
     <smile_commons.group>com.github.mskcc</smile_commons.group>
-    <smile_commons.version>2.0.4.RELEASE</smile_commons.version>
+    <smile_commons.version>2.0.5.RELEASE</smile_commons.version>
     <!-- smile expected schema version -->
     <smile.schema_version>v2.3</smile.schema_version>
   </properties>
