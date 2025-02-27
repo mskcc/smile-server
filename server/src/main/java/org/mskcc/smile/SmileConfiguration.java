@@ -50,11 +50,14 @@ public class SmileConfiguration {
      */
     @Autowired
     public void logger() {
-        Logger logger = (Logger) LoggerFactory.getLogger("org.neo4j.ogm.drivers.bolt.response.BoltResponse.unrecognized");
+        Logger logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.drivers.bolt.response.BoltResponse.unrecognized");
         logger.setLevel(Level.OFF);
-        logger = (Logger) LoggerFactory.getLogger("org.neo4j.ogm.context.GraphEntityMapper");
+        logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.context.GraphEntityMapper");
         logger.setLevel(Level.OFF);
-        logger = (Logger) LoggerFactory.getLogger("org.neo4j.ogm.context.EntityGraphMapper");
+        logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.context.EntityGraphMapper");
         logger.setLevel(Level.OFF);
     }
 }
