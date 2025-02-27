@@ -23,12 +23,11 @@ import org.mskcc.smile.service.CrdbMappingService;
 import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
-import org.mskcc.smile.service.TempoService;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Component
 public class SampleServiceImpl implements SmileSampleService {
@@ -37,16 +36,13 @@ public class SampleServiceImpl implements SmileSampleService {
     private JsonComparator jsonComparator;
 
     @Autowired
-    private SmileRequestService requestService;
-
-    @Autowired
     private SmileSampleRepository sampleRepository;
 
-    @Autowired
-    private SmilePatientService patientService;
+    @Autowired @Lazy // prevents circular dependencies and initializes when component is first needed
+    private SmileRequestService requestService;
 
-    @Autowired
-    private TempoService tempoService;
+    @Autowired @Lazy // prevents circular dependencies and initializes when component is first needed
+    private SmilePatientService patientService;
 
     @Autowired
     private CrdbMappingService crdbMappingService;

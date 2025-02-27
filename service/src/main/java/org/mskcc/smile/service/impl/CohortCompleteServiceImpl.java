@@ -15,6 +15,7 @@ import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,7 +33,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Autowired
     private SmileSampleService sampleService;
 
-    @Autowired
+    @Autowired @Lazy // prevents circular dependencies and initializes when component is first needed
     private TempoService tempoService;
 
     private ObjectMapper mapper = new ObjectMapper();
