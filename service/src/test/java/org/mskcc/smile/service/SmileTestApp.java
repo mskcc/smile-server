@@ -1,5 +1,7 @@
 package org.mskcc.smile.service;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.utils.SSLUtils;
 import org.mskcc.smile.commons.JsonComparator;
@@ -21,6 +23,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -59,6 +63,16 @@ public class SmileTestApp {
     @Bean
     public CohortCompleteService cohortCompleteService() {
         return new CohortCompleteServiceImpl();
+    }
+
+    @Autowired
+    public void logger() {
+        Logger logger = (Logger) LoggerFactory.getLogger("org.neo4j.ogm.drivers.bolt.response.BoltResponse.unrecognized");
+        logger.setLevel(Level.OFF);
+        logger = (Logger) LoggerFactory.getLogger("org.neo4j.ogm.context.GraphEntityMapper");
+        logger.setLevel(Level.OFF);
+        logger = (Logger) LoggerFactory.getLogger("org.neo4j.ogm.context.EntityGraphMapper");
+        logger.setLevel(Level.OFF);
     }
 
     @MockBean

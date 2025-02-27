@@ -19,6 +19,7 @@ import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +33,10 @@ public class TempoServiceImpl implements TempoService {
     @Autowired
     private TempoRepository tempoRepository;
 
-    @Autowired
+    @Autowired @Lazy // prevents circular dependencies and initializes when component is first needed
     private SmileSampleService sampleService;
 
-    @Autowired
+    @Autowired @Lazy // prevents circular dependencies and initializes when component is first needed
     private SmileRequestService requestService;
 
     private static final Log LOG = LogFactory.getLog(TempoServiceImpl.class);
