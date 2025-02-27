@@ -19,7 +19,7 @@ jobs:
               git checkout ${SMILE_COMMONS_VERSION}
       - run:
           name: "Build project and run checkstyle plugin..."
-          command: mvn clean install -Dspring.main.allow-circular-references=true
+          command: mvn clean install
       - run:
           name: "Running checkstyle plugin..."
           command: mvn checkstyle:checkstyle
