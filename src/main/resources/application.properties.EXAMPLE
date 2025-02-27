@@ -72,9 +72,6 @@ request_reply.samples_by_alt_id_topic=
 # cmo patient id correction topics
 smile.correct_cmoptid_topic=
 
-# messaging failures filepath
-smile.publishing_failures_filepath=
-
 # tempo topics
 num.tempo_msg_handler_threads=
 tempo.wes_bam_complete_topic=
