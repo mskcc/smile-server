@@ -405,9 +405,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 .addAllTempoSamples(validTempoSamples)
                 .build();
             try {
-                String messageAsJsonString = JsonFormat.printer().print(tempoSampleUpdateMessage);
-                LOG.info("Publishing TEMPO samples to cBioPortal: " + messageAsJsonString);
-                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, messageAsJsonString);
+                byte[] protobufMessage = tempoSampleUpdateMessage.toByteArray();
+                LOG.info("Publishing TEMPO samples to cBioPortal: " + protobufMessage);
+                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, protobufMessage);
             } catch (Exception e) {
                 LOG.error("Error publishing TEMPO samples to cBioPortal", e);
             }
