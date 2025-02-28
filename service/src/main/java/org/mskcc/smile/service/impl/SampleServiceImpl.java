@@ -529,7 +529,7 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public String getCmoSampleNameByPrimaryId(String primaryId) {
-        return sampleRepository.findCmoSampleNameByPrimaryId(primaryId);
+    public SampleMetadata getLatestSampleMetadataByPrimaryId(String primaryId) {
+        return sampleRepository.findLatestSampleMetadataByPrimaryId(primaryId);
     }
 }
