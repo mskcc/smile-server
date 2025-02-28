@@ -394,6 +394,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     .setCmoSampleName(cmoSampleName)
                     .setAccessLevel(accessLevel)
                     .setCustodianInformation(custodianInformation)
+                    .setBaitSet(sampleMetadata.getBaitSet())
+                    .setGenePanel(sampleMetadata.getGenePanel())
+                    .setOncotreeCode(sampleMetadata.getOncotreeCode())
+                    .setCmoPatientId(sampleMetadata.getCmoPatientId())
+                    // TODO: obtain these values
+                    // .setDmpPatientId(sampleMetadata.getDmpPatientId())
+                    // .setRecapture(sampleMetadata.getRecapture())
                     .build();
                 validTempoSamples.add(tempoSample);
             } catch (Exception e) {
