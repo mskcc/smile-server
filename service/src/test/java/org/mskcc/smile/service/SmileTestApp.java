@@ -1,5 +1,7 @@
 package org.mskcc.smile.service;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.utils.SSLUtils;
 import org.mskcc.smile.commons.JsonComparator;
@@ -16,6 +18,8 @@ import org.mskcc.smile.service.impl.ResearchMessageHandlingServiceImpl;
 import org.mskcc.smile.service.impl.SampleServiceImpl;
 import org.mskcc.smile.service.impl.TempoMessageHandlingServiceImpl;
 import org.mskcc.smile.service.impl.TempoServiceImpl;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -59,6 +63,22 @@ public class SmileTestApp {
     @Bean
     public CohortCompleteService cohortCompleteService() {
         return new CohortCompleteServiceImpl();
+    }
+
+    /**
+     * Suppresses warnings from default logger from the neo4j-ogm dependency.
+     */
+    @Autowired
+    public void logger() {
+        Logger logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.drivers.bolt.response.BoltResponse.unrecognized");
+        logger.setLevel(Level.OFF);
+        logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.context.GraphEntityMapper");
+        logger.setLevel(Level.OFF);
+        logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.context.EntityGraphMapper");
+        logger.setLevel(Level.OFF);
     }
 
     @MockBean

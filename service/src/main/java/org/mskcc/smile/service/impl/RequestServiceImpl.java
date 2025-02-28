@@ -24,6 +24,7 @@ import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,7 @@ public class RequestServiceImpl implements SmileRequestService {
     @Autowired
     private SmileRequestRepository requestRepository;
 
-    @Autowired
+    @Autowired @Lazy // prevents circular dependencies and initializes when component is first needed
     private SmileSampleService sampleService;
 
     private final DateFormat IMPORT_DATE_FORMATTER = initDateFormatter();

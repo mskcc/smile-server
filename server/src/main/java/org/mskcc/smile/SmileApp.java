@@ -1,5 +1,7 @@
 package org.mskcc.smile;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import java.util.concurrent.CountDownLatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,6 +11,7 @@ import org.mskcc.smile.service.CorrectCmoPatientHandlingService;
 import org.mskcc.smile.service.RequestReplyHandlingService;
 import org.mskcc.smile.service.ResearchMessageHandlingService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
+import org.slf4j.LoggerFactory;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -51,6 +54,23 @@ public class SmileApp implements CommandLineRunner {
 
     private Thread shutdownHook;
     final CountDownLatch smileAppClose = new CountDownLatch(1);
+
+    /**
+     * Added this as a means of silencing the neo4j ogm log cluttering.
+     * There's probably a nicer way to do this but it gets the job done.
+     */
+    @Autowired
+    public void logger() {
+        Logger logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.drivers.bolt.response.BoltResponse.unrecognized");
+        logger.setLevel(Level.OFF);
+        logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.context.GraphEntityMapper");
+        logger.setLevel(Level.OFF);
+        logger = (Logger)
+                LoggerFactory.getLogger("org.neo4j.ogm.context.EntityGraphMapper");
+        logger.setLevel(Level.OFF);
+    }
 
     /**
      * Migration from springfox-swagger to springdoc-openapi.
