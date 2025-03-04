@@ -2,7 +2,6 @@ package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.protobuf.util.JsonFormat;
 import io.nats.client.Message;
 import java.util.AbstractMap;
 import java.util.HashSet;
@@ -405,9 +404,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 .addAllTempoSamples(validTempoSamples)
                 .build();
             try {
-                String messageAsJsonString = JsonFormat.printer().print(tempoSampleUpdateMessage);
-                LOG.info("Publishing TEMPO samples to cBioPortal: " + messageAsJsonString);
-                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, messageAsJsonString);
+                LOG.info("Publishing TEMPO samples to cBioPortal:\n" + tempoSampleUpdateMessage.toString());
+                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, tempoSampleUpdateMessage.toByteArray());
             } catch (Exception e) {
                 LOG.error("Error publishing TEMPO samples to cBioPortal", e);
             }
