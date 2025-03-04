@@ -404,7 +404,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 .addAllTempoSamples(validTempoSamples)
                 .build();
             try {
-                LOG.info("Publishing TEMPO samples to cBioPortal: " + tempoSampleUpdateMessage.toString());
+                LOG.info("Publishing TEMPO samples to cBioPortal:\n" + tempoSampleUpdateMessage.toString());
                 messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, tempoSampleUpdateMessage.toByteArray());
             } catch (Exception e) {
                 LOG.error("Error publishing TEMPO samples to cBioPortal", e);
