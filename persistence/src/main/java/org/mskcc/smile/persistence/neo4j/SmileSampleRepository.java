@@ -41,7 +41,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
-            + "RETURN DISTINCT sm, hs, ss")
+            + "RETURN sm, hs, ss")
     List<SampleMetadata> findAllSampleMetadataListBySampleId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSample.smileSampleId})"
@@ -80,7 +80,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "-[:IS_ALIAS]->(s: Sample)"
             + "-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
-            + "RETURN DISTINCT sm, hs, ss")
+            + "RETURN sm, hs, ss")
     List<SampleMetadata> findSampleMetadataHistoryByNamespaceValue(
             @Param("namespace") String namespace, @Param("value") String value);
 
@@ -96,7 +96,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
-            + "RETURN DISTINCT sm, hs, ss ORDER BY sm.importDate DESC LIMIT 1")
+            + "RETURN sm, hs, ss ORDER BY sm.importDate DESC LIMIT 1")
     SampleMetadata findLatestSampleMetadataBySmileId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (sm:SampleMetadata)<-[:HAS_METADATA]-(s:Sample)<-[:IS_ALIAS]-(sa:SampleAlias) "
@@ -132,6 +132,6 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
     List<SmileSample> findSamplesByCohortId(@Param("cohortId") String cohortId);
 
     @Query("MATCH (sm:SampleMetadata {primaryId: $primaryId})"
-            + "RETURN DISTINCT sm.cmoSampleName ORDER BY sm.importDate DESC LIMIT 1")
+            + "RETURN sm.cmoSampleName ORDER BY sm.importDate DESC LIMIT 1")
     String findCmoSampleNameByPrimaryId(@Param("primaryId") String primaryId);
 }

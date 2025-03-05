@@ -19,7 +19,7 @@ public interface CohortCompleteRepository extends Neo4jRepository<Cohort, Long> 
     Cohort findCohortByCohortId(@Param("cohortId") String cohortId);
 
     @Query("MATCH (c: Cohort {cohortId: $cohortId})-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete) "
-            + "RETURN DISTINCT cc ORDER BY cc.date DESC LIMIT 1")
+            + "RETURN cc ORDER BY cc.date DESC LIMIT 1")
     CohortComplete findLatestCohortCompleteEventByCohortId(@Param("cohortId") String cohortId);
 
     @Query("MATCH (c: Cohort)-[:HAS_COHORT_SAMPLE]->(s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata "

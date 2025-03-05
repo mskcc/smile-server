@@ -38,15 +38,15 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
     List<MafComplete> findMafCompleteEventsByTempoId(@Param("smileTempoId") UUID smileTempoId);
 
     @Query("MATCH (t:Tempo) WHERE t.smileTempoId = $smileTempoId MATCH (t)-[:HAS_EVENT]->(bc: BamComplete) "
-            + "RETURN DISTINCT bc ORDER BY bc.date DESC LIMIT 1")
+            + "RETURN bc ORDER BY bc.date DESC LIMIT 1")
     BamComplete findLatestBamCompleteEventByTempoId(@Param("smileTempoId") UUID smileTempoId);
 
     @Query("MATCH (t:Tempo) WHERE t.smileTempoId = $smileTempoId MATCH (t)-[:HAS_EVENT]->(mc: MafComplete) "
-            + "RETURN DISTINCT mc ORDER BY mc.date DESC LIMIT 1")
+            + "RETURN mc ORDER BY mc.date DESC LIMIT 1")
     MafComplete findLatestMafCompleteEventByTempoId(@Param("smileTempoId") UUID smileTempoId);
 
     @Query("MATCH (t:Tempo) WHERE t.smileTempoId = $smileTempoId MATCH (t)-[:HAS_EVENT]->(qc: QcComplete) "
-            + "RETURN DISTINCT qc ORDER BY qc.date DESC LIMIT 1")
+            + "RETURN qc ORDER BY qc.date DESC LIMIT 1")
     QcComplete findLatestQcCompleteEventByTempoId(@Param("smileTempoId") UUID smileTempoId);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
@@ -80,6 +80,6 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
 
     @Query("MATCH (cc:CohortComplete)<-[:HAS_COHORT_COMPLETE]-(c:Cohort)-[:HAS_COHORT_SAMPLE]"
             + "->(s:Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
-            + "RETURN DISTINCT cc.date ORDER BY cc.date ASC LIMIT 1")
+            + "RETURN cc.date ORDER BY cc.date ASC LIMIT 1")
     String findInitialPipelineRunDateBySamplePrimaryId(@Param("primaryId") String primaryId);
 }

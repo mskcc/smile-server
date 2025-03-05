@@ -25,7 +25,7 @@ public interface SmileRequestRepository extends Neo4jRepository<SmileRequest, Lo
 
     @Query("MATCH (r: Request {igoRequestId: $reqId}) "
             + "MATCH (r)-[:HAS_METADATA]->(rm: RequestMetadata)-[hs:HAS_STATUS]->(rs: Status) "
-            + "RETURN DISTINCT rm, hs, rs")
+            + "RETURN rm, hs, rs")
     List<RequestMetadata> findRequestMetadataHistoryByRequestId(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request)-[:HAS_METADATA]->(rm: RequestMetadata) "
