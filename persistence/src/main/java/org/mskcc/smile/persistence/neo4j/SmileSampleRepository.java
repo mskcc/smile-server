@@ -2,6 +2,8 @@ package org.mskcc.smile.persistence.neo4j;
 
 import java.util.List;
 import java.util.UUID;
+
+import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
 import org.springframework.data.neo4j.annotation.Query;
@@ -134,4 +136,10 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
     @Query("MATCH (sm:SampleMetadata {primaryId: $primaryId})"
             + "RETURN sm ORDER BY sm.importDate DESC LIMIT 1")
     SampleMetadata findLatestSampleMetadataByPrimaryId(@Param("primaryId") String primaryId);
+
+    @Query("MATCH (pa:PatientAlias {namespace: $patientAliasType})-[:IS_ALIAS]->(p:Patient)-[:HAS_SAMPLE]->"
+            + "(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata {primaryId: $primaryId}) "
+            + "RETURN COLLECT(pa) AS pas")
+    String findPatientAliasByTypeAndPrimaryId(@Param("patientAliasType") String patientAliasType,
+            @Param("primaryId") String primaryId);
 }

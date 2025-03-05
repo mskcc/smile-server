@@ -528,4 +528,9 @@ public class SampleServiceImpl implements SmileSampleService {
     public SampleMetadata getLatestSampleMetadataByPrimaryId(String primaryId) {
         return sampleRepository.findLatestSampleMetadataByPrimaryId(primaryId);
     }
+
+    @Override
+    public String getPatientAliasByTypeAndPrimaryId(String patientAliasType, String primaryId) {
+        return sampleRepository.findPatientAliasByTypeAndPrimaryId(patientAliasType, primaryId);
+    }
 }

@@ -2,6 +2,8 @@ package org.mskcc.smile.service;
 
 import java.util.List;
 import java.util.UUID;
+
+import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.PublishedSmileSample;
@@ -38,4 +40,5 @@ public interface SmileSampleService {
     List<SmileSample> getSamplesByCmoSampleName(String cmoSampleName) throws Exception;
     List<SmileSample> getSamplesByAltId(String altId) throws Exception;
     SampleMetadata getLatestSampleMetadataByPrimaryId(String primaryId) throws Exception;
+    String getPatientAliasByTypeAndPrimaryId(String patientAliasType, String primaryId) throws Exception;
 }
