@@ -41,4 +41,5 @@ public interface SmileSampleService {
     List<SmileSample> getSamplesByAltId(String altId) throws Exception;
     SampleMetadata getLatestSampleMetadataByPrimaryId(String primaryId) throws Exception;
     String getPatientAliasByTypeAndPrimaryId(String patientAliasType, String primaryId) throws Exception;
+    Boolean sampleIsRecapture(String investigatorSampleId) throws Exception;
 }

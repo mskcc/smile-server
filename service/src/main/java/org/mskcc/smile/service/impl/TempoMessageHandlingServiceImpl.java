@@ -398,8 +398,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     .setOncotreeCode(sampleMetadata.getOncotreeCode())
                     .setCmoPatientId(sampleMetadata.getCmoPatientId())
                     .setDmpPatientId(sampleService.getPatientAliasByTypeAndPrimaryId("dmpId", primaryId))
-                    // TODO:
-                    // .setRecapture(sampleMetadata.getRecapture())
+                    .setRecapture(sampleService.sampleIsRecapture(sampleMetadata.getInvestigatorSampleId()))
                     .build();
                 validTempoSamples.add(tempoSample);
             } catch (Exception e) {
