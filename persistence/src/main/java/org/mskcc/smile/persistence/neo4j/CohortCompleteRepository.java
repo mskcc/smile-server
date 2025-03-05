@@ -15,15 +15,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CohortCompleteRepository extends Neo4jRepository<Cohort, Long> {
     @Query("MATCH (c: Cohort {cohortId: $cohortId})-[hcc:HAS_COHORT_COMPLETE]->(cc: CohortComplete) "
-            + "RETURN c, hcc, cc")
+            + "RETURN DISTINCT c, hcc, cc")
     Cohort findCohortByCohortId(@Param("cohortId") String cohortId);
 
     @Query("MATCH (c: Cohort {cohortId: $cohortId})-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete) "
-            + "RETURN cc ORDER BY cc.date DESC LIMIT 1")
+            + "RETURN DISTINCT cc ORDER BY cc.date DESC LIMIT 1")
     CohortComplete findLatestCohortCompleteEventByCohortId(@Param("cohortId") String cohortId);
 
     @Query("MATCH (c: Cohort)-[:HAS_COHORT_SAMPLE]->(s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata "
-            + "{primaryId: $primaryId}) RETURN c")
+            + "{primaryId: $primaryId}) RETURN DISTINCT c")
     List<Cohort> findCohortsBySamplePrimaryId(@Param("primaryId") String primaryId);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "

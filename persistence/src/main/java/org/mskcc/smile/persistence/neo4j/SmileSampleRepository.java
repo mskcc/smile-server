@@ -23,7 +23,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "OPTIONAL MATCH (t)-[hbe:HAS_EVENT]->(bc: BamComplete) "
             + "OPTIONAL MATCH (t)-[hqe:HAS_EVENT]->(qc: QcComplete) "
             + "OPTIONAL MATCH (t)-[hme:HAS_EVENT]->(mc: MafComplete) "
-            + "RETURN s, hsm, sm, hss, ss, isa, sa, ht, t, hbe, bc, hqe, qc, hme, mc")
+            + "RETURN DISTINCT s, hsm, sm, hss, ss, isa, sa, ht, t, hbe, bc, hqe, qc, hme, mc")
     SmileSample findSampleBySampleSmileId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
@@ -41,38 +41,38 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
-            + "RETURN sm, hs, ss")
+            + "RETURN DISTINCT sm, hs, ss")
     List<SampleMetadata> findAllSampleMetadataListBySampleId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSample.smileSampleId})"
             + "MATCH (s)<-[:HAS_SAMPLE]-(p: Patient)"
             + "MATCH (n: Sample)<-[:HAS_SAMPLE]-(p) "
             + "WHERE toLower(n.sampleClass) = 'normal'"
-            + "RETURN n")
+            + "RETURN DISTINCT n")
     List<SmileSample> findMatchedNormalsByResearchSample(
             @Param("smileSample") SmileSample smileSample);
 
     @Query("MATCH (r: Request {igoRequestId: $reqId})-[:HAS_SAMPLE]->"
             + "(s: Sample) "
-            + "RETURN s")
+            + "RETURN DISTINCT s")
     List<SmileSample> findResearchSamplesByRequest(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request {igoRequestId: $reqId}) "
         + "MATCH(r)-[:HAS_SAMPLE]->(s: Sample) "
         + "MATCH (s)<-[:IS_ALIAS]-(sa: SampleAlias {namespace: 'igoId', value: $igoId}) "
-        + "RETURN s")
+        + "RETURN DISTINCT s")
     SmileSample findResearchSampleByRequestAndIgoId(@Param("reqId") String reqId,
             @Param("igoId") String igoId);
 
     @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
             + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample) "
-            + "RETURN s")
+            + "RETURN DISTINCT s")
     List<SmileSample> findAllSamplesByCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId);
 
     @Query("MATCH (pa: PatientAlias {namespace: 'cmoId', value: $cmoPatientId})-[:IS_ALIAS]->"
             + "(p: Patient)-[:HAS_SAMPLE]->(s: Sample {sampleCategory: $sampleCategory}) "
-            + "RETURN s")
+            + "RETURN DISTINCT s")
     List<SmileSample> findAllSamplesByCategoryAndCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId, @Param("sampleCategory") String sampleCategory);
 
@@ -80,7 +80,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "-[:IS_ALIAS]->(s: Sample)"
             + "-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
-            + "RETURN sm, hs, ss")
+            + "RETURN DISTINCT sm, hs, ss")
     List<SampleMetadata> findSampleMetadataHistoryByNamespaceValue(
             @Param("namespace") String namespace, @Param("value") String value);
 
@@ -96,7 +96,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId})-[:HAS_METADATA]->(sm: SampleMetadata) "
             + "OPTIONAL MATCH (sm)-[hs:HAS_STATUS]->(ss: Status) "
-            + "RETURN sm, hs, ss ORDER BY sm.importDate DESC LIMIT 1")
+            + "RETURN DISTINCT sm, hs, ss ORDER BY sm.importDate DESC LIMIT 1")
     SampleMetadata findLatestSampleMetadataBySmileId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (sm:SampleMetadata)<-[:HAS_METADATA]-(s:Sample)<-[:IS_ALIAS]-(sa:SampleAlias) "
@@ -105,7 +105,7 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "OR s.smileSampleId = $inputId "
             + "OR sm.cmoSampleName = $inputId "
             + "OR sm.investigatorSampleId = $inputId "
-            + "RETURN s")
+            + "RETURN DISTINCT s")
     SmileSample findSampleByInputId(@Param("inputId") String inputId);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
@@ -122,16 +122,16 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "
             + "SET s.revisable = $revisable "
-            + "RETURN s")
+            + "RETURN DISTINCT s")
     SmileSample updateRevisableBySampleId(@Param("smileSampleId") UUID smileSampleId,
             @Param("revisable") Boolean revisable);
 
     @Query("MATCH (c: Cohort {cohortId: $cohortId})-[:HAS_COHORT_SAMPLE]->"
             + "(s: Sample) "
-            + "RETURN s")
+            + "RETURN DISTINCT s")
     List<SmileSample> findSamplesByCohortId(@Param("cohortId") String cohortId);
 
     @Query("MATCH (sm:SampleMetadata {primaryId: $primaryId})"
-            + "RETURN sm.cmoSampleName ORDER BY sm.importDate DESC LIMIT 1")
+            + "RETURN DISTINCT sm.cmoSampleName ORDER BY sm.importDate DESC LIMIT 1")
     String findCmoSampleNameByPrimaryId(@Param("primaryId") String primaryId);
 }
