@@ -133,6 +133,13 @@ public class SmileSample implements Serializable {
                 return s.getValue();
             }
         }
+
+        // check latest metadata for primary id if not found in sample aliases
+        // which is possible when limited sample data is returned by a sample query
+        if (latestMetadata != null) {
+            return latestMetadata.getPrimaryId();
+        }
+
         return null;
     }
 

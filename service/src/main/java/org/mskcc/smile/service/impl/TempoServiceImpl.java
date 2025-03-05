@@ -156,7 +156,7 @@ public class TempoServiceImpl implements TempoService {
     private LocalDate getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
         String dateString = tempoRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
         if (StringUtils.isEmpty(dateString)) {
-            LOG.warn("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
+            LOG.debug("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
             return null;
         }
         DateTimeFormatter runDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

@@ -20,12 +20,12 @@ public interface SmileRequestRepository extends Neo4jRepository<SmileRequest, Lo
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSample.smileSampleId}) "
             + "MATCH (s)<-[:HAS_SAMPLE]-(r: Request) "
-            + "RETURN r")
+            + "RETURN DISTINCT r")
     SmileRequest findRequestByResearchSample(@Param("smileSample") SmileSample smileSample);
 
     @Query("MATCH (r: Request {igoRequestId: $reqId}) "
             + "MATCH (r)-[:HAS_METADATA]->(rm: RequestMetadata)-[hs:HAS_STATUS]->(rs: Status) "
-            + "RETURN rm, hs, rs")
+            + "RETURN DISTINCT rm, hs, rs")
     List<RequestMetadata> findRequestMetadataHistoryByRequestId(@Param("reqId") String reqId);
 
     @Query("MATCH (r: Request)-[:HAS_METADATA]->(rm: RequestMetadata) "

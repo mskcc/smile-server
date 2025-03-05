@@ -14,25 +14,25 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SmilePatientRepository extends Neo4jRepository<SmilePatient, Long> {
     @Query("MATCH (p: Patient {smilePatientId: $smilePatientId})<-[ia:IS_ALIAS]-(pa: PatientAlias) "
-            + "RETURN p, ia, pa")
+            + "RETURN DISTINCT p, ia, pa")
     SmilePatient findPatientByPatientSmileId(@Param("smilePatientId") UUID smileSampleId);
 
     @Query("OPTIONAL MATCH (s: Sample {smileSampleId: $smileSampleId})<-[hs:HAS_SAMPLE]-(p: Patient)"
             + "<-[ia:IS_ALIAS]-(pa: PatientAlias) "
-            + "RETURN p, hs, ia, pa")
+            + "RETURN DISTINCT p, hs, ia, pa")
     SmilePatient findPatientBySampleSmileId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias) "
             + "WHERE pa.namespace = 'cmoId' AND pa.value = $cmoPatientId "
             + "MATCH (p)<-[ipa:IS_ALIAS]-(pa2: PatientAlias) "
-            + "RETURN p, ipa, pa2")
+            + "RETURN DISTINCT p, ipa, pa2")
     SmilePatient findPatientByCmoPatientId(
             @Param("cmoPatientId") String cmoPatientId);
 
     @Query("MATCH (p: Patient)<-[:IS_ALIAS]-(pa: PatientAlias {value: $oldCmoId, namespace: 'cmoId'}) "
             + "SET pa.value = $newCmoId WITH p "
             + "MATCH (p)<-[ipa:IS_ALIAS]-(pa2: PatientAlias) "
-            + "RETURN p, ipa, pa2")
+            + "RETURN DISTINCT p, ipa, pa2")
     SmilePatient updateCmoPatientIdInPatientNode(@Param("oldCmoId") String oldCmoId,
             @Param("newCmoId") String newCmoId);
 
