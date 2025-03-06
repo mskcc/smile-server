@@ -23,6 +23,7 @@ import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.commons.generated.Smile.TempoSample;
 import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
+import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
@@ -370,7 +371,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     continue;
                 }
                 // validate props before building tempo sample
-                String cmoSampleName = sampleService.getCmoSampleNameByPrimaryId(primaryId);
+                SampleMetadata sampleMetadata = sampleService.getLatestSampleMetadataByPrimaryId(primaryId);
+                String cmoSampleName = sampleMetadata.getCmoSampleName();
                 if (StringUtils.isBlank(cmoSampleName)) {
                     LOG.error("Invalid CMO Sample Name for sample with Primary ID " + primaryId);
                     continue;
@@ -391,6 +393,13 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     .setCmoSampleName(cmoSampleName)
                     .setAccessLevel(accessLevel)
                     .setCustodianInformation(custodianInformation)
+                    .setBaitSet(sampleMetadata.getBaitSet())
+                    .setGenePanel(sampleMetadata.getGenePanel())
+                    .setOncotreeCode(sampleMetadata.getOncotreeCode())
+                    .setCmoPatientId(sampleMetadata.getCmoPatientId())
+                    // TODO: obtain these values
+                    // .setDmpPatientId(sampleMetadata.getDmpPatientId())
+                    // .setRecapture(sampleMetadata.getRecapture())
                     .build();
                 validTempoSamples.add(tempoSample);
             } catch (Exception e) {
