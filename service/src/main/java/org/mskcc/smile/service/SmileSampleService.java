@@ -2,8 +2,6 @@ package org.mskcc.smile.service;
 
 import java.util.List;
 import java.util.UUID;
-
-import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.web.PublishedSmileSample;

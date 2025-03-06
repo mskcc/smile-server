@@ -2,8 +2,6 @@ package org.mskcc.smile.persistence.neo4j;
 
 import java.util.List;
 import java.util.UUID;
-
-import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
 import org.springframework.data.neo4j.annotation.Query;
