@@ -24,6 +24,7 @@ import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.commons.generated.Smile.TempoSample;
 import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
 import org.mskcc.smile.model.SampleMetadata;
+import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
@@ -33,6 +34,7 @@ import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.service.CohortCompleteService;
+import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
 import org.mskcc.smile.service.TempoService;
@@ -74,6 +76,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     @Autowired
     private TempoService tempoService;
+
+    @Autowired
+    private SmilePatientService patientService;
 
     @Autowired
     private CohortCompleteService cohortCompleteService;
@@ -387,6 +392,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     LOG.error("Invalid Custodian Information for sample with Primary ID " + primaryId);
                     continue;
                 }
+                String cmoPatientId = sampleMetadata.getCmoPatientId();
+                SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
                 // build tempo sample object
                 TempoSample tempoSample = TempoSample.newBuilder()
                     .setPrimaryId(primaryId)
@@ -396,8 +403,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     .setBaitSet(sampleMetadata.getBaitSet())
                     .setGenePanel(sampleMetadata.getGenePanel())
                     .setOncotreeCode(sampleMetadata.getOncotreeCode())
-                    .setCmoPatientId(sampleMetadata.getCmoPatientId())
-                    .setDmpPatientId(sampleService.getPatientAliasByTypeAndPrimaryId("dmpId", primaryId))
+                    .setCmoPatientId(cmoPatientId)
+                    .setDmpPatientId(patient.getPatientAlias("dmpId"))
                     .setRecapture(sampleService.sampleIsRecapture(sampleMetadata.getInvestigatorSampleId()))
                     .build();
                 validTempoSamples.add(tempoSample);

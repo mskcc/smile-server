@@ -531,11 +531,6 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public String getPatientAliasByTypeAndPrimaryId(String patientAliasType, String primaryId) {
-        return sampleRepository.findPatientAliasByTypeAndPrimaryId(patientAliasType, primaryId);
-    }
-
-    @Override
     public Boolean sampleIsRecapture(String investigatorSampleId) {
         if (StringUtils.isBlank(investigatorSampleId)) {
             return Boolean.FALSE;
