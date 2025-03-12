@@ -394,6 +394,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 }
                 String cmoPatientId = sampleMetadata.getCmoPatientId();
                 SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
+                String dmpPatientId = patient.getPatientAlias("dmpId");
                 // build tempo sample object
                 TempoSample tempoSample = TempoSample.newBuilder()
                     .setPrimaryId(primaryId)
@@ -404,7 +405,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     .setGenePanel(sampleMetadata.getGenePanel())
                     .setOncotreeCode(sampleMetadata.getOncotreeCode())
                     .setCmoPatientId(cmoPatientId)
-                    .setDmpPatientId(patient.getPatientAlias("dmpId"))
+                    .setDmpPatientId(dmpPatientId != null ? dmpPatientId : "")
                     .setRecapture(sampleService.sampleIsRecapture(sampleMetadata.getInvestigatorSampleId()))
                     .build();
                 validTempoSamples.add(tempoSample);
