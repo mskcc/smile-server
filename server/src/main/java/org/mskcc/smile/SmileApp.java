@@ -6,6 +6,7 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
+import org.mskcc.smile.service.CBioPortalMessageSchedulingService;
 import org.mskcc.smile.service.ClinicalMessageHandlingService;
 import org.mskcc.smile.service.CorrectCmoPatientHandlingService;
 import org.mskcc.smile.service.RequestReplyHandlingService;
@@ -52,6 +53,9 @@ public class SmileApp implements CommandLineRunner {
     @Autowired
     private RequestReplyHandlingService requestReplyHandlingService;
 
+    @Autowired
+    private CBioPortalMessageSchedulingService cBioPortalMessageSchedulingService;
+
     private Thread shutdownHook;
     final CountDownLatch smileAppClose = new CountDownLatch(1);
 
@@ -95,6 +99,7 @@ public class SmileApp implements CommandLineRunner {
             researchMessageHandlingService.initialize(messagingGateway);
             clinicalMessageHandlingService.initialize(messagingGateway);
             correctCmoPatientHandlingService.initialize(messagingGateway);
+            cBioPortalMessageSchedulingService.initialize(messagingGateway);
             tempoMessageHandlingService.intialize(messagingGateway);
             smileAppClose.await();
         } catch (Exception e) {
@@ -113,6 +118,7 @@ public class SmileApp implements CommandLineRunner {
                         clinicalMessageHandlingService.shutdown();
                         correctCmoPatientHandlingService.shutdown();
                         tempoMessageHandlingService.shutdown();
+                        cBioPortalMessageSchedulingService.shutdown();
                         messagingGateway.shutdown();
                     } catch (Exception e) {
                         LOG.error("Encountered error during shutdown process", e);
