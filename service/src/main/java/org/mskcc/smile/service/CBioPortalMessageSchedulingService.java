@@ -9,5 +9,4 @@ import org.mskcc.cmo.messaging.Gateway;
 public interface CBioPortalMessageSchedulingService {
     void initialize(Gateway gateway) throws Exception;
     void shutdown() throws Exception;
-    void scheduleTask() throws Exception;
 }
