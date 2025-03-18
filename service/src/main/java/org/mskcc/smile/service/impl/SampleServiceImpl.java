@@ -539,7 +539,7 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public List<String> getSamplePrimaryIdsBySmileTempoIds(List<String> smileTempoIds) {
+    public List<String> getSamplePrimaryIdsBySmileTempoIds(List<UUID> smileTempoIds) throws Exception {
         return sampleRepository.findSamplePrimaryIdsBySmileTempoIds(smileTempoIds);
     }
 }

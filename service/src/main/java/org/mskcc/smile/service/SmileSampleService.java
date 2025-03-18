@@ -39,5 +39,5 @@ public interface SmileSampleService {
     List<SmileSample> getSamplesByAltId(String altId) throws Exception;
     SampleMetadata getLatestSampleMetadataByPrimaryId(String primaryId) throws Exception;
     Boolean sampleIsRecapture(String investigatorSampleId) throws Exception;
-    List<String> getSamplePrimaryIdsBySmileTempoIds(List<String> smileTempoIds) throws Exception;
+    List<String> getSamplePrimaryIdsBySmileTempoIds(List<UUID> smileTempoIds) throws Exception;
 }

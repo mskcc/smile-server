@@ -1,6 +1,8 @@
 package org.mskcc.smile.service;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
@@ -21,6 +23,6 @@ public interface TempoService {
     Tempo mergeMafCompleteEventBySamplePrimaryId(String primaryId, MafComplete mafComplete) throws Exception;
     Tempo initAndSaveDefaultTempoData(String primaryId) throws Exception;
     void updateSampleBilling(SampleBillingJson billing) throws Exception;
-    List<String> getTempoIdsNoLongerEmbargoed() throws Exception;
-    void updateTempoAccessLevel(List<String> smileTempoIds, String accessLevel) throws Exception;
+    List<UUID> getTempoIdsNoLongerEmbargoed() throws Exception;
+    void updateTempoAccessLevel(List<UUID> smileTempoIds, String accessLevel) throws Exception;
 }

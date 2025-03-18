@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -212,13 +214,13 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
-    public List<String> getTempoIdsNoLongerEmbargoed() throws Exception {
+    public List<UUID> getTempoIdsNoLongerEmbargoed() throws Exception {
         return tempoRepository.findTempoIdsNoLongerEmbargoed(TempoServiceImpl.ACCESS_LEVEL_EMBARGO);
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public void updateTempoAccessLevel(List<String> smileTempoIds, String accessLevel) throws Exception {
+    public void updateTempoAccessLevel(List<UUID> smileTempoIds, String accessLevel) throws Exception {
         tempoRepository.updateTempoAccessLevelBySmileTempoIds(smileTempoIds, accessLevel);
     }
 }

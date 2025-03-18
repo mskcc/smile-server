@@ -3,6 +3,7 @@ package org.mskcc.smile.service.impl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,7 +73,7 @@ public class CBioPortalMessageSchedulingServiceImpl implements CBioPortalMessage
         if (initialized) {
             try {
                 LOG.info("Checking for embargoed Tempo samples that are now public...");
-                List<String> tempoIdsNoLongerEmbargoed = tempoService.getTempoIdsNoLongerEmbargoed();
+                List<UUID> tempoIdsNoLongerEmbargoed = tempoService.getTempoIdsNoLongerEmbargoed();
                 if (tempoIdsNoLongerEmbargoed.isEmpty()) {
                     return;
                 }

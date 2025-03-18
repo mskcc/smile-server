@@ -138,5 +138,5 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
     @Query("MATCH (t:Tempo)<-[:HAS_TEMPO]-(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata) "
             + "WHERE t.smileTempoId IN $smileTempoIds "
             + "RETURN DISTINCT sm.primaryId")
-    List<String> findSamplePrimaryIdsBySmileTempoIds(@Param("smileTempoIds") List<String> smileTempoIds);
+    List<String> findSamplePrimaryIdsBySmileTempoIds(@Param("smileTempoIds") List<UUID> smileTempoIds);
 }
