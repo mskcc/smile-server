@@ -1,7 +1,6 @@
 package org.mskcc.smile.service;
 
 import java.util.List;
-
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
