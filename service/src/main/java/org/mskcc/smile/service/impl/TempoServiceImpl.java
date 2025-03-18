@@ -3,6 +3,8 @@ package org.mskcc.smile.service.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -207,5 +209,9 @@ public class TempoServiceImpl implements TempoService {
         String accessLevelLower = accessLevel.toLowerCase();
         return accessLevelLower.contains("public") || accessLevelLower.contains("publish")
             || accessLevelLower.contains("pmid");
+    }
+
+    public List<String> getTempoIdsNoLongerEmbargoed() throws Exception {
+        return tempoRepository.findTempoIdsNoLongerEmbargoed();
     }
 }
