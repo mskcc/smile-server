@@ -43,9 +43,10 @@ public class TempoServiceImpl implements TempoService {
 
     private static final Log LOG = LogFactory.getLog(TempoServiceImpl.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
-    private static final String ACCESS_LEVEL_EMBARGO = "MSK Embargo";
-    private static final String ACCESS_LEVEL_PUBLIC = "MSK Public";
     private static final int EMBARGO_PERIOD_MONTHS = 18;
+
+    public static final String ACCESS_LEVEL_EMBARGO = "MSK Embargo";
+    public static final String ACCESS_LEVEL_PUBLIC = "MSK Public";
 
 
     @Override
@@ -211,7 +212,14 @@ public class TempoServiceImpl implements TempoService {
             || accessLevelLower.contains("pmid");
     }
 
+    @Override
     public List<String> getTempoIdsNoLongerEmbargoed() throws Exception {
         return tempoRepository.findTempoIdsNoLongerEmbargoed();
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class})
+    public void updateTempoAccessLevel(List<String> smileTempoIds, String accessLevel) throws Exception {
+        tempoRepository.updateTempoAccessLevelBySmileTempoIds(smileTempoIds, accessLevel);
     }
 }

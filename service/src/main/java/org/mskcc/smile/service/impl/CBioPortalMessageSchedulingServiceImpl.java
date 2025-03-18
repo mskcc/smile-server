@@ -48,20 +48,23 @@ public class CBioPortalMessageSchedulingServiceImpl implements CBioPortalMessage
      */
     @Scheduled(fixedRate = 1000 * 30) // 30 seconds
     // @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
-    public void checkNewlyPublicTempoSamplesAndSendUpdates() {
+    public void checkEmbargoStatusChangeAndSendUpdates() {
         if (initialized) {
-            LOG.info("Checking for embargoed Tempo samples that are now public...");
             try {
+                LOG.info("Checking for embargoed Tempo samples that are now public...");
                 List<String> tempoIdsNoLongerEmbargoed = tempoService.getTempoIdsNoLongerEmbargoed();
                 if (tempoIdsNoLongerEmbargoed.isEmpty()) {
                     return;
                 }
-                // otherwise, update those tempos' accessLevel to public (TODO)
+
+                LOG.info("Found " + tempoIdsNoLongerEmbargoed.size() + " Tempo samples that are no longer embargoed.");
+                LOG.info("Updating Access Level to '" + TempoServiceImpl.ACCESS_LEVEL_PUBLIC + "' for these samples...");
+                tempoService.updateTempoAccessLevel(tempoIdsNoLongerEmbargoed, TempoServiceImpl.ACCESS_LEVEL_PUBLIC);
 
                 // get the samples connected to those tempo ids
                 // then send a message to cBioPortal with those samples (leverage existing code from TempoMessageHandlingServiceImpl.java)
             } catch (Exception e) {
-                LOG.error("Error running the daily embargo status change check: " + e.getMessage());
+                LOG.error("Error running the daily job checkEmbargoStatusChangeAndSendUpdates: " + e.getMessage());
             }
         }
     }

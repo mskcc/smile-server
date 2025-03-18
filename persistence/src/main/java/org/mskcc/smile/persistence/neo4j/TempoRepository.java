@@ -86,4 +86,7 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
     @Query("MATCH (t:Tempo {accessLevel: 'MSK Embargo'}) WHERE date(t.embargoDate) < date() "
             + "RETURN t.smileTempoId")
     List<String> findTempoIdsNoLongerEmbargoed();
+
+    @Query("MATCH (t:Tempo) WHERE t.smileTempoId IN $smileTempoIds SET t.accessLevel = $accessLevel")
+    void updateTempoAccessLevelBySmileTempoIds(List<String> smileTempoIds, String accessLevel);
 }
