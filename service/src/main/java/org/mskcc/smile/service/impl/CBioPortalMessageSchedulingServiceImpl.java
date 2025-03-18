@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.smile.service.CBioPortalMessageSchedulingService;
+import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,9 @@ import org.springframework.stereotype.Component;
 public class CBioPortalMessageSchedulingServiceImpl implements CBioPortalMessageSchedulingService {
     @Autowired
     private TempoService tempoService;
+
+    @Autowired
+    private SmileSampleService smileSampleService;
 
     private static Gateway messagingGateway;
     private static boolean initialized = false;
@@ -61,8 +65,7 @@ public class CBioPortalMessageSchedulingServiceImpl implements CBioPortalMessage
                 LOG.info("Updating Access Level to '" + TempoServiceImpl.ACCESS_LEVEL_PUBLIC + "' for these samples...");
                 tempoService.updateTempoAccessLevel(tempoIdsNoLongerEmbargoed, TempoServiceImpl.ACCESS_LEVEL_PUBLIC);
 
-                // get the samples connected to those tempo ids
-                // then send a message to cBioPortal with those samples (leverage existing code from TempoMessageHandlingServiceImpl.java)
+                List<String> samplePrimaryIds = smileSampleService.getSamplePrimaryIdsBySmileTempoIds(tempoIdsNoLongerEmbargoed);
             } catch (Exception e) {
                 LOG.error("Error running the daily job checkEmbargoStatusChangeAndSendUpdates: " + e.getMessage());
             }

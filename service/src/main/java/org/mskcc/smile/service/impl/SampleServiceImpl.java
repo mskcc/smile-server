@@ -537,4 +537,9 @@ public class SampleServiceImpl implements SmileSampleService {
         }
         return RECAPTURE_INVESTIGATOR_SAMPLE_ID.matcher(investigatorSampleId).matches();
     }
+
+    @Override
+    public List<String> getSamplePrimaryIdsBySmileTempoIds(List<String> smileTempoIds) {
+        return sampleRepository.findSamplePrimaryIdsBySmileTempoIds(smileTempoIds);
+    }
 }
