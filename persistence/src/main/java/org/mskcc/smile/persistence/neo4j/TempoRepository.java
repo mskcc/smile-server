@@ -83,9 +83,9 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             + "RETURN cc.date ORDER BY cc.date ASC LIMIT 1")
     String findInitialPipelineRunDateBySamplePrimaryId(@Param("primaryId") String primaryId);
 
-    @Query("MATCH (t:Tempo {accessLevel: 'MSK Embargo'}) WHERE date(t.embargoDate) < date() "
+    @Query("MATCH (t:Tempo {accessLevel: $embargoAccessLevel}) WHERE date(t.embargoDate) < date() "
             + "RETURN t.smileTempoId")
-    List<String> findTempoIdsNoLongerEmbargoed();
+    List<String> findTempoIdsNoLongerEmbargoed(String embargoAccessLevel);
 
     @Query("MATCH (t:Tempo) WHERE t.smileTempoId IN $smileTempoIds SET t.accessLevel = $accessLevel")
     void updateTempoAccessLevelBySmileTempoIds(List<String> smileTempoIds, String accessLevel);
