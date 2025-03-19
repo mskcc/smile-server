@@ -31,15 +31,6 @@ public class CBioPortalMessageSchedulingServiceImpl implements CBioPortalMessage
     @Autowired
     private TempoService tempoService;
 
-    @Autowired
-    private SmileSampleService sampleService;
-
-    @Autowired
-    private SmilePatientService patientService;
-
-    @Value("${tempo.release_samples_topic}")
-    private String TEMPO_RELEASE_SAMPLES_TOPIC;
-
     private static Gateway messagingGateway;
     private static boolean initialized = false;
     private static final Log LOG = LogFactory.getLog(CBioPortalMessageSchedulingServiceImpl.class);
@@ -64,98 +55,33 @@ public class CBioPortalMessageSchedulingServiceImpl implements CBioPortalMessage
     }
 
     /**
-     * Daily job that checks for embargoed Tempo samples that are now public, updates their access level to
-     * 'public', and publishes their samples to cBioPortal.
+     * TODO: add function description
+     * Note for Angelica: for testing, we can change the cron expression to run more frequently
+     * (e.g. every 5 minutes) by changing the cron expression or setting a fixedDelay
      */
-    // @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
-    @Scheduled(fixedRate = 1000 * 60) // 60 seconds
-    public void checkEmbargoStatusChangeAndSendUpdates() {
+    @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
+    public void checkEmbargoStatusChangesDaily() {
         if (initialized) {
             try {
-                LOG.info("Checking for embargoed Tempo samples that are now public...");
+                LOG.info("Checking for Tempo records that are no longer embargoed...");
                 List<UUID> tempoIdsNoLongerEmbargoed = tempoService.getTempoIdsNoLongerEmbargoed();
                 if (tempoIdsNoLongerEmbargoed.isEmpty()) {
+                    LOG.info("No Tempo records need to be updated.");
                     return;
                 }
-                LOG.info("Found " + tempoIdsNoLongerEmbargoed.size()
-                    + " Tempo samples that are no longer embargoed.");
-                LOG.info("Updating Access Level to '" + TempoServiceImpl.ACCESS_LEVEL_PUBLIC
-                    + "' for these samples...");
-                tempoService.updateTempoAccessLevel(
-                    tempoIdsNoLongerEmbargoed, TempoServiceImpl.ACCESS_LEVEL_PUBLIC);
-                List<String> samplePrimaryIds = sampleService.getSamplePrimaryIdsBySmileTempoIds(
-                    tempoIdsNoLongerEmbargoed);
-                publishTempoSamplesToCBioPortal(samplePrimaryIds);
+                // Notes for Angelica: these are methods I wrote that you might find useful for your PR
+                // (Please modify them as needed and delete them if you don't end up using them)
+                //
+                // 1. To update the access level of a list of Tempo IDs to MSK Public
+                // tempoService.updateTempoAccessLevel(
+                //     tempoIdsNoLongerEmbargoed, TempoServiceImpl.ACCESS_LEVEL_PUBLIC);
+                //
+                // 2. To get a list of sample primary IDs from a list of Tempo IDs
+                // List<String> samplePrimaryIds = sampleService.getSamplePrimaryIdsBySmileTempoIds(
+                //     tempoIdsNoLongerEmbargoed);
             } catch (Exception e) {
-                LOG.error("Error running the daily job checkEmbargoStatusChangeAndSendUpdates: "
-                    + e.getMessage());
+                LOG.error("Error running the daily job checkEmbargoStatusChangesDaily: " + e.getMessage());
             }
         }
     }
-
-    private void publishTempoSamplesToCBioPortal(List<String> samplePrimaryIds) throws Exception {
-        // validate and build tempo samples to publish to cBioPortal
-        Set<TempoSample> validTempoSamples = new HashSet<>();
-        for (String primaryId : samplePrimaryIds) {
-            try {
-                // confirm tempo data exists by primary id
-                Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
-                if (tempo == null) {
-                    LOG.error("Tempo data not found for sample with Primary ID " + primaryId);
-                    continue;
-                }
-                // validate props before building tempo sample
-                SampleMetadata sampleMetadata = sampleService.getLatestSampleMetadataByPrimaryId(primaryId);
-                String cmoSampleName = sampleMetadata.getCmoSampleName();
-                if (StringUtils.isBlank(cmoSampleName)) {
-                    LOG.error("Invalid CMO Sample Name for sample with Primary ID " + primaryId);
-                    continue;
-                }
-                String accessLevel = tempo.getAccessLevel();
-                if (StringUtils.isBlank(accessLevel)) {
-                    LOG.error("Invalid Access Level for sample with Primary ID " + primaryId);
-                    continue;
-                }
-                String custodianInformation = tempo.getCustodianInformation();
-                if (StringUtils.isBlank(custodianInformation)) {
-                    LOG.error("Invalid Custodian Information for sample with Primary ID " + primaryId);
-                    continue;
-                }
-                String cmoPatientId = sampleMetadata.getCmoPatientId();
-                SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
-                // build tempo sample object
-                TempoSample tempoSample = TempoSample.newBuilder()
-                    .setPrimaryId(primaryId)
-                    .setCmoSampleName(cmoSampleName)
-                    .setAccessLevel(accessLevel)
-                    .setCustodianInformation(custodianInformation)
-                    .setBaitSet(StringUtils.defaultString(sampleMetadata.getBaitSet(), ""))
-                    .setGenePanel(StringUtils.defaultString(sampleMetadata.getGenePanel(), ""))
-                    .setOncotreeCode(StringUtils.defaultString(sampleMetadata.getOncotreeCode(), ""))
-                    .setCmoPatientId(StringUtils.defaultString(cmoPatientId, ""))
-                    .setDmpPatientId(StringUtils.defaultString(patient.getPatientAlias("dmpId"), ""))
-                    .setRecapture(sampleService.sampleIsRecapture(sampleMetadata.getInvestigatorSampleId()))
-                    .build();
-                validTempoSamples.add(tempoSample);
-            } catch (Exception e) {
-                LOG.error("Error building to publish to cBioPortal of sample: " + primaryId, e);
-                continue;
-            }
-        }
-        // bundle together all valid tempo samples and publish to cBioPortal
-        if (!validTempoSamples.isEmpty()) {
-            TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
-                .addAllTempoSamples(validTempoSamples)
-                .build();
-            try {
-                LOG.info("Publishing TEMPO samples to cBioPortal:\n" + tempoSampleUpdateMessage.toString());
-                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, tempoSampleUpdateMessage.toByteArray());
-            } catch (Exception e) {
-                LOG.error("Error publishing TEMPO samples to cBioPortal", e);
-            }
-        } else {
-            LOG.warn("No valid TEMPO samples to publish to cBioPortal");
-        }
-    }
-
 }
