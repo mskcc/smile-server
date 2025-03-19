@@ -164,7 +164,13 @@ RETURN cc
 
 // add properties "initialPipelineRunDate" and "embargoDate" to Tempo nodes for samples that belong to Tempo cohorts
 MATCH (t:Tempo)<-[:HAS_TEMPO]-(s:Sample)<-[:HAS_COHORT_SAMPLE]-(c:Cohort)-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
-WITH t,s,c,cc, apoc.date.parse(min(cc.date), "ms", "yyyy-MM-dd HH:mm") as initRunDatetime, apoc.date.add(apoc.date.parse(min(cc.date), "ms", "yyyy-MM-dd HH:mm"), "ms", 547, "days") as embargoDate
-SET t.initialPipelineRunDate = apoc.date.format(initRunDatetime, "ms", "yyyy-MM-dd"), t.embargoDate = apoc.date.format(embargoDate, "ms", "yyy-MM-dd")
+WITH t,s,c,cc, 
+    apoc.date.parse(min(cc.date), "ms", "yyyy-MM-dd HH:mm") as initRunDatetime, 
+    apoc.date.parse(min(cc.date), "ms", "yyyy-MM-dd HH:mm") as minDate
+with t,s,c,cc,
+    initRunDatetime, 
+    datetime(apoc.date.format(minDate, "ms", "yyyy-MM-dd")) + Duration({months:18}) as embargoDatetime
+SET 
+    t.initialPipelineRunDate = apoc.date.format(initRunDatetime, "ms", "yyyy-MM-dd"), 
+    t.embargoDate = apoc.temporal.format(embargoDatetime, 'YYYY-MM-dd')
 RETURN s.smileSampleId, collect(DISTINCT cc.date), min(cc.date), t.initialPipelineRunDate, t.embargoDate
-
