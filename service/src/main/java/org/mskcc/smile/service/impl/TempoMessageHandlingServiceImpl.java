@@ -364,10 +364,10 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
-    private void publishTempoSamplesToCBioPortal(Set<String> tumorPrimaryIds) throws Exception {
+    private void publishTempoSamplesToCBioPortal(Set<String> samplePrimaryIds) throws Exception {
         // validate and build tempo samples to publish to cBioPortal
         Set<TempoSample> validTempoSamples = new HashSet<>();
-        for (String primaryId : tumorPrimaryIds) {
+        for (String primaryId : samplePrimaryIds) {
             try {
                 // confirm tempo data exists by primary id
                 Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
