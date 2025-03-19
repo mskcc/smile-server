@@ -1,10 +1,10 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.util.AbstractMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,8 +23,6 @@ import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.commons.generated.Smile.TempoSample;
 import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
-import org.mskcc.smile.model.SampleMetadata;
-import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
@@ -68,6 +66,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     @Value("${tempo.release_samples_topic}")
     private String TEMPO_RELEASE_SAMPLES_TOPIC;
 
+    @Value("${tempo.update_samples_embargo_topic}")
+    private String TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC;
+
     @Value("${num.tempo_msg_handler_threads}")
     private int NUM_TEMPO_MSG_HANDLERS;
 
@@ -78,18 +79,15 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     private TempoService tempoService;
 
     @Autowired
-    private SmilePatientService patientService;
-
-    @Autowired
     private CohortCompleteService cohortCompleteService;
 
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(TempoMessageHandlingServiceImpl.class);
-    private final ObjectMapper mapper = new ObjectMapper();
 
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
     private static final ExecutorService exec = Executors.newCachedThreadPool();
+
     private static final BlockingQueue<Map.Entry<String, BamComplete>> bamCompleteQueue =
             new LinkedBlockingQueue<Map.Entry<String, BamComplete>>();
     private static final BlockingQueue<Map.Entry<String, QcComplete>> qcCompleteQueue =
@@ -100,12 +98,15 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<CohortCompleteJson>();
     private static final BlockingQueue<SampleBillingJson> sampleBillingQueue =
             new LinkedBlockingQueue<SampleBillingJson>();
+    private static final BlockingQueue<List<String>> tempoEmbargoStatusQueue =
+            new LinkedBlockingQueue<List<String>>();
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
     private static CountDownLatch mafCompleteHandlerShutdownLatch;
     private static CountDownLatch cohortCompleteHandlerShutdownLatch;
     private static CountDownLatch sampleBillingHandlerShutdownLatch;
+    private static CountDownLatch tempoEmbargoStatusHandlerShutdownLatch;
 
     private class BamCompleteHandler implements Runnable {
         final Phaser phaser;
@@ -286,7 +287,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             // compiles them into a set list of strings
                             cohortCompleteService.saveCohort(cohort, ccJson.getTumorNormalPairsAsSet());
 
-                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet());
+                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet(),
+                                    TEMPO_RELEASE_SAMPLES_TOPIC);
                         } else if (cohortCompleteService.hasUpdates(existingCohort,
                                 cohort)) {
                             LOG.info("Received updates for cohort: " + ccJson.getCohortId());
@@ -301,7 +303,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             // persist updates to db
                             cohortCompleteService.saveCohort(existingCohort, newSamples);
 
-                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet());
+                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet(),
+                                    TEMPO_RELEASE_SAMPLES_TOPIC);
                         } else {
                             LOG.error("Cohort " + ccJson.getCohortId()
                                     + " already exists and no new updates were received.");
@@ -364,63 +367,83 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
-    private void publishTempoSamplesToCBioPortal(Set<String> tumorPrimaryIds) throws Exception {
+    private class TempoEmbargoStatusHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        TempoEmbargoStatusHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    List<String> samplePrimaryIds = tempoEmbargoStatusQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (samplePrimaryIds != null) {
+                        LOG.info("Updating access level for " + samplePrimaryIds.size() + " samples...");
+                        tempoService.updateTempoAccessLevel(samplePrimaryIds,
+                                TempoServiceImpl.ACCESS_LEVEL_PUBLIC);
+                        // publish to tempo sample update topic
+                        publishTempoSamplesToCBioPortal(new HashSet<>(samplePrimaryIds),
+                                TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of sample billing data", e);
+                }
+                tempoEmbargoStatusHandlerShutdownLatch.countDown();
+            }
+        }
+    }
+
+    private void publishTempoSamplesToCBioPortal(Set<String> samplePrimaryIds, String topic)
+            throws Exception {
         // validate and build tempo samples to publish to cBioPortal
         Set<TempoSample> validTempoSamples = new HashSet<>();
-        for (String primaryId : tumorPrimaryIds) {
+        LOG.info("Assembling TEMPO data per sample for publishing....");
+        for (String primaryId : samplePrimaryIds) {
             try {
+                TempoSample tempoSample = tempoService.getTempoSampleDataBySamplePrimaryId(primaryId);
+
                 // confirm tempo data exists by primary id
-                Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
-                if (tempo == null) {
-                    LOG.error("Tempo data not found for sample with Primary ID " + primaryId);
+                if (tempoSample == null) {
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Tempo data not found "
+                            + "for sample: " + primaryId);
                     continue;
                 }
-                // validate props before building tempo sample
-                SampleMetadata sampleMetadata = sampleService.getLatestSampleMetadataByPrimaryId(primaryId);
-                String cmoSampleName = sampleMetadata.getCmoSampleName();
-                if (StringUtils.isBlank(cmoSampleName)) {
-                    LOG.error("Invalid CMO Sample Name for sample with Primary ID " + primaryId);
+                // validate props before adding tempo sample to set of samples to be published
+                if (StringUtils.isBlank(tempoSample.getCmoSampleName())) {
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid CMO Sample Name "
+                            + "for sample: " + primaryId + ", " + tempoSample.toString());
                     continue;
                 }
-                String accessLevel = tempo.getAccessLevel();
-                if (StringUtils.isBlank(accessLevel)) {
-                    LOG.error("Invalid Access Level for sample with Primary ID " + primaryId);
+                if (StringUtils.isBlank(tempoSample.getAccessLevel())) {
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid Access Level "
+                            + "for sample: " + primaryId + ", " + tempoSample.toString());
                     continue;
                 }
-                String custodianInformation = tempo.getCustodianInformation();
-                if (StringUtils.isBlank(custodianInformation)) {
-                    LOG.error("Invalid Custodian Information for sample with Primary ID " + primaryId);
+                if (StringUtils.isBlank(tempoSample.getCustodianInformation())) {
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid Custodian Information "
+                            + "for sample: " + primaryId + ", " + tempoSample.toString());
                     continue;
                 }
-                String cmoPatientId = sampleMetadata.getCmoPatientId();
-                SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
-                // build tempo sample object
-                TempoSample tempoSample = TempoSample.newBuilder()
-                    .setPrimaryId(primaryId)
-                    .setCmoSampleName(cmoSampleName)
-                    .setAccessLevel(accessLevel)
-                    .setCustodianInformation(custodianInformation)
-                    .setBaitSet(StringUtils.defaultString(sampleMetadata.getBaitSet(), ""))
-                    .setGenePanel(StringUtils.defaultString(sampleMetadata.getGenePanel(), ""))
-                    .setOncotreeCode(StringUtils.defaultString(sampleMetadata.getOncotreeCode(), ""))
-                    .setCmoPatientId(StringUtils.defaultString(cmoPatientId, ""))
-                    .setDmpPatientId(StringUtils.defaultString(patient.getPatientAlias("dmpId"), ""))
-                    .setRecapture(sampleService.sampleIsRecapture(sampleMetadata.getInvestigatorSampleId()))
-                    .build();
                 validTempoSamples.add(tempoSample);
             } catch (Exception e) {
-                LOG.error("Error building to publish to cBioPortal of sample: " + primaryId, e);
-                continue;
+                LOG.error("Error building TEMPO data to publish to cBioPortal for sample: " + primaryId, e);
             }
         }
         // bundle together all valid tempo samples and publish to cBioPortal
         if (!validTempoSamples.isEmpty()) {
+            LOG.info("Total samples that will be published = " + validTempoSamples.size());
             TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
                 .addAllTempoSamples(validTempoSamples)
                 .build();
             try {
                 LOG.info("Publishing TEMPO samples to cBioPortal:\n" + tempoSampleUpdateMessage.toString());
-                messagingGateway.publish(TEMPO_RELEASE_SAMPLES_TOPIC, tempoSampleUpdateMessage.toByteArray());
+                messagingGateway.publish(topic, tempoSampleUpdateMessage.toByteArray());
             } catch (Exception e) {
                 LOG.error("Error publishing TEMPO samples to cBioPortal", e);
             }
@@ -438,6 +461,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             setupMafCompleteHandler(messagingGateway, this);
             setupCohortCompleteHandler(messagingGateway, this);
             setupSampleBillingHandler(messagingGateway, this);
+            setupTempoEmbargoStatusHandler(messagingGateway, this);
             initializeMessageHandlers();
             initialized = true;
         } else {
@@ -511,6 +535,20 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     }
 
     @Override
+    public void tempoEmbargoStatusHandler(List<String> samplePrimaryIds) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            tempoEmbargoStatusQueue.put(samplePrimaryIds);
+        } else {
+            LOG.error("Shutdown initiated, not accepting TEMPO embargo status update event: "
+                    + samplePrimaryIds);
+            throw new IllegalStateException("Shutdown initiated, not handling any more TEMPO events");
+        }
+    }
+
+    @Override
     public void shutdown() throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
@@ -521,6 +559,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         mafCompleteHandlerShutdownLatch.await();
         cohortCompleteHandlerShutdownLatch.await();
         sampleBillingHandlerShutdownLatch.await();
+        tempoEmbargoStatusHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -574,6 +613,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new SampleBillingHandler(sampleBillingPhaser));
         }
         sampleBillingPhaser.arriveAndAwaitAdvance();
+
+        // tempo embargo status handler
+        tempoEmbargoStatusHandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
+        final Phaser tempoEmbargoStatusPhaser = new Phaser();
+        tempoEmbargoStatusPhaser.register();
+        for (int lc = 0; lc < NUM_TEMPO_MSG_HANDLERS; lc++) {
+            tempoEmbargoStatusPhaser.register();
+            exec.execute(new TempoEmbargoStatusHandler(tempoEmbargoStatusPhaser));
+        }
+        tempoEmbargoStatusPhaser.arriveAndAwaitAdvance();
     }
 
     private void setupBamCompleteHandler(Gateway gateway,
@@ -722,8 +771,33 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
                     tempoMessageHandlingService.sampleBillingHandler(billing);
                 } catch (Exception e) {
-                    LOG.error("Exception occurred during processing of Cohort Complete event: "
+                    LOG.error("Exception occurred during processing of billing update event: "
                             + TEMPO_SAMPLE_BILLING_TOPIC, e);
+                }
+            }
+        });
+    }
+
+    private void setupTempoEmbargoStatusHandler(Gateway gateway,
+            TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
+        gateway.subscribe(TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                try {
+                    LOG.info("Received message on topic: " + TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);
+                    String samplePrimaryIdsString = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (samplePrimaryIdsString == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    List<String> samplePrimaryIds =
+                            (List<String>) NatsMsgUtil.convertObjectFromString(
+                                    samplePrimaryIdsString, new TypeReference<List<String>>() {});
+
+                    tempoMessageHandlingService.tempoEmbargoStatusHandler(samplePrimaryIds);
+                } catch (Exception e) {
+                    LOG.error("Exception occurred during processing of TEMPO Embargo Status update event: "
+                            + TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC, e);
                 }
             }
         });
