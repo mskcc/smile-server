@@ -26,7 +26,7 @@ public class TempoEmbargoStatusScheduler {
     private static final Log LOG = LogFactory.getLog(TempoEmbargoStatusScheduler.class);
 
     // @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
-    @Scheduled(cron = "*/2 * * * * ?") // testing - every 2 min
+    @Scheduled(cron = "*/2 * * * * ?") // testing - every 2 sec
     public void checkEmbargoStatusChangesDaily() {
         try {
             LOG.info("Checking for Tempo records that are no longer embargoed...");

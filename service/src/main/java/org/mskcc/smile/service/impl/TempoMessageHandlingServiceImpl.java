@@ -398,7 +398,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Error during handling of sample billing data", e);
                 }
-                sampleBillingHandlerShutdownLatch.countDown();
+                tempoEmbargoStatusHandlerShutdownLatch.countDown();
             }
         }
     }
