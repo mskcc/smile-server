@@ -214,7 +214,7 @@ public class TempoServiceImpl implements TempoService {
 
     @Override
     public List<UUID> getTempoIdsNoLongerEmbargoed() throws Exception {
-        return tempoRepository.findTempoIdsNoLongerEmbargoed(TempoServiceImpl.ACCESS_LEVEL_EMBARGO);
+        return tempoRepository.findTempoIdsNoLongerEmbargoed(ACCESS_LEVEL_EMBARGO);
     }
 
     @Override

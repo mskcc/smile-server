@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -106,7 +105,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<SampleBillingJson>();
     private static final BlockingQueue<List<String>> tempoEmbargoStatusQueue =
             new LinkedBlockingQueue<List<String>>();
-
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
