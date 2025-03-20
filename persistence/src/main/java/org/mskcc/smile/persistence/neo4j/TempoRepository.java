@@ -87,7 +87,8 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             + "RETURN t.smileTempoId")
     List<UUID> findTempoIdsNoLongerEmbargoed(@Param("embargoAccessLevel") String embargoAccessLevel);
 
-    @Query("MATCH (t:Tempo) WHERE t.smileTempoId IN $smileTempoIds SET t.accessLevel = $accessLevel")
-    void updateTempoAccessLevelBySmileTempoIds(@Param("smileTempoIds") List<UUID> smileTempoIds,
+    @Query("MATCH (sm: SampleMetadata)<-[:HAS_METADATA]-(s: Sample)-[:HAS_TEMPO]->(t:Tempo) "
+            + "WHERE sm.primaryId IN $samplePrimaryIds SET t.accessLevel = $accessLevel")
+    void updateTempoAccessLevelBySmileTempoIds(@Param("samplePrimaryIds") List<String> samplePrimaryIds,
             @Param("accessLevel") String accessLevel);
 }

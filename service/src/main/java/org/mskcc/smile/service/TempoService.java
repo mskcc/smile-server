@@ -23,5 +23,5 @@ public interface TempoService {
     Tempo initAndSaveDefaultTempoData(String primaryId) throws Exception;
     void updateSampleBilling(SampleBillingJson billing) throws Exception;
     List<UUID> getTempoIdsNoLongerEmbargoed() throws Exception;
-    void updateTempoAccessLevel(List<UUID> smileTempoIds, String accessLevel) throws Exception;
+    void updateTempoAccessLevel(List<String> samplePrimaryIds, String accessLevel) throws Exception;
 }

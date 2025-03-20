@@ -219,7 +219,7 @@ public class TempoServiceImpl implements TempoService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public void updateTempoAccessLevel(List<UUID> smileTempoIds, String accessLevel) throws Exception {
-        tempoRepository.updateTempoAccessLevelBySmileTempoIds(smileTempoIds, accessLevel);
+    public void updateTempoAccessLevel(List<String> samplePrimaryIds, String accessLevel) throws Exception {
+        tempoRepository.updateTempoAccessLevelBySmileTempoIds(samplePrimaryIds, accessLevel);
     }
 }
