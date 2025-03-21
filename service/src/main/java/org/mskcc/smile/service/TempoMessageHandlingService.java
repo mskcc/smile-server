@@ -1,5 +1,6 @@
 package org.mskcc.smile.service;
 
+import java.util.List;
 import java.util.Map;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.smile.model.tempo.BamComplete;
@@ -19,5 +20,6 @@ public interface TempoMessageHandlingService {
     void mafCompleteHandler(Map.Entry<String, MafComplete> mcEvent) throws Exception;
     void cohortCompleteHandler(CohortCompleteJson ccEvent) throws Exception;
     void sampleBillingHandler(SampleBillingJson billing) throws Exception;
+    void tempoEmbargoStatusHandler(List<String> samplePrimaryIds) throws Exception;
     void shutdown() throws Exception;
 }

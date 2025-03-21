@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class SampleServiceImpl implements SmileSampleService {
     private static final Pattern DMP_PATIENT_ID = Pattern.compile("P-\\d*");
-    private static final Pattern RECAPTURE_INVESTIGATOR_SAMPLE_ID = Pattern.compile("^P-\\d{6}-.*-WES$");
+    private static final Pattern RECAPTURE_INVESTIGATOR_SAMPLE_ID = Pattern.compile("^P-\\d{7}-.*-WES$");
     @Autowired
     private JsonComparator jsonComparator;
 

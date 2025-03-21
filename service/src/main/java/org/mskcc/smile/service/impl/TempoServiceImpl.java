@@ -4,11 +4,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.util.Strings;
+import org.mskcc.smile.commons.generated.Smile.TempoSample;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
@@ -214,12 +216,44 @@ public class TempoServiceImpl implements TempoService {
 
     @Override
     public List<UUID> getTempoIdsNoLongerEmbargoed() throws Exception {
-        return tempoRepository.findTempoIdsNoLongerEmbargoed(TempoServiceImpl.ACCESS_LEVEL_EMBARGO);
+        return tempoRepository.findTempoIdsNoLongerEmbargoed(ACCESS_LEVEL_EMBARGO);
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public void updateTempoAccessLevel(List<UUID> smileTempoIds, String accessLevel) throws Exception {
-        tempoRepository.updateTempoAccessLevelBySmileTempoIds(smileTempoIds, accessLevel);
+    public void updateTempoAccessLevel(List<String> samplePrimaryIds, String accessLevel) throws Exception {
+        tempoRepository.updateTempoAccessLevelBySamplePrimaryIds(samplePrimaryIds, accessLevel);
     }
+
+    @Override
+    public TempoSample getTempoSampleDataBySamplePrimaryId(String primaryId) throws Exception {
+        Map<String, Object> tempoSampleMap = tempoRepository.findTempoSampleDataBySamplePrimaryId(primaryId);
+        if (tempoSampleMap == null) {
+            return null;
+        }
+
+        // build tempo sample object
+        TempoSample tempoSample = TempoSample.newBuilder()
+            .setPrimaryId(primaryId)
+            .setCmoSampleName(
+                    StringUtils.defaultIfBlank((String) tempoSampleMap.get("cmoSampleName"), ""))
+            .setAccessLevel(
+                    StringUtils.defaultIfBlank((String) tempoSampleMap.get("accessLevel"), ""))
+            .setCustodianInformation(
+                    StringUtils.defaultIfBlank((String) tempoSampleMap.get("custodianInformation"), ""))
+            .setBaitSet(
+                    StringUtils.defaultIfBlank((String) tempoSampleMap.get("baitSet"), ""))
+            .setGenePanel(
+                    StringUtils.defaultIfBlank((String) tempoSampleMap.get("genePanel"), ""))
+            .setOncotreeCode(
+                    StringUtils.defaultIfBlank((String) tempoSampleMap.get("oncotreeCode"), ""))
+            .setCmoPatientId(
+                    StringUtils.defaultIfBlank((String) tempoSampleMap.get("cmoPatientId"), ""))
+            .setDmpPatientId(
+                    StringUtils.defaultIfBlank((String) tempoSampleMap.get("dmpPatientId"), ""))
+            .setRecapture((Boolean) tempoSampleMap.get("recapture"))
+            .build();
+        return tempoSample;
+    }
+
 }
