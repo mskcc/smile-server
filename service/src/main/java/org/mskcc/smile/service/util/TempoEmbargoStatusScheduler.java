@@ -32,9 +32,8 @@ public class TempoEmbargoStatusScheduler {
 
     /**
      * Checks for changes in TEMPO embargo status.
-     * Scheduled(cron = "0 0 0 * * ?") // every day at midnight
      */
-    @Scheduled(cron = "*/30 * * * * ?") // testing - every 30 sec
+    @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
     public void checkEmbargoStatusChangesDaily() {
         try {
             LOG.info("Checking for Tempo records that are no longer embargoed...");
