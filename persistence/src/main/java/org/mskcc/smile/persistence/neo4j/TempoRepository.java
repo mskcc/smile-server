@@ -93,8 +93,7 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
     void updateTempoAccessLevelBySamplePrimaryIds(@Param("samplePrimaryIds") List<String> samplePrimaryIds,
             @Param("accessLevel") String accessLevel);
 
-    @Query("MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata{primaryId: $primaryId}) "
-            + "MATCH (s)-[:HAS_TEMPO]->(t:Tempo) "
+    @Query("MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo) "
             + "WITH s, t, COLLECT { "
             + "MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata) "
             + "RETURN sm ORDER BY sm.importDate DESC LIMIT 1 "
@@ -118,7 +117,7 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             + "latestSm.cmoPatientId AS cmoPatientId, "
             + "dmpIdAlias.value AS dmpPatientId, "
             + "recapture AS recapture "
-            + "RETURN ({ "
+            + "WITH ({ "
             + "primaryId: primaryId, "
             + "cmoSampleName: cmoSampleName, "
             + "accessLevel: accessLevel, "
@@ -128,6 +127,8 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             + "oncotreeCode: oncotreeCode, "
             + "cmoPatientId: cmoPatientId, "
             + "dmpPatientId: dmpPatientId, "
-            + "recapture: recapture }) AS tempoSample")
+            + "recapture: recapture }) AS result "
+            + "WHERE result.primaryId = $primaryId "
+            + "RETURN result")
     Map<String, Object> findTempoSampleDataBySamplePrimaryId(@Param("primaryId") String primaryId);
 }
