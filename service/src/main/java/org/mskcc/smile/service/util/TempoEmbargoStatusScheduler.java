@@ -1,18 +1,21 @@
-package org.mskcc.smile.service;
+package org.mskcc.smile.service.util;
 
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.TempoMessageHandlingService;
+import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author qu8n
  */
-@Service
+@Component
 public class TempoEmbargoStatusScheduler {
     @Autowired
     private TempoService tempoService;
@@ -25,16 +28,24 @@ public class TempoEmbargoStatusScheduler {
 
     private static final Log LOG = LogFactory.getLog(TempoEmbargoStatusScheduler.class);
 
-    // @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
-    @Scheduled(cron = "*/2 * * * * ?") // testing - every 2 sec
+
+
+    /**
+     * Checks for changes in TEMPO embargo status.
+     * Scheduled(cron = "0 0 0 * * ?") // every day at midnight
+     */
+    @Scheduled(cron = "*/30 * * * * ?") // testing - every 30 sec
     public void checkEmbargoStatusChangesDaily() {
         try {
             LOG.info("Checking for Tempo records that are no longer embargoed...");
             List<UUID> tempoIdsNoLongerEmbargoed = tempoService.getTempoIdsNoLongerEmbargoed();
             if (!tempoIdsNoLongerEmbargoed.isEmpty()) {
                 // add to tempo messaging queue
+                LOG.info(tempoIdsNoLongerEmbargoed.size() + " TEMPO nodes no longer embargoed.");
                 List<String> samplePrimaryIds = sampleService.getSamplePrimaryIdsBySmileTempoIds(
                         tempoIdsNoLongerEmbargoed);
+
+                LOG.info("Updating embargo status for " + samplePrimaryIds.size() + " samples");
                 tempoMessageHandlingService.tempoEmbargoStatusHandler(samplePrimaryIds);
             }
         } catch (Exception e) {

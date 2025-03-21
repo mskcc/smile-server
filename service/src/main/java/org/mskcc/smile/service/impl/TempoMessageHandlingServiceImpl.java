@@ -23,8 +23,6 @@ import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.commons.generated.Smile.TempoSample;
 import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
-import org.mskcc.smile.model.SampleMetadata;
-import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
@@ -79,9 +77,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     @Autowired
     private TempoService tempoService;
-
-    @Autowired
-    private SmilePatientService patientService;
 
     @Autowired
     private CohortCompleteService cohortCompleteService;
@@ -387,6 +382,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 try {
                     List<String> samplePrimaryIds = tempoEmbargoStatusQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (samplePrimaryIds != null) {
+                        LOG.info("Updating access level for " + samplePrimaryIds.size() + " samples...");
                         tempoService.updateTempoAccessLevel(samplePrimaryIds,
                                 TempoServiceImpl.ACCESS_LEVEL_PUBLIC);
                         // publish to tempo sample update topic
@@ -407,46 +403,29 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             throws Exception {
         // validate and build tempo samples to publish to cBioPortal
         Set<TempoSample> validTempoSamples = new HashSet<>();
+        LOG.info("Assembling TEMPO data per sample for publishing....");
         for (String primaryId : samplePrimaryIds) {
             try {
+                TempoSample tempoSample = tempoService.getTempoSampleDataBySamplePrimaryId(primaryId);
+
                 // confirm tempo data exists by primary id
-                Tempo tempo = tempoService.getTempoDataBySamplePrimaryId(primaryId);
-                if (tempo == null) {
+                if (tempoSample == null) {
                     LOG.error("Tempo data not found for sample with Primary ID " + primaryId);
                     continue;
                 }
-                // validate props before building tempo sample
-                SampleMetadata sampleMetadata = sampleService.getLatestSampleMetadataByPrimaryId(primaryId);
-                String cmoSampleName = sampleMetadata.getCmoSampleName();
-                if (StringUtils.isBlank(cmoSampleName)) {
+                // validate props before adding tempo sample to set of samples to be published
+                if (StringUtils.isBlank(tempoSample.getCmoSampleName())) {
                     LOG.error("Invalid CMO Sample Name for sample with Primary ID " + primaryId);
                     continue;
                 }
-                String accessLevel = tempo.getAccessLevel();
-                if (StringUtils.isBlank(accessLevel)) {
+                if (StringUtils.isBlank(tempoSample.getAccessLevel())) {
                     LOG.error("Invalid Access Level for sample with Primary ID " + primaryId);
                     continue;
                 }
-                String custodianInformation = tempo.getCustodianInformation();
-                if (StringUtils.isBlank(custodianInformation)) {
+                if (StringUtils.isBlank(tempoSample.getCustodianInformation())) {
                     LOG.error("Invalid Custodian Information for sample with Primary ID " + primaryId);
                     continue;
                 }
-                String cmoPatientId = sampleMetadata.getCmoPatientId();
-                SmilePatient patient = patientService.getPatientByCmoPatientId(cmoPatientId);
-                // build tempo sample object
-                TempoSample tempoSample = TempoSample.newBuilder()
-                    .setPrimaryId(primaryId)
-                    .setCmoSampleName(cmoSampleName)
-                    .setAccessLevel(accessLevel)
-                    .setCustodianInformation(custodianInformation)
-                    .setBaitSet(StringUtils.defaultString(sampleMetadata.getBaitSet(), ""))
-                    .setGenePanel(StringUtils.defaultString(sampleMetadata.getGenePanel(), ""))
-                    .setOncotreeCode(StringUtils.defaultString(sampleMetadata.getOncotreeCode(), ""))
-                    .setCmoPatientId(StringUtils.defaultString(cmoPatientId, ""))
-                    .setDmpPatientId(StringUtils.defaultString(patient.getPatientAlias("dmpId"), ""))
-                    .setRecapture(sampleService.sampleIsRecapture(sampleMetadata.getInvestigatorSampleId()))
-                    .build();
                 validTempoSamples.add(tempoSample);
             } catch (Exception e) {
                 LOG.error("Error building to publish to cBioPortal of sample: " + primaryId, e);
@@ -454,6 +433,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
         // bundle together all valid tempo samples and publish to cBioPortal
         if (!validTempoSamples.isEmpty()) {
+            LOG.info("Total samples that will be published = " + validTempoSamples.size());
             TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
                 .addAllTempoSamples(validTempoSamples)
                 .build();
