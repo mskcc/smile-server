@@ -28,8 +28,6 @@ public class TempoEmbargoStatusScheduler {
 
     private static final Log LOG = LogFactory.getLog(TempoEmbargoStatusScheduler.class);
 
-
-
     /**
      * Checks for changes in TEMPO embargo status.
      */
