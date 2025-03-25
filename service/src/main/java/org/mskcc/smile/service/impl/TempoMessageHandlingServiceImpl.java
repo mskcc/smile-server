@@ -410,25 +410,29 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
                 // confirm tempo data exists by primary id
                 if (tempoSample == null) {
-                    LOG.error("Tempo data not found for sample with Primary ID " + primaryId);
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Tempo data not found "
+                            + "for sample: " + primaryId);
                     continue;
                 }
                 // validate props before adding tempo sample to set of samples to be published
                 if (StringUtils.isBlank(tempoSample.getCmoSampleName())) {
-                    LOG.error("Invalid CMO Sample Name for sample with Primary ID " + primaryId);
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid CMO Sample Name "
+                            + "for sample: " + primaryId + ", " + tempoSample.toString());
                     continue;
                 }
                 if (StringUtils.isBlank(tempoSample.getAccessLevel())) {
-                    LOG.error("Invalid Access Level for sample with Primary ID " + primaryId);
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid Access Level "
+                            + "for sample: " + primaryId + ", " + tempoSample.toString());
                     continue;
                 }
                 if (StringUtils.isBlank(tempoSample.getCustodianInformation())) {
-                    LOG.error("Invalid Custodian Information for sample with Primary ID " + primaryId);
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid Custodian Information "
+                            + "for sample: " + primaryId + ", " + tempoSample.toString());
                     continue;
                 }
                 validTempoSamples.add(tempoSample);
             } catch (Exception e) {
-                LOG.error("Error building to publish to cBioPortal of sample: " + primaryId, e);
+                LOG.error("Error building TEMPO data to publish to cBioPortal for sample: " + primaryId, e);
             }
         }
         // bundle together all valid tempo samples and publish to cBioPortal
