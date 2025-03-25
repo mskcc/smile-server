@@ -84,9 +84,10 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             + "RETURN cc.date ORDER BY cc.date ASC LIMIT 1")
     String findInitialPipelineRunDateBySamplePrimaryId(@Param("primaryId") String primaryId);
 
-    @Query("MATCH (t:Tempo {accessLevel: $embargoAccessLevel}) WHERE date(t.embargoDate) < date() "
+    @Query("MATCH (t:Tempo {accessLevel: 'MSK Embargo'}) "
+            + "WHERE date(t.embargoDate) < date() "
             + "RETURN t.smileTempoId")
-    List<UUID> findTempoIdsNoLongerEmbargoed(@Param("embargoAccessLevel") String embargoAccessLevel);
+    List<UUID> findTempoIdsNoLongerEmbargoed();
 
     @Query("MATCH (sm: SampleMetadata)<-[:HAS_METADATA]-(s: Sample)-[:HAS_TEMPO]->(t:Tempo) "
             + "WHERE sm.primaryId IN $samplePrimaryIds SET t.accessLevel = $accessLevel")
@@ -106,28 +107,17 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             + "WITH s,t,latestSm,p,cmoIdAlias, pa as dmpIdAlias, "
             + "CASE WHEN latestSm.investigatorSampleId =~ '^P-\\d{7}-.*-WES$' "
             + "THEN true ELSE false END as recapture "
-            + "WITH "
-            + "latestSm.primaryId AS primaryId, "
-            + "latestSm.cmoSampleName AS cmoSampleName, "
-            + "t.accessLevel AS accessLevel, "
-            + "t.custodianInformation AS custodianInformation, "
-            + "latestSm.baitSet AS baitSet, "
-            + "latestSm.genePanel AS genePanel, "
-            + "latestSm.oncotreeCode AS oncotreeCode, "
-            + "latestSm.cmoPatientId AS cmoPatientId, "
-            + "dmpIdAlias.value AS dmpPatientId, "
-            + "recapture AS recapture "
             + "WITH ({ "
-            + "primaryId: primaryId, "
-            + "cmoSampleName: cmoSampleName, "
-            + "accessLevel: accessLevel, "
-            + "custodianInformation: custodianInformation, "
-            + "baitSet: baitSet, "
-            + "genePanel: genePanel, "
-            + "oncotreeCode: oncotreeCode, "
-            + "cmoPatientId: cmoPatientId, "
-            + "dmpPatientId: dmpPatientId, "
-            + "recapture: recapture }) AS result "
+            + "primaryId: latestSm.primaryId, "
+            + "cmoSampleName: latestSm.cmoSampleName, "
+            + "accessLevel: t.accessLevel, "
+            + "custodianInformation: t.custodianInformation, "
+            + "baitSet: latestSm.baitSet, "
+            + "genePanel: latestSm.genePanel, "
+            + "oncotreeCode: latestSm.oncotreeCode, "
+            + "cmoPatientId: latestSm.cmoPatientId, "
+            + "dmpPatientId: dmpIdAlias.value, "
+            + "recapture: recapture )} as result "
             + "WHERE result.primaryId = $primaryId "
             + "RETURN result")
     Map<String, Object> findTempoSampleDataBySamplePrimaryId(@Param("primaryId") String primaryId);

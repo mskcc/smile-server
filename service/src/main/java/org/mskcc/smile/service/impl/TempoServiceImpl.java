@@ -55,6 +55,10 @@ public class TempoServiceImpl implements TempoService {
     @Transactional(rollbackFor = {Exception.class})
     public Tempo saveTempoData(Tempo tempo) throws Exception {
         SmileSample sample = tempo.getSmileSample();
+        Tempo existingTempo = tempoRepository.findTempoBySmileSampleId(sample.getSmileSampleId());
+        if (existingTempo != null) {
+            tempo.setSmileTempoId(existingTempo.getSmileTempoId());
+        }
 
         // if sample is a normal sample then no need to set values for custodian
         // information or access level. Normal samples do not require this info.
@@ -189,9 +193,6 @@ public class TempoServiceImpl implements TempoService {
                         ? ACCESS_LEVEL_PUBLIC : ACCESS_LEVEL_EMBARGO);
             }
         } else {
-            // explicitly set dates to empty strings if no initial pipeline run date is found
-            tempo.setInitialPipelineRunDate("");
-            tempo.setEmbargoDate("");
             if (!sampleIsMarkedAsPublic(accessLevel)) {
                 tempo.setAccessLevel(ACCESS_LEVEL_EMBARGO);
             }
@@ -216,7 +217,7 @@ public class TempoServiceImpl implements TempoService {
 
     @Override
     public List<UUID> getTempoIdsNoLongerEmbargoed() throws Exception {
-        return tempoRepository.findTempoIdsNoLongerEmbargoed(ACCESS_LEVEL_EMBARGO);
+        return tempoRepository.findTempoIdsNoLongerEmbargoed();
     }
 
     @Override

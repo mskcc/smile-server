@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -290,8 +292,8 @@ public class TempoServiceTest {
         Tempo savedTempo = tempoService.saveTempoData(tempo);
 
         Assertions.assertEquals("MSK Embargo", savedTempo.getAccessLevel());
-        Assertions.assertEquals("", savedTempo.getInitialPipelineRunDate());
-        Assertions.assertEquals("", savedTempo.getEmbargoDate());
+        Assertions.assertEquals(null, savedTempo.getInitialPipelineRunDate());
+        Assertions.assertEquals(null, savedTempo.getEmbargoDate());
     }
 
     @Test
@@ -377,6 +379,27 @@ public class TempoServiceTest {
         cohortCompleteService.saveCohort(cohort, newSamples);
         Cohort cohortAfterSave = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
         Assertions.assertEquals(6, cohortAfterSave.getCohortSamplePrimaryIds().size());
+    }
+
+    @Test
+    public void testFindSamplesNoLongerEmbargoed() throws Exception {
+        // using a tumor sample to trigger population of tempo data
+        String igoId = "MOCKREQUEST1_B_3";
+        String requestId = "MOCKREQUEST1_B";
+        SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+
+        CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        cohortCompleteService.saveCohort(new Cohort(ccJson), ccJson.getTumorNormalPairsAsSet());
+
+        Tempo tempo = new Tempo();
+        tempo.setSmileSample(sample);
+        // calling this will populate the sample's tempo node initial run date and embargo date values
+        tempoService.saveTempoData(tempo);
+        // manually set access level to MSK Embargo for this test
+        tempoService.updateTempoAccessLevel(Arrays.asList(igoId), "MSK Embargo");
+
+        List<UUID> tempoIds = tempoService.getTempoIdsNoLongerEmbargoed();
+        Assertions.assertEquals(1, tempoIds.size());
     }
 
     private CohortCompleteJson getCohortEventData(String dataIdentifier) throws JsonProcessingException {
