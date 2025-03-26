@@ -22,6 +22,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Controller;
 
 @EntityScan(basePackages = "org.mskcc.smile.model")
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Controller;
         "org.mskcc.smile.commons.*", "org.mskcc.smile.*"})
 @Controller
 @EnableCaching
+@EnableScheduling
 public class SmileApp implements CommandLineRunner {
     private static final Log LOG = LogFactory.getLog(SmileApp.class);
 
