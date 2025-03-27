@@ -3,6 +3,7 @@ package org.mskcc.smile.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.nats.client.Message;
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -352,6 +353,11 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             }
                             LOG.info(builder.toString());
                             tempoService.updateSampleBilling(billing);
+
+                            // publish to tempo sample update topic
+                            publishTempoSamplesToCBioPortal(new HashSet<>(
+                                    Arrays.asList(billing.getPrimaryId())),
+                                TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);
                         } else {
                             LOG.error("[TEMPO SAMPLE BILLING ERROR] Cannot update billing information for "
                                     + "sample that does not exist: " + billing.getPrimaryId());
