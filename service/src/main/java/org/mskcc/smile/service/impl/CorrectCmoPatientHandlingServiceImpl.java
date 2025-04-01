@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileSample;
@@ -109,6 +110,30 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                         String oldCmoPtId = idCorrectionMap.get("oldId");
                         String newCmoPtId = idCorrectionMap.get("newId");
 
+                        // start with updating/merging old patient aliases to the new patient
+                        // that we are swapping to
+                        // before deleting it forever though we will check for aliases that are not-CMO ID
+                        // and merge them to the patient to swap to....
+                        SmilePatient patientByOldId =
+                                patientService.getPatientByCmoPatientId(oldCmoPtId);
+                        SmilePatient patientByNewId =
+                                patientService.getPatientByCmoPatientId(newCmoPtId);
+                        if (patientByNewId != null) {
+                            for (PatientAlias pa : patientByOldId.getPatientAliases()) {
+                                if (pa.getNamespace().equalsIgnoreCase("cmoId")) {
+                                    continue;
+                                }
+                                // if patient by new id doesn't already have current alias
+                                // then go ahead and add as a new instance of PatientAlias so as to
+                                // not recycle node ids.
+                                if (!patientByNewId.hasPatientAlias(pa.getNamespace())) {
+                                    patientByNewId.addPatientAlias(new PatientAlias(pa.getValue(),
+                                            pa.getNamespace()));
+                                }
+                            }
+                            patientService.savePatientMetadata(patientByNewId);
+                        }
+
                         // grab samples by old cmo patient id and new cmo patient id that
                         // we are correcting or swapping to
                         List<SmileSample> samplesByOldCmoPatient =
@@ -141,8 +166,6 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
 
                         // sample service is handling patient swapping now so we can simply rely on deleting
                         // this old patient node that shouldn't have any samples attached to it anymore
-                        SmilePatient patientByOldId =
-                                patientService.getPatientByCmoPatientId(oldCmoPtId);
                         patientService.deletePatient(patientByOldId);
 
                         // sanity check the counts before and after the swaps
