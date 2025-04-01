@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -151,9 +154,19 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                             LOG.error("Expected sample count after patient ID swap does not match actual"
                                     + " count: " + expectedCount + " != " + samplesAfterSwap.size());
                         } else {
+                            // collect unique set of sample smile ids that we can skip publishing updates for
+                            Set<UUID> samplesToSkipPublishingUpdatesFor = new HashSet<>();
+                            for (SmileSample s : samplesByOldCmoPatient) {
+                                samplesToSkipPublishingUpdatesFor.add(s.getSmileSampleId());
+                            }
+
+                            // publish sample updates only for samples that actually got patient swapped
                             List<SmileSample> samplesByNewCmoPatientAfterCorrection =
                                     sampleService.getSamplesByCmoPatientId(newCmoPtId);
                             for (SmileSample sample : samplesByNewCmoPatientAfterCorrection) {
+                                if (samplesToSkipPublishingUpdatesFor.contains(sample.getSmileSampleId())) {
+                                    continue;
+                                }
                                 // publish sampleMetadata history to CMO_SAMPLE_UPDATE_TOPIC
                                 LOG.info("Publishing sample-level metadata history for sample: "
                                         + sample.getLatestSampleMetadata().getPrimaryId());
