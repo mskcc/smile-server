@@ -134,6 +134,7 @@ public class RequestServiceImpl implements SmileRequestService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Boolean updateRequestMetadata(RequestMetadata requestMetadata, Boolean fromLims) throws Exception {
         SmileRequest existingRequest = getSmileRequestById(requestMetadata.getIgoRequestId());
         if (existingRequest == null) {

@@ -157,6 +157,7 @@ public class SampleServiceImpl implements SmileSampleService {
      * @throws Exception
      */
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public SmileSample fetchAndLoadPatientDetails(SmileSample sample) throws Exception {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         SmilePatient patient = sample.getPatient();
@@ -533,5 +534,10 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public List<String> getSamplePrimaryIdsBySmileTempoIds(List<UUID> smileTempoIds) throws Exception {
         return sampleRepository.findSamplePrimaryIdsBySmileTempoIds(smileTempoIds);
+    }
+
+    @Override
+    public String getSamplePrimaryIdBySampleInputId(String inputId) throws Exception {
+        return sampleRepository.findSamplePrimaryIdByInputId(inputId);
     }
 }

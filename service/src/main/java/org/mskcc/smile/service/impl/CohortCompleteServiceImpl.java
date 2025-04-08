@@ -17,6 +17,7 @@ import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -41,6 +42,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     private static final Log LOG = LogFactory.getLog(CohortCompleteServiceImpl.class);
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Cohort saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
@@ -49,9 +51,8 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         LOG.info("Adding cohort-sample edges in database for " + sampleIds.size() + " samples...");
         for (String sampleId : sampleIds) {
             // confirm sample exists by primary id and then link to cohort
-            SmileSample sample = sampleService.getDetailedSampleByInputId(sampleId);
-            if (sample != null) {
-                String primaryId = sample.getPrimarySampleAlias();
+            if (sampleService.sampleExistsByInputId(sampleId)) {
+                String primaryId = sampleService.getSamplePrimaryIdBySampleInputId(sampleId);
                 // init default tempo data for sample if sample does not already have tempo data
                 if (tempoService.getTempoDataBySamplePrimaryId(primaryId) == null) {
                     tempoService.initAndSaveDefaultTempoData(primaryId);
@@ -104,6 +105,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Cohort updateCohort(Cohort cohort) throws Exception {
         return cohortCompleteRepository.save(cohort);
     }
