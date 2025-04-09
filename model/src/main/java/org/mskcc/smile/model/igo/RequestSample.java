@@ -12,7 +12,7 @@ public class RequestSample implements Serializable {
     public RequestSample() {}
 
     /**
-     * RequestSample contructor
+     * RequestSample constructor
      * @param investigatorSampleId
      * @param igoSampleId
      * @param igoComplete
