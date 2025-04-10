@@ -31,6 +31,8 @@ public class SmileSample implements Serializable {
     private List<SampleMetadata> sampleMetadataList;
     @Relationship(type = "HAS_TEMPO", direction = Relationship.Direction.OUTGOING)
     private Tempo tempo;
+    @Relationship(type = "HAS_DBGAP", direction = Relationship.Direction.OUTGOING)
+    private DbGap dbGap;
     private String sampleClass;
     private String sampleCategory;
     private String datasource;
@@ -232,6 +234,14 @@ public class SmileSample implements Serializable {
 
     public void setTempo(Tempo tempo) {
         this.tempo = tempo;
+    }
+
+    public DbGap getDbGap() {
+        return dbGap;
+    }
+
+    public void setDbGap(DbGap dbGap) {
+        this.dbGap = dbGap;
     }
 
     @Override
