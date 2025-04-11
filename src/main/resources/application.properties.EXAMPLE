@@ -82,3 +82,6 @@ tempo.sample_billing_topic=
 tempo.release_samples_topic=
 tempo.update_samples_embargo_topic=
 
+# dbgap topics
+num.dbgap_msg_handler_threads=
+dbgap.sample_update_topic=
