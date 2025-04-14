@@ -13,9 +13,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.json.DbGapJson;
 import org.mskcc.smile.service.DbGapMessageHandlingService;
 import org.mskcc.smile.service.DbGapService;
+import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.util.NatsMsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +34,9 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
     @Autowired
     private DbGapService dbGapService;
 
+    @Autowired
+    private SmileSampleService sampleService;
+
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(DbGapMessageHandlingServiceImpl.class);
 
@@ -39,7 +44,7 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
     private static volatile boolean shutdownInitiated;
     private static final ExecutorService exec = Executors.newCachedThreadPool();
 
-    private static final BlockingQueue<DbGapJson> dbgapUpdateQueue =
+    private static final BlockingQueue<DbGapJson> dbGapUpdateQueue =
             new LinkedBlockingQueue<DbGapJson>();
 
     private static CountDownLatch dbgapUpdateHandlerShutdownLatch;
@@ -57,13 +62,33 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
             phaser.arrive();
             while (true) {
                 try {
-                    DbGapJson dbGapJson = dbgapUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if (dbGapJson != null) {
+                    DbGapJson dbGap = dbGapUpdateQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (dbGap != null) {
+                        // this message is coming straight from the dashboard and should therefore always
+                        // have data for a valid sample that exists in the database
+                        // however this check will make extra sure that the primary id received
+                        // in the nats message actually exists in the database before conducting
+                        // further operations in the db
+                        SmileSample sample = sampleService.getDetailedSampleByInputId(dbGap.getPrimaryId());
                         try {
-                            dbGapService.updateDbGap(dbGapJson);
                         } catch (Exception e) {
                             LOG.error("[DBGAP UPDATE ERROR] Encountered error while persisting "
-                                    + "DbGap update to database: " + dbGapJson.toString(), e);
+                                    + "DbGap update to database: " + dbGap.toString(), e);
+                        }
+                        if (sample != null) {
+                            StringBuilder builder = new StringBuilder();
+                            builder.append("Updating billing information for sample: ")
+                                    .append(sample.getPrimarySampleAlias());
+                            if (!dbGap.getPrimaryId().equalsIgnoreCase(sample.getPrimarySampleAlias())) {
+                                builder.append(" (mapped from input id: ")
+                                        .append(dbGap.getPrimaryId())
+                                        .append(")");
+                            }
+                            LOG.info(builder.toString());
+                            dbGapService.updateDbGap(dbGap);
+                        } else {
+                            LOG.error("[DBGAP UPDATE ERROR] Cannot update DbGap information for "
+                                    + "sample that does not exist: " + dbGap.getPrimaryId());
                         }
                     }
                     if (interrupted || shutdownInitiated) {
@@ -72,13 +97,10 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
                 } catch (InterruptedException e) {
                     interrupted = true;
                 } catch (Exception e) {
-                    LOG.error("Error during handling of DbGap update event", e);
+                    LOG.error("Error during handling of sample DbGap data", e);
                 }
-                if (interrupted || shutdownInitiated) {
-                    break;
-                }
+                dbgapUpdateHandlerShutdownLatch.countDown();
             }
-            dbgapUpdateHandlerShutdownLatch.countDown();
         }
     }
 
@@ -100,7 +122,7 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
             throw new IllegalStateException("DbGap Message Handler Service has not been initialized");
         }
         if (!shutdownInitiated) {
-            dbgapUpdateQueue.put(dbGapJson);
+            dbGapUpdateQueue.put(dbGapJson);
         } else {
             LOG.error("DbGap Message Handler Service has been shutdown, cannot handle request: "
                     + dbGapJson);
@@ -137,17 +159,18 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
             public void onMessage(Message msg, Object message) {
                 try {
                     LOG.info("Received message on topic: " + DBGAP_SAMPLE_UPDATE_TOPIC);
-                    String dbGapJsonStr = NatsMsgUtil.extractNatsJsonString(msg);
-                    if (dbGapJsonStr == null) {
+                    String dbGapJson = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (dbGapJson == null) {
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    DbGapJson dbGapJson = (DbGapJson) NatsMsgUtil.convertObjectFromString(
-                            dbGapJsonStr, new TypeReference<DbGapJson>() {});
-                    LOG.info("Received DbGap update event: " + dbGapJson);
-                    dbGapMessageHandlingService.dbGapUpdateHandler(dbGapJson);
+                    DbGapJson dbGap = (DbGapJson) NatsMsgUtil.convertObjectFromString(
+                            dbGapJson, new TypeReference<DbGapJson>() {});
+
+                    dbGapMessageHandlingService.dbGapUpdateHandler(dbGap);
                 } catch (Exception e) {
-                    LOG.error("Error during handling of DbGap update", e);
+                    LOG.error("Exception occurred during processing of DbGap update event: "
+                            + DBGAP_SAMPLE_UPDATE_TOPIC, e);
                 }
             }
         });
