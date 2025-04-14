@@ -1,7 +1,5 @@
 package org.mskcc.smile.service.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.model.DbGap;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.json.DbGapJson;
@@ -13,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class DbGapServiceImpl implements DbGapService {
-    private static final Log LOG = LogFactory.getLog(DbGapServiceImpl.class);
 
     @Autowired
     private DbGapRepository dbGapRepository;
@@ -31,10 +28,6 @@ public class DbGapServiceImpl implements DbGapService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void updateDbGap(DbGapJson dbGap) throws Exception {
-        LOG.info("Updating DbGap with primaryId: " + dbGap.getPrimaryId()
-                + ", dbGapStudy: " + dbGap.getDbGapStudy()
-                + ", instrumentModel: " + dbGap.getInstrumentModel()
-                + ", platform: " + dbGap.getPlatform());
         dbGapRepository.updateDbGap(dbGap);
     }
 }

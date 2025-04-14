@@ -70,14 +70,9 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
                         // in the nats message actually exists in the database before conducting
                         // further operations in the db
                         SmileSample sample = sampleService.getDetailedSampleByInputId(dbGap.getPrimaryId());
-                        try {
-                        } catch (Exception e) {
-                            LOG.error("[DBGAP UPDATE ERROR] Encountered error while persisting "
-                                    + "DbGap update to database: " + dbGap.toString(), e);
-                        }
                         if (sample != null) {
                             StringBuilder builder = new StringBuilder();
-                            builder.append("Updating billing information for sample: ")
+                            builder.append("Updating DbGap information for sample: ")
                                     .append(sample.getPrimarySampleAlias());
                             if (!dbGap.getPrimaryId().equalsIgnoreCase(sample.getPrimarySampleAlias())) {
                                 builder.append(" (mapped from input id: ")
@@ -90,9 +85,6 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
                             LOG.error("[DBGAP UPDATE ERROR] Cannot update DbGap information for "
                                     + "sample that does not exist: " + dbGap.getPrimaryId());
                         }
-                    }
-                    if (interrupted || shutdownInitiated) {
-                        break;
                     }
                 } catch (InterruptedException e) {
                     interrupted = true;
