@@ -19,7 +19,7 @@ public interface DbGapRepository extends Neo4jRepository<DbGap, UUID> {
     DbGap findDbGapBySamplePrimaryId(@Param("primaryId") String primaryId);
 
     @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $dbGap.primaryId}) "
-            + "MATCH (s)-[:HAS_DBGAP]->(d: DbGap) "
+            + "MERGE (s)-[:HAS_DBGAP]->(d: DbGap) "
             + "SET d.dbGapStudy = $dbGap.dbGapStudy, d.instrumentModel = $dbGap.instrumentModel, "
             + "d.platform = $dbGap.platform")
     void updateDbGap(@Param("dbGap") DbGapJson dbGap);
