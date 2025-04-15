@@ -168,12 +168,22 @@ public class SmileSample implements Serializable {
     }
 
     /**
-     * Applies IGO LIMS updates for the following fields
+     * Applies IGO LIMS updates for the following fields:
+     * species
+     * genePanel
+     * baitSet
+     * igoComplete
+     * qcReports
+     * libraries
      * @param sampleMetadata
      * @throws java.text.ParseException
      */
     public void applyIgoLimsUpdates(SampleMetadata sampleMetadata) throws ParseException {
-        // this is the metadata with the igo overrides to apply
+        // this is the metadata that we want to keep non-IGO approved updates for
+        // i.e., sampleMetadata has IGO updates but we will override some if its
+        // properties with what's already in the database since we want to limit
+        // what data IGO can reset/override in the event that data gets erroneously
+        // redelivered for a given sample
         SampleMetadata latestSampleMetadata = getLatestSampleMetadata();
 
         sampleMetadata.setId(null);
@@ -182,8 +192,9 @@ public class SmileSample implements Serializable {
         sampleMetadata.setSampleName(latestSampleMetadata.getSampleName());
         sampleMetadata.setCmoInfoIgoId(latestSampleMetadata.getCmoInfoIgoId());
         sampleMetadata.setOncotreeCode(latestSampleMetadata.getOncotreeCode());
+        sampleMetadata.setCollectionYear(latestSampleMetadata.getCollectionYear());
         sampleMetadata.setTubeId(latestSampleMetadata.getTubeId());
-        sampleMetadata.setSpecies(latestSampleMetadata.getSpecies());
+        sampleMetadata.setCfDNA2dBarcode(latestSampleMetadata.getCfDNA2dBarcode());
         sampleMetadata.setSex(latestSampleMetadata.getSex());
         sampleMetadata.setTumorOrNormal(latestSampleMetadata.getTumorOrNormal());
         sampleMetadata.setSampleType(latestSampleMetadata.getSampleType());
@@ -191,9 +202,6 @@ public class SmileSample implements Serializable {
         sampleMetadata.setSampleClass(latestSampleMetadata.getSampleClass());
         sampleMetadata.setSampleOrigin(latestSampleMetadata.getSampleOrigin());
         sampleMetadata.setTissueLocation(latestSampleMetadata.getTissueLocation());
-        sampleMetadata.setGenePanel(latestSampleMetadata.getGenePanel());
-        sampleMetadata.setIgoComplete(latestSampleMetadata.getIgoComplete());
-        sampleMetadata.setBaitSet(latestSampleMetadata.getBaitSet());
         addSampleMetadata(sampleMetadata);
     }
 
