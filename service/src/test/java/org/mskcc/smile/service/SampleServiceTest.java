@@ -480,6 +480,19 @@ public class SampleServiceTest {
         List<SampleMetadata> sampleMetadataHistory = sampleService
                 .getResearchSampleMetadataHistoryByIgoId(igoId);
         Assertions.assertEquals(2, sampleMetadataHistory.size());
+
+        // confirm that the latest metadata has NEW BAIT SET
+        SmileSample latestSample = sampleService.getDetailedSampleByInputId(igoId);
+        Boolean testPassed = Boolean.FALSE;
+        // both of the import dates are from "today" so just confirm that at least one of the
+        // sample metadata objects in the list have the NEW BAIT SET value
+        for (SampleMetadata sm : latestSample.getSampleMetadataList()) {
+            if (sm.getBaitSet().equals("NEW BAIT SET")) {
+                testPassed = Boolean.TRUE;
+                break;
+            }
+        }
+        Assertions.assertTrue(testPassed);
     }
 
     /**
