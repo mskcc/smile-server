@@ -16,21 +16,19 @@ public class DbGap implements Serializable {
     @Convert(UuidStringConverter.class)
     private UUID smileDgGapId;
     private String dbGapStudy;
-    private String instrumentModel;
-    private String platform;
 
     public DbGap() {}
 
     /**
      * DbGap constructor.
      * @param dbGapStudy
-     * @param instrumentModel
-     * @param platform
      */
-    public DbGap(String dbGapStudy, String instrumentModel, String platform) {
+    public DbGap(String dbGapStudy) {
         this.dbGapStudy = dbGapStudy;
-        this.instrumentModel = instrumentModel;
-        this.platform = platform;
+    }
+
+    public UUID getSmileDgGapId() {
+        return smileDgGapId;
     }
 
     public String getDbGapStudy() {
@@ -39,22 +37,6 @@ public class DbGap implements Serializable {
 
     public void setDbGapStudy(String dbGapStudy) {
         this.dbGapStudy = dbGapStudy;
-    }
-
-    public String getInstrumentModel() {
-        return instrumentModel;
-    }
-
-    public void setInstrumentModel(String instrumentModel) {
-        this.instrumentModel = instrumentModel;
-    }
-
-    public String getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
     }
 
     @Override
