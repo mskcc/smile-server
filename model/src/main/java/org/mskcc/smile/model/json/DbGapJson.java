@@ -14,6 +14,11 @@ public class DbGapJson implements Serializable {
 
     public DbGapJson() {}
 
+    public DbGapJson(String primaryId, String dbGapStudy) {
+        this.primaryId = primaryId;
+        this.dbGapStudy = dbGapStudy;
+    }
+
     public String getPrimaryId() {
         return primaryId;
     }
