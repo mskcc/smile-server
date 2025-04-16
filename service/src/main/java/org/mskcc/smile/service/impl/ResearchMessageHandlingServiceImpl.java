@@ -266,7 +266,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             initializeMessageHandlers();
             initialized = true;
         } else {
-            LOG.error("Messaging Handler Service has already been initialized, ignoring request.\n");
+            LOG.error("Messaging Handler Service has already been initialized, ignoring request.");
         }
     }
 

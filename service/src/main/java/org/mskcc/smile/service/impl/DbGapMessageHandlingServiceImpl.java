@@ -13,7 +13,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
-import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.json.DbGapJson;
 import org.mskcc.smile.service.DbGapMessageHandlingService;
 import org.mskcc.smile.service.DbGapService;
@@ -69,20 +68,14 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
                         // however this check will make extra sure that the primary id received
                         // in the nats message actually exists in the database before conducting
                         // further operations in the db
-                        SmileSample sample = sampleService.getDetailedSampleByInputId(dbGap.getPrimaryId());
-                        if (sample != null) {
+                        if (sampleService.sampleExistsByInputId(dbGap.getPrimaryId())) {
                             StringBuilder builder = new StringBuilder();
-                            builder.append("Updating DbGap information for sample: ")
-                                    .append(sample.getPrimarySampleAlias());
-                            if (!dbGap.getPrimaryId().equalsIgnoreCase(sample.getPrimarySampleAlias())) {
-                                builder.append(" (mapped from input id: ")
-                                        .append(dbGap.getPrimaryId())
-                                        .append(")");
-                            }
+                            builder.append("Updating dbGap information for sample: ")
+                                    .append(dbGap.getPrimaryId());
                             LOG.info(builder.toString());
                             dbGapService.updateDbGap(dbGap);
                         } else {
-                            LOG.error("[DBGAP UPDATE ERROR] Cannot update DbGap information for "
+                            LOG.error("[DBGAP UPDATE ERROR] Cannot update dbGap information for "
                                     + "sample that does not exist: " + dbGap.getPrimaryId());
                         }
                     }
@@ -104,7 +97,7 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
             initializeMessageHandlers();
             initialized = true;
         } else {
-            LOG.error("DbGap Message Handler Service has already been initialized, ignoring request.\n");
+            LOG.error("DbGap Message Handler Service has already been initialized, ignoring request.");
         }
     }
 
@@ -127,7 +120,6 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
         if (!initialized) {
             throw new IllegalStateException("DbGap Message Handler Service has not been initialized");
         }
-
         exec.shutdownNow();
         dbgapUpdateHandlerShutdownLatch.await();
         shutdownInitiated = true;
@@ -161,7 +153,7 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
 
                     dbGapMessageHandlingService.dbGapUpdateHandler(dbGap);
                 } catch (Exception e) {
-                    LOG.error("Exception occurred during processing of DbGap update event: "
+                    LOG.error("Exception occurred during processing of dbGap update event: "
                             + DBGAP_SAMPLE_UPDATE_TOPIC, e);
                 }
             }
