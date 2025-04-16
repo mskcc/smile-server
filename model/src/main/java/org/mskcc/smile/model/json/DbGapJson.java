@@ -11,10 +11,6 @@ public class DbGapJson implements Serializable {
     private String primaryId;
     @JsonProperty("dbGapStudy")
     private String dbGapStudy;
-    @JsonProperty("instrumentModel")
-    private String instrumentModel;
-    @JsonProperty("platform")
-    private String platform;
 
     public DbGapJson() {}
 
@@ -32,22 +28,6 @@ public class DbGapJson implements Serializable {
 
     public void setDbGapStudy(String dbGapStudy) {
         this.dbGapStudy = dbGapStudy;
-    }
-
-    public String getInstrumentModel() {
-        return instrumentModel;
-    }
-
-    public void setInstrumentModel(String instrumentModel) {
-        this.instrumentModel = instrumentModel;
-    }
-
-    public String getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
     }
 
     @Override
