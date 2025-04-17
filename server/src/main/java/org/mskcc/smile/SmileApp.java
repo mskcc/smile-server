@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.smile.service.ClinicalMessageHandlingService;
 import org.mskcc.smile.service.CorrectCmoPatientHandlingService;
+import org.mskcc.smile.service.DbGapMessageHandlingService;
 import org.mskcc.smile.service.RequestReplyHandlingService;
 import org.mskcc.smile.service.ResearchMessageHandlingService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
@@ -54,6 +55,9 @@ public class SmileApp implements CommandLineRunner {
     @Autowired
     private RequestReplyHandlingService requestReplyHandlingService;
 
+    @Autowired
+    private DbGapMessageHandlingService dbGapMessageHandlingService;
+
     private Thread shutdownHook;
     final CountDownLatch smileAppClose = new CountDownLatch(1);
 
@@ -98,6 +102,7 @@ public class SmileApp implements CommandLineRunner {
             clinicalMessageHandlingService.initialize(messagingGateway);
             correctCmoPatientHandlingService.initialize(messagingGateway);
             tempoMessageHandlingService.intialize(messagingGateway);
+            dbGapMessageHandlingService.initialize(messagingGateway);
             smileAppClose.await();
         } catch (Exception e) {
             LOG.error("Encountered error during initialization", e);
@@ -115,6 +120,7 @@ public class SmileApp implements CommandLineRunner {
                         clinicalMessageHandlingService.shutdown();
                         correctCmoPatientHandlingService.shutdown();
                         tempoMessageHandlingService.shutdown();
+                        dbGapMessageHandlingService.shutdown();
                         messagingGateway.shutdown();
                     } catch (Exception e) {
                         LOG.error("Encountered error during shutdown process", e);

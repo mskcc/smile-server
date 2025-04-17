@@ -255,7 +255,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
             initializeRequestReplyHandlers();
             initialized = true;
         } else {
-            LOG.error("Messaging Handler Service has already been initialized, ignoring patientId.\n");
+            LOG.error("Messaging Handler Service has already been initialized, ignoring request.");
         }
     }
 

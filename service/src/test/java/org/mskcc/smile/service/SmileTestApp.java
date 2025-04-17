@@ -11,6 +11,8 @@ import org.mskcc.smile.service.impl.ClinicalMessageHandlingServiceImpl;
 import org.mskcc.smile.service.impl.CohortCompleteServiceImpl;
 import org.mskcc.smile.service.impl.CorrectCmoPatientHandlingServiceImpl;
 import org.mskcc.smile.service.impl.CrdbMappingServiceImpl;
+import org.mskcc.smile.service.impl.DbGapMessageHandlingServiceImpl;
+import org.mskcc.smile.service.impl.DbGapServiceImpl;
 import org.mskcc.smile.service.impl.PatientServiceImpl;
 import org.mskcc.smile.service.impl.RequestReplyHandlingServiceImpl;
 import org.mskcc.smile.service.impl.RequestServiceImpl;
@@ -65,6 +67,11 @@ public class SmileTestApp {
         return new CohortCompleteServiceImpl();
     }
 
+    @Bean
+    public DbGapService dbGapService() {
+        return new DbGapServiceImpl();
+    }
+
     /**
      * Suppresses warnings from default logger from the neo4j-ogm dependency.
      */
@@ -107,6 +114,9 @@ public class SmileTestApp {
 
     @MockBean
     public TempoMessageHandlingServiceImpl tempoMessageHandlingService;
+
+    @MockBean
+    public DbGapMessageHandlingServiceImpl dbGapMessageHandlingService;
 
 }
 
