@@ -3,7 +3,7 @@ name: Build and Publish image to Docker Hub
 on:
   push:
     tags:
-      - *.RELEASE
+      - "*.RELEASE"
 
 jobs:
   publish_images:
