@@ -1,7 +1,9 @@
 name: Build and Publish image to Docker Hub
 
 on:
-  [workflow_dispatch]
+  push:
+    tags:
+      - *.RELEASE
 
 jobs:
   publish_images:
