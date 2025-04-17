@@ -1,9 +1,7 @@
 name: MANUAL Build and Publish image to Docker Hub
 
 on:
-  push:
-    tags:
-      - "*.RELEASE"
+  [workflow_dispatch]
 
 jobs:
   publish_images:
@@ -17,4 +15,3 @@ jobs:
       run: |
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
         docker push cmometadb/smile-server:${{ github.ref_name }}
-      
