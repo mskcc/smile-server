@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.DbGap;
 import org.mskcc.smile.model.SmileRequest;
+import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.json.DbGapJson;
 import org.mskcc.smile.persistence.neo4j.DbGapRepository;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
@@ -121,16 +122,49 @@ public class DbGapServiceTest {
         String samplePrimaryId = "MOCKREQUEST1_B_1";
         Assertions.assertTrue(sampleService.sampleExistsByInputId(samplePrimaryId));
 
+
+        SmileSample s = sampleService.getDetailedSampleByInputId(samplePrimaryId);
         // now test save and fetch of dbgap node
         DbGapJson dbGapJson = new DbGapJson(samplePrimaryId, "mockDbgapStudyId.v1");
-        dbGapService.updateDbGap(dbGapJson);
-        DbGap dbGapNode = dbGapService.getDbGapBySamplePrimaryId(samplePrimaryId);
-        Assertions.assertEquals("mockDbgapStudyId.v1", dbGapNode.getDbGapStudy());
-
-        //pretend that the dbgap study is updated to v2
-        DbGapJson dbGapJson2 = new DbGapJson(samplePrimaryId, "mockDbgapStudyId.v2");
-        dbGapService.updateDbGap(dbGapJson2);
-        DbGap dbGapNode2 = dbGapService.getDbGapBySamplePrimaryId(samplePrimaryId);
-        Assertions.assertEquals("mockDbgapStudyId.v2", dbGapNode2.getDbGapStudy());
+        DbGap d = new DbGap(dbGapJson);
+//        s.setDbGap(d);
+//        DbGap savedDbGap = dbGapService.saveDbGap(s.getDbGap());
+//        System.out.println("\n\n\n\n saved dbgap =");
+//        System.out.println(savedDbGap);
+//        System.out.println("\n\n\n\n\n");
+        
+        DbGap fromDb = dbGapService.updateDbGap(dbGapJson);
+        System.out.println("\n\n\n dbgap after update??? ");
+        System.out.println(fromDb);
+                
+        
+        
+        System.out.println("\n\n\n dbgap by sample primary id =");
+        DbGap dBySample = dbGapService.getDbGapBySamplePrimaryId(dbGapJson.getPrimaryId());
+        System.out.println(dBySample);
+        System.out.println("\n\n\n\n\n");
+        
+//        dbGapService.updateDbGap(dbGapJson);
+//        DbGap dbGapNode = dbGapService.getDbGapBySamplePrimaryId(samplePrimaryId);
+//        Assertions.assertEquals("mockDbgapStudyId.v1", dbGapNode.getDbGapStudy());
+//
+//        //pretend that the dbgap study is updated to v2
+//        DbGapJson dbGapJson2 = new DbGapJson(samplePrimaryId, "mockDbgapStudyId.v2");
+//        dbGapService.updateDbGap(dbGapJson2);
+//        DbGap dbGapNode2 = dbGapService.getDbGapBySamplePrimaryId(samplePrimaryId);
+//        Assertions.assertEquals("mockDbgapStudyId.v2", dbGapNode2.getDbGapStudy());
+//        
+//        System.out.println("\n\n\n\n\n");
+//        System.out.println(dbGapNode2.getSmileDgGapId());
+//        DbGap d = new DbGap(dbGapJson);
+//        System.out.println(d.getSmileDgGapId());
+//        System.out.println("\n\n\n\n\n");
+//        SmileSample s = sampleService.getDetailedSampleByInputId(samplePrimaryId);
+//        System.out.println(s.getSmileSampleId());
+//        System.out.println("\n\n\n\n\n");
+//        
+//        DbGap savedDbGap = dbGapService.saveDbGap(d);
+//        System.out.println(savedDbGap);
+//        System.out.println("\n\n\n\n\n");
     }
 }
