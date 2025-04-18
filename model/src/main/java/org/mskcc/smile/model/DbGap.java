@@ -3,6 +3,7 @@ package org.mskcc.smile.model;
 import java.io.Serializable;
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.smile.model.json.DbGapJson;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
@@ -18,6 +19,10 @@ public class DbGap implements Serializable {
     private String dbGapStudy;
 
     public DbGap() {}
+    
+    public DbGap(DbGapJson dbGapJson) {
+        this.dbGapStudy = dbGapJson.getDbGapStudy();
+    }
 
     /**
      * DbGap constructor.
@@ -29,6 +34,10 @@ public class DbGap implements Serializable {
 
     public UUID getSmileDgGapId() {
         return smileDgGapId;
+    }
+    
+    public void setSmileDgGapId(UUID smileDgGapId) {
+        this.smileDgGapId = smileDgGapId;
     }
 
     public String getDbGapStudy() {
