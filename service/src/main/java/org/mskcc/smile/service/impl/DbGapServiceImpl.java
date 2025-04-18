@@ -1,5 +1,6 @@
 package org.mskcc.smile.service.impl;
 
+import java.util.UUID;
 import org.mskcc.smile.model.DbGap;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.json.DbGapJson;
@@ -16,6 +17,11 @@ public class DbGapServiceImpl implements DbGapService {
     private DbGapRepository dbGapRepository;
 
     @Override
+    public DbGap saveDbGap(DbGap dbGap) throws Exception {
+        return dbGapRepository.save(dbGap);
+    }
+    
+    @Override
     public DbGap getDbGapBySampleId(SmileSample smileSample) throws Exception {
         return dbGapRepository.findDbGapBySmileSampleId(smileSample.getSmileSampleId());
     }
@@ -27,7 +33,15 @@ public class DbGapServiceImpl implements DbGapService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public void updateDbGap(DbGapJson dbGap) throws Exception {
-        dbGapRepository.updateDbGap(dbGap);
+    public DbGap updateDbGap(DbGapJson dbGap) throws Exception {
+        UUID smileDbGapId;
+        DbGap existingDbGap = dbGapRepository.findDbGapBySamplePrimaryId(dbGap.getPrimaryId());
+        if (existingDbGap == null) {
+            smileDbGapId = saveDbGap(new DbGap(dbGap)).getSmileDgGapId();
+        } else {
+            smileDbGapId = existingDbGap.getSmileDgGapId();
+        }
+        return dbGapRepository.updateDbGap(smileDbGapId, dbGap);
     }
+
 }

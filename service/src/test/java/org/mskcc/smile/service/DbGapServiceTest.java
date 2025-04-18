@@ -132,5 +132,6 @@ public class DbGapServiceTest {
         dbGapService.updateDbGap(dbGapJson2);
         DbGap dbGapNode2 = dbGapService.getDbGapBySamplePrimaryId(samplePrimaryId);
         Assertions.assertEquals("mockDbgapStudyId.v2", dbGapNode2.getDbGapStudy());
+        Assertions.assertEquals(dbGapNode.getSmileDgGapId(), dbGapNode2.getSmileDgGapId());
     }
 }
