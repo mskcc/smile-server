@@ -14,8 +14,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties({"dt_alys_end_time", "dt_dms_start_time",
-    "mrev_comments", "mrev_status_name", "tmb_cohort", "tmb_tt_cohort"})
+@JsonIgnoreProperties(value = {"dt_alys_end_time", "dt_dms_start_time",
+    "mrev_comments", "mrev_status_name", "tmb_cohort", "tmb_tt_cohort"}, ignoreUnknown = true)
 public class DmpSampleMetadata {
     @JsonProperty("alys2sample_id")
     private Integer alys2sampleId;
