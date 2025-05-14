@@ -1,5 +1,6 @@
 package org.mskcc.smile.service.impl;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.nio.charset.StandardCharsets;
@@ -239,7 +240,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                                     + sampleMetadataEntry.getValue().getPrimaryId());
                             // publish sample-level metadata history to CMO_REQUEST_UPDATE_TOPIC
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
-                                    mapper.writeValueAsString(existingSample.getSampleMetadataList()));
+                                    mapper.writeValueAsString(existingSample));
                         }
                     }
                     if (interrupted && researchSampleUpdateQueue.isEmpty()) {
@@ -264,6 +265,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             setupRequestUpdateHandler(messagingGateway, this);
             setupResearchSampleUpdateHandler(messagingGateway, this);
             initializeMessageHandlers();
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring request.");
