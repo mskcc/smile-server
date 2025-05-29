@@ -200,6 +200,9 @@ public class SampleDataFactory {
     }
 
     private static String resolveDmpCollectionYear(String dmpDateTumorSequencing) {
+        if (StringUtils.isBlank(dmpDateTumorSequencing)) {
+            return "";
+        }
         try {
             Date dmpDateSequenced = DMP_DATE_TUMOR_SEQ_FORMAT.parse(dmpDateTumorSequencing);
             Calendar calendar = Calendar.getInstance();
