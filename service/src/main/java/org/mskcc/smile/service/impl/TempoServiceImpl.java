@@ -122,14 +122,14 @@ public class TempoServiceImpl implements TempoService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Tempo initAndSaveDefaultTempoData(String primaryId) throws Exception {
+    public Tempo initAndSaveDefaultTempoData(String primaryId, CohortComplete cc) throws Exception {
         SmileSample sample = sampleService.getSampleByInputId(primaryId);
         Tempo tempo = new Tempo(sample);
 
         // if sample is a normal sample then no need to set values for custodian
         // information or access level. Normal samples do not require this info.
         if (!sample.getSampleClass().equalsIgnoreCase("Normal")) {
-            populateTempoData(sample, tempo);
+            populateTempoData(sample, tempo, cc);
         }
         return tempoRepository.save(tempo);
     }
@@ -173,7 +173,7 @@ public class TempoServiceImpl implements TempoService {
         return initialPipelineRunDate.toLocalDate(); // return date only
     }
 
-    private void populateTempoData(SmileSample sample, Tempo tempo) throws Exception {
+    private void populateTempoData(SmileSample sample, Tempo tempo, CohortComplete cc) throws Exception {
         SmileRequest request = requestService.getRequestBySample(sample);
         String custodianInformation = Strings.isBlank(request.getLabHeadName())
                 ? request.getLabHeadName() : request.getInvestigatorName();
@@ -181,7 +181,9 @@ public class TempoServiceImpl implements TempoService {
 
         String accessLevel = tempo.getAccessLevel();
         String primaryId = sample.getPrimarySampleAlias();
-        LocalDate initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
+        LocalDate initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId); // from database
+        // if initial pipeline run date from database is null (sample not part of existing cohort) then
+        // fall back on cohort complete date value and set initial pipeline run date/embargo date based on that
 
         if (initialPipelineRunDate != null) {
             LocalDate embargoDate = initialPipelineRunDate.plusMonths(EMBARGO_PERIOD_MONTHS);

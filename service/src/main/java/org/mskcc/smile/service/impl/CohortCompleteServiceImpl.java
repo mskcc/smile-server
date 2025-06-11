@@ -55,8 +55,11 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
                 String primaryId = sampleService.getSamplePrimaryIdBySampleInputId(sampleId);
                 // init default tempo data for sample if sample does not already have tempo data
                 if (tempoService.getTempoDataBySamplePrimaryId(primaryId) == null) {
-                    tempoService.initAndSaveDefaultTempoData(primaryId);
+                    tempoService.initAndSaveDefaultTempoData(primaryId, cohort.getLatestCohortComplete().getDate());
                 }
+                // if tempo node does not have initial pipeline run date/embargo date then calculate now and update values
+                
+                
                 cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryId);
             } else {
                 unknownSamples.add(sampleId);
