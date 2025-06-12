@@ -188,7 +188,8 @@ public class TempoServiceImpl implements TempoService {
         // fall back on cohort complete date value and set initial pipeline run date/embargo date based on that
         if (initialPipelineRunDate == null && !StringUtils.isBlank(latestCohortCompleteDate)) {
           try {
-            initialPipelineRunDate = LocalDate.parse(latestCohortCompleteDate, DATE_FORMATTER);
+            DateTimeFormatter cohortDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            initialPipelineRunDate = LocalDateTime.parse(latestCohortCompleteDate, cohortDateTimeFormatter).toLocalDate();
           } catch (DateTimeParseException e) {
             LOG.error("Error parsing latest cohort complete date for sample with Primary ID: " + primaryId, e);
           }
