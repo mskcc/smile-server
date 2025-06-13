@@ -123,7 +123,8 @@ public class TempoServiceImpl implements TempoService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Tempo initAndSaveDefaultTempoData(String primaryId, String latestCohortCompleteDate) throws Exception {
+    public Tempo initAndSaveDefaultTempoData(String primaryId, String latestCohortCompleteDate)
+            throws Exception {
         SmileSample sample = sampleService.getSampleByInputId(primaryId);
         Tempo tempo = new Tempo(sample);
 
@@ -174,7 +175,8 @@ public class TempoServiceImpl implements TempoService {
         return initialPipelineRunDate.toLocalDate(); // return date only
     }
 
-    private void populateTempoData(SmileSample sample, Tempo tempo, String latestCohortCompleteDate) throws Exception {
+    private void populateTempoData(SmileSample sample, Tempo tempo, String latestCohortCompleteDate)
+            throws Exception {
         SmileRequest request = requestService.getRequestBySample(sample);
         String custodianInformation = Strings.isBlank(request.getLabHeadName())
                 ? request.getLabHeadName() : request.getInvestigatorName();
@@ -184,15 +186,17 @@ public class TempoServiceImpl implements TempoService {
         String primaryId = sample.getPrimarySampleAlias();
         LocalDate initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
 
-        // if initial pipeline run date from database is null (sample not part of existing cohort) then
-        // fall back on cohort complete date value and set initial pipeline run date/embargo date based on that
+        // if initial pipeline run date from database is null (sample not part of existing cohort) then fall
+        // back on cohort complete date value and set initial pipeline run date/embargo date based on that
         if (initialPipelineRunDate == null && !StringUtils.isBlank(latestCohortCompleteDate)) {
-          try {
-            DateTimeFormatter cohortDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            initialPipelineRunDate = LocalDateTime.parse(latestCohortCompleteDate, cohortDateTimeFormatter).toLocalDate();
-          } catch (DateTimeParseException e) {
-            LOG.error("Error parsing latest cohort complete date for sample with Primary ID: " + primaryId, e);
-          }
+            try {
+                DateTimeFormatter cohortDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                initialPipelineRunDate = LocalDateTime.parse(
+                    latestCohortCompleteDate, cohortDateTimeFormatter).toLocalDate();
+            } catch (DateTimeParseException e) {
+                LOG.error("Error parsing latest cohort complete date for sample with Primary ID: "
+                    + primaryId, e);
+            }
         }
 
         if (initialPipelineRunDate != null) {
