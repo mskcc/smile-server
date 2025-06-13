@@ -402,6 +402,29 @@ public class TempoServiceTest {
         Assertions.assertEquals(1, tempoIds.size());
     }
 
+    @Test
+    public void testInitAndSaveDefaultTempoDataWithFallbackToCohortDate() throws Exception {
+        // use a tumor sample that doet not belong to an existing cohort
+        String igoId = "MOCKREQUEST1_B_3";
+        Tempo preTempo = tempoService.getTempoDataBySamplePrimaryId(igoId);
+        Assertions.assertNull(preTempo);
+
+        // save a new tempo for this sample and assert tempo dates are null
+        SmileSample sample = sampleService.getSampleByInputId(igoId);
+        Tempo newTempo = new Tempo(sample);
+        Tempo savedPreTempo = tempoService.saveTempoData(newTempo);
+        Assertions.assertNull(savedPreTempo.getInitialPipelineRunDate());
+        Assertions.assertNull(savedPreTempo.getEmbargoDate());
+
+        // call initAndSaveDefaultTempoData with a fallback date
+        String fallbackCohortDate = "2024-06-01 12:00";
+        Tempo tempo = tempoService.initAndSaveDefaultTempoData(igoId, fallbackCohortDate);
+
+        // verify that the tempo dates are set based on the fallback date
+        Assertions.assertEquals("2024-06-01", tempo.getInitialPipelineRunDate());
+        Assertions.assertEquals("2025-12-01", tempo.getEmbargoDate());
+    }
+
     private CohortCompleteJson getCohortEventData(String dataIdentifier) throws JsonProcessingException {
         MockJsonTestData mockData = mockDataUtils.mockedTempoDataMap.get(dataIdentifier);
         CohortCompleteJson cohortCompleteData = mapper.readValue(mockData.getJsonString(),

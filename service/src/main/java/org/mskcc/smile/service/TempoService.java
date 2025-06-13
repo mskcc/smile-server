@@ -21,7 +21,7 @@ public interface TempoService {
     Tempo mergeBamCompleteEventBySamplePrimaryId(String primaryId, BamComplete bamComplete) throws Exception;
     Tempo mergeQcCompleteEventBySamplePrimaryId(String primaryId, QcComplete qcComplete) throws Exception;
     Tempo mergeMafCompleteEventBySamplePrimaryId(String primaryId, MafComplete mafComplete) throws Exception;
-    Tempo initAndSaveDefaultTempoData(String primaryId) throws Exception;
+    Tempo initAndSaveDefaultTempoData(String primaryId, String latestCohortCompleteDate) throws Exception;
     void updateSampleBilling(SampleBillingJson billing) throws Exception;
     List<UUID> getTempoIdsNoLongerEmbargoed() throws Exception;
     void updateTempoAccessLevel(List<String> samplePrimaryIds, String accessLevel) throws Exception;
