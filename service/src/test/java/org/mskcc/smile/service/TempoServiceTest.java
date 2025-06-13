@@ -409,6 +409,13 @@ public class TempoServiceTest {
         Tempo preTempo = tempoService.getTempoDataBySamplePrimaryId(igoId);
         Assertions.assertNull(preTempo);
 
+        // save a new tempo for this sample and assert tempo dates are null
+        SmileSample sample = sampleService.getSampleByInputId(igoId);
+        Tempo newTempo = new Tempo(sample);
+        Tempo savedPreTempo = tempoService.saveTempoData(newTempo);
+        Assertions.assertNull(savedPreTempo.getInitialPipelineRunDate());
+        Assertions.assertNull(savedPreTempo.getEmbargoDate());
+
         // call initAndSaveDefaultTempoData with a fallback date
         String fallbackCohortDate = "2024-06-01 12:00";
         Tempo tempo = tempoService.initAndSaveDefaultTempoData(igoId, fallbackCohortDate);
