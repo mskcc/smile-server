@@ -1,6 +1,5 @@
 package org.mskcc.smile.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import org.neo4j.ogm.id.UuidStrategy;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
 @NodeEntity(label = "Sample")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SmileSample implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
