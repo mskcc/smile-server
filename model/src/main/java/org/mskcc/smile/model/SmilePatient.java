@@ -1,5 +1,6 @@
 package org.mskcc.smile.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class SmilePatient implements Serializable {
     @Id @GeneratedValue(strategy = UuidStrategy.class)
     @Convert(UuidStringConverter.class)
     private UUID smilePatientId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Relationship(type = "HAS_SAMPLE", direction = Relationship.Direction.OUTGOING)
     private List<SmileSample> smileSampleList;
     @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.INCOMING)
