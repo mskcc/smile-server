@@ -15,11 +15,11 @@ import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
-import org.mskcc.smile.model.internal.CrdbMappingModel;
+import org.mskcc.smile.model.internal.PatientIdTriplet;
 import org.mskcc.smile.model.web.PublishedSmileSample;
 import org.mskcc.smile.model.web.SmileSampleIdMapping;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
-import org.mskcc.smile.service.CrdbMappingService;
+import org.mskcc.smile.service.PatientIdMappingService;
 import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
@@ -46,7 +46,7 @@ public class SampleServiceImpl implements SmileSampleService {
     private SmilePatientService patientService;
 
     @Autowired
-    private CrdbMappingService crdbMappingService;
+    private PatientIdMappingService patientIdMappingService;
 
     private static final Log LOG = LogFactory.getLog(SampleServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
@@ -162,10 +162,10 @@ public class SampleServiceImpl implements SmileSampleService {
         SampleMetadata sampleMetadata = sample.getLatestSampleMetadata();
         SmilePatient patient = sample.getPatient();
         if (!patient.hasPatientAlias("dmpId")) {
-            CrdbMappingModel result =
-                    crdbMappingService.getCrdbMappingModelByInputId(patient.getCmoPatientId().getValue());
+            PatientIdTriplet result = patientIdMappingService.getPatientIdTripletByInputId(
+                    patient.getCmoPatientId().getValue());
             if (result != null) {
-                PatientAlias alias = new PatientAlias(result.getDmpId(), "dmpId");
+                PatientAlias alias = new PatientAlias(result.getDmpPatientId(), "dmpId");
                 patient.addPatientAlias(alias);
             }
         }

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Import;
  */
 @SpringBootTest(
         classes = SmileTestApp.class,
-        properties = {"spring.neo4j.authentication.username:neo4j"}
+        properties = {"spring.neo4j.authentication.username:neo4j", "databricks.url:"}
 )
 @Import(MockDataUtils.class)
 public class RequestDataFactoryUtilTest {
