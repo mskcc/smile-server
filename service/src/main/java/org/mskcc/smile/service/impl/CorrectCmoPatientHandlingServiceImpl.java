@@ -25,8 +25,9 @@ import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.Status;
+import org.mskcc.smile.model.internal.PatientIdTriplet;
 import org.mskcc.smile.service.CorrectCmoPatientHandlingService;
-import org.mskcc.smile.service.CrdbMappingService;
+import org.mskcc.smile.service.PatientIdMappingService;
 import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
     private int NUM_NEW_REQUEST_HANDLERS;
 
     @Autowired
-    private CrdbMappingService crdbMappingService;
+    private PatientIdMappingService patientIdMappingService;
 
     @Autowired
     private SmilePatientService patientService;
@@ -238,10 +239,20 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                             new String(msg.getData(), StandardCharsets.UTF_8),
                             String.class);
                     incomingDataMap = mapper.readValue(incomingDataString, Map.class);
-                    oldCmoPatientId = crdbMappingService.getCmoPatientIdByInputId(
-                                incomingDataMap.get("oldId"));
-                    newCmoPatientId = crdbMappingService.getCmoPatientIdByInputId(
-                                incomingDataMap.get("newId"));
+
+                    PatientIdTriplet oldPatientIdMapping
+                            = patientIdMappingService.getPatientIdTripletByInputId(
+                                    incomingDataMap.get("oldId"));
+                    if (oldPatientIdMapping != null) {
+                        oldCmoPatientId = oldPatientIdMapping.getCmoPatientId();
+                    }
+
+                    PatientIdTriplet newPatientIdMapping
+                            = patientIdMappingService.getPatientIdTripletByInputId(
+                                    incomingDataMap.get("newId"));
+                    if (newPatientIdMapping != null) {
+                        newCmoPatientId = newPatientIdMapping.getCmoPatientId();
+                    }
                 } catch (Exception e) {
                     LOG.error("Error parsing the incoming data map: ", e);
                 }

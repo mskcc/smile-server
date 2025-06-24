@@ -16,8 +16,9 @@ import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.dmp.DmpSampleMetadata;
+import org.mskcc.smile.model.internal.PatientIdTriplet;
 import org.mskcc.smile.service.ClinicalMessageHandlingService;
-import org.mskcc.smile.service.CrdbMappingService;
+import org.mskcc.smile.service.PatientIdMappingService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
     private SmileSampleService sampleService;
 
     @Autowired
-    private CrdbMappingService crdbMappingService;
+    private PatientIdMappingService patientIdMappingService;
 
     @Override
     public void initialize(Gateway gateway) throws Exception {
@@ -242,13 +243,16 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
                             DmpSampleMetadata.class);
-                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
-                            dmpSample.getDmpPatientId());
-                    if (cmoPatientId == null) {
+
+                    PatientIdTriplet mappedPatientTriplet
+                            = patientIdMappingService.getPatientIdTripletByInputId(
+                                    dmpSample.getDmpPatientId());
+                    if (mappedPatientTriplet == null) {
                         LOG.error("Could not resolve cmoPatientId from dmpId: "
                                 + dmpSample.getDmpPatientId());
                         return;
                     }
+                    String cmoPatientId = mappedPatientTriplet.getCmoPatientId();
                     SmileSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
                             cmoPatientId, dmpSample);
                     clinicalMessageHandlingService.newClinicalSampleHandler(sample);
@@ -271,13 +275,16 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                             new String(msg.getData(), StandardCharsets.UTF_8), String.class);
                     DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
                             DmpSampleMetadata.class);
-                    String cmoPatientId = crdbMappingService.getCmoPatientIdbyDmpId(
-                            dmpSample.getDmpPatientId());
-                    if (cmoPatientId == null) {
+
+                    PatientIdTriplet mappedPatientTriplet
+                            = patientIdMappingService.getPatientIdTripletByInputId(
+                                    dmpSample.getDmpPatientId());
+                    if (mappedPatientTriplet == null) {
                         LOG.error("Could not resolve cmoPatientId from dmpId: "
                                 + dmpSample.getDmpPatientId());
                         return;
                     }
+                    String cmoPatientId = mappedPatientTriplet.getCmoPatientId();
                     SmileSample sample = SampleDataFactory.buildNewClinicalSampleFromMetadata(
                             cmoPatientId, dmpSample);
                     clinicalMessageHandlingService.clinicalSampleUpdateHandler(sample);
