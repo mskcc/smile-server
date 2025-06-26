@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 /**
  *
- * @author laptop
+ * @author ochoaa
  */
 public class PatientIdTripletMapper implements RowMapper<PatientIdTriplet> {
 

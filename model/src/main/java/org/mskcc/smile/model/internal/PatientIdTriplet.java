@@ -2,7 +2,7 @@ package org.mskcc.smile.model.internal;
 
 /**
  *
- * @author laptop
+ * @author ochoaa
  */
 public class PatientIdTriplet {
     private String mrn;
