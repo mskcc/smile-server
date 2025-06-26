@@ -9,7 +9,7 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 /**
  *
- * @author laptop
+ * @author ochoaa
  */
 @Configuration
 public class DatabricksJdbcConfig {
