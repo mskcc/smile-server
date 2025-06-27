@@ -18,8 +18,8 @@ All properties are required with the exception of some NATS connection-specific 
 ### Locally
 
 **Requirements:**
-- maven 3.6.1
-- java 8
+- maven 3.8.8
+- java 21
 
 Add `application.properties` to the local application resources: `src/main/resources`
 
@@ -32,7 +32,7 @@ mvn clean install
 Run with
 
 ```
-java -jar server/target/smile_server.jar
+java --add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED -jar server/target/smile_server.jar
 ```
 
 ### With Docker
@@ -57,7 +57,7 @@ If the Docker image is built with the properties baked in then simply run with:
 
 ```
 docker run --name smile-server <repo>/<tag>:<version> \
-	-jar /smile-server/smile_server.jar
+	--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED -jar /smile-server/smile_server.jar
 ```
 
 Otherwise use a bind mount to make the local files available to the Docker image and add  `--spring.config.location` to the java arg
@@ -65,6 +65,6 @@ Otherwise use a bind mount to make the local files available to the Docker image
 ```
 docker run --mount type=bind,source=<local path to properties files>,target=/smile-server/src/main/resources \
 	--name smile-server <repo>/<tag>:<version> \
-	-jar /smile-server/smile_server.jar \
+	--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED -jar /smile-server/smile_server.jar \
 	--spring.config.location=/cmo-metadb/src/main/resources/application.properties
 ```

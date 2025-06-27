@@ -8,7 +8,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 /**
  *
- * @author laptop
+ * @author ochoaa
  */
 @Configuration
 @EnableNeo4jRepositories(basePackages = "org.mskcc.smile.persistence.neo4j")

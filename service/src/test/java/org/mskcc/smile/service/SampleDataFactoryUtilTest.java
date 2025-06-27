@@ -19,7 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  */
 @SpringBootTest(
         classes = SmileTestApp.class,
-        properties = {"spring.neo4j.authentication.username:neo4j"}
+        properties = {"spring.neo4j.authentication.username:neo4j", "databricks.url:"}
 )
 @Testcontainers
 @Import(MockDataUtils.class)

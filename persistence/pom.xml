@@ -16,11 +16,11 @@
       <artifactId>model</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- oracle jdbc driver -->
+    <!-- https://mvnrepository.com/artifact/com.databricks/databricks-jdbc -->
     <dependency>
-      <groupId>com.oracle.database.jdbc</groupId>
-      <artifactId>ojdbc8</artifactId>
-      <version>21.1.0.0</version>
+      <groupId>com.databricks</groupId>
+      <artifactId>databricks-jdbc</artifactId>
+      <version>2.7.3</version>
     </dependency>
   </dependencies>
 </project>
