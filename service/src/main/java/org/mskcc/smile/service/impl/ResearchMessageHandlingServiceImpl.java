@@ -265,7 +265,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             setupRequestUpdateHandler(messagingGateway, this);
             setupResearchSampleUpdateHandler(messagingGateway, this);
             initializeMessageHandlers();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
             initialized = true;
         } else {
             LOG.error("Messaging Handler Service has already been initialized, ignoring request.");
