@@ -26,4 +26,5 @@ public interface TempoService {
     List<UUID> getTempoIdsNoLongerEmbargoed() throws Exception;
     void updateTempoAccessLevel(List<String> samplePrimaryIds, String accessLevel) throws Exception;
     TempoSample getTempoSampleDataBySamplePrimaryId(String primaryId) throws Exception;
+    void updateSampleInitRunDate(String primaryId) throws Exception;
 }

@@ -82,7 +82,7 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
     @Query("MATCH (cc:CohortComplete)<-[:HAS_COHORT_COMPLETE]-(c:Cohort)-[:HAS_COHORT_SAMPLE]"
             + "->(s:Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
             + "RETURN cc.date ORDER BY cc.date ASC LIMIT 1")
-    String findInitialPipelineRunDateBySamplePrimaryId(@Param("primaryId") String primaryId);
+    String findEarliestCohortDeliveryDateBySamplePrimaryId(@Param("primaryId") String primaryId);
 
     @Query("MATCH (t:Tempo {accessLevel: 'MSK Embargo'}) "
             + "WHERE date(t.embargoDate) < date() "
@@ -132,4 +132,12 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             + "WHERE result.primaryId = $primaryId "
             + "RETURN result")
     Map<String, Object> findTempoSampleDataBySamplePrimaryId(@Param("primaryId") String primaryId);
+
+    @Query("MATCH (t: Tempo{smileTempoId: $smileTempoId}) "
+            + "SET t.initialPipelineRunDate = $initialPipelineRunDate, "
+            + "t.embargoDate = $embargoDate, t.accessLevel = $accessLevel")
+    void updateTempoData(@Param("smileTempoId") UUID smileTempoId,
+            @Param("initialPipelineRunDate") String initialPipelineRunDate,
+            @Param("embargoDate") String embargoDate,
+            @Param("accessLevel") String accessLevel);
 }
