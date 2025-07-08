@@ -164,10 +164,10 @@ public class TempoServiceImpl implements TempoService {
         tempoRepository.updateSampleBilling(billing);
     }
 
-    private LocalDate getInitialPipelineRunDateBySamplePrimaryId(String primaryId) throws Exception {
-        String dateString = tempoRepository.findInitialPipelineRunDateBySamplePrimaryId(primaryId);
+    private LocalDate getEarliestCohortDeliveryBySamplePrimaryId(String primaryId) throws Exception {
+        String dateString = tempoRepository.findEarliestCohortDeliveryDateBySamplePrimaryId(primaryId);
         if (StringUtils.isEmpty(dateString)) {
-            LOG.debug("No Initial Pipeline Run Date found for sample with Primary ID: " + primaryId);
+            LOG.debug("No Cohort Delivery Date found for sample with Primary ID: " + primaryId);
             return null;
         }
         DateTimeFormatter runDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -184,7 +184,7 @@ public class TempoServiceImpl implements TempoService {
 
         String accessLevel = tempo.getAccessLevel();
         String primaryId = sample.getPrimarySampleAlias();
-        LocalDate initialPipelineRunDate = getInitialPipelineRunDateBySamplePrimaryId(primaryId);
+        LocalDate initialPipelineRunDate = getEarliestCohortDeliveryBySamplePrimaryId(primaryId);
 
         // if initial pipeline run date from database is null (sample not part of existing cohort) then fall
         // back on cohort complete date value and set initial pipeline run date/embargo date based on that
@@ -271,6 +271,61 @@ public class TempoServiceImpl implements TempoService {
             .setRecapture((Boolean) tempoSampleMap.get("recapture"))
             .build();
         return tempoSample;
+    }
+
+    @Override
+    public void updateSampleInitRunDate(String primaryId) throws Exception {
+        LocalDate earliestDeliveryDate = getEarliestCohortDeliveryBySamplePrimaryId(primaryId);
+        Tempo tempo = tempoRepository.findTempoBySamplePrimaryId(primaryId);
+
+        if (tempo == null) {
+            return;
+        }
+
+        if (earliestDeliveryDate == null) {
+            return;
+        }
+
+        // if there is no stored init run date then use the earliest cohort delivery date available
+        Boolean needsUpdate = Boolean.FALSE;
+        if (Strings.isBlank(tempo.getInitialPipelineRunDate())) {
+            // call to update the stored init run date and embargo date
+            LocalDate embargoDate = earliestDeliveryDate.plusMonths(EMBARGO_PERIOD_MONTHS);
+            tempo.setInitialPipelineRunDate(earliestDeliveryDate.format(DATE_FORMATTER));
+            tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
+            if (!sampleIsMarkedAsPublic(tempo.getAccessLevel())) {
+                // we release the sample the day after the embargo ends (confirmed with PMs)
+                tempo.setAccessLevel(LocalDate.now().isAfter(embargoDate)
+                        ? ACCESS_LEVEL_PUBLIC : ACCESS_LEVEL_EMBARGO);
+            }
+            needsUpdate = Boolean.TRUE;
+        } else {
+            try {
+                LocalDate savedInitRunDate = LocalDate.parse(
+                        tempo.getInitialPipelineRunDate());
+                if (earliestDeliveryDate.isBefore(savedInitRunDate)) {
+                    LocalDate embargoDate = earliestDeliveryDate.plusMonths(EMBARGO_PERIOD_MONTHS);
+                    tempo.setInitialPipelineRunDate(earliestDeliveryDate.format(DATE_FORMATTER));
+                    tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
+                    if (!sampleIsMarkedAsPublic(tempo.getAccessLevel())) {
+                        // we release the sample the day after the embargo ends (confirmed with PMs)
+                        tempo.setAccessLevel(LocalDate.now().isAfter(embargoDate)
+                                ? ACCESS_LEVEL_PUBLIC : ACCESS_LEVEL_EMBARGO);
+                    }
+                    needsUpdate = Boolean.TRUE;
+                }
+            } catch (DateTimeParseException e) {
+                LOG.error("Error parsing earliest cohort complete date for sample with Primary ID: "
+                        + primaryId, e);
+            }
+        }
+
+        if (needsUpdate) {
+            tempoRepository.updateTempoData(tempo.getSmileTempoId(),
+                    tempo.getInitialPipelineRunDate(),
+                    tempo.getEmbargoDate(),
+                    tempo.getAccessLevel());
+        }
     }
 
 }

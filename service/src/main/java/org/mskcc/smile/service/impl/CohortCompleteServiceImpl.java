@@ -59,6 +59,10 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
                         cohort.getLatestCohortComplete().getDate());
                 }
                 cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryId);
+                // the update needs to happen after the new cohort-sample relationship
+                // is established so that all possible cohort delivery dates are taken into consideration
+                // when potentially updating the pipeline run date
+                tempoService.updateSampleInitRunDate(primaryId);
             } else {
                 unknownSamples.add(sampleId);
             }
