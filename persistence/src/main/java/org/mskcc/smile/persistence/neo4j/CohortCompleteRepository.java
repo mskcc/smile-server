@@ -14,20 +14,30 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CohortCompleteRepository extends Neo4jRepository<Cohort, Long> {
-    @Query("MATCH (c: Cohort {cohortId: $cohortId})-[hcc:HAS_COHORT_COMPLETE]->(cc: CohortComplete) "
-            + "RETURN DISTINCT c, hcc, cc")
+    @Query("""
+           MATCH (c: Cohort {cohortId: $cohortId})-[hcc:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
+           RETURN DISTINCT c, hcc, cc
+           """)
     Cohort findCohortByCohortId(@Param("cohortId") String cohortId);
 
-    @Query("MATCH (c: Cohort {cohortId: $cohortId})-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete) "
-            + "RETURN cc ORDER BY cc.date DESC LIMIT 1")
+    @Query("""
+           MATCH (c: Cohort {cohortId: $cohortId})-[:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
+           RETURN cc ORDER BY cc.date DESC LIMIT 1
+           """)
     CohortComplete findLatestCohortCompleteEventByCohortId(@Param("cohortId") String cohortId);
 
-    @Query("MATCH (c: Cohort)-[:HAS_COHORT_SAMPLE]->(s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata "
-            + "{primaryId: $primaryId}) RETURN DISTINCT c")
+    @Query("""
+           MATCH (c: Cohort)-[:HAS_COHORT_SAMPLE]->(s: Sample)-[:HAS_METADATA]->
+           (sm: SampleMetadata {primaryId: $primaryId})
+           RETURN DISTINCT c
+           """)
     List<Cohort> findCohortsBySamplePrimaryId(@Param("primaryId") String primaryId);
 
-    @Query("MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId}) "
-            + "MATCH (c: Cohort {cohortId: $cohortId}) MERGE (c)-[hcs:HAS_COHORT_SAMPLE]->(s)")
+    @Query("""
+           MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId})
+           MATCH (c: Cohort {cohortId: $cohortId})
+           MERGE (c)-[hcs:HAS_COHORT_SAMPLE]->(s)
+           """)
     void addCohortSampleRelationship(@Param("cohortId") String cohortId,
             @Param("primaryId") String primaryId);
 }
