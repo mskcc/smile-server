@@ -30,7 +30,7 @@ public class Library implements Serializable {
     @Convert(RunStringConverter.class)
     private List<Run> runs;
 
-    public Library(){}
+    public Library() {}
 
     /**
      * Library constructor.

@@ -99,13 +99,21 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
             + "RETURN sm, hs, ss ORDER BY sm.importDate DESC LIMIT 1")
     SampleMetadata findLatestSampleMetadataBySmileId(@Param("smileSampleId") UUID smileSampleId);
 
-    @Query("MATCH (sm:SampleMetadata)<-[:HAS_METADATA]-(s:Sample)<-[:IS_ALIAS]-(sa:SampleAlias) "
-            + "WHERE sm.primaryId = $inputId "
-            + "OR sa.value = $inputId "
-            + "OR s.smileSampleId = $inputId "
-            + "OR sm.cmoSampleName = $inputId "
-            + "OR sm.investigatorSampleId = $inputId "
-            + "RETURN DISTINCT s")
+
+    @Query("""
+           MATCH (s: Sample)<-[:IS_ALIAS]-(sa: SampleAlias)
+           WITH s, sa, COLLECT {
+            MATCH (s)-[:HAS_METADATA]->(sm: SampleMetadata)
+            RETURN sm ORDER BY sm.importDate DESC LIMIT 1
+           } as latestSm
+           WITH s, sa, latestSm[0] as latestSm
+           WHERE latestSm.primaryId = $inputId
+           OR latestSm.cmoSampleName = $inputId
+           OR latestSm.investigatorSampleId = $inputId
+           OR s.smileSampleId = $inputId
+           OR sa.value = $inputId
+           RETURN DISTINCT s
+           """)
     SmileSample findSampleByInputId(@Param("inputId") String inputId);
 
     @Query("MATCH (s: Sample {smileSampleId: $smileSampleId}) "

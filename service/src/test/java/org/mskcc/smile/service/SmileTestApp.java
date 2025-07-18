@@ -33,7 +33,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
  * @author ochoaa
  */
 @SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging",
-        "org.mskcc.smile.commons.*", "org.mskcc.smile.*"})
+    "org.mskcc.smile.commons.*", "org.mskcc.smile.*"})
 @EntityScan(basePackages = "org.mskcc.smile.model")
 @EnableNeo4jRepositories(basePackages = "org.mskcc.smile.persistence.neo4j")
 public class SmileTestApp {
