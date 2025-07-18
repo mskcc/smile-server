@@ -23,7 +23,7 @@ public class QcReport implements Serializable {
     private String comments;
     private String investigatorDecision;
 
-    public QcReport(){}
+    public QcReport() {}
 
     /**
      * QcReport constructor.

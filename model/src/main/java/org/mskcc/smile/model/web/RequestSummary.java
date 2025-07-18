@@ -19,7 +19,7 @@ public class RequestSummary implements Serializable {
     /**
      * RequestSummary default constructor.
      */
-    public RequestSummary(){}
+    public RequestSummary() {}
 
     /**
      * RequestSummary args constructor.
