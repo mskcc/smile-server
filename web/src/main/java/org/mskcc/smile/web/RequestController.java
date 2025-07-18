@@ -158,7 +158,7 @@ public class RequestController {
         String startDate;
         String endDate;
 
-        DateRange(){}
+        DateRange() {}
 
         String getStartDate() {
             return startDate;

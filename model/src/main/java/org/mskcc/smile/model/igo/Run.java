@@ -24,7 +24,7 @@ public class Run implements Serializable {
     private List<Integer> flowCellLanes;
     private List<String> fastqs;
 
-    public Run(){}
+    public Run() {}
 
     /**
      * Run constructor.

@@ -30,7 +30,7 @@ import org.springframework.stereotype.Controller;
 @EnableNeo4jRepositories(basePackages = "org.mskcc.smile.persistence.neo4j")
 @EnableJpaRepositories(basePackages = "org.mskcc.smile.persistence.jpa")
 @SpringBootApplication(scanBasePackages = {"org.mskcc.cmo.messaging",
-        "org.mskcc.smile.commons.*", "org.mskcc.smile.*"})
+    "org.mskcc.smile.commons.*", "org.mskcc.smile.*"})
 @Controller
 @EnableCaching
 @EnableScheduling
