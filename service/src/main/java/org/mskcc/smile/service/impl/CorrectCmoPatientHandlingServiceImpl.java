@@ -30,6 +30,7 @@ import org.mskcc.smile.service.CorrectCmoPatientHandlingService;
 import org.mskcc.smile.service.PatientIdMappingService;
 import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.util.NatsMsgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -235,9 +236,7 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                 String oldCmoPatientId = null;
                 String newCmoPatientId = null;
                 try {
-                    String incomingDataString = mapper.readValue(
-                            new String(msg.getData(), StandardCharsets.UTF_8),
-                            String.class);
+                    String incomingDataString = NatsMsgUtil.extractNatsJsonString(msg);
                     incomingDataMap = mapper.readValue(incomingDataString, Map.class);
 
                     PatientIdTriplet oldPatientIdMapping
