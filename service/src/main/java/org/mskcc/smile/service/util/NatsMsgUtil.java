@@ -32,7 +32,7 @@ public class NatsMsgUtil {
                 String.class);
             return jsonString;
         } catch (MismatchedInputException e) {
-            LOG.warn("Failed to deserialize with mapper.readValue() - "
+            LOG.debug("Failed to deserialize with mapper.readValue() - "
                     + "attempting mapper.convertValue()");
         }
 
@@ -42,7 +42,7 @@ public class NatsMsgUtil {
                     String.class);
             return jsonString;
         } catch (Exception e) {
-            LOG.warn("Failed to deserialize with mapper.convertValue(). "
+            LOG.debug("Failed to deserialize with mapper.convertValue(). "
                     + "Cannot deserialize message");
             e.printStackTrace();
         }

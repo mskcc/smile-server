@@ -20,6 +20,7 @@ import org.mskcc.smile.model.internal.PatientIdTriplet;
 import org.mskcc.smile.service.ClinicalMessageHandlingService;
 import org.mskcc.smile.service.PatientIdMappingService;
 import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.util.NatsMsgUtil;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -239,8 +240,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
             public void onMessage(Message msg, Object message) {
                 LOG.info("Received message on topic: " + NEW_DMP_SAMPLE_TOPIC);
                 try {
-                    String clinicalSampleJson = mapper.readValue(
-                            new String(msg.getData(), StandardCharsets.UTF_8), String.class);
+                    String clinicalSampleJson = NatsMsgUtil.extractNatsJsonString(msg);
                     DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
                             DmpSampleMetadata.class);
 
@@ -271,8 +271,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
             public void onMessage(Message msg, Object message) {
                 LOG.info("Received message on topic: " + DMP_SAMPLE_UPDATE_TOPIC);
                 try {
-                    String clinicalSampleJson = mapper.readValue(
-                            new String(msg.getData(), StandardCharsets.UTF_8), String.class);
+                    String clinicalSampleJson = NatsMsgUtil.extractNatsJsonString(msg);
                     DmpSampleMetadata dmpSample = mapper.readValue(clinicalSampleJson,
                             DmpSampleMetadata.class);
 
