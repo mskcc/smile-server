@@ -25,6 +25,7 @@ import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.service.ResearchMessageHandlingService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.util.NatsMsgUtil;
 import org.mskcc.smile.service.util.RequestDataFactory;
 import org.mskcc.smile.service.util.SampleDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -387,9 +388,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         gateway.subscribe(IGO_NEW_REQUEST_TOPIC, Object.class, new MessageConsumer() {
             public void onMessage(Message msg, Object message) {
                 try {
-                    String requestJson = mapper.readValue(
-                            new String(msg.getData(), StandardCharsets.UTF_8),
-                            String.class);
+                    String requestJson = NatsMsgUtil.extractNatsJsonString(msg);
                     SmileRequest request = RequestDataFactory.buildNewLimsRequestFromJson(requestJson);
                     LOG.info("Received message on topic: " + IGO_NEW_REQUEST_TOPIC + " and request id: "
                             + request.getIgoRequestId());
@@ -406,9 +405,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
         gateway.subscribe(IGO_PROMOTED_REQUEST_TOPIC, Object.class, new MessageConsumer() {
             public void onMessage(Message msg, Object message) {
                 try {
-                    String requestJson = mapper.readValue(
-                            new String(msg.getData(), StandardCharsets.UTF_8),
-                            String.class);
+                    String requestJson = NatsMsgUtil.extractNatsJsonString(msg);
                     SmileRequest request = RequestDataFactory.buildNewLimsRequestFromJson(requestJson);
                     LOG.info("Received message on topic: " + IGO_PROMOTED_REQUEST_TOPIC + " and request id: "
                             + request.getIgoRequestId());
@@ -427,8 +424,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             @Override
             public void onMessage(Message msg, Object message) {
                 try {
-                    String requestMetadataJson = mapper.readValue(
-                            new String(msg.getData(), StandardCharsets.UTF_8), String.class);
+                    String requestMetadataJson = NatsMsgUtil.extractNatsJsonString(msg);
                     RequestMetadata requestMetadata =
                             RequestDataFactory.buildNewRequestMetadataFromMetadata(requestMetadataJson);
                     LOG.info("Received message on topic: "  + IGO_REQUEST_UPDATE_TOPIC + " and request id: "
@@ -450,8 +446,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
             public void onMessage(Message msg, Object message) {
                 LOG.info("Received message on topic: " + IGO_SAMPLE_UPDATE_TOPIC);
                 try {
-                    String sampleMetadataJson = mapper.readValue(
-                            new String(msg.getData(), StandardCharsets.UTF_8), String.class);
+                    String sampleMetadataJson = NatsMsgUtil.extractNatsJsonString(msg);
                     SampleMetadata sampleMetadata =
                             SampleDataFactory.buildNewSampleMetadatafromJson(sampleMetadataJson);
                     if (sampleMetadata.getIgoRequestId() == null) {
