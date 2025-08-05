@@ -33,7 +33,6 @@ import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.service.CohortCompleteService;
-import org.mskcc.smile.service.SmilePatientService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
 import org.mskcc.smile.service.TempoService;

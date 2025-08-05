@@ -3,7 +3,6 @@ package org.mskcc.smile.service.impl;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Map.Entry;
