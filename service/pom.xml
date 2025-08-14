@@ -23,5 +23,11 @@
         <artifactId>protobuf-java-util</artifactId>
         <version>4.26.1</version>
     </dependency>
+    <!-- aws s3 -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>aws-sdk-java</artifactId>
+      <version>2.32.20</version>
+    </dependency>
   </dependencies>
 </project>
