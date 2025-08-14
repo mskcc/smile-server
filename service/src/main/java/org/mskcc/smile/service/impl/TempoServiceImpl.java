@@ -178,7 +178,7 @@ public class TempoServiceImpl implements TempoService {
     private void populateTempoData(SmileSample sample, Tempo tempo, String latestCohortCompleteDate)
             throws Exception {
         SmileRequest request = requestService.getRequestBySample(sample);
-        String custodianInformation = Strings.isBlank(request.getLabHeadName())
+        String custodianInformation = !Strings.isBlank(request.getLabHeadName())
                 ? request.getLabHeadName() : request.getInvestigatorName();
         tempo.setCustodianInformation(custodianInformation);
 
