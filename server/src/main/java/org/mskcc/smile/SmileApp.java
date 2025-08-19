@@ -6,6 +6,7 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
+import org.mskcc.smile.service.AwsS3Service;
 import org.mskcc.smile.service.ClinicalMessageHandlingService;
 import org.mskcc.smile.service.CorrectCmoPatientHandlingService;
 import org.mskcc.smile.service.DbGapMessageHandlingService;
@@ -57,6 +58,9 @@ public class SmileApp implements CommandLineRunner {
 
     @Autowired
     private DbGapMessageHandlingService dbGapMessageHandlingService;
+    
+    @Autowired
+    private AwsS3Service awsS3Service;
 
     private Thread shutdownHook;
     final CountDownLatch smileAppClose = new CountDownLatch(1);
@@ -103,6 +107,7 @@ public class SmileApp implements CommandLineRunner {
             correctCmoPatientHandlingService.initialize(messagingGateway);
             tempoMessageHandlingService.intialize(messagingGateway);
             dbGapMessageHandlingService.initialize(messagingGateway);
+            awsS3Service.initialize();
             smileAppClose.await();
         } catch (Exception e) {
             LOG.error("Encountered error during initialization", e);

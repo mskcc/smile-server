@@ -28,27 +28,55 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
  */
 @Component
 public class AwsS3ServiceImpl implements AwsS3Service {
-    @Value("${s3.aws_region}")
+    @Value("${s3.aws_region:}")
     private String s3Region;
 
-    @Value("${s3.aws_profile}")
+    @Value("${s3.aws_profile:}")
     private String s3Profile;
 
-    @Value("${s3.aws_tempo_bucket}")
+    @Value("${s3.aws_tempo_bucket:}")
     private String s3TempoBucket;
 
-    @Value("${s3.aws_role}")
+    @Value("${s3.aws_role:}")
     private String s3Role;
 
-    @Value("${s3.aws_username}")
+    @Value("${s3.aws_username:}")
     private String s3Username;
 
-    @Value("${s3.aws_password}")
+    @Value("${s3.aws_password:}")
     private String s3Password;
+    
+    @Value("${s3.saml_aws_setup_script:}")
+    private String SAML_AWS_SETUP_SCRIPT;
 
     private static final Log LOG = LogFactory.getLog(AwsS3ServiceImpl.class);
     private S3Client s3;
+    private static boolean initialized = Boolean.FALSE;
 
+    @Override
+    public void initialize() throws Exception {
+        if (!initialized) {
+            if (StringUtils.isBlank(SAML_AWS_SETUP_SCRIPT)) {
+                throw new RuntimeException("Cannot initialize AWS s3 service without"
+                        + " defined ${s3.saml_aws_setup_script}");
+            }
+            s3 = getAwsS3Client();
+//            LOG.info("Running saml2aws setup script: " + SAML_AWS_SETUP_SCRIPT);
+//            String[] saml2AwsSetupCmd = {"bash", SAML_AWS_SETUP_SCRIPT};
+//            Process process = Runtime.getRuntime().exec(saml2AwsSetupCmd);
+//            int exitCode = process.waitFor();
+//            System.out.println(process);
+//            if (exitCode > 0) {
+//                throw new RuntimeException("Failed to run: " + StringUtils.join(saml2AwsSetupCmd, " ", exitCode));
+//            } else {
+//                initialized = Boolean.TRUE;
+//            }
+        } else {
+            LOG.error("AWS s3 service has already been initialized, ignoring request.");
+        }
+    }
+    
+    
     @Override
     public S3Client getAwsS3Client() {
         if (s3 == null || sessionIsExpired(s3)) {
