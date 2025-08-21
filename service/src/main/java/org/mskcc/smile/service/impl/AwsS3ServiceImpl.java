@@ -1,10 +1,16 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +22,7 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.identity.spi.AwsCredentialsIdentity;
 import software.amazon.awssdk.identity.spi.IdentityProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -45,9 +52,6 @@ public class AwsS3ServiceImpl implements AwsS3Service {
 
     @Value("${s3.aws_password:}")
     private String s3Password;
-    
-    @Value("${s3.saml_aws_setup_script:}")
-    private String SAML_AWS_SETUP_SCRIPT;
 
     private static final Log LOG = LogFactory.getLog(AwsS3ServiceImpl.class);
     private S3Client s3;
@@ -56,34 +60,20 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     @Override
     public void initialize() throws Exception {
         if (!initialized) {
-            if (StringUtils.isBlank(SAML_AWS_SETUP_SCRIPT)) {
-                throw new RuntimeException("Cannot initialize AWS s3 service without"
-                        + " defined ${s3.saml_aws_setup_script}");
-            }
             s3 = getAwsS3Client();
-//            LOG.info("Running saml2aws setup script: " + SAML_AWS_SETUP_SCRIPT);
-//            String[] saml2AwsSetupCmd = {"bash", SAML_AWS_SETUP_SCRIPT};
-//            Process process = Runtime.getRuntime().exec(saml2AwsSetupCmd);
-//            int exitCode = process.waitFor();
-//            System.out.println(process);
-//            if (exitCode > 0) {
-//                throw new RuntimeException("Failed to run: " + StringUtils.join(saml2AwsSetupCmd, " ", exitCode));
-//            } else {
-//                initialized = Boolean.TRUE;
-//            }
         } else {
             LOG.error("AWS s3 service has already been initialized, ignoring request.");
         }
     }
-    
-    
+
     @Override
     public S3Client getAwsS3Client() {
         if (s3 == null || sessionIsExpired(s3)) {
             try {
                 generateToken();
+                // TODO - decide if this is still necessary (ported from the databricks gateway go code)
                 // saml2AWS returns without error, but without being fully setup, lets pause
-                Thread.sleep(60000);
+                //Thread.sleep(30000);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException("Error during attempt to authenticate with saml2aws", e);
             }
@@ -114,19 +104,27 @@ public class AwsS3ServiceImpl implements AwsS3Service {
                 }
             } catch (JsonProcessingException ex) {
                 LOG.error("Error during attempt to upload TEMPO sample to s3 bucket", ex);
+            } catch (InvalidProtocolBufferException ex) {
+                Logger.getLogger(AwsS3ServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
     private Boolean pushObjectToS3Bucket(S3Client s3Client, TempoSample sample)
-            throws JsonProcessingException {
-        String bucketKey = sample.getPrimaryId() + "_clinical.json";
+            throws JsonProcessingException, InvalidProtocolBufferException {
+        // TODO- REMOVE _TEST from key
+        String bucketKey = sample.getPrimaryId() + "_clinical_TEST.json";
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(s3TempoBucket)
                 .key(bucketKey)
+                .contentType("application/json")
                 .build();
+
+        // protobuf json printer
+        JsonFormat.Printer printer = JsonFormat.printer().preservingProtoFieldNames();
+
         PutObjectResponse response = s3Client.putObject(putObjectRequest,
-                RequestBody.fromBytes(sample.toByteArray()));
+                RequestBody.fromString(printer.print(sample.toBuilder().build())));
         if (response.sdkHttpResponse().isSuccessful()) {
             return Boolean.TRUE;
         } else {
@@ -143,13 +141,31 @@ public class AwsS3ServiceImpl implements AwsS3Service {
                 .append(s3Password).toString();
         String[] saml2AwsCmd = {"saml2aws", "--role", s3Role, "login", "--force",
             "--mfa=Auto", usernameArg, passwordArg, "--skip-prompt", "--session-duration=3600"};
-        Process process = Runtime.getRuntime().exec(saml2AwsCmd);
-        int exitCode = process.waitFor();
+
+        ProcessBuilder loginBuilder = new ProcessBuilder(saml2AwsCmd);
+        Process loginProcess = loginBuilder.start();
+
+        // Read the output of the login process (for debugging or to check success/failure)
+        BufferedReader loginReader = new BufferedReader(new InputStreamReader(loginProcess.getInputStream()));
+        String line;
+        while ((line = loginReader.readLine()) != null) {
+            System.out.println("SAML2AWS Login Output: " + line);
+        }
+
+        int exitCode = loginProcess.waitFor();
+        System.out.println("SAML2AWS Login Exit Code: " + exitCode);
+
         if (exitCode > 0) {
             throw new RuntimeException("Failed to run: " + StringUtils.join(saml2AwsCmd, " "));
         }
     }
 
+
+    /**
+     * TO-DO: GET THE CREDENTIALS REFRESH WORKING CORRECTLY
+     * @param s3Client
+     * @return
+     */
     private Boolean sessionIsExpired(S3Client s3Client) {
         if (s3Client == null) {
             return Boolean.TRUE;
@@ -157,15 +173,47 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         try {
             IdentityProvider credentialsProvider
                     = s3Client.serviceClientConfiguration().credentialsProvider();
-            AwsSessionCredentials credentials = (AwsSessionCredentials)
-                    credentialsProvider.resolveIdentity().join();
-            Optional<Instant> expirationTime = credentials.expirationTime();
-            Instant now = Instant.now();
-            Duration timeLeft = Duration.between(now, expirationTime.get());
-            if (timeLeft.isPositive()) {
+
+            System.out.println("\n\nprinting credentials provider");
+            System.out.println(credentialsProvider);
+            System.out.println("\n\nprinting credentials provider identity type");
+            System.out.println(credentialsProvider.identityType());
+            System.out.println("\n\n");
+
+            AwsCredentialsIdentity credentialsIdentity = (AwsCredentialsIdentity) credentialsProvider.resolveIdentity().join();
+            if (credentialsIdentity instanceof AwsSessionCredentials) {
+                System.out.println("Identified credentials identity is temporary meaning that there is a time-based expiration...");
+                // per aws sdk java doc: https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/identity/spi/Identity.html#expirationTime()
+                // expiration time = The time after which this identity will no longer be valid.
+                // - If this is empty, an expiration time is not known (but the identity may still
+                // expire at some time in the future).
+                AwsSessionCredentials sessionCredentials = (AwsSessionCredentials) credentialsIdentity;
+
+                if (sessionCredentials.expirationTime().isPresent()) {
+                    Instant expirationTime = sessionCredentials.expirationTime().get();
+                    Instant now = Instant.now();
+                    System.out.println("\n\nexpiration time");
+                    System.out.println(expirationTime);
+                    System.out.println("time now");
+                    System.out.println(now);
+                    System.out.println("\n\n");
+
+                    Duration timeLeft = Duration.between(now, expirationTime);
+                    if (timeLeft.isPositive()) {
+                        return Boolean.FALSE;
+                    } else {
+                        return Boolean.TRUE;
+                    }
+                } else {
+                    System.out.println("Expiration time not available for these credentials.");
+                    return Boolean.FALSE;
+                }
+
+
+            } else {
+                // Not temporary credentials, so no time-based expiration
                 return Boolean.FALSE;
             }
-            return Boolean.TRUE;
         } catch (Exception e) {
             throw new RuntimeException("Error resolving credentials and/or resolving "
                     + "the remaining session duration.", e);
