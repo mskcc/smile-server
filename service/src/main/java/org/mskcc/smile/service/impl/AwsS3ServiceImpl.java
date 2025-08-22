@@ -160,6 +160,11 @@ public class AwsS3ServiceImpl implements AwsS3Service {
 
     /**
      * TO-DO: GET THE CREDENTIALS REFRESH WORKING CORRECTLY
+     * See doc related to AWS SDK Identity
+     * - https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/identity/spi/Identity.html
+     *      expiration time = The time after which this identity will no longer be valid.
+     *      if this is empty, an expiration time is not known (but the identity may still
+     *      expire at some time in the future).
      * @param s3Client
      * @return
      */
@@ -173,19 +178,17 @@ public class AwsS3ServiceImpl implements AwsS3Service {
 
             System.out.println("\n\nprinting credentials provider");
             System.out.println(credentialsProvider);
-            System.out.println("\n\nprinting credentials provider identity type");
+            System.out.println("\nprinting credentials provider identity type");
             System.out.println(credentialsProvider.identityType());
             System.out.println("\n\n");
 
-            AwsCredentialsIdentity credentialsIdentity = (AwsCredentialsIdentity) credentialsProvider.resolveIdentity().join();
+            AwsCredentialsIdentity credentialsIdentity =
+                    (AwsCredentialsIdentity) credentialsProvider.resolveIdentity().join();
             if (credentialsIdentity instanceof AwsSessionCredentials) {
-                System.out.println("Identified credentials identity is temporary meaning that there is a time-based expiration...");
-                // per aws sdk java doc: https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/identity/spi/Identity.html#expirationTime()
-                // expiration time = The time after which this identity will no longer be valid.
-                // - If this is empty, an expiration time is not known (but the identity may still
-                // expire at some time in the future).
-                AwsSessionCredentials sessionCredentials = (AwsSessionCredentials) credentialsIdentity;
+                System.out.println("Identified credentials identity is temporary meaning "
+                        + "that there is a time-based expiration...");
 
+                AwsSessionCredentials sessionCredentials = (AwsSessionCredentials) credentialsIdentity;
                 if (sessionCredentials.expirationTime().isPresent()) {
                     Instant expirationTime = sessionCredentials.expirationTime().get();
                     Instant now = Instant.now();
@@ -202,7 +205,8 @@ public class AwsS3ServiceImpl implements AwsS3Service {
                         return Boolean.TRUE;
                     }
                 } else {
-                    System.out.println("Expiration time not available for these credentials even though credentialsIdentity identified as instanceof 'AwsSessionCredentials'.");
+                    System.out.println("Expiration time not available for these credentials even though "
+                            + "credentialsIdentity identified as instanceof 'AwsSessionCredentials'.");
                     return Boolean.FALSE;
                 }
             } else {
