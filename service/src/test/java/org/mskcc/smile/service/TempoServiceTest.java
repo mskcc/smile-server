@@ -312,7 +312,7 @@ public class TempoServiceTest {
         Tempo savedTempo = tempoService.saveTempoData(tempo);
 
         // assert data persisted correctly
-        Assertions.assertEquals("John Smith", savedTempo.getCustodianInformation());
+        Assertions.assertEquals("Foo Bar", savedTempo.getCustodianInformation());
         Assertions.assertEquals("2022-11-12", savedTempo.getInitialPipelineRunDate());
         Assertions.assertEquals("MSK Public", savedTempo.getAccessLevel());
         // assert that embargo date is set to 18 months after initial pipeline run date
