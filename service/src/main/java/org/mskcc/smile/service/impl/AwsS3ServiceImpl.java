@@ -66,31 +66,6 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         }
     }
 
-    @Override
-    public S3Client getAwsS3Client() {
-        if (s3 == null || sessionIsExpired(s3)) {
-            try {
-                generateToken();
-                // TODO - decide if this is still necessary (ported from the databricks gateway go code)
-                // saml2AWS returns without error, but without being fully setup, lets pause
-                //Thread.sleep(30000);
-            } catch (InterruptedException | IOException e) {
-                throw new RuntimeException("Error during attempt to authenticate with saml2aws", e);
-            }
-
-            Region region = Region.of(s3Region);
-            try {
-                s3 = S3Client.builder()
-                        .region(region)
-                        .credentialsProvider(ProfileCredentialsProvider.create(s3Profile))
-                        .build();
-                return s3;
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to create s3 client", e);
-            }
-        }
-        return s3;
-    }
 
     @Override
     public void pushTempoSamplesToS3Bucket(TempoSampleUpdateMessage tempoSampleUpdateMessage) {
@@ -112,7 +87,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
 
     private Boolean pushObjectToS3Bucket(S3Client s3Client, TempoSample sample)
             throws JsonProcessingException, InvalidProtocolBufferException {
-        // TODO- REMOVE _TEST from key
+        // TODO - REMOVE _TEST FROM BUCKEY KEY
         String bucketKey = sample.getPrimaryId() + "_clinical_TEST.json";
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(s3TempoBucket)
@@ -134,6 +109,28 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         }
     }
 
+    private S3Client getAwsS3Client() {
+        if (s3 == null || sessionIsExpired(s3)) {
+            try {
+                generateToken();
+            } catch (InterruptedException | IOException e) {
+                throw new RuntimeException("Error during attempt to authenticate with saml2aws", e);
+            }
+
+            Region region = Region.of(s3Region);
+            try {
+                s3 = S3Client.builder()
+                        .region(region)
+                        .credentialsProvider(ProfileCredentialsProvider.create(s3Profile))
+                        .build();
+                return s3;
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create s3 client", e);
+            }
+        }
+        return s3;
+    }
+
     private void generateToken() throws IOException, InterruptedException {
         String usernameArg = new StringBuilder("--username=")
                 .append(s3Username).toString();
@@ -141,6 +138,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
                 .append(s3Password).toString();
         String[] saml2AwsCmd = {"saml2aws", "--role", s3Role, "login", "--force",
             "--mfa=Auto", usernameArg, passwordArg, "--skip-prompt", "--session-duration=3600"};
+        System.out.println("Running SAML2AWS login: " + StringUtils.join(saml2AwsCmd, " "));
 
         ProcessBuilder loginBuilder = new ProcessBuilder(saml2AwsCmd);
         Process loginProcess = loginBuilder.start();
@@ -159,7 +157,6 @@ public class AwsS3ServiceImpl implements AwsS3Service {
             throw new RuntimeException("Failed to run: " + StringUtils.join(saml2AwsCmd, " "));
         }
     }
-
 
     /**
      * TO-DO: GET THE CREDENTIALS REFRESH WORKING CORRECTLY
@@ -205,13 +202,11 @@ public class AwsS3ServiceImpl implements AwsS3Service {
                         return Boolean.TRUE;
                     }
                 } else {
-                    System.out.println("Expiration time not available for these credentials.");
+                    System.out.println("Expiration time not available for these credentials even though credentialsIdentity identified as instanceof 'AwsSessionCredentials'.");
                     return Boolean.FALSE;
                 }
-
-
             } else {
-                // Not temporary credentials, so no time-based expiration
+                // not temporary credentials, so no time-based expiration
                 return Boolean.FALSE;
             }
         } catch (Exception e) {
