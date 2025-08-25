@@ -70,9 +70,17 @@ tempo.wes_qc_complete_topic=
 tempo.wes_maf_complete_topic=
 tempo.wes_cohort_complete_topic=
 tempo.sample_billing_topic=
-tempo.release_samples_topic=
 tempo.update_samples_embargo_topic=
 
 # dbgap topics
 num.dbgap_msg_handler_threads=
 dbgap.sample_update_topic=
+
+# aws s3 config
+s3.aws_region=
+s3.aws_profile=
+s3.aws_tempo_bucket=
+s3.aws_role=
+s3.aws_username=
+s3.aws_password=
+
