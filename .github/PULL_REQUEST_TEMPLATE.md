@@ -39,6 +39,8 @@ Please follow these checks if any changes were made to any classes in the web, s
 - [ ] Screenshots have been provided to demonstrate changes made to the response body JSON schema and/or swagger page.
 - [ ] Unit tests were updated in relation to updates to the mocked test data.
 
+If no unit tests were updated or added, then please explain why: [insert details here]
+
 ### II. Neo4j models and database schema checklist:
 - [ ] Neo4j persistence models were changed.
 - [ ] The graph database produces the expected changes to models, relationships, and/or property names. [provide screenshot of updated elements in graph db below]
@@ -46,9 +48,6 @@ Please follow these checks if any changes were made to any classes in the web, s
 ### III. Message handlers checklist:
 - [ ] Changes in this PR affect the workflow of incoming messages.
 - [ ] Messages are following the expected workflow when published to the topic(s) changed or introduced in this pull request.
-- [ ] Unit tests were added to ensure messages are handled as expected.
-
-If no unit tests were updated or added, then please explain why: [insert details here]
 
 Please describe how the workflow and messaging was tested/simulated:
 
@@ -73,4 +72,4 @@ Other: [insert details on how messages were published or simulated for testing]
 ---
 ### General checklist:
 - [ ] All requested changes and comments have been resolved.
-- [ ] The commit log is comprehensible. It follows [7 rules of great commit messages](http://chris.beams.io/posts/git-commit/). For most PRs a single commit should suffice, in some cases multiple topical commits can be useful. During review it is ok to see tiny commits (e.g. Fix reviewer comments), but right before the code gets merged to master or rc branch, any such commits should be squashed since they are useless to the other developers. Definitely avoid [merge commits, use rebase instead.](http://nathanleclaire.com/blog/2014/09/14/dont-be-scared-of-git-rebase/)
+
