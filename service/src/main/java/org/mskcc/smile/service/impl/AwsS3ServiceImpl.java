@@ -56,6 +56,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     private static final Log LOG = LogFactory.getLog(AwsS3ServiceImpl.class);
     private S3Client s3;
     private static boolean initialized = Boolean.FALSE;
+    private static Instant s3SessionTimestamp;
 
     @Override
     public void initialize() throws Exception {
@@ -112,6 +113,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     private S3Client getAwsS3Client() {
         if (s3 == null || sessionIsExpired(s3)) {
             try {
+                s3SessionTimestamp = Instant.now();
                 generateToken();
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException("Error during attempt to authenticate with saml2aws", e);
@@ -159,63 +161,15 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     }
 
     /**
-     * TO-DO: GET THE CREDENTIALS REFRESH WORKING CORRECTLY
-     * See doc related to AWS SDK Identity
-     * - https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/identity/spi/Identity.html
-     *      expiration time = The time after which this identity will no longer be valid.
-     *      if this is empty, an expiration time is not known (but the identity may still
-     *      expire at some time in the future).
+     * Simple session expiration check.
      * @param s3Client
-     * @return
+     * @return Boolean
      */
     private Boolean sessionIsExpired(S3Client s3Client) {
         if (s3Client == null) {
             return Boolean.TRUE;
         }
-        try {
-            IdentityProvider credentialsProvider
-                    = s3Client.serviceClientConfiguration().credentialsProvider();
-
-            System.out.println("\n\nprinting credentials provider");
-            System.out.println(credentialsProvider);
-            System.out.println("\nprinting credentials provider identity type");
-            System.out.println(credentialsProvider.identityType());
-            System.out.println("\n\n");
-
-            AwsCredentialsIdentity credentialsIdentity =
-                    (AwsCredentialsIdentity) credentialsProvider.resolveIdentity().join();
-            if (credentialsIdentity instanceof AwsSessionCredentials) {
-                System.out.println("Identified credentials identity is temporary meaning "
-                        + "that there is a time-based expiration...");
-
-                AwsSessionCredentials sessionCredentials = (AwsSessionCredentials) credentialsIdentity;
-                if (sessionCredentials.expirationTime().isPresent()) {
-                    Instant expirationTime = sessionCredentials.expirationTime().get();
-                    Instant now = Instant.now();
-                    System.out.println("\n\nexpiration time");
-                    System.out.println(expirationTime);
-                    System.out.println("time now");
-                    System.out.println(now);
-                    System.out.println("\n\n");
-
-                    Duration timeLeft = Duration.between(now, expirationTime);
-                    if (timeLeft.isPositive()) {
-                        return Boolean.FALSE;
-                    } else {
-                        return Boolean.TRUE;
-                    }
-                } else {
-                    System.out.println("Expiration time not available for these credentials even though "
-                            + "credentialsIdentity identified as instanceof 'AwsSessionCredentials'.");
-                    return Boolean.FALSE;
-                }
-            } else {
-                // not temporary credentials, so no time-based expiration
-                return Boolean.FALSE;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error resolving credentials and/or resolving "
-                    + "the remaining session duration.", e);
-        }
+        Instant expirationTime = s3SessionTimestamp.plusSeconds(3600);
+        return Instant.now().isAfter(expirationTime);
     }
 }
