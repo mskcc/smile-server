@@ -129,7 +129,8 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         ProcessBuilder loginBuilder = new ProcessBuilder(saml2AwsCmd);
         Process loginProcess = loginBuilder.start();
         // Read the output of the login process (for debugging or to check success/failure)
-        BufferedReader loginReader = new BufferedReader(new InputStreamReader(loginProcess.getInputStream()));
+        BufferedReader loginReader = new BufferedReader(
+                new InputStreamReader(loginProcess.getInputStream()));
         String line;
         while ((line = loginReader.readLine()) != null) {
             System.out.println("SAML2AWS Login Output: " + line);
@@ -139,7 +140,8 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         System.out.println("SAML2AWS Login Exit Code: " + exitCode);
 
         if (exitCode > 0) {
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(loginProcess.getErrorStream()));
+            BufferedReader errorReader = new BufferedReader(
+                    new InputStreamReader(loginProcess.getErrorStream()));
             String err;
             while ((err = errorReader.readLine()) != null) {
                 System.out.println("SAML2AWS Error Output: " + err);
