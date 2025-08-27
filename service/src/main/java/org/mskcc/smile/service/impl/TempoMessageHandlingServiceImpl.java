@@ -32,6 +32,7 @@ import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
+import org.mskcc.smile.service.AwsS3Service;
 import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
@@ -63,9 +64,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     @Value("${tempo.sample_billing_topic}")
     private String TEMPO_SAMPLE_BILLING_TOPIC;
 
-    @Value("${tempo.release_samples_topic}")
-    private String TEMPO_RELEASE_SAMPLES_TOPIC;
-
     @Value("${tempo.update_samples_embargo_topic}")
     private String TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC;
 
@@ -80,6 +78,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     @Autowired
     private CohortCompleteService cohortCompleteService;
+
+    @Autowired
+    private AwsS3Service awsS3Service;
 
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(TempoMessageHandlingServiceImpl.class);
@@ -286,9 +287,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             // tumor-normal pairs are provided as map entries - this block
                             // compiles them into a set list of strings
                             cohortCompleteService.saveCohort(cohort, ccJson.getTumorNormalPairsAsSet());
-
-                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet(),
-                                    TEMPO_RELEASE_SAMPLES_TOPIC);
+                            // upload to aws s3 bucket
+                            uploadTempoSamplesToAwsS3Bucket(ccJson.getTumorPrimaryIdsAsSet());
                         } else if (cohortCompleteService.hasUpdates(existingCohort,
                                 cohort)) {
                             LOG.info("Received updates for cohort: " + ccJson.getCohortId());
@@ -300,11 +300,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             Set<String> newSamples = ccJson.getTumorNormalPairsAsSet();
                             newSamples.removeAll(existingCohort.getCohortSamplePrimaryIds());
 
-                            // persist updates to db
+                            // persist updates to db and upload to aws s3 bucket
                             cohortCompleteService.saveCohort(existingCohort, newSamples);
-
-                            publishTempoSamplesToCBioPortal(ccJson.getTumorPrimaryIdsAsSet(),
-                                    TEMPO_RELEASE_SAMPLES_TOPIC);
+                            uploadTempoSamplesToAwsS3Bucket(ccJson.getTumorPrimaryIdsAsSet());
                         } else {
                             LOG.error("Cohort " + ccJson.getCohortId()
                                     + " already exists and no new updates were received.");
@@ -354,9 +352,18 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             tempoService.updateSampleBilling(billing);
 
                             // publish to tempo sample update topic
-                            publishTempoSamplesToCBioPortal(new HashSet<>(
-                                    Arrays.asList(billing.getPrimaryId())),
-                                TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);
+                            TempoSampleUpdateMessage sampleUpdateMessage = genTempoSampleUpdateMessage(
+                                    new HashSet<>(Arrays.asList(billing.getPrimaryId())));
+                            if (sampleUpdateMessage != null) {
+                                LOG.info("Publishing TEMPO samples to cBioPortal:\n"
+                                        + sampleUpdateMessage.toString());
+                                messagingGateway.publish(TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC,
+                                        sampleUpdateMessage.toByteArray());
+                            } else {
+                                LOG.warn("There are no valid TEMPO samples to publish to: "
+                                        + TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);
+                            }
+
                         } else {
                             LOG.error("[TEMPO SAMPLE BILLING ERROR] Cannot update billing information for "
                                     + "sample that does not exist: " + billing.getPrimaryId());
@@ -391,8 +398,17 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         tempoService.updateTempoAccessLevel(samplePrimaryIds,
                                 TempoServiceImpl.ACCESS_LEVEL_PUBLIC);
                         // publish to tempo sample update topic
-                        publishTempoSamplesToCBioPortal(new HashSet<>(samplePrimaryIds),
-                                TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);
+                        TempoSampleUpdateMessage sampleUpdateMessage = genTempoSampleUpdateMessage(
+                                new HashSet<>(samplePrimaryIds));
+                        if (sampleUpdateMessage != null) {
+                            LOG.info("Publishing TEMPO samples to cBioPortal:\n"
+                                    + sampleUpdateMessage.toString());
+                            messagingGateway.publish(TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC,
+                                    sampleUpdateMessage.toByteArray());
+                        } else {
+                            LOG.warn("There are no valid TEMPO samples to publish to: "
+                                    + TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);
+                        }
                     }
                 } catch (InterruptedException e) {
                     interrupted = true;
@@ -404,11 +420,11 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
-    private void publishTempoSamplesToCBioPortal(Set<String> samplePrimaryIds, String topic)
+    private TempoSampleUpdateMessage genTempoSampleUpdateMessage(Set<String> samplePrimaryIds)
             throws Exception {
         // validate and build tempo samples to publish to cBioPortal
         Set<TempoSample> validTempoSamples = new HashSet<>();
-        LOG.info("Assembling TEMPO data per sample for publishing....");
+        LOG.info("Assembling TEMPO data per sample for uploading to AWS s3 bucket for cBioPortal");
         for (String primaryId : samplePrimaryIds) {
             try {
                 TempoSample tempoSample = tempoService.getTempoSampleDataBySamplePrimaryId(primaryId);
@@ -442,18 +458,29 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
         // bundle together all valid tempo samples and publish to cBioPortal
         if (!validTempoSamples.isEmpty()) {
-            LOG.info("Total samples that will be published = " + validTempoSamples.size());
+            LOG.info("Total samples that will be uploaded to AWS s3 bucket = " + validTempoSamples.size());
             TempoSampleUpdateMessage tempoSampleUpdateMessage = TempoSampleUpdateMessage.newBuilder()
                 .addAllTempoSamples(validTempoSamples)
                 .build();
+            return tempoSampleUpdateMessage;
+        } else {
+            LOG.warn("No valid TEMPO samples to upload to AWS s3 bucket for cBioPortal");
+            return null;
+        }
+    }
+
+    private void uploadTempoSamplesToAwsS3Bucket(Set<String> samplePrimaryIds) throws Exception {
+        TempoSampleUpdateMessage tempoSampleUpdateMessage = genTempoSampleUpdateMessage(samplePrimaryIds);
+        if (tempoSampleUpdateMessage != null) {
             try {
-                LOG.info("Publishing TEMPO samples to cBioPortal:\n" + tempoSampleUpdateMessage.toString());
-                messagingGateway.publish(topic, tempoSampleUpdateMessage.toByteArray());
+                LOG.info("Pushing TEMPO samples to AWS s3 bucket for cBioPortal:\n"
+                        + tempoSampleUpdateMessage.toString());
+                awsS3Service.pushTempoSamplesToS3Bucket(tempoSampleUpdateMessage);
             } catch (Exception e) {
-                LOG.error("Error publishing TEMPO samples to cBioPortal", e);
+                LOG.error("Error uploading TEMPO samples to AWS s3 bucket for cBioPortal", e);
             }
         } else {
-            LOG.warn("No valid TEMPO samples to publish to cBioPortal");
+            LOG.warn("There are no valid TEMPO samples to upload to AWS s3 bucket");
         }
     }
 
