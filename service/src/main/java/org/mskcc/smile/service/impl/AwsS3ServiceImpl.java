@@ -121,13 +121,13 @@ public class AwsS3ServiceImpl implements AwsS3Service {
                 .append(s3Username).toString();
         String passwordArg = new StringBuilder("--password=")
                 .append(s3Password).toString();
-        String[] saml2AwsCmd = {"saml2aws", "--role", s3Role, "login", "--force",
-            "--mfa=Auto", usernameArg, passwordArg, "--skip-prompt", "--session-duration=3600"};
+        String[] saml2AwsCmd = {"saml2aws", "login", "--profile", s3Profile, "--role", s3Role, "--force",
+            "--mfa=Auto", usernameArg, passwordArg, "--skip-prompt", "--session-duration=3600",
+            "--idp-account", s3Profile};
         System.out.println("Running SAML2AWS login: " + StringUtils.join(saml2AwsCmd, " "));
 
         ProcessBuilder loginBuilder = new ProcessBuilder(saml2AwsCmd);
         Process loginProcess = loginBuilder.start();
-
         // Read the output of the login process (for debugging or to check success/failure)
         BufferedReader loginReader = new BufferedReader(new InputStreamReader(loginProcess.getInputStream()));
         String line;
@@ -139,6 +139,11 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         System.out.println("SAML2AWS Login Exit Code: " + exitCode);
 
         if (exitCode > 0) {
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(loginProcess.getErrorStream()));
+            String err;
+            while ((err = errorReader.readLine()) != null) {
+                System.out.println("SAML2AWS Error Output: " + err);
+            }
             throw new RuntimeException("Failed to run: " + StringUtils.join(saml2AwsCmd, " "));
         }
     }
