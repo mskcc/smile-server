@@ -66,6 +66,10 @@ public class SampleDataFactory {
         }
         sampleMetadata.setStatus(sampleStatus);
 
+        // standardize value for sex (M -> Male, F -> Female)
+        String sex = resolveIgoSampleSex(sampleMetadata.getSex());
+        sampleMetadata.setSex(sex);
+
         SmileSample sample = new SmileSample();
         sample.addSampleMetadata(sampleMetadata);
         sample.setSampleCategory("research");
@@ -143,6 +147,11 @@ public class SampleDataFactory {
                 mapper.readValue(sampleMetadataJson, SampleMetadata.class);
         sampleMetadata.setImportDate(
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        // standardize value for sex (M -> Male, F -> Female)
+        String sex = resolveIgoSampleSex(sampleMetadata.getSex());
+        sampleMetadata.setSex(sex);
+
         // resolve igo request id if null from additionalProperties if possible
         if (sampleMetadata.getIgoRequestId() == null
                 && !sampleMetadata.getAdditionalProperties().isEmpty()) {
@@ -249,5 +258,17 @@ public class SampleDataFactory {
             status = mapper.convertValue(jsonMap.get("status"), Status.class);
         }
         return status;
+    }
+
+    private static String resolveIgoSampleSex(String sex) {
+        // standardize value for sex (M -> Male, F -> Female)
+        if (!StringUtils.isBlank(sex)) {
+            return switch (sex.toUpperCase()) {
+                case "M" -> "Male";
+                case "F" -> "Female";
+                default -> sex;
+            };
+        }
+        return "";
     }
 }

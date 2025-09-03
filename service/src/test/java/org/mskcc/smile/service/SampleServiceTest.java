@@ -766,4 +766,14 @@ public class SampleServiceTest {
             Assertions.assertNull(s.getSmilePatientId());
         }
     }
+
+    @Test
+    @Order(26)
+    public void testResolvedSampleSex() throws Exception {
+        String requestId = "MOCKREQUEST1_B";
+        String igoId = "MOCKREQUEST1_B_1";
+        SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
+        SampleMetadata sm = sample.getLatestSampleMetadata();
+        Assertions.assertEquals("Female", sm.getSex());
+    }
 }
