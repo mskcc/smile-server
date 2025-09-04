@@ -196,7 +196,7 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                                 LOG.info("Publishing sample-level metadata history for sample: "
                                         + sample.getLatestSampleMetadata().getPrimaryId());
                                 messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
-                                        mapper.writeValueAsString(sample.getSampleMetadataList()));
+                                        mapper.writeValueAsString(sample));
                             }
                         }
                     }
