@@ -49,25 +49,28 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingService {
-    @Value("${tempo.wes_bam_complete_topic}")
+    @Value("${tempo.wes_bam_complete_topic:}")
     private String TEMPO_WES_BAM_COMPLETE_TOPIC;
 
-    @Value("${tempo.wes_qc_complete_topic}")
+    @Value("${tempo.wes_qc_complete_topic:}")
     private String TEMPO_WES_QC_COMPLETE_TOPIC;
 
-    @Value("${tempo.wes_maf_complete_topic}")
+    @Value("${tempo.wes_maf_complete_topic:}")
     private String TEMPO_WES_MAF_COMPLETE_TOPIC;
 
-    @Value("${tempo.wes_cohort_complete_topic}")
+    @Value("${tempo.wes_cohort_complete_topic:}")
     private String TEMPO_WES_COHORT_COMPLETE_TOPIC;
 
-    @Value("${tempo.sample_billing_topic}")
+    @Value("${tempo.sample_billing_topic:}")
     private String TEMPO_SAMPLE_BILLING_TOPIC;
 
-    @Value("${tempo.update_samples_embargo_topic}")
+    @Value("${tempo.update_samples_embargo_topic:}")
     private String TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC;
 
-    @Value("${num.tempo_msg_handler_threads}")
+    @Value("${tempo.upload_samples_to_s3_topic:}")
+    private String TEMPO_UPLOAD_SAMPLES_TO_S3_TOPIC;
+
+    @Value("${num.tempo_msg_handler_threads:1}")
     private int NUM_TEMPO_MSG_HANDLERS;
 
     @Autowired
@@ -101,6 +104,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<SampleBillingJson>();
     private static final BlockingQueue<List<String>> tempoEmbargoStatusQueue =
             new LinkedBlockingQueue<List<String>>();
+    private static final BlockingQueue<List<String>> uploadSamplesToS3BucketQueue =
+            new LinkedBlockingQueue<List<String>>();
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
@@ -108,6 +113,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     private static CountDownLatch cohortCompleteHandlerShutdownLatch;
     private static CountDownLatch sampleBillingHandlerShutdownLatch;
     private static CountDownLatch tempoEmbargoStatusHandlerShutdownLatch;
+    private static CountDownLatch uploadSamplesToS3HandlerShutdownLatch;
 
     private class BamCompleteHandler implements Runnable {
         final Phaser phaser;
@@ -297,7 +303,10 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             }
 
                             // new samples refer to samples that aren't yet linked to the given cohort
-                            Set<String> newSamples = ccJson.getTumorNormalPairsAsSet();
+                            Set<String> newSamples = new HashSet<>();
+                            for (String inputId : ccJson.getTumorNormalPairsAsSet()) {
+                                newSamples.add(sampleService.getSamplePrimaryIdBySampleInputId(inputId));
+                            }
                             newSamples.removeAll(existingCohort.getCohortSamplePrimaryIds());
 
                             // persist updates to db and upload to aws s3 bucket
@@ -413,9 +422,39 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (InterruptedException e) {
                     interrupted = true;
                 } catch (Exception e) {
-                    LOG.error("Error during handling of sample billing data", e);
+                    LOG.error("Error during handling of sample embargo status update", e);
                 }
                 tempoEmbargoStatusHandlerShutdownLatch.countDown();
+            }
+        }
+    }
+
+    private class UploadSamplesToS3BucketHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        UploadSamplesToS3BucketHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    List<String> samplePrimaryIds
+                            = uploadSamplesToS3BucketQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (samplePrimaryIds != null) {
+                        // upload samples to s3 bucket
+                        LOG.info("Uploading " + samplePrimaryIds.size() + " samples to AWS s3 bucket...");
+                        uploadTempoSamplesToAwsS3Bucket(new HashSet<>(samplePrimaryIds));
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of sample billing data", e);
+                }
+                uploadSamplesToS3HandlerShutdownLatch.countDown();
             }
         }
     }
@@ -494,6 +533,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             setupCohortCompleteHandler(messagingGateway, this);
             setupSampleBillingHandler(messagingGateway, this);
             setupTempoEmbargoStatusHandler(messagingGateway, this);
+            setupUploadSamplesToS3BucketHandler(messagingGateway, this);
             initializeMessageHandlers();
             initialized = true;
         } else {
@@ -581,6 +621,20 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     }
 
     @Override
+    public void uploadSamplesToS3BucketHandler(List<String> samplePrimaryIds) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            uploadSamplesToS3BucketQueue.put(samplePrimaryIds);
+        } else {
+            LOG.error("Shutdown initiated, not accepting request to upload samples to s3 bucket: "
+                    + samplePrimaryIds);
+            throw new IllegalStateException("Shutdown initiated, not handling any more TEMPO events");
+        }
+    }
+
+    @Override
     public void shutdown() throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
@@ -592,6 +646,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         cohortCompleteHandlerShutdownLatch.await();
         sampleBillingHandlerShutdownLatch.await();
         tempoEmbargoStatusHandlerShutdownLatch.await();
+        uploadSamplesToS3HandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -655,6 +710,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new TempoEmbargoStatusHandler(tempoEmbargoStatusPhaser));
         }
         tempoEmbargoStatusPhaser.arriveAndAwaitAdvance();
+
+        // upload samples to s3 bucket handler
+        uploadSamplesToS3HandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
+        final Phaser samplesUploadS3Phaser = new Phaser();
+        samplesUploadS3Phaser.register();
+        for (int lc = 0; lc < NUM_TEMPO_MSG_HANDLERS; lc++) {
+            samplesUploadS3Phaser.register();
+            exec.execute(new UploadSamplesToS3BucketHandler(samplesUploadS3Phaser));
+        }
+        samplesUploadS3Phaser.arriveAndAwaitAdvance();
     }
 
     private void setupBamCompleteHandler(Gateway gateway,
@@ -830,6 +895,31 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of TEMPO Embargo Status update event: "
                             + TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC, e);
+                }
+            }
+        });
+    }
+
+    private void setupUploadSamplesToS3BucketHandler(Gateway gateway,
+            TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
+        gateway.subscribe(TEMPO_UPLOAD_SAMPLES_TO_S3_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                try {
+                    LOG.info("Received message on topic: " + TEMPO_UPLOAD_SAMPLES_TO_S3_TOPIC);
+                    String samplePrimaryIdsString = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (samplePrimaryIdsString == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    List<String> samplePrimaryIds =
+                            (List<String>) NatsMsgUtil.convertObjectFromString(
+                                    samplePrimaryIdsString, new TypeReference<List<String>>() {});
+                    tempoMessageHandlingService.uploadSamplesToS3BucketHandler(samplePrimaryIds);
+                } catch (Exception e) {
+                    LOG.error("Exception occurred during processing of TEMPO "
+                            + "samples upload to s3 bucket message: "
+                            + TEMPO_UPLOAD_SAMPLES_TO_S3_TOPIC, e);
                 }
             }
         });
