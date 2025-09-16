@@ -21,5 +21,6 @@ public interface TempoMessageHandlingService {
     void cohortCompleteHandler(CohortCompleteJson ccEvent) throws Exception;
     void sampleBillingHandler(SampleBillingJson billing) throws Exception;
     void tempoEmbargoStatusHandler(List<String> samplePrimaryIds) throws Exception;
+    void uploadSamplesToS3BucketHandler(List<String> samplePrimaryIds) throws Exception;
     void shutdown() throws Exception;
 }
