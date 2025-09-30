@@ -1,5 +1,6 @@
 package org.mskcc.smile.model.igo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,7 @@ import org.neo4j.ogm.annotation.Id;
  *
  * @author ochoaa
  */
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Run implements Serializable {
     @Id @GeneratedValue
     private Long id;

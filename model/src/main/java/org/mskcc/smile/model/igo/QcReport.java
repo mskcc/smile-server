@@ -1,5 +1,6 @@
 package org.mskcc.smile.model.igo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -10,6 +11,7 @@ import org.neo4j.ogm.annotation.Id;
  *
  * @author ochoaa
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QcReport implements Serializable {
     public enum QcReportType {
         DNA, RNA, LIBRARY;
