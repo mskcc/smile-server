@@ -14,7 +14,7 @@ import org.neo4j.ogm.annotation.typeconversion.Convert;
  *
  * @author ochoaa
  */
-@JsonIgnoreProperties({"numFastQs"})
+@JsonIgnoreProperties(value = {"numFastQs"}, ignoreUnknown = true)
 public class Library implements Serializable {
     @Id @GeneratedValue
     private Long id;
