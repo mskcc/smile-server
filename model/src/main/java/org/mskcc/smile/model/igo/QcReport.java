@@ -24,6 +24,7 @@ public class QcReport implements Serializable {
     private String igoRecommendation;
     private String comments;
     private String investigatorDecision;
+    private Float din;
 
     public QcReport() {}
 
@@ -35,11 +36,12 @@ public class QcReport implements Serializable {
      * @param investigatorDecision
      */
     public QcReport(QcReportType qcReportType, String igoRecommendation,
-            String comments, String investigatorDecision) {
+            String comments, String investigatorDecision, Float din) {
         this.qcReportType = qcReportType;
         this.igoRecommendation = igoRecommendation;
         this.comments = comments;
         this.investigatorDecision = investigatorDecision;
+        this.din = din;
     }
 
     public QcReportType getQcReportType() {
@@ -72,6 +74,14 @@ public class QcReport implements Serializable {
 
     public void setInvestigatorDecision(String investigatorDecision) {
         this.investigatorDecision = investigatorDecision;
+    }
+
+    public Float getDin() {
+        return din;
+    }
+
+    public void setDin(Float din) {
+        this.din = din;
     }
 
     @Override
