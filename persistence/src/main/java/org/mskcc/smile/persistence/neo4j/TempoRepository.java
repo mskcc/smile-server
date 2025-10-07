@@ -167,11 +167,12 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             t.accessLevel AS accessLevel, t.custodianInformation AS custodianInformation,
             latestSm.baitSet AS baitSet, latestSm.genePanel AS genePanel,
             latestSm.oncotreeCode AS oncotreeCode, latestSm.cmoPatientId AS cmoPatientId,
-            dmpIdAlias.value AS dmpPatientId, recapture AS recapture
+            dmpIdAlias.value AS dmpPatientId, recapture AS recapture,
+            latestSm.investigatorSampleId AS dmpSampleId
            WITH ({ primaryId: primaryId, cmoSampleName: cmoSampleName, accessLevel: accessLevel,
             custodianInformation: custodianInformation, baitSet: baitSet, genePanel: genePanel,
             oncotreeCode: oncotreeCode, cmoPatientId: cmoPatientId, dmpPatientId: dmpPatientId,
-            recapture: recapture }) AS result
+            recapture: recapture, dmpSampleId: dmpSampleId }) AS result
            WHERE result.primaryId = $primaryId
            RETURN result
            """)
