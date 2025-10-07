@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.smile.commons.generated.Smile.TempoCohortUpdate;
 import org.mskcc.smile.commons.generated.Smile.TempoSample;
 import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
 import org.mskcc.smile.model.SmileSample;
@@ -499,9 +500,20 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             // note: passing null as sample ids because this update
                             // is from the smile dashboard
                             cohortCompleteService.saveCohort(existingCohort, null);
+
+                            // use proto type
+                            TempoCohortUpdate cohortUpdateMessage = TempoCohortUpdate.newBuilder()
+                                    .setCohortId(ccJson.getCohortId())
+                                    .setDate(ccJson.getDate())
+                                    .setType(ccJson.getType())
+                                    .setProjectTitle(ccJson.getProjectTitle())
+                                    .setProjectSubtitle(ccJson.getProjectSubtitle())
+                                    .addAllEndUsers(ccJson.getEndUsers())
+                                    .addAllPmUsers(ccJson.getPmUsers())
+                                    .build();
                             LOG.info("Publishing updates to TEMPO bot.");
                             messagingGateway.publish(TEMPO_UPDATE_COHORT_PUB_TOPIC,
-                                    mapper.writeValueAsString(cohort.getLatestCohortComplete()));
+                                    cohortUpdateMessage.toByteArray());
                         } else {
                             LOG.error("No new updates to persist for cohort:  " + ccJson.getCohortId());
                         }
