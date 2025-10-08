@@ -72,7 +72,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
 
     private Boolean pushObjectToS3Bucket(S3Client s3Client, TempoSample sample)
             throws JsonProcessingException, InvalidProtocolBufferException {
-        String bucketKey = sample.getPrimaryId() + "_clinical.json";
+        String bucketKey = sample.getDmpSampleId() + "_clinical.json";
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(s3TempoBucket)
                 .key(bucketKey)
@@ -124,7 +124,7 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         String[] saml2AwsCmd = {"saml2aws", "login", "--profile", s3Profile, "--role", s3Role, "--force",
             "--mfa=Auto", usernameArg, passwordArg, "--skip-prompt", "--session-duration=3600",
             "--idp-account", s3Profile};
-        System.out.println("Running SAML2AWS login: " + StringUtils.join(saml2AwsCmd, " "));
+        System.out.println("Running SAML2AWS login...");
 
         ProcessBuilder loginBuilder = new ProcessBuilder(saml2AwsCmd);
         Process loginProcess = loginBuilder.start();
