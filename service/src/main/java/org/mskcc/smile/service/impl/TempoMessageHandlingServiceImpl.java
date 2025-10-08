@@ -490,6 +490,11 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             + "for sample: " + primaryId + ", " + tempoSample.toString());
                     continue;
                 }
+                if (StringUtils.isBlank(tempoSample.getDmpSampleId())) {
+                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid DMP WES ID "
+                            + "for sample: " + primaryId + ", " + tempoSample.toString());
+                    continue;
+                }
                 validTempoSamples.add(tempoSample);
             } catch (Exception e) {
                 LOG.error("Error building TEMPO data to publish to cBioPortal for sample: " + primaryId, e);
