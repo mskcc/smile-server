@@ -1,6 +1,7 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.cmo.messaging.Gateway;
 import org.mskcc.cmo.messaging.MessageConsumer;
+import org.mskcc.smile.commons.generated.Smile.TempoCohortUpdate;
 import org.mskcc.smile.commons.generated.Smile.TempoSample;
 import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
 import org.mskcc.smile.model.SmileSample;
@@ -70,6 +72,12 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     @Value("${tempo.upload_samples_to_s3_topic:}")
     private String TEMPO_UPLOAD_SAMPLES_TO_S3_TOPIC;
 
+    @Value("${tempo.update_cohort_sub_topic:}")
+    private String TEMPO_UPDATE_COHORT_SUB_TOPIC;
+
+    @Value("${tempo.update_cohort_pub_topic:}")
+    private String TEMPO_UPDATE_COHORT_PUB_TOPIC;
+
     @Value("${num.tempo_msg_handler_threads:1}")
     private int NUM_TEMPO_MSG_HANDLERS;
 
@@ -87,6 +95,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
 
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(TempoMessageHandlingServiceImpl.class);
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private static boolean initialized = false;
     private static volatile boolean shutdownInitiated;
@@ -106,6 +115,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<List<String>>();
     private static final BlockingQueue<List<String>> uploadSamplesToS3BucketQueue =
             new LinkedBlockingQueue<List<String>>();
+    private static final BlockingQueue<CohortCompleteJson> updateTempoCohortQueue =
+            new LinkedBlockingQueue<CohortCompleteJson>();
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
@@ -114,6 +125,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     private static CountDownLatch sampleBillingHandlerShutdownLatch;
     private static CountDownLatch tempoEmbargoStatusHandlerShutdownLatch;
     private static CountDownLatch uploadSamplesToS3HandlerShutdownLatch;
+    private static CountDownLatch updateTempoCohortHandlerShutdownLatch;
 
     private class BamCompleteHandler implements Runnable {
         final Phaser phaser;
@@ -459,6 +471,63 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
+    private class UpdateTempoCohortHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        UpdateTempoCohortHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    CohortCompleteJson ccJson
+                            = updateTempoCohortQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (ccJson != null) {
+                        Cohort cohort = new Cohort(ccJson);
+                        Cohort existingCohort =
+                                cohortCompleteService.getCohortByCohortId(ccJson.getCohortId());
+                        // check if there are updates to persist
+                        if (cohortCompleteService.hasCohortCompleteUpdates(existingCohort,
+                                cohort)) {
+                            LOG.info("Received updates for cohort: " + ccJson.getCohortId());
+                            existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
+
+                            // persist updates to db and publish updates to tempobot
+                            // note: passing null as sample ids because this update
+                            // is from the smile dashboard
+                            cohortCompleteService.saveCohort(existingCohort, null);
+
+                            // use proto type
+                            TempoCohortUpdate cohortUpdateMessage = TempoCohortUpdate.newBuilder()
+                                    .setCohortId(ccJson.getCohortId())
+                                    .setDate(ccJson.getDate())
+                                    .setType(ccJson.getType())
+                                    .setProjectTitle(ccJson.getProjectTitle())
+                                    .setProjectSubtitle(ccJson.getProjectSubtitle())
+                                    .addAllEndUsers(ccJson.getEndUsers())
+                                    .addAllPmUsers(ccJson.getPmUsers())
+                                    .build();
+                            LOG.info("Publishing updates to TEMPO bot.");
+                            messagingGateway.publish(TEMPO_UPDATE_COHORT_PUB_TOPIC,
+                                    cohortUpdateMessage.toByteArray());
+                        } else {
+                            LOG.error("No new updates to persist for cohort:  " + ccJson.getCohortId());
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of tempo cohort update", e);
+                }
+                updateTempoCohortHandlerShutdownLatch.countDown();
+            }
+        }
+    }
+
     private TempoSampleUpdateMessage genTempoSampleUpdateMessage(Set<String> samplePrimaryIds)
             throws Exception {
         // validate and build tempo samples to publish to cBioPortal
@@ -539,6 +608,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             setupSampleBillingHandler(messagingGateway, this);
             setupTempoEmbargoStatusHandler(messagingGateway, this);
             setupUploadSamplesToS3BucketHandler(messagingGateway, this);
+            setupUpdateTempoCohortHandler(messagingGateway, this);
             initializeMessageHandlers();
             initialized = true;
         } else {
@@ -640,6 +710,20 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     }
 
     @Override
+    public void updateTempoCohortHandler(CohortCompleteJson ccJson) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            updateTempoCohortQueue.put(ccJson);
+        } else {
+            LOG.error("Shutdown initiated, not accepting request to update TEMPO cohort: "
+                    + ccJson);
+            throw new IllegalStateException("Shutdown initiated, not handling any more TEMPO events");
+        }
+    }
+
+    @Override
     public void shutdown() throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
@@ -652,6 +736,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         sampleBillingHandlerShutdownLatch.await();
         tempoEmbargoStatusHandlerShutdownLatch.await();
         uploadSamplesToS3HandlerShutdownLatch.await();
+        updateTempoCohortHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -725,6 +810,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new UploadSamplesToS3BucketHandler(samplesUploadS3Phaser));
         }
         samplesUploadS3Phaser.arriveAndAwaitAdvance();
+
+        // update cohort from smile dashboard handler
+        updateTempoCohortHandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
+        final Phaser updateTempoCohortPhaser = new Phaser();
+        updateTempoCohortPhaser.register();
+        for (int lc = 0; lc < NUM_TEMPO_MSG_HANDLERS; lc++) {
+            updateTempoCohortPhaser.register();
+            exec.execute(new UpdateTempoCohortHandler(updateTempoCohortPhaser));
+        }
+        updateTempoCohortPhaser.arriveAndAwaitAdvance();
     }
 
     private void setupBamCompleteHandler(Gateway gateway,
@@ -925,6 +1020,30 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     LOG.error("Exception occurred during processing of TEMPO "
                             + "samples upload to s3 bucket message: "
                             + TEMPO_UPLOAD_SAMPLES_TO_S3_TOPIC, e);
+                }
+            }
+        });
+    }
+
+    private void setupUpdateTempoCohortHandler(Gateway gateway,
+            TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
+        gateway.subscribe(TEMPO_UPDATE_COHORT_SUB_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                try {
+                    LOG.info("Received message on topic: " + TEMPO_UPDATE_COHORT_SUB_TOPIC);
+                    String ccJsonString = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (ccJsonString == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    CohortCompleteJson ccJson = (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
+                                    ccJsonString, new TypeReference<CohortCompleteJson>() {});
+                    tempoMessageHandlingService.updateTempoCohortHandler(ccJson);
+                } catch (Exception e) {
+                    LOG.error("Exception occurred during processing of TEMPO "
+                            + "cohort update message: "
+                            + TEMPO_UPDATE_COHORT_SUB_TOPIC, e);
                 }
             }
         });

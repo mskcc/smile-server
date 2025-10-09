@@ -45,6 +45,9 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     public Cohort saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
+        if (sampleIds == null) {
+            return getCohortByCohortId(cohort.getCohortId());
+        }
         Set<String> unknownSamples = new HashSet<>(); // tracks unknown samples in smile
         // create cohort-sample relationships
         LOG.info("Adding cohort-sample edges in database for " + sampleIds.size() + " samples...");
