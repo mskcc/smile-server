@@ -34,6 +34,8 @@ public class CohortCompleteJson implements Serializable {
     private List<Map<String, String>> tumorNormalPairs;
     @JsonProperty("status")
     private String status;
+    @JsonProperty("pipelineVersion")
+    private String pipelineVersion;
 
     public CohortCompleteJson() {}
 
@@ -107,6 +109,14 @@ public class CohortCompleteJson implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPipelineVersion() {
+        return pipelineVersion;
+    }
+
+    public void setPipelineVersion(String pipelineVersion) {
+        this.pipelineVersion = pipelineVersion;
     }
 
     /**

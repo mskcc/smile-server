@@ -425,6 +425,25 @@ public class TempoServiceTest {
         Assertions.assertEquals("2025-12-01", tempo.getEmbargoDate());
     }
 
+    @Test
+    public void testCohortCompletePipelineVersionNull() throws Exception {
+        CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        cohortCompleteService.saveCohort(new Cohort(ccJson), ccJson.getTumorNormalPairsAsSet());
+
+        Cohort cohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertNull(cohort.getLatestCohortComplete().getPipelineVersion());
+    }
+
+    @Test
+    public void testCohortCompletePipelineVersionNotNull() throws Exception {
+        CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        ccJson.setPipelineVersion("v2.3");
+        cohortCompleteService.saveCohort(new Cohort(ccJson), ccJson.getTumorNormalPairsAsSet());
+
+        Cohort cohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertEquals("v2.3", cohort.getLatestCohortComplete().getPipelineVersion());
+    }
+
     private CohortCompleteJson getCohortEventData(String dataIdentifier) throws JsonProcessingException {
         MockJsonTestData mockData = mockDataUtils.mockedTempoDataMap.get(dataIdentifier);
         CohortCompleteJson cohortCompleteData = mapper.readValue(mockData.getJsonString(),

@@ -31,6 +31,7 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
     private List<String> pmUsers;
     private String projectTitle;
     private String projectSubtitle;
+    private String pipelineVersion;
 
     public CohortComplete() {}
 
@@ -46,6 +47,7 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
         this.pmUsers = ccJson.getPmUsers();
         this.projectTitle = ccJson.getProjectTitle();
         this.projectSubtitle = ccJson.getProjectSubtitle();
+        this.pipelineVersion = ccJson.getPipelineVersion();
     }
 
     public String getDate() {
@@ -118,6 +120,14 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
 
     public void setProjectSubtitle(String projectSubtitle) {
         this.projectSubtitle = projectSubtitle;
+    }
+
+    public String getPipelineVersion() {
+        return pipelineVersion;
+    }
+
+    public void setPipelineVersion(String pipelineVersion) {
+        this.pipelineVersion = pipelineVersion;
     }
 
     /**
