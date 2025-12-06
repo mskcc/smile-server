@@ -26,8 +26,8 @@ public class DatabricksRepository {
      */
     public PatientIdTriplet findPatientIdTripletByInputId(String inputId) {
         String sqlQuery = "SELECT MRN, CMO_PATIENT_ID, DMP_PATIENT_ID "
-                + "FROM cdsi_eng_phi.id_mapping.mrn_cmo_dmp_patient_fullouter "
-                + "WHERE ? IN (MRN, CMO_PATIENT_ID, DMP_PATIENT_ID)";
+                + "FROM cdsi_eng_phi.deng_id_mapping.mrn_cmo_dmp_patient_fullouter "
+                + "WHERE MRN NOT LIKE 'P-%' AND ? IN (MRN, CMO_PATIENT_ID, DMP_PATIENT_ID)";
 
         List<PatientIdTriplet> patientIds = jdbcTemplate.query(
                 sqlQuery,
