@@ -236,6 +236,10 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
                                     sampleMetadataEntry.getValue().getIgoRequestId(),
                                     sampleMetadataEntry.getValue().getPrimaryId());
+                            // temp patch to avoid deep-nested circular writing of
+                            // sample -> tempo - > sample etc.
+                            // tempo isn't needed when publishing sample metadata history
+                            existingSample.setTempo(null);
                             LOG.info("Publishing sample-level metadata history for research sample: "
                                     + sampleMetadataEntry.getValue().getPrimaryId());
                             // publish sample-level metadata history to CMO_REQUEST_UPDATE_TOPIC
