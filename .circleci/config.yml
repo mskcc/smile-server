@@ -8,16 +8,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Pull smile commons code
-          command: |
-              export SMILE_COMMONS_VERSION=$(grep 'smile_commons\.version' pom.xml | head -1 | sed 's/<smile_commons\.version>//g' | sed 's|</smile_commons\.version>||' | tr -d '[:blank:]' | cut -f1) && \
-              export SMILE_COMMONS_ORG=$(grep 'smile_commons\.group' pom.xml | head -1 | sed 's/<smile_commons\.group>//g' | sed 's|</smile_commons\.group>||' | tr -d '[:blank:]' | cut -d. -f3) && \
-              cd .. && \
-              git clone https://github.com/$SMILE_COMMONS_ORG/smile-commons.git && \
-              cd smile-commons && \
-              git fetch --tags && \
-              git checkout ${SMILE_COMMONS_VERSION}
-      - run:
           name: "Build project and run checkstyle plugin..."
           command: mvn clean install
       - run:
@@ -25,7 +15,7 @@ jobs:
           command: mvn checkstyle:checkstyle
       - run:
           name: "Validating checkstyle plugin report..."
-          command: bash /tmp/repos/smile-commons/test/scripts/generate_checkstyle_report.sh /tmp/repos/smile-server
+          command: bash test/scripts/generate_checkstyle_report.sh /tmp/repos/smile-server
       - store_artifacts:
           path: /tmp/repos/smile-server/checkstyle_report_compiled.txt
           destination: /checkstyle_report.txt
