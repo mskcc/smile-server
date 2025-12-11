@@ -161,8 +161,8 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
            WITH s, t, latestSm, p, pa AS cmoIdAlias
            OPTIONAL MATCH (p)<-[:IS_ALIAS]-(pa:PatientAlias{namespace: 'dmpId'})
            WITH s,t,latestSm,p,cmoIdAlias, pa as dmpIdAlias,
-            CASE WHEN latestSm.investigatorSampleId =~ '^P-\\d{7}-.*-WES$'
-            THEN true ELSE false END as recapture
+            CASE WHEN latestSm.investigatorSampleId =~ '^P-\\d{7}-.*-WES[_A-Z0-9]*'
+            THEN 'Yes' ELSE 'No' END as recapture
            WITH latestSm.primaryId AS primaryId, latestSm.cmoSampleName AS cmoSampleName,
             t.accessLevel AS accessLevel, t.custodianInformation AS custodianInformation,
             latestSm.baitSet AS baitSet, latestSm.genePanel AS genePanel,
