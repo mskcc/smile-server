@@ -268,7 +268,7 @@ public class TempoServiceImpl implements TempoService {
                     StringUtils.defaultIfBlank((String) tempoSampleMap.get("cmoPatientId"), ""))
             .setDmpPatientId(
                     StringUtils.defaultIfBlank((String) tempoSampleMap.get("dmpPatientId"), ""))
-            .setRecapture((Boolean) tempoSampleMap.get("recapture"))
+            .setRecapture((String) tempoSampleMap.get("recapture"))
             .setDmpSampleId(
                     StringUtils.defaultIfBlank((String) tempoSampleMap.get("dmpSampleId"), "")
             )
