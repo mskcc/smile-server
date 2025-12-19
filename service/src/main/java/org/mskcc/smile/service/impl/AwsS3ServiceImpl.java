@@ -7,8 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Instant;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,25 +46,35 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     @Value("${s3.aws_password:}")
     private String s3Password;
 
+    @Value("${ENABLE_S3_UPLOAD:false}")
+    private Boolean sysEnableS3Upload;
+
+    @Value("${s3.enable_upload:false}")
+    private Boolean localEnableS3Upload;
+
     private static final Log LOG = LogFactory.getLog(AwsS3ServiceImpl.class);
     private S3Client s3;
     private static Instant s3SessionTimestamp;
 
     @Override
     public void pushTempoSamplesToS3Bucket(TempoSampleUpdateMessage tempoSampleUpdateMessage) {
-        S3Client s3Client = getAwsS3Client();
-        for (TempoSample sample : tempoSampleUpdateMessage.getTempoSamplesList()) {
-            try {
-                Boolean success = pushObjectToS3Bucket(s3Client, sample);
-                if (!success) {
-                    LOG.error("Failed to upload TEMPO sample to s3 bucket: "
-                            + sample.getPrimaryId());
+        if (sysEnableS3Upload || localEnableS3Upload) {
+            S3Client s3Client = getAwsS3Client();
+            for (TempoSample sample : tempoSampleUpdateMessage.getTempoSamplesList()) {
+                try {
+                    Boolean success = pushObjectToS3Bucket(s3Client, sample);
+                    if (!success) {
+                        LOG.error("Failed to upload TEMPO sample to s3 bucket: "
+                                + sample.getPrimaryId());
+                    }
+                } catch (JsonProcessingException ex) {
+                    LOG.error("Error during attempt to upload TEMPO sample to s3 bucket", ex);
+                } catch (InvalidProtocolBufferException ex) {
+                    LOG.error(ex);
                 }
-            } catch (JsonProcessingException ex) {
-                LOG.error("Error during attempt to upload TEMPO sample to s3 bucket", ex);
-            } catch (InvalidProtocolBufferException ex) {
-                Logger.getLogger(AwsS3ServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            LOG.info("Upload to s3 bucket disabled - enable by setting property 's3.enable_upload=true'");
         }
     }
 
