@@ -46,11 +46,11 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     @Value("${s3.aws_password:}")
     private String s3Password;
 
-    @Value("${ENABLE_S3_UPLOAD:false}")
-    private Boolean sysEnableS3Upload;
+    @Value("${sys.s3.enable.upload:false}")
+    private boolean sysEnableS3Upload;
 
     @Value("${s3.enable_upload:false}")
-    private Boolean localEnableS3Upload;
+    private boolean localEnableS3Upload;
 
     private static final Log LOG = LogFactory.getLog(AwsS3ServiceImpl.class);
     private S3Client s3;
@@ -74,7 +74,9 @@ public class AwsS3ServiceImpl implements AwsS3Service {
                 }
             }
         } else {
-            LOG.info("Upload to s3 bucket disabled - enable by setting property 's3.enable_upload=true'");
+            LOG.info("Upload to s3 bucket disabled - enable by setting property 's3.enable_upload=true'"
+                    + " - ($ENABLE_S3_UPLOAD=" + sysEnableS3Upload
+                    + ", 's3.enable_upload'=" + localEnableS3Upload + ")");
         }
     }
 
