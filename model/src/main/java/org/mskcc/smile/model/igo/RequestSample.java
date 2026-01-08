@@ -19,7 +19,8 @@ public class RequestSample implements Serializable {
      * @param igoComplete
      * @param sampleStatus
      */
-    public RequestSample(String investigatorSampleId, String igoSampleId, boolean igoComplete, String sampleStatus) {
+    public RequestSample(String investigatorSampleId, String igoSampleId,
+            boolean igoComplete, String sampleStatus) {
         this.investigatorSampleId = investigatorSampleId;
         this.igoSampleId = igoSampleId;
         this.igoComplete = igoComplete;

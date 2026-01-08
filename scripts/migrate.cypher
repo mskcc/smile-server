@@ -174,3 +174,11 @@ SET
     t.initialPipelineRunDate = apoc.date.format(initRunDatetime, "ms", "yyyy-MM-dd"), 
     t.embargoDate = apoc.temporal.format(embargoDatetime, 'YYYY-MM-dd')
 RETURN s.smileSampleId, collect(DISTINCT cc.date), min(cc.date), t.initialPipelineRunDate, t.embargoDate
+
+// resolve 'igoDeliveryDate' from requestJson string
+MATCH (r:Request)
+WITH r, apoc.convert.fromJsonMap(r.requestJson).deliveryDate as deliveryDate
+WHERE deliveryDate IS NOT NULL
+SET r.igoDeliveryDate = toInteger(deliveryDate)
+RETURN r.igoRequestId, r.igoDeliveryDate, deliveryDate
+
