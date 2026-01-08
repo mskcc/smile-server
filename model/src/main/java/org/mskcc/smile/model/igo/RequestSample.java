@@ -8,6 +8,7 @@ public class RequestSample implements Serializable {
     private String investigatorSampleId;
     private String igoSampleId;
     private boolean igoComplete;
+    private String sampleStatus;
 
     public RequestSample() {}
 
@@ -16,11 +17,13 @@ public class RequestSample implements Serializable {
      * @param investigatorSampleId
      * @param igoSampleId
      * @param igoComplete
+     * @param sampleStatus
      */
-    public RequestSample(String investigatorSampleId, String igoSampleId, boolean igoComplete) {
+    public RequestSample(String investigatorSampleId, String igoSampleId, boolean igoComplete, String sampleStatus) {
         this.investigatorSampleId = investigatorSampleId;
         this.igoSampleId = igoSampleId;
         this.igoComplete = igoComplete;
+        this.sampleStatus = sampleStatus;
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -48,6 +51,14 @@ public class RequestSample implements Serializable {
 
     public void setIgoComplete(boolean igoComplete) {
         this.igoComplete = igoComplete;
+    }
+
+    public String getSampleStatus() {
+        return sampleStatus;
+    }
+
+    public void setSampleStatus(String sampleStatus) {
+        this.sampleStatus = sampleStatus;
     }
 
     @Override

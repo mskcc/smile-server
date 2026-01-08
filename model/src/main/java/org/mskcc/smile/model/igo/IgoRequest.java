@@ -12,6 +12,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IgoRequest implements Serializable {
+    private String ilabRequestId;
     private String requestId;
     private String projectId;
     private String dataAccessEmails;
@@ -35,6 +36,14 @@ public class IgoRequest implements Serializable {
     private List<String> pooledNormals;
 
     public IgoRequest() {}
+
+    public String getIlabRequestId() {
+        return ilabRequestId;
+    }
+
+    public void setIlabRequestId(String ilabRequestId) {
+        this.ilabRequestId = ilabRequestId;
+    }
 
     public String getProjectId() {
         return projectId;

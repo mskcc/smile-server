@@ -47,6 +47,8 @@ public class SmileRequest implements Serializable {
     private String igoProjectId;
     private String requestJson;
     private String igoRequestId;
+    private String ilabRequestId;
+    private Long igoDeliveryDate;
     private String genePanel;
     private String projectManagerName;
     private String piEmail;
@@ -107,6 +109,8 @@ public class SmileRequest implements Serializable {
         this.isCmoRequest = igoRequest.getIsCmoRequest();
         this.namespace = "igo";
         this.requestJson = mapper.writeValueAsString(igoRequest);
+        this.ilabRequestId = igoRequest.getIlabRequestId();
+        this.igoDeliveryDate = igoRequest.getDeliveryDate();
     }
 
     public UUID getSmileRequestId() {
@@ -204,6 +208,22 @@ public class SmileRequest implements Serializable {
 
     public void setIgoRequestId(String igoRequestId) {
         this.igoRequestId = igoRequestId;
+    }
+
+    public String getIlabRequestId() {
+        return ilabRequestId;
+    }
+
+    public void setIlabRequestId(String ilabRequestId) {
+        this.ilabRequestId = ilabRequestId;
+    }
+
+    public Long getIgoDeliveryDate() {
+        return igoDeliveryDate;
+    }
+
+    public void setIgoDeliveryDate(Long igoDeliveryDate) {
+        this.igoDeliveryDate = igoDeliveryDate;
     }
 
     public String getGenePanel() {
@@ -420,6 +440,7 @@ public class SmileRequest implements Serializable {
         this.libraryType = String.valueOf(metadataMap.get("libraryType"));
         this.isCmoRequest = Boolean.parseBoolean(String.valueOf(metadataMap.get("isCmoRequest")));
         this.pooledNormals = mapper.convertValue(metadataMap.get("pooledNormals"), List.class);
+        this.igoDeliveryDate = mapper.convertValue(metadataMap.get("deliveryDate"), Long.class);
         addRequestMetadata(requestMetadata);
     }
 
@@ -429,10 +450,10 @@ public class SmileRequest implements Serializable {
      * @return String
      */
     public String resolveGenePanel(Map<String, Object> metadataMap) {
-        Object genePanel = (metadataMap.containsKey("recipe"))
+        Object genePanel_ = (metadataMap.containsKey("recipe"))
                 ? metadataMap.get("recipe") : metadataMap.get("genePanel");
-        if (genePanel != null) {
-            return String.valueOf(genePanel);
+        if (genePanel_ != null) {
+            return String.valueOf(genePanel_);
         }
         return null;
     }
