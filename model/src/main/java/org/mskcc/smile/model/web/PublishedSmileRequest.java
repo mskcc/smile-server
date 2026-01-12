@@ -17,6 +17,8 @@ public class PublishedSmileRequest {
     private UUID smileRequestId;
     private String igoProjectId;
     private String igoRequestId;
+    private Long igoDeliveryDate;
+    private String ilabRequestId;
     private String genePanel;
     private String projectManagerName;
     private String piEmail;
@@ -49,6 +51,8 @@ public class PublishedSmileRequest {
         this.smileRequestId = smileRequest.getSmileRequestId();
         this.igoProjectId = smileRequest.getIgoRequestId().split("_")[0];
         this.igoRequestId = smileRequest.getIgoRequestId();
+        this.igoDeliveryDate = smileRequest.getIgoDeliveryDate();
+        this.ilabRequestId = smileRequest.getIlabRequestId();
         this.genePanel = smileRequest.getGenePanel();
         this.projectManagerName = smileRequest.getProjectManagerName();
         this.piEmail = smileRequest.getPiEmail();
@@ -76,6 +80,8 @@ public class PublishedSmileRequest {
      * @param smileRequestId
      * @param igoProjectId
      * @param igoRequestId
+     * @param igoDeliveryDate
+     * @param ilabRequestId
      * @param genePanel
      * @param projectManagerName
      * @param piEmail
@@ -97,15 +103,17 @@ public class PublishedSmileRequest {
      * @param samples
      */
     public PublishedSmileRequest(UUID smileRequestId, String igoProjectId, String igoRequestId,
-            String genePanel, String projectManagerName, String piEmail, String labHeadName,
-            String labHeadEmail, String investigatorName, String investigatorEmail, String dataAnalystName,
-            String dataAnalystEmail, String otherContactEmails, String dataAccessEmails,
-            String qcAccessEmails, String strand, String libraryType, Boolean isCmoRequest,
-            Boolean bicAnalysis, String requestJson, List<String> pooledNormals,
-            List<PublishedSmileSample> samples) {
+            Long igoDeliveryDate, String ilabRequestId, String genePanel, String projectManagerName, 
+            String piEmail, String labHeadName, String labHeadEmail, String investigatorName, 
+            String investigatorEmail, String dataAnalystName, String dataAnalystEmail, 
+            String otherContactEmails, String dataAccessEmails, String qcAccessEmails, String strand, 
+            String libraryType, Boolean isCmoRequest, Boolean bicAnalysis, String requestJson, 
+            List<String> pooledNormals, List<PublishedSmileSample> samples) {
         this.smileRequestId = smileRequestId;
         this.igoProjectId = igoProjectId;
         this.igoRequestId = igoRequestId;
+        this.igoDeliveryDate = igoDeliveryDate;
+        this.ilabRequestId = ilabRequestId;
         this.genePanel = genePanel;
         this.projectManagerName = projectManagerName;
         this.piEmail = piEmail;
@@ -149,6 +157,22 @@ public class PublishedSmileRequest {
 
     public void setIgoRequestId(String igoRequestId) {
         this.igoRequestId = igoRequestId;
+    }
+
+    public Long getIgoDeliveryDate() {
+        return igoDeliveryDate;
+    }
+
+    public void setIgoDeliveryDate(Long igoDeliveryDate) {
+        this.igoDeliveryDate = igoDeliveryDate;
+    }
+
+    public String getIlabRequestId() {
+        return ilabRequestId;
+    }
+
+    public void setIlabRequestId(String ilabRequestId) {
+        this.ilabRequestId = ilabRequestId;
     }
 
     public String getGenePanel() {

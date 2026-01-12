@@ -95,6 +95,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
         this.libraries = igoSampleManifest.getLibraries();
         this.cmoSampleIdFields = igoSampleManifest.getCmoSampleIdFields();
         addAdditionalProperty("altId", igoSampleManifest.getAltid());
+        addAdditionalProperty("igoSampleStatus", igoSampleManifest.getSampleStatus());
     }
 
     /**

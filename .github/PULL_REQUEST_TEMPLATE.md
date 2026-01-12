@@ -53,10 +53,10 @@ Please describe how the workflow and messaging was tested/simulated:
 
 **Describe your testing environment:**
 
-- NATS [local, local docker, dev server, production]
-- Neo4j [local, local docker, dev server, production]
-- SMILE Server [local, local docker, dev server, production]
-- Message publishing simulation [nats cli, docker nats cli, smile publisher tool, other (describe below)]
+- NATS: [local, local docker, dev server, production]
+- Neo4j: [local, local docker, dev server, production]
+- SMILE Server: [local, local docker, dev server, production]
+- Message publishing simulation: [nats cli, docker nats cli, smile publisher tool, other (describe below)]
 
 Other: [insert details on how messages were published or simulated for testing]
 

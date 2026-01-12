@@ -36,6 +36,7 @@ public class IgoSampleManifest {
     private List<QcReport> qcReports;
     private List<Library> libraries;
     private Map<String, String> cmoSampleIdFields = new HashMap<>();
+    private String sampleStatus;
 
     public IgoSampleManifest() {}
 
@@ -233,6 +234,14 @@ public class IgoSampleManifest {
 
     public String getCmoSampleIdFieldValue(String field) {
         return cmoSampleIdFields.getOrDefault(field, "");
+    }
+    
+    public void setSampleStatus(String sampleStatus) {
+        this.sampleStatus = sampleStatus;
+    }
+    
+    public String getSampleStatus() {
+        return sampleStatus;
     }
 
     @Override
