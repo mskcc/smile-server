@@ -380,6 +380,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                         + sampleUpdateMessage.toString());
                                 messagingGateway.publish(TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC,
                                         sampleUpdateMessage.toByteArray());
+                                LOG.info("Pushing TEMPO samples to AWS s3 bucket for cBioPortal:\n"
+                                        + sampleUpdateMessage.toString());
+                                awsS3Service.pushTempoSamplesToS3Bucket(sampleUpdateMessage);
                             } else {
                                 LOG.warn("There are no valid TEMPO samples to publish to: "
                                         + TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);
@@ -426,6 +429,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                     + sampleUpdateMessage.toString());
                             messagingGateway.publish(TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC,
                                     sampleUpdateMessage.toByteArray());
+                            LOG.info("Pushing TEMPO samples to AWS s3 bucket for cBioPortal:\n"
+                                        + sampleUpdateMessage.toString());
+                            awsS3Service.pushTempoSamplesToS3Bucket(sampleUpdateMessage);
                         } else {
                             LOG.warn("There are no valid TEMPO samples to publish to: "
                                     + TEMPO_UPDATE_SAMPLES_EMBARGO_TOPIC);

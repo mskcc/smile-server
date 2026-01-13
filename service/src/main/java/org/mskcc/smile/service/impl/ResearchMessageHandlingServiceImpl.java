@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
@@ -21,9 +22,12 @@ import org.mskcc.smile.model.RequestMetadata;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
+import org.mskcc.smile.model.tempo.Tempo;
 import org.mskcc.smile.service.ResearchMessageHandlingService;
 import org.mskcc.smile.service.SmileRequestService;
 import org.mskcc.smile.service.SmileSampleService;
+import org.mskcc.smile.service.TempoMessageHandlingService;
+import org.mskcc.smile.service.TempoService;
 import org.mskcc.smile.service.util.NatsMsgUtil;
 import org.mskcc.smile.service.util.RequestDataFactory;
 import org.mskcc.smile.service.util.SampleDataFactory;
@@ -71,6 +75,12 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
 
     @Autowired
     private SmileSampleService sampleService;
+
+    @Autowired
+    private TempoService tempoService;
+
+    @Autowired
+    private TempoMessageHandlingService tempoMessageHandlingService;
 
     private static Gateway messagingGateway;
     private static final Log LOG = LogFactory.getLog(ResearchMessageHandlingServiceImpl.class);
@@ -245,6 +255,15 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             // publish sample-level metadata history to CMO_REQUEST_UPDATE_TOPIC
                             messagingGateway.publish(CMO_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(existingSample));
+
+                            // if sample has tempo data in smile then upload to s3 bucket also
+                            Tempo tempo = tempoService.getTempoDataBySampleId(existingSample);
+                            if (tempo != null) {
+                                LOG.info("Pushing TEMPO sample to AWS s3 bucket for cBioPortal:\n"
+                                        + sampleMetadataEntry.getValue().getPrimaryId());
+                                tempoMessageHandlingService.uploadSamplesToS3BucketHandler(
+                                        Arrays.asList(sampleMetadataEntry.getValue().getPrimaryId()));
+                            }
                         }
                     }
                     if (interrupted && researchSampleUpdateQueue.isEmpty()) {
