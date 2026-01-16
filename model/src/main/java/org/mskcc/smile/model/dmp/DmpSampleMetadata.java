@@ -93,6 +93,8 @@ public class DmpSampleMetadata {
     private String biopsySite;
     @JsonProperty("standard_coverage")
     private String standardCoverage;
+    @JsonProperty("recommended_coverage")
+    private String recommendedCoverage;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -138,6 +140,7 @@ public class DmpSampleMetadata {
      * @param wholeSlideViewerId
      * @param biopsySite
      * @param standardCoverage
+     * @param recommendedCoverage
      */
     public DmpSampleMetadata(Integer alys2sampleId, Integer cbxPatientId,
             Integer cbxSampleId, Integer ct, String dateTumorSequencing, String linkedMskimpactCase,
@@ -152,7 +155,7 @@ public class DmpSampleMetadata {
             Double tmbScore, Double tmbTtPercentile, String tumorPurity,
             String tumorTypeCode, String tumorTypeName,
             String consentPartA, String consentPartC, String wholeSlideViewerId,
-            String biopsySite, String standardCoverage) {
+            String biopsySite, String standardCoverage, String recommendedCoverage) {
         this.alys2sampleId = alys2sampleId;
         this.cbxPatientId = cbxPatientId;
         this.cbxSampleId = cbxSampleId;
@@ -191,6 +194,7 @@ public class DmpSampleMetadata {
         this.wholeSlideViewerId = wholeSlideViewerId;
         this.biopsySite = biopsySite;
         this.standardCoverage = standardCoverage;
+        this.recommendedCoverage = recommendedCoverage;
     }
 
     public String getSomaticStatus() {
@@ -495,6 +499,14 @@ public class DmpSampleMetadata {
 
     public void setStandardCoverage(String standardCoverage) {
         this.standardCoverage = standardCoverage;
+    }
+
+    public String getRecommendedCoverage() {
+        return recommendedCoverage;
+    }
+
+    public void setRecommendedCoverage(String recommendedCoverage) {
+        this.recommendedCoverage = recommendedCoverage;
     }
 
     public Map<String, Object> getAdditionalProperties() {

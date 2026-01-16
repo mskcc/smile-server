@@ -186,25 +186,51 @@ public class SampleDataFactory {
                 resolveDmpSampleClass(dmpSampleMetadata.getDmpSampleId()));
         sampleMetadata.setSampleType(
                 resolveDmpSampleType(dmpSampleMetadata.getIsMetastasis()));
-        sampleMetadata.addAdditionalProperty("ct", String.valueOf(dmpSampleMetadata.getCt()));
-        sampleMetadata.addAdditionalProperty("msi-comment",
-                dmpSampleMetadata.getMsiComment());
-        sampleMetadata.addAdditionalProperty("msi-score",
-                dmpSampleMetadata.getMsiScore());
-        sampleMetadata.addAdditionalProperty("msi-type",
-                dmpSampleMetadata.getMsiType());
-        sampleMetadata.addAdditionalProperty("consent-parta",
-                dmpSampleMetadata.getConsentPartA());
-        sampleMetadata.addAdditionalProperty("consent-partc",
-                dmpSampleMetadata.getConsentPartC());
-        sampleMetadata.addAdditionalProperty("tmb_cohort_percentile",
-                String.valueOf(dmpSampleMetadata.getTmbCohortPercentile()));
-        sampleMetadata.addAdditionalProperty("tmb_score",
-                String.valueOf(dmpSampleMetadata.getTmbScore()));
-        sampleMetadata.addAdditionalProperty("tmb_tt_percentile",
-                String.valueOf(dmpSampleMetadata.getTmbTtPercentile()));
-        sampleMetadata.addAdditionalProperty("standard_coverage",
-                dmpSampleMetadata.getStandardCoverage());
+
+        // conditionally set additional properties
+        if (dmpSampleMetadata.getCt() != null) {
+            sampleMetadata.addAdditionalProperty("ct", String.valueOf(dmpSampleMetadata.getCt()));
+        }
+        if (!StringUtils.isBlank(dmpSampleMetadata.getMsiComment())) {
+            sampleMetadata.addAdditionalProperty("msi-comment",
+                    dmpSampleMetadata.getMsiComment());
+        }
+        if (!StringUtils.isBlank(dmpSampleMetadata.getMsiScore())) {
+            sampleMetadata.addAdditionalProperty("msi-score",
+                    dmpSampleMetadata.getMsiScore());
+        }
+        if (!StringUtils.isBlank(dmpSampleMetadata.getMsiType())) {
+            sampleMetadata.addAdditionalProperty("msi-type",
+                    dmpSampleMetadata.getMsiType());
+        }
+        if (!StringUtils.isBlank(dmpSampleMetadata.getConsentPartA())) {
+            sampleMetadata.addAdditionalProperty("consent-parta",
+                    dmpSampleMetadata.getConsentPartA());
+        }
+        if (!StringUtils.isBlank(dmpSampleMetadata.getConsentPartC())) {
+            sampleMetadata.addAdditionalProperty("consent-partc",
+                    dmpSampleMetadata.getConsentPartC());
+        }
+        if (dmpSampleMetadata.getTmbCohortPercentile() != null) {
+            sampleMetadata.addAdditionalProperty("tmb_cohort_percentile",
+                    String.valueOf(dmpSampleMetadata.getTmbCohortPercentile()));
+        }
+        if (dmpSampleMetadata.getTmbScore() != null) {
+            sampleMetadata.addAdditionalProperty("tmb_score",
+                    String.valueOf(dmpSampleMetadata.getTmbScore()));
+        }
+        if (dmpSampleMetadata.getTmbTtPercentile() != null) {
+            sampleMetadata.addAdditionalProperty("tmb_tt_percentile",
+                    String.valueOf(dmpSampleMetadata.getTmbTtPercentile()));
+        }
+        if (!StringUtils.isBlank(dmpSampleMetadata.getStandardCoverage())) {
+            sampleMetadata.addAdditionalProperty("standard_coverage",
+                    dmpSampleMetadata.getStandardCoverage());
+        }
+        if (!StringUtils.isBlank(dmpSampleMetadata.getRecommendedCoverage())) {
+            sampleMetadata.addAdditionalProperty("recommended_coverage",
+                    dmpSampleMetadata.getRecommendedCoverage());
+        }
         return sampleMetadata;
     }
 
