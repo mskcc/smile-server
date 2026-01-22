@@ -11,12 +11,21 @@ public class DbGapJson implements Serializable {
     private String primaryId;
     @JsonProperty("dbGapStudy")
     private String dbGapStudy;
+    @JsonProperty("irbConsentProtocol")
+    private String irbConsentProtocol;
 
     public DbGapJson() {}
 
-    public DbGapJson(String primaryId, String dbGapStudy) {
+    /**
+     * DbGapJson constructor.
+     * @param primaryId
+     * @param dbGapStudy
+     * @param irbConsentProtocol
+     */
+    public DbGapJson(String primaryId, String dbGapStudy, String irbConsentProtocol) {
         this.primaryId = primaryId;
         this.dbGapStudy = dbGapStudy;
+        this.irbConsentProtocol = irbConsentProtocol;
     }
 
     public String getPrimaryId() {
@@ -33,6 +42,14 @@ public class DbGapJson implements Serializable {
 
     public void setDbGapStudy(String dbGapStudy) {
         this.dbGapStudy = dbGapStudy;
+    }
+
+    public String getIrbConsentProtocol() {
+        return irbConsentProtocol;
+    }
+
+    public void setIrbConsentProtocol(String irbConsentProtocol) {
+        this.irbConsentProtocol = irbConsentProtocol;
     }
 
     @Override
