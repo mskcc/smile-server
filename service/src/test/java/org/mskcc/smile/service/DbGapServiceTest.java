@@ -122,16 +122,18 @@ public class DbGapServiceTest {
         Assertions.assertTrue(sampleService.sampleExistsByInputId(samplePrimaryId));
 
         // now test save and fetch of dbgap node
-        DbGapJson dbGapJson = new DbGapJson(samplePrimaryId, "mockDbgapStudyId.v1");
+        DbGapJson dbGapJson = new DbGapJson(samplePrimaryId, "mockDbgapStudyId.v1", "IRB-123456");
         dbGapService.updateDbGap(dbGapJson);
         DbGap dbGapNode = dbGapService.getDbGapBySamplePrimaryId(samplePrimaryId);
         Assertions.assertEquals("mockDbgapStudyId.v1", dbGapNode.getDbGapStudy());
+        Assertions.assertEquals("IRB-123456", dbGapNode.getIrbConsentProtocol());
 
         //pretend that the dbgap study is updated to v2
-        DbGapJson dbGapJson2 = new DbGapJson(samplePrimaryId, "mockDbgapStudyId.v2");
+        DbGapJson dbGapJson2 = new DbGapJson(samplePrimaryId, "mockDbgapStudyId.v2", "IRB-123456");
         dbGapService.updateDbGap(dbGapJson2);
         DbGap dbGapNode2 = dbGapService.getDbGapBySamplePrimaryId(samplePrimaryId);
         Assertions.assertEquals("mockDbgapStudyId.v2", dbGapNode2.getDbGapStudy());
+        Assertions.assertEquals("IRB-123456", dbGapNode.getIrbConsentProtocol());
         Assertions.assertEquals(dbGapNode.getSmileDgGapId(), dbGapNode2.getSmileDgGapId());
     }
 }

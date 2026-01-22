@@ -17,11 +17,13 @@ public class DbGap implements Serializable {
     @Convert(UuidStringConverter.class)
     private UUID smileDbGapId;
     private String dbGapStudy;
+    private String irbConsentProtocol;
 
     public DbGap() {}
-    
+
     public DbGap(DbGapJson dbGapJson) {
         this.dbGapStudy = dbGapJson.getDbGapStudy();
+        this.irbConsentProtocol = dbGapJson.getIrbConsentProtocol();
     }
 
     /**
@@ -35,7 +37,7 @@ public class DbGap implements Serializable {
     public UUID getSmileDgGapId() {
         return smileDbGapId;
     }
-    
+
     public void setSmileDgGapId(UUID smileDbGapId) {
         this.smileDbGapId = smileDbGapId;
     }
@@ -46,6 +48,14 @@ public class DbGap implements Serializable {
 
     public void setDbGapStudy(String dbGapStudy) {
         this.dbGapStudy = dbGapStudy;
+    }
+
+    public String getIrbConsentProtocol() {
+        return irbConsentProtocol;
+    }
+
+    public void setIrbConsentProtocol(String irbConsentProtocol) {
+        this.irbConsentProtocol = irbConsentProtocol;
     }
 
     @Override
