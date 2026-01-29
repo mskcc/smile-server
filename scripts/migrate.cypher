@@ -182,3 +182,9 @@ WHERE deliveryDate IS NOT NULL
 SET r.igoDeliveryDate = toInteger(deliveryDate)
 RETURN r.igoRequestId, r.igoDeliveryDate, deliveryDate
 
+// add and set importDate to cohort complete nodes
+MATCH (cc:CohortComplete)
+WHERE cc.importDate IS NULL
+SET cc.importDate = apoc.date.parse(cc.date, "ms", "yyyy-MM-dd HH:mm")
+return cc
+

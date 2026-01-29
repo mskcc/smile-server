@@ -2,6 +2,7 @@ package org.mskcc.smile.model.tempo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,9 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
     @Id @GeneratedValue
     @JsonIgnore
     private Long id;
-    private String date;
+    @JsonIgnore
+    private Long importDate;
+    private String date; // cohort delivery date
     private String status;
     private String type;
     @Convert(ArrayStringConverter.class)
@@ -40,6 +43,7 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
      * @param ccJson
      */
     public CohortComplete(CohortCompleteJson ccJson) {
+        this.importDate = Instant.now().toEpochMilli();
         this.date = ccJson.getDate();
         this.status = ccJson.getStatus();
         this.type = ccJson.getType();
@@ -48,6 +52,14 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
         this.projectTitle = ccJson.getProjectTitle();
         this.projectSubtitle = ccJson.getProjectSubtitle();
         this.pipelineVersion = ccJson.getPipelineVersion();
+    }
+
+    public Long getImportDate() {
+        return importDate;
+    }
+
+    public void setImportDate(Long importDate) {
+        this.importDate = importDate;
     }
 
     public String getDate() {
@@ -137,10 +149,10 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
      */
     @Override
     public int compareTo(CohortComplete cohortComplete) {
-        if (date == null || cohortComplete.getDate() == null) {
+        if (importDate == null || cohortComplete.getImportDate() == null) {
             return 0;
         }
-        return date.compareTo(cohortComplete.getDate());
+        return importDate.compareTo(cohortComplete.getImportDate());
     }
 
     @Override
