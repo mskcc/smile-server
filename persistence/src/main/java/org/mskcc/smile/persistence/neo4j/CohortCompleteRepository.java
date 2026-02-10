@@ -34,10 +34,12 @@ public interface CohortCompleteRepository extends Neo4jRepository<Cohort, Long> 
     List<Cohort> findCohortsBySamplePrimaryId(@Param("primaryId") String primaryId);
 
     @Query("""
-           MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId})
            MATCH (c: Cohort {cohortId: $cohortId})
+           MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata)
+           WHERE sm.primaryId IN $primaryIds
+           WITH s, c
            MERGE (c)-[hcs:HAS_COHORT_SAMPLE]->(s)
            """)
     void addCohortSampleRelationship(@Param("cohortId") String cohortId,
-            @Param("primaryId") String primaryId);
+            @Param("primaryIds") List<String> primaryIds);
 }

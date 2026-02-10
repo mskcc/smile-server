@@ -179,13 +179,99 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
     Map<String, Object> findTempoSampleDataBySamplePrimaryId(@Param("primaryId") String primaryId);
 
     @Query("""
-           MATCH (t: Tempo{smileTempoId: $smileTempoId})
-           SET t.initialPipelineRunDate = $initialPipelineRunDate,
-           t.embargoDate = $embargoDate,
-           t.accessLevel = $accessLevel
+           MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+           WHERE sm.primaryId IN $primaryIds
+           WITH s, sm.primaryId as primaryId, EXISTS {MATCH (s)-[:HAS_TEMPO]->(t:Tempo)} AS hasTempo
+           WITH hasTempo AS tempoStatus, COLLECT(DISTINCT primaryId) AS samplePrimaryIds
+           RETURN ({ tempoStatus: tempoStatus, samples: samplePrimaryIds}) as result
            """)
-    void updateTempoData(@Param("smileTempoId") UUID smileTempoId,
-            @Param("initialPipelineRunDate") String initialPipelineRunDate,
-            @Param("embargoDate") String embargoDate,
-            @Param("accessLevel") String accessLevel);
+    List<Map<String, Object>> sortSamplesByTempoStatus(@Param("primaryIds") List<String> primaryIds);
+
+
+    @Query("""
+           MATCH (r:Request)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+           WHERE sm.primaryId in $primaryIds
+           WITH r, s,
+           CASE WHEN (r.labHeadName IS NULL OR r.labHeadName = "")
+            THEN r.investigatorName ELSE r.labHeadName END AS custodianInformation,
+           COLLECT {
+            OPTIONAL MATCH (cc:CohortComplete)<-[:HAS_COHORT_COMPLETE]-(c:Cohort)-[:HAS_COHORT_SAMPLE]->(s)
+            RETURN cc.date ORDER BY cc.date ASC LIMIT 1
+           }[0] AS earliestDeliveryDate
+           WITH custodianInformation, s.smileSampleId as smileSampleId, earliestDeliveryDate,
+           CASE WHEN (earliestDeliveryDate IS NULL OR earliestDeliveryDate = "")
+            THEN $ccDeliveryDate ELSE earliestDeliveryDate END AS initialPipelineRunDate
+           WITH custodianInformation, smileSampleId, earliestDeliveryDate, initialPipelineRunDate,
+           CASE WHEN (initialPipelineRunDate IS NULL OR initialPipelineRunDate = "") THEN ""
+            ELSE  apoc.temporal.format(datetime(apoc.date.format(
+              apoc.date.parse(initialPipelineRunDate, "ms", "yyyy-MM-dd HH:mm"),"ms", "yyyy-MM-dd"))
+              + Duration({months:18}), 'YYYY-MM-dd HH:mm') END AS embargoDate,
+           apoc.date.format(apoc.date.currentTimestamp(), 'ms', 'yyyy-MM-dd HHM:mm') AS today
+           WITH smileSampleId, today, custodianInformation, initialPipelineRunDate, embargoDate,
+           CASE WHEN (today <= embargoDate OR initialPipelineRunDate = "")
+            THEN "MSK Embargo" ELSE "MSK Public"
+            END AS accessLevel
+           WITH DISTINCT smileSampleId, custodianInformation,
+            initialPipelineRunDate, embargoDate, accessLevel
+           CREATE (t:Tempo {
+            smileTempoId: randomUUID(),
+            custodianInformation: custodianInformation,
+            accessLevel: accessLevel,
+            initialPipelineRunDate: initialPipelineRunDate,
+            embargoDate: embargoDate,
+            billedBy: "", costCenter: ""})
+           WITH smileSampleId, t
+           MATCH (s:Sample {smileSampleId: smileSampleId})
+           MERGE (s)-[x:HAS_TEMPO]->(t)
+           RETURN COUNT(DISTINCT t)
+           """)
+    Integer batchCreateTempoNodesForSamplePrimaryIds(@Param("primaryIds") List<String> primaryIds,
+            @Param("ccDeliveryDate") String ccDeliveryDate);
+
+    @Query("""
+           MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+           WHERE sm.primaryId IN $primaryIds
+           WITH s,
+           COLLECT {
+           OPTIONAL MATCH (cc:CohortComplete)<-[:HAS_COHORT_COMPLETE]-(c:Cohort)-[:HAS_COHORT_SAMPLE]->(s)
+            RETURN cc.date ORDER BY cc.date ASC LIMIT 1
+           }[0] AS earliestDeliveryDate
+           WITH s, earliestDeliveryDate,
+            apoc.date.format(apoc.date.currentTimestamp(), 'ms', 'yyyy-MM-dd HHM:mm') AS today
+           MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
+           WITH s, t, earliestDeliveryDate, today,
+           CASE WHEN ((t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = "")
+              AND (earliestDeliveryDate IS NULL)) THEN ""
+            ELSE CASE WHEN (t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = ""
+              OR earliestDeliveryDate < t.initialPipelineRunDate)
+            THEN earliestDeliveryDate
+            ELSE t.initialPipelineRunDate
+            END
+           END AS updatedInitRundate
+           SET t.initialPipelineRunDate = updatedInitRundate
+           WITH s, t, today,
+           CASE WHEN (t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = "")
+            THEN ""
+            ELSE apoc.temporal.format(datetime(
+              apoc.date.format(apoc.date.parse(t.initialPipelineRunDate, "ms", "yyyy-MM-dd HH:mm"),
+              "ms", "yyyy-MM-dd")) + Duration({months:18}), 'YYYY-MM-dd HH:mm')
+           END as updatedEmbargoDate
+           SET t.embargoDate = updatedEmbargoDate
+           WITH s,t,today,
+           CASE WHEN (t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = "")
+            THEN t.accessLevel
+            ELSE
+            CASE
+              WHEN (today > t.embargoDate
+                AND (t.accessLevel = "" OR t.accessLevel IS NULL OR t.accessLevel = "MSK Embargo"))
+            THEN "MSK Public"
+            ELSE
+            CASE WHEN (today <= t.embargoDate AND (t.accessLevel = "" OR t.accessLevel IS NULL))
+            THEN "MSK Embargo"
+            END
+            END
+           END AS updatedAccessLevel
+           SET t.accessLevel = updatedAccessLevel
+           """)
+    void batchUpdateTempoDataForSamplePrimaryIds(@Param("primaryIds") List<String> primaryIds);
 }

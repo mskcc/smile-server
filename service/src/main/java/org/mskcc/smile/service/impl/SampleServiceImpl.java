@@ -3,6 +3,7 @@ package org.mskcc.smile.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -539,5 +540,10 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public String getSamplePrimaryIdBySampleInputId(String inputId) throws Exception {
         return sampleRepository.findSamplePrimaryIdByInputId(inputId);
+    }
+
+    @Override
+    public Map<String, Object> getMatchedAndUnmatchedInputSampleIds(List<String> inputIds) throws Exception {
+        return sampleRepository.findMatchedAndUnmatchedInputSampleIds(inputIds);
     }
 }

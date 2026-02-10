@@ -1,8 +1,9 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -48,28 +49,49 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         if (sampleIds == null) {
             return getCohortByCohortId(cohort.getCohortId());
         }
-        Set<String> unknownSamples = new HashSet<>(); // tracks unknown samples in smile
-        // create cohort-sample relationships
-        LOG.info("Adding cohort-sample edges in database for " + sampleIds.size() + " samples...");
-        for (String sampleId : sampleIds) {
-            // confirm sample exists by primary id and then link to cohort
-            if (sampleService.sampleExistsByInputId(sampleId)) {
-                String primaryId = sampleService.getSamplePrimaryIdBySampleInputId(sampleId);
-                // init default tempo data for sample if sample does not already have tempo data
-                if (tempoService.getTempoDataBySamplePrimaryId(primaryId) == null) {
-                    tempoService.initAndSaveDefaultTempoData(primaryId,
-                        cohort.getLatestCohortComplete().getDate());
-                }
-                cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryId);
-                // the update needs to happen after the new cohort-sample relationship
-                // is established so that all possible cohort delivery dates are taken into consideration
-                // when potentially updating the pipeline run date
-                tempoService.updateSampleInitRunDate(primaryId);
-            } else {
-                unknownSamples.add(sampleId);
-            }
+
+        Map<String, Object> result
+                = sampleService.getMatchedAndUnmatchedInputSampleIds(new ArrayList<>(sampleIds));
+        if (result.isEmpty()) {
+            LOG.error("None of the samples provided in the cohort sample list are known to SMILE: "
+                    + mapper.writeValueAsString(result));
+            throw new RuntimeException("Cohort does not have any known samples in SMILE"
+                    + " - check data before reattempting.");
         }
+
+        // merge cohort-samples
+        List<String> primaryIds = (List<String>) result.get("matchedPrimaryIds");
+        LOG.info("Adding cohort-sample edges in database for " + primaryIds.size() + " samples...");
+        cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryIds);
+        LOG.info("Done.");
+
+        // create tempo nodes for samples that do not already have tempo data in smile
+        Map<String, Object> samplesByTempoStatus = tempoService.sortSamplesByTempoStatus(primaryIds);
+        if (samplesByTempoStatus.containsKey("false")) {
+            LOG.info("Creating TEMPO nodes for cohort samples...");
+            List<String> samplesMissingTempoData = (List<String>) samplesByTempoStatus.get("false");
+            Integer actual = tempoService.batchCreateTempoNodesForSamplePrimaryIds(samplesMissingTempoData,
+                    cohort.getLatestCohortComplete().getDate());
+            if (actual != samplesMissingTempoData.size()) {
+                LOG.error("Actual number of TEMPO nodes created does not match expected. "
+                        + "Actual = " + actual + ", expected = " + samplesMissingTempoData.size());
+            } else {
+                LOG.info("Number of TEMPO nodes created = " + samplesMissingTempoData.size());
+            }
+            LOG.info("Done");
+        }
+
+        // re-calculate the intiial pipeline rundate embargo date, and access level for samples
+        // that already have tempo data in smile
+        if (samplesByTempoStatus.containsKey("true")) {
+            LOG.info("Updating TEMPO nodes for cohort samples...");
+            List<String> samplesWithTempoData = (List<String>) samplesByTempoStatus.get("true");
+            tempoService.batchUpdateTempoDataForSamplePrimaryIds(samplesWithTempoData);
+            LOG.info("Done. Number of TEMPO nodes updated = " + samplesWithTempoData.size());
+        }
+
         // log and report unknown samples for reference
+        List<String> unknownSamples = (List<String>) result.get("unmatchedIds");
         if (!unknownSamples.isEmpty()) {
             StringBuilder builder = new StringBuilder();
             builder.append("[TEMPO COHORT COMPLETE FAILED SAMPLES] Could not import ")
