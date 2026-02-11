@@ -1,9 +1,11 @@
 package org.mskcc.smile.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,6 +46,7 @@ public class TempoServiceImpl implements TempoService {
     @Autowired @Lazy // prevents circular dependencies and initializes when component is first needed
     private SmileRequestService requestService;
 
+    private ObjectMapper mapper = new ObjectMapper();
     private static final Log LOG = LogFactory.getLog(TempoServiceImpl.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
     private static final int EMBARGO_PERIOD_MONTHS = 18;
@@ -277,58 +280,26 @@ public class TempoServiceImpl implements TempoService {
     }
 
     @Override
-    public void updateSampleInitRunDate(String primaryId) throws Exception {
-        LocalDate earliestDeliveryDate = getEarliestCohortDeliveryBySamplePrimaryId(primaryId);
-        Tempo tempo = tempoRepository.findTempoBySamplePrimaryId(primaryId);
-
-        if (tempo == null) {
-            return;
+    public Map<String, Object> sortSamplesByTempoStatus(List<String> primaryIds) throws Exception {
+        List<Map<String, Object>> results = tempoRepository.sortSamplesByTempoStatus(primaryIds);
+        Map<String, Object> toReturn = new HashMap<>();
+        for (Map<String, Object> r : results) {
+            Map<String, Object> result = mapper.convertValue(r.get("result"), Map.class);
+            String tempoStatus = String.valueOf(result.get("tempoStatus"));
+            Object samples = result.get("samples");
+            toReturn.put(tempoStatus, samples);
         }
-
-        if (earliestDeliveryDate == null) {
-            return;
-        }
-
-        // if there is no stored init run date then use the earliest cohort delivery date available
-        Boolean needsUpdate = Boolean.FALSE;
-        if (Strings.isBlank(tempo.getInitialPipelineRunDate())) {
-            // call to update the stored init run date and embargo date
-            LocalDate embargoDate = earliestDeliveryDate.plusMonths(EMBARGO_PERIOD_MONTHS);
-            tempo.setInitialPipelineRunDate(earliestDeliveryDate.format(DATE_FORMATTER));
-            tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
-            if (!sampleIsMarkedAsPublic(tempo.getAccessLevel())) {
-                // we release the sample the day after the embargo ends (confirmed with PMs)
-                tempo.setAccessLevel(LocalDate.now().isAfter(embargoDate)
-                        ? ACCESS_LEVEL_PUBLIC : ACCESS_LEVEL_EMBARGO);
-            }
-            needsUpdate = Boolean.TRUE;
-        } else {
-            try {
-                LocalDate savedInitRunDate = LocalDate.parse(
-                        tempo.getInitialPipelineRunDate());
-                if (earliestDeliveryDate.isBefore(savedInitRunDate)) {
-                    LocalDate embargoDate = earliestDeliveryDate.plusMonths(EMBARGO_PERIOD_MONTHS);
-                    tempo.setInitialPipelineRunDate(earliestDeliveryDate.format(DATE_FORMATTER));
-                    tempo.setEmbargoDate(embargoDate.format(DATE_FORMATTER));
-                    if (!sampleIsMarkedAsPublic(tempo.getAccessLevel())) {
-                        // we release the sample the day after the embargo ends (confirmed with PMs)
-                        tempo.setAccessLevel(LocalDate.now().isAfter(embargoDate)
-                                ? ACCESS_LEVEL_PUBLIC : ACCESS_LEVEL_EMBARGO);
-                    }
-                    needsUpdate = Boolean.TRUE;
-                }
-            } catch (DateTimeParseException e) {
-                LOG.error("Error parsing earliest cohort complete date for sample with Primary ID: "
-                        + primaryId, e);
-            }
-        }
-
-        if (needsUpdate) {
-            tempoRepository.updateTempoData(tempo.getSmileTempoId(),
-                    tempo.getInitialPipelineRunDate(),
-                    tempo.getEmbargoDate(),
-                    tempo.getAccessLevel());
-        }
+        return toReturn;
     }
 
+    @Override
+    public Integer batchCreateTempoNodesForSamplePrimaryIds(List<String> primaryIds, String ccDeliveryDate)
+            throws Exception {
+        return tempoRepository.batchCreateTempoNodesForSamplePrimaryIds(primaryIds, ccDeliveryDate);
+    }
+
+    @Override
+    public void batchUpdateTempoDataForSamplePrimaryIds(List<String> primaryIds) throws Exception {
+        tempoRepository.batchUpdateTempoDataForSamplePrimaryIds(primaryIds);
+    }
 }

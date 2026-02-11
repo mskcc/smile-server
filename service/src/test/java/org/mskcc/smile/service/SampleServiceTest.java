@@ -1,6 +1,7 @@
 package org.mskcc.smile.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
@@ -70,7 +71,8 @@ public class SampleServiceTest {
     @Container
     private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>(
             DockerImageName.parse("neo4j:5.19.0"))
-            .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
+            .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*")
+            .withPlugins("apoc");
 
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
@@ -775,5 +777,33 @@ public class SampleServiceTest {
         SmileSample sample = sampleService.getResearchSampleByRequestAndIgoId(requestId, igoId);
         SampleMetadata sm = sample.getLatestSampleMetadata();
         Assertions.assertEquals("Female", sm.getSex());
+    }
+
+    @Test
+    @Order(27)
+    public void testMatchedAndUnmatchedInputIds() throws Exception {
+        List<String> inputIds = Arrays.asList("MOCKREQUEST1_B_1", "MOCKREQUEST1_B_2",
+                "MOCKREQUEST1_B_3", "madeupfakeid");
+        Map<String, Object> result = sampleService.getMatchedAndUnmatchedInputSampleIds(inputIds);
+
+        List<String> matchedIds = (List<String>) result.get("matchedIds");
+        List<String> unmatchedIds = (List<String>) result.get("unmatchedIds");
+        Assertions.assertEquals(3, matchedIds.size());
+        Assertions.assertEquals(1, unmatchedIds.size());
+
+        // handle case where all inputs are non-existent samples
+        List<String> nonexistingIds = Arrays.asList("doesnotexist", "randomsampleid",
+                "alsoafake", "madeupfakeid");
+        Map<String, Object> result2 = sampleService.getMatchedAndUnmatchedInputSampleIds(nonexistingIds);
+        Assertions.assertTrue(result2.isEmpty());
+
+        // all real sample ids
+        List<String> allRealIds = Arrays.asList("MOCKREQUEST1_B_1", "MOCKREQUEST1_B_2",
+                "MOCKREQUEST1_B_3");
+        Map<String, Object> result3 = sampleService.getMatchedAndUnmatchedInputSampleIds(allRealIds);
+        List<String> matchedIds3 = (List<String>) result3.get("matchedIds");
+        List<String> unmatchedIds3 = (List<String>) result3.get("unmatchedIds");
+        Assertions.assertEquals(3, matchedIds3.size());
+        Assertions.assertTrue(unmatchedIds3.isEmpty());
     }
 }

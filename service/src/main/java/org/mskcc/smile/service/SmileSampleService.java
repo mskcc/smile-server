@@ -1,6 +1,7 @@
 package org.mskcc.smile.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
@@ -40,4 +41,5 @@ public interface SmileSampleService {
     SampleMetadata getLatestSampleMetadataByPrimaryId(String primaryId) throws Exception;
     List<String> getSamplePrimaryIdsBySmileTempoIds(List<UUID> smileTempoIds) throws Exception;
     String getSamplePrimaryIdBySampleInputId(String inputId) throws Exception;
+    Map<String, Object> getMatchedAndUnmatchedInputSampleIds(List<String> inputIds) throws Exception;
 }

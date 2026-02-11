@@ -1,6 +1,7 @@
 package org.mskcc.smile.persistence.neo4j;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.mskcc.smile.model.SampleMetadata;
 import org.mskcc.smile.model.SmileSample;
@@ -196,4 +197,41 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
            RETURN DISTINCT sm.primaryId LIMIT 1
            """)
     String findSamplePrimaryIdByInputId(@Param("inputId") String inputId);
+
+    @Query("""
+           MATCH (s: Sample)<-[:IS_ALIAS]-(sa: SampleAlias)
+           WITH s, sa, COLLECT {
+           MATCH (s)-[:HAS_METADATA]->(sm: SampleMetadata)
+           RETURN sm ORDER BY sm.importDate DESC LIMIT 1
+           } as latestSm
+           WITH s, sa, latestSm[0] AS latestSm, $inputIds AS inputIds
+           WHERE latestSm.primaryId IN $inputIds
+           OR latestSm.cmoSampleName IN $inputIds
+           OR latestSm.investigatorSampleId IN $inputIds
+           OR s.smileSampleId IN $inputIds
+           OR sa.value IN $inputIds
+           WITH s, latestSm, inputIds
+           WITH ({
+            smileSampleId: s.smileSampleId,
+            primaryId: latestSm.primaryId,
+            cmoSampleName: latestSm.cmoSampleName,
+            investigatorSampleId: latestSm.investigatorSampleId
+           }) as matchedSample, inputIds
+           UNWIND inputIds as inputId
+           WITH inputId, matchedSample, inputIds
+           WHERE ANY(prop IN keys(matchedSample) WHERE toString(matchedSample[prop]) = inputId)
+           WITH
+            COLLECT(DISTINCT inputId) AS matchedIds,
+            COLLECT(DISTINCT matchedSample.primaryId) as matchedPrimaryIds,
+            inputIds
+           WITH matchedIds, matchedPrimaryIds,
+            [item IN inputIds WHERE NOT item IN matchedIds] as unmatchedIds
+           WITH ({
+            matchedIds: matchedIds,
+            matchedPrimaryIds: matchedPrimaryIds,
+            unmatchedIds: unmatchedIds
+           }) AS result
+           RETURN result
+           """)
+    Map<String, Object> findMatchedAndUnmatchedInputSampleIds(List<String> inputIds);
 }

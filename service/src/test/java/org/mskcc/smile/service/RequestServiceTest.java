@@ -62,7 +62,8 @@ public class RequestServiceTest {
     @Container
     private static final Neo4jContainer<?> databaseServer = new Neo4jContainer<>(
             DockerImageName.parse("neo4j:5.19.0"))
-            .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*");
+            .withEnv("NEO4J_dbms_security_procedures_unrestricted", "apoc.*,algo.*")
+            .withPlugins("apoc");
 
     @DynamicPropertySource
     static void neo4jProperties(DynamicPropertyRegistry registry) {
