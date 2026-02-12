@@ -43,11 +43,11 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Cohort saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
+    public void saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
         if (sampleIds == null) {
-            return getCohortByCohortId(cohort.getCohortId());
+            LOG.error("No samples saved for cohort: " + cohort.getCohortId());
         }
 
         Map<String, Object> result
@@ -102,7 +102,6 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
                     .append(StringUtils.join(unknownSamples,", "));
             LOG.warn(builder.toString());
         }
-        return getCohortByCohortId(cohort.getCohortId());
     }
 
     @Override
