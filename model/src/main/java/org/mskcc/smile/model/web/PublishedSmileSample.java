@@ -30,7 +30,7 @@ public class PublishedSmileSample {
     private String sampleName;
     private String cmoInfoIgoId;
     private String investigatorSampleId;
-    private String importDate;
+    private Long importDate;
     private String sampleType;
     private String oncotreeCode;
     private String collectionYear;
@@ -113,11 +113,11 @@ public class PublishedSmileSample {
         this.smileSampleId = smileSampleId;
     }
 
-    public String getImportDate() {
+    public Long getImportDate() {
         return importDate;
     }
 
-    public void setImportDate(String importDate) {
+    public void setImportDate(Long importDate) {
         this.importDate = importDate;
     }
 

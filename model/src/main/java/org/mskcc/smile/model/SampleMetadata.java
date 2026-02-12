@@ -34,7 +34,7 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
     private String cmoSampleName;
     private String sampleName;
     private String igoRequestId;
-    private String importDate;
+    private Long importDate;
     private String cmoInfoIgoId;
     private String oncotreeCode;
     private String collectionYear;
@@ -124,11 +124,11 @@ public class SampleMetadata implements Serializable, Comparable<SampleMetadata>,
         this.id = id;
     }
 
-    public String getImportDate() {
+    public Long getImportDate() {
         return importDate;
     }
 
-    public void setImportDate(String importDate) {
+    public void setImportDate(Long importDate) {
         this.importDate = importDate;
     }
 

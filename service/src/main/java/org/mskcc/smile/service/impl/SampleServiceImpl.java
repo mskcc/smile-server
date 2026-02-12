@@ -1,10 +1,18 @@
 package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -437,17 +445,20 @@ public class SampleServiceImpl implements SmileSampleService {
         if (StringUtils.isBlank(importDate)) {
             throw new RuntimeException("Start date " + importDate + " cannot be null or empty");
         }
-        // return latest sample metadata for each sample uuid returned
-        List<UUID> sampleIds = sampleRepository.findSamplesByLatestImportDate(importDate);
-        if (sampleIds == null) {
-            return null;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date formattedDate = df.parse(importDate);
+            List<Object> sampleIds = sampleRepository.findSamplesByLatestImportDate(
+                    formattedDate.toInstant().toEpochMilli());
+            if (sampleIds == null) {
+                return null;
+            }
+            return Arrays.asList(mapper.convertValue(sampleIds, SmileSampleIdMapping[].class));
+        } catch (ParseException ex) {
+            LOG.error("Could not parse input date string as yyyy-MM-dd: " + importDate);
+            throw new RuntimeException(ex);
         }
-        List<SmileSampleIdMapping> sampleIdsList = new ArrayList<>();
-        for (UUID smileSampleId : sampleIds) {
-            SampleMetadata sm = sampleRepository.findLatestSampleMetadataBySmileId(smileSampleId);
-            sampleIdsList.add(new SmileSampleIdMapping(smileSampleId, sm));
-        }
-        return sampleIdsList;
     }
 
     @Override

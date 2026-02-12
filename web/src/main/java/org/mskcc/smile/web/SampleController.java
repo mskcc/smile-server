@@ -79,7 +79,7 @@ public class SampleController {
      * @return ResponseEntity
      * @throws Exception
      */
-    @Operation(description = "Fetch SmileSampleIdMapping list by inputDate")
+    @Operation(description = "Fetch SmileSampleIdMapping list by inputDate (yyyy-MM-dd)")
     @RequestMapping(value = "/samplesByDate/{importDate}",
         method = RequestMethod.GET,
         produces = "application/json")

@@ -13,7 +13,7 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
     private Long id;
     private String igoRequestId;
     private String requestMetadataJson;
-    private String importDate;
+    private Long importDate;
     @Relationship(type = "HAS_STATUS", direction = Relationship.Direction.OUTGOING)
     private Status status;
 
@@ -23,7 +23,7 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
      * @param requestMetadataJson
      * @param importDate
      */
-    public RequestMetadata(String igoRequestId, String requestMetadataJson, String importDate) {
+    public RequestMetadata(String igoRequestId, String requestMetadataJson, Long importDate) {
         this.igoRequestId = igoRequestId;
         this.requestMetadataJson = requestMetadataJson;
         this.importDate = importDate;
@@ -53,11 +53,11 @@ public class RequestMetadata implements Serializable, Comparable<RequestMetadata
         this.requestMetadataJson = requestMetadataJson;
     }
 
-    public String getImportDate() {
+    public Long getImportDate() {
         return importDate;
     }
 
-    public void setImportDate(String importDate) {
+    public void setImportDate(Long importDate) {
         this.importDate = importDate;
     }
 

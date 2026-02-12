@@ -1,6 +1,7 @@
 package org.mskcc.smile.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -370,7 +371,7 @@ public class SampleServiceTest {
     public void testFindLatestSampleMetadataAfterUpdatingNewPredatedSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_2";
-        String importDate = "2000-06-10";
+        Long importDate = 960595200000L; // "2000-06-10" in ms
 
         SampleMetadata sampleMetadata = sampleService.getResearchSampleByRequestAndIgoId(
                 requestId, igoId).getLatestSampleMetadata();
@@ -387,6 +388,16 @@ public class SampleServiceTest {
         Assertions.assertNotEquals(importDate, updatedSampleMetadataAfterUpdate.getImportDate());
         Assertions.assertEquals(sampleMetadata.getImportDate(),
                 updatedSampleMetadataAfterUpdate.getImportDate());
+
+        SampleMetadata updatedSampleType = (SampleMetadata) updatedSampleMetadataAfterUpdate.clone();
+        updatedSampleType.setImportDate(Instant.now().toEpochMilli());
+        updatedSampleType.setSampleType("Metastasis");
+        SmileSample sample = sampleService.getSampleByInputId(igoId);
+        sample.updateSampleMetadata(updatedSampleType);
+        sampleService.saveSmileSample(sample);
+        SampleMetadata latest = sampleService.getResearchSampleByRequestAndIgoId(
+                requestId, igoId).getLatestSampleMetadata();
+        Assertions.assertEquals("Metastasis", latest.getSampleType());
     }
 
     /**
@@ -399,7 +410,7 @@ public class SampleServiceTest {
     public void testFindLatestSampleMetadataAfterSavingNewPredatedSample() throws Exception {
         String requestId = "MOCKREQUEST1_B";
         String igoId = "MOCKREQUEST1_B_3";
-        String importDate = "2000-06-10";
+        Long importDate = 960595200000L; // "2000-06-10" in ms
 
         SampleMetadata sampleMetadata = sampleService.getResearchSampleByRequestAndIgoId(
                 requestId, igoId).getLatestSampleMetadata();
@@ -521,7 +532,7 @@ public class SampleServiceTest {
 
         String invalidCollectionYear = "INVALID IGO UPDATE";
         SampleMetadata updatedMetadata = updatedSample.getLatestSampleMetadata();
-        updatedMetadata.setImportDate("2000-10-15");
+        updatedMetadata.setImportDate(971568000000L); // 2000-10-15 in ms
         updatedMetadata.setBaitSet("NEW BAIT SET");
         updatedMetadata.setGenePanel("NEW GENE PANEL");
         updatedMetadata.setCollectionYear(invalidCollectionYear);
