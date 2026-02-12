@@ -477,12 +477,7 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public List<SmileSample> getSamplesByCohortId(String cohortId) throws Exception {
         List<SmileSample> samples = sampleRepository.findSamplesByCohortId(cohortId);
-
-        List<SmileSample> detailedSamples = new ArrayList<>();
-        for (SmileSample s: samples) {
-            detailedSamples.add(getSmileSample(s.getSmileSampleId()));
-        }
-        return detailedSamples;
+        return samples;
     }
 
     @Override
