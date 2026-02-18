@@ -204,9 +204,9 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
            WITH custodianInformation, smileSampleId, earliestDeliveryDate, initialPipelineRunDate,
            CASE WHEN (initialPipelineRunDate IS NULL OR initialPipelineRunDate = "") THEN ""
             ELSE  apoc.temporal.format(datetime(apoc.date.format(
-              apoc.date.parse(initialPipelineRunDate, "ms", "yyyy-MM-dd HH:mm"),"ms", "yyyy-MM-dd"))
-              + Duration({months:18}), 'YYYY-MM-dd HH:mm') END AS embargoDate,
-           apoc.date.format(apoc.date.currentTimestamp(), 'ms', 'yyyy-MM-dd HHM:mm') AS today
+              apoc.date.parse(initialPipelineRunDate, "ms", "yyyy-MM-dd"), "ms", "yyyy-MM-dd"))
+              + Duration({months:18}), "yyyy-MM-dd") END AS embargoDate,
+           apoc.date.format(apoc.date.currentTimestamp(), "ms", "yyyy-MM-dd HHM:mm") AS today
            WITH smileSampleId, today, custodianInformation, initialPipelineRunDate, embargoDate,
            CASE WHEN (today <= embargoDate OR initialPipelineRunDate = "")
             THEN "MSK Embargo" ELSE "MSK Public"
@@ -253,8 +253,8 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
            CASE WHEN (t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = "")
             THEN ""
             ELSE apoc.temporal.format(datetime(
-              apoc.date.format(apoc.date.parse(t.initialPipelineRunDate, "ms", "yyyy-MM-dd HH:mm"),
-              "ms", "yyyy-MM-dd")) + Duration({months:18}), 'YYYY-MM-dd HH:mm')
+              apoc.date.format(apoc.date.parse(t.initialPipelineRunDate, "ms", "yyyy-MM-dd"),
+              "ms", "yyyy-MM-dd")) + Duration({months:18}), 'YYYY-MM-dd')
            END as updatedEmbargoDate
            SET t.embargoDate = updatedEmbargoDate
            WITH s,t,today,
