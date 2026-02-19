@@ -3,8 +3,7 @@ package org.mskcc.smile.service.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -94,7 +93,7 @@ public class RequestDataFactory {
         RequestMetadata requestMetadata = new RequestMetadata(
                 requestId.toString(),
                 mapper.writeValueAsString(requestMetadataMap),
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                Instant.now().toEpochMilli());
         requestMetadata.setStatus(extractStatusFromJson(requestMetadataJson));
         return requestMetadata;
     }

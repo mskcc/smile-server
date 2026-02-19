@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -104,10 +105,6 @@ public class RequestServiceImpl implements SmileRequestService {
         if (request == null) {
             return null;
         }
-        // get request metadata and sample metadata for request if exists
-        List<RequestMetadata> requestMetadataList =
-                requestRepository.findRequestMetadataHistoryByRequestId(requestId);
-        request.setRequestMetadataList(requestMetadataList);
         List<SmileSample> smileSampleList = sampleService.getResearchSamplesByRequestId(requestId);
         request.setSmileSampleList(smileSampleList);
         return request;
@@ -212,7 +209,7 @@ public class RequestServiceImpl implements SmileRequestService {
         }
         if (StringUtils.isBlank(endDate)) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now().plusDays(1L); // inclusive of whole day
             endDate = dtf.format(now);
         }
         // get formatted dates and validate inputs
@@ -223,9 +220,9 @@ public class RequestServiceImpl implements SmileRequestService {
             throw new RuntimeException("Start date " + startDate + " cannot occur after end date "
             + endDate);
         }
-
-        return transformRequestSummaryResults(
-                requestRepository.findRequestWithinDateRange(startDate, endDate));
+        List<Object> requests = requestRepository.findRequestWithinDateRange(
+                formattedStartDate.toInstant().toEpochMilli(), formattedEndDate.toInstant().toEpochMilli());
+        return Arrays.asList(mapper.convertValue(requests, RequestSummary[].class));
     }
 
     @Override
@@ -244,14 +241,6 @@ public class RequestServiceImpl implements SmileRequestService {
         } catch (ParseException e) {
             throw new RuntimeException("Could not parse date: " + dateString, e);
         }
-    }
-
-    private List<RequestSummary> transformRequestSummaryResults(List<List<String>> results) {
-        List<RequestSummary> requestSummaryList = new ArrayList<>();
-        for (List<String> result : results) {
-            requestSummaryList.add(new RequestSummary(result));
-        }
-        return requestSummaryList;
     }
 
     private DateFormat initDateFormatter() {

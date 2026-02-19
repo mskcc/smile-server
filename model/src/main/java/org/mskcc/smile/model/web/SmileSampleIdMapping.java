@@ -2,7 +2,6 @@ package org.mskcc.smile.model.web;
 
 import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.mskcc.smile.model.SampleMetadata;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
@@ -21,18 +20,6 @@ public class SmileSampleIdMapping {
      * SmileSampleIdMapping constructor.
      */
     public SmileSampleIdMapping() {}
-
-    /**
-     * SmileSampleIdMapping constructor.
-     * @param smileSampleId
-     * @param sampleMetadata
-     */
-    public SmileSampleIdMapping(UUID smileSampleId, SampleMetadata sampleMetadata) {
-        this.smileSampleId = smileSampleId;
-        this.importDate = sampleMetadata.getImportDate();
-        this.primaryId = sampleMetadata.getPrimaryId();
-        this.cmoSampleName = sampleMetadata.getCmoSampleName();
-    }
 
     public UUID getSmileSampleId() {
         return smileSampleId;

@@ -17,7 +17,8 @@ import org.springframework.stereotype.Repository;
 public interface SmileRequestRepository extends Neo4jRepository<SmileRequest, Long> {
     @Query("""
            MATCH (r: Request {igoRequestId: $reqId})
-           RETURN r
+           OPTIONAL MATCH (r)-[hm:HAS_METADATA]->(rm: RequestMetadata)-[hs:HAS_STATUS]->(rs: Status)
+           RETURN r, rm, rs, hm, hs
            """)
     SmileRequest findRequestById(@Param("reqId") String reqId);
 
@@ -36,10 +37,11 @@ public interface SmileRequestRepository extends Neo4jRepository<SmileRequest, Lo
     List<RequestMetadata> findRequestMetadataHistoryByRequestId(@Param("reqId") String reqId);
 
     @Query("""
-           MATCH (r: Request)-[:HAS_METADATA]->(rm: RequestMetadata)
+           MATCH (r: Request)-[hm:HAS_METADATA]->(rm: RequestMetadata)
            WHERE $dateRangeStart <= [rm][0].importDate <= $dateRangeEnd
-           RETURN DISTINCT [r.smileRequestId, r.igoProjectId, r.igoRequestId]
+           RETURN DISTINCT ({smileRequestId: r.smileRequestId,
+           projectId: r.igoProjectId, requestId: r.igoRequestId})
            """)
-    List<List<String>> findRequestWithinDateRange(@Param("dateRangeStart") String startDate,
-            @Param("dateRangeEnd") String endDate);
+    List<Object> findRequestWithinDateRange(@Param("dateRangeStart") Long startDate,
+            @Param("dateRangeEnd") Long endDate);
 }

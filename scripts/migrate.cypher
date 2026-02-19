@@ -188,3 +188,9 @@ WHERE cc.importDate IS NULL
 SET cc.importDate = apoc.date.parse(cc.date, "ms", "yyyy-MM-dd HH:mm")
 return cc
 
+// convert dates to timestamps for request and sample metadata nodes
+MATCH (rm: RequestMetadata)
+SET rm.importDate = apoc.date.parse(rm.importDate, "ms", "yyyy-MM-dd")
+
+MATCH (sm: SampleMetadata)
+SET sm.importDate = apoc.date.parse(sm.importDate, "ms", "yyyy-MM-dd")

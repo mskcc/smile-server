@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public class SampleDataFactory {
             SampleMetadata sampleMetadata, Boolean isCmoRequest, Status sampleStatus) {
         sampleMetadata.setIgoRequestId(requestId);
         if (sampleMetadata.getImportDate() == null) {
-            sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            sampleMetadata.setImportDate(Instant.now().toEpochMilli());
         }
         sampleMetadata.addAdditionalProperty("igoRequestId", requestId);
         if (isCmoRequest != null) {
@@ -119,7 +118,7 @@ public class SampleDataFactory {
     public static SmileSample buildNewClinicalSampleFromMetadata(String cmoPatientId,
             DmpSampleMetadata dmpSampleMetadata) throws ParseException {
         SampleMetadata sampleMetadata = buildNewSampleMetadataFromDmpSample(cmoPatientId, dmpSampleMetadata);
-        sampleMetadata.setImportDate(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        sampleMetadata.setImportDate(Instant.now().toEpochMilli());
 
         SmileSample sample = new SmileSample();
         sample.addSampleMetadata(sampleMetadata);
@@ -145,8 +144,7 @@ public class SampleDataFactory {
             throws JsonProcessingException {
         SampleMetadata sampleMetadata =
                 mapper.readValue(sampleMetadataJson, SampleMetadata.class);
-        sampleMetadata.setImportDate(
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        sampleMetadata.setImportDate(Instant.now().toEpochMilli());
 
         // standardize value for sex (M -> Male, F -> Female)
         String sex = resolveIgoSampleSex(sampleMetadata.getSex());

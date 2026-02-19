@@ -110,7 +110,8 @@ public class RequestController {
             method = RequestMethod.POST,
             produces = "application/json")
     public ResponseEntity<Object> fetchRequestsByImportDatePOST(@Parameter(description =
-            "JSON with 'startDate' (required) and 'endDate' (optional) to query for.", required = true)
+            "JSON with 'startDate' (required) and 'endDate' (optional) to query for as yyyy-MM-dd",
+            required = true)
             @RequestBody DateRange dateRange,  ReturnTypeDetails returnType) throws Exception {
         // get request summary for given date range
         List<RequestSummary> requestSummaryList;
