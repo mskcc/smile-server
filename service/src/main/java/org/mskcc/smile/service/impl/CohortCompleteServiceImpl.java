@@ -46,8 +46,10 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     public void saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
-        if (sampleIds == null) {
-            LOG.error("No samples saved for cohort: " + cohort.getCohortId());
+        if (sampleIds == null || sampleIds.isEmpty()) {
+            LOG.error("No samples saved for cohort: " + cohort.getCohortId()
+                    + " - persisting cohort to SMILE and exiting.");
+            return;
         }
 
         Map<String, Object> result

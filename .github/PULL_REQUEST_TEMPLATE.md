@@ -36,7 +36,6 @@ Please follow these checks if any changes were made to any classes in the web, s
 
 **Code checks:**
 - [ ] Endpoints were tested to ensure their integrity.
-- [ ] Screenshots have been provided to demonstrate changes made to the response body JSON schema and/or swagger page.
 - [ ] Unit tests were updated in relation to updates to the mocked test data.
 
 If no unit tests were updated or added, then please explain why: [insert details here]
