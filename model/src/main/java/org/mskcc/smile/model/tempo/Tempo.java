@@ -28,8 +28,8 @@ public class Tempo implements Serializable {
     private Boolean billed;
     private String billedBy;
     private String costCenter;
-    private String initialPipelineRunDate;
-    private String embargoDate;
+    private String initialPipelineRunDate; // yyyy-MM-dd
+    private String embargoDate; // yyyy-MM-dd
     @Relationship(type = "HAS_EVENT", direction = Relationship.Direction.OUTGOING)
     private List<BamComplete> bamCompleteEvents;
     @Relationship(type = "HAS_EVENT", direction = Relationship.Direction.OUTGOING)

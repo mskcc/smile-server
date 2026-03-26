@@ -427,6 +427,26 @@ public class TempoServiceTest {
     }
 
     @Test
+    public void testInitAndSaveBatchTempoDataWithFallbackToCohortDate() throws Exception {
+        // use a tumor sample that doet not belong to an existing cohort
+        String igoId = "MOCKREQUEST1_B_3";
+        Tempo preTempo = tempoService.getTempoDataBySamplePrimaryId(igoId);
+        Assertions.assertNull(preTempo);
+
+        // call batch create tempo nodes for current sample
+        SmileSample sample = sampleService.getSampleByInputId(igoId);
+        String fallbackCohortDate = "2024-06-01 12:00";
+        Integer actual =
+                tempoService.batchCreateTempoNodesForSamplePrimaryIds(
+                        Arrays.asList("MOCKREQUEST1_B_3"), fallbackCohortDate);
+        Assertions.assertEquals(1, actual);
+        Tempo tempo = tempoService.getTempoDataBySampleId(sample);
+        // verify that the tempo dates are set based on the fallback date
+        Assertions.assertEquals("2024-06-01", tempo.getInitialPipelineRunDate());
+        Assertions.assertEquals("2025-12-01", tempo.getEmbargoDate());
+    }
+
+    @Test
     public void testCohortCompletePipelineVersionNull() throws Exception {
         CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
         cohortCompleteService.saveCohort(new Cohort(ccJson), ccJson.getTumorNormalPairsAsSet());
