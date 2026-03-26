@@ -200,7 +200,10 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
            }[0] AS earliestDeliveryDate
            WITH custodianInformation, s.smileSampleId as smileSampleId, earliestDeliveryDate,
            CASE WHEN (earliestDeliveryDate IS NULL OR earliestDeliveryDate = "")
-            THEN $ccDeliveryDate ELSE earliestDeliveryDate END AS initialPipelineRunDate
+            THEN apoc.date.parse($ccDeliveryDate,"ms","yyyy-MM-dd HH:mm")
+            ELSE apoc.date.parse(earliestDeliveryDate,"ms","yyyy-MM-dd HH:mm") END AS initPipelineRunDatetime
+           WITH custodianInformation, smileSampleId, earliestDeliveryDate,
+            apoc.date.format(initPipelineRunDatetime, "ms", "yyyy-MM-dd") AS initialPipelineRunDate
            WITH custodianInformation, smileSampleId, earliestDeliveryDate, initialPipelineRunDate,
            CASE WHEN (initialPipelineRunDate IS NULL OR initialPipelineRunDate = "") THEN ""
             ELSE  apoc.temporal.format(datetime(apoc.date.format(
@@ -244,17 +247,17 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
               AND (earliestDeliveryDate IS NULL)) THEN ""
             ELSE CASE WHEN (t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = ""
               OR earliestDeliveryDate < t.initialPipelineRunDate)
-            THEN earliestDeliveryDate
-            ELSE t.initialPipelineRunDate
+            THEN apoc.date.parse(earliestDeliveryDate,"ms","yyyy-MM-dd HH:mm")
+            ELSE apoc.date.parse(t.initialPipelineRunDate,"ms","yyyy-MM-dd")
             END
-           END AS updatedInitRundate
-           SET t.initialPipelineRunDate = updatedInitRundate
+           END AS updatedInitRundatetime
+           SET t.initialPipelineRunDate = apoc.date.format(updatedInitRundatetime,"ms","yyyy-MM-dd")
            WITH s, t, today,
            CASE WHEN (t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = "")
             THEN ""
             ELSE apoc.temporal.format(datetime(
               apoc.date.format(apoc.date.parse(t.initialPipelineRunDate, "ms", "yyyy-MM-dd"),
-              "ms", "yyyy-MM-dd")) + Duration({months:18}), 'YYYY-MM-dd')
+              "ms", "yyyy-MM-dd")) + Duration({months:18}), 'yyyy-MM-dd')
            END as updatedEmbargoDate
            SET t.embargoDate = updatedEmbargoDate
            WITH s,t,today,
