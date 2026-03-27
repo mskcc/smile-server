@@ -372,9 +372,13 @@ public class SampleServiceImpl implements SmileSampleService {
             return Boolean.TRUE;
         }
         // if there is a change to the cmo sample label..
-        if (isResearchSample && !existingSampleMetadata.getCmoSampleName()
-                .equals(sampleMetadata.getCmoSampleName())) {
-            return Boolean.TRUE;
+        if (isResearchSample) {
+            String currentLabel = existingSampleMetadata.getCmoSampleName();
+            String newLabel = sampleMetadata.getCmoSampleName();
+            if ((!StringUtils.isBlank(currentLabel) && !currentLabel.equals(newLabel))
+                    || (StringUtils.isBlank(currentLabel) && !StringUtils.isBlank(newLabel))) {
+                return Boolean.TRUE;
+            }
         }
         // if there needs to be a patient swap..
         if (!existingSampleMetadata.getCmoPatientId()
