@@ -52,19 +52,46 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
             return;
         }
 
-        Map<String, Object> result
-                = sampleService.getMatchedAndUnmatchedInputSampleIds(new ArrayList<>(sampleIds));
-        if (result.isEmpty()) {
-            LOG.error("None of the samples provided in the cohort sample list are known to SMILE: "
-                    + mapper.writeValueAsString(result));
+        // process samples in chunks of 50
+        List<String> sampleIdList = new ArrayList<>(sampleIds);
+        List<String> primaryIds = new ArrayList<>();
+        List<String> unknownSamples = new ArrayList<>();
+        int chunkSize = 50;
+        boolean anyChunkMatched = false;
+
+        for (int i = 0; i < sampleIdList.size(); i += chunkSize) {
+            List<String> chunk = sampleIdList.subList(i, Math.min(i + chunkSize, sampleIdList.size()));
+            Map<String, Object> result = sampleService.getMatchedAndUnmatchedInputSampleIds(chunk);
+            if (result.isEmpty()) {
+                LOG.warn("None of the samples in chunk [" + i + "-"
+                        + Math.min(i + chunkSize, sampleIdList.size())
+                        + "] are known to SMILE - skipping chunk.");
+                unknownSamples.addAll(chunk);
+                continue;
+            }
+            anyChunkMatched = true;
+            List<String> chunkMatched = (List<String>) result.get("matchedPrimaryIds");
+            if (chunkMatched != null) {
+                primaryIds.addAll(chunkMatched);
+            }
+            List<String> chunkUnmatched = (List<String>) result.get("unmatchedIds");
+            if (chunkUnmatched != null) {
+                unknownSamples.addAll(chunkUnmatched);
+            }
+        }
+
+        if (!anyChunkMatched) {
+            LOG.error("None of the samples provided in the cohort sample list are known to SMILE.");
             throw new RuntimeException("Cohort does not have any known samples in SMILE"
                     + " - check data before reattempting.");
         }
 
-        // merge cohort-samples
-        List<String> primaryIds = (List<String>) result.get("matchedPrimaryIds");
+        // merge cohort-samples in chunks
         LOG.info("Adding cohort-sample edges in database for " + primaryIds.size() + " samples...");
-        cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), primaryIds);
+        for (int i = 0; i < primaryIds.size(); i += chunkSize) {
+            List<String> chunk = primaryIds.subList(i, Math.min(i + chunkSize, primaryIds.size()));
+            cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), chunk);
+        }
         LOG.info("Done.");
 
         // create tempo nodes for samples that do not already have tempo data in smile
@@ -72,8 +99,13 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         if (samplesByTempoStatus.containsKey("false")) {
             LOG.info("Creating TEMPO nodes for cohort samples...");
             List<String> samplesMissingTempoData = (List<String>) samplesByTempoStatus.get("false");
-            Integer actual = tempoService.batchCreateTempoNodesForSamplePrimaryIds(samplesMissingTempoData,
-                    cohort.getLatestCohortComplete().getDate());
+            int actual = 0;
+            for (int i = 0; i < samplesMissingTempoData.size(); i += chunkSize) {
+                List<String> chunk = samplesMissingTempoData.subList(
+                        i, Math.min(i + chunkSize, samplesMissingTempoData.size()));
+                actual += tempoService.batchCreateTempoNodesForSamplePrimaryIds(chunk,
+                        cohort.getLatestCohortComplete().getDate());
+            }
             if (actual != samplesMissingTempoData.size()) {
                 LOG.error("Actual number of TEMPO nodes created does not match expected. "
                         + "Actual = " + actual + ", expected = " + samplesMissingTempoData.size());
@@ -83,7 +115,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
             LOG.info("Done");
         }
 
-        // re-calculate the intiial pipeline rundate embargo date, and access level for samples
+        // re-calculate the initial pipeline rundate, embargo date, and access level for samples
         // that already have tempo data in smile
         if (samplesByTempoStatus.containsKey("true")) {
             LOG.info("Updating TEMPO nodes for cohort samples...");
@@ -93,7 +125,6 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         }
 
         // log and report unknown samples for reference
-        List<String> unknownSamples = (List<String>) result.get("unmatchedIds");
         if (!unknownSamples.isEmpty()) {
             StringBuilder builder = new StringBuilder();
             builder.append("[TEMPO COHORT COMPLETE FAILED SAMPLES] Could not import ")
