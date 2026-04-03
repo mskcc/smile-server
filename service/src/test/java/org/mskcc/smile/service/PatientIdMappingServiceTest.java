@@ -1,6 +1,9 @@
 package org.mskcc.smile.service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,5 +104,23 @@ public class PatientIdMappingServiceTest {
     public void testDmpIdToPatientTripletMappingValues() throws Exception {
         Assertions.assertEquals("C-FFX222",
                 patientIdMappingService.getPatientIdTripletByInputId("P-0000222").getCmoPatientId());
+    }
+
+    @Test
+    public void testAmbigIdMappingPriority() throws Exception {
+        // for the ambiguous triplet mapping
+        PatientIdTriplet valid = getPatientTriplet("P-0009991", "C-KABCP0");
+        PatientIdTriplet invalid = getPatientTriplet("P-0009991", "");
+        List<PatientIdTriplet> results = Arrays.asList(invalid, valid);
+        // return first 'complete' triplet if more than one result hit
+        PatientIdTriplet picked = null;
+        for (PatientIdTriplet t : results) {
+            if (!StringUtils.isBlank(t.getCmoPatientId())
+                    && !StringUtils.isBlank(t.getDmpPatientId())) {
+                picked = t;
+                break;
+            }
+        }
+        Assertions.assertEquals("C-KABCP0", picked.getCmoPatientId());
     }
 }

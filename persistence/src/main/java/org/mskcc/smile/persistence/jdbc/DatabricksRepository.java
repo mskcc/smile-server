@@ -3,6 +3,7 @@ package org.mskcc.smile.persistence.jdbc;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.mskcc.smile.model.internal.PatientIdTriplet;
 import org.mskcc.smile.model.internal.PatientIdTripletMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,15 @@ public class DatabricksRepository {
                 },
                 new PatientIdTripletMapper()
         );
+        // return first 'complete' triplet if more than one result hit
+        if (patientIds.size() > 1) {
+            for (PatientIdTriplet t : patientIds) {
+                if (!StringUtils.isBlank(t.getCmoPatientId())
+                        && !StringUtils.isBlank(t.getDmpPatientId())) {
+                    return t;
+                }
+            }
+        }
         return patientIds.isEmpty() ? null : patientIds.get(0);
     }
 
