@@ -44,6 +44,10 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
+        if (StringUtils.isBlank(cohort.getCohortStatus())) {
+            cohort.setCohortStatus("DELIVERED");
+        }
+
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
         if (sampleIds == null || sampleIds.isEmpty()) {
@@ -151,10 +155,22 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Override
     public Boolean hasUpdates(Cohort existingCohort, Cohort cohort) throws Exception {
         // check cohort complete data for updates first
-        Boolean hasUpdates = hasCohortCompleteUpdates(existingCohort, cohort);
+        if (hasCohortCompleteUpdates(existingCohort, cohort)) {
+            return Boolean.TRUE;
+        }
+        // check for change in cohort status
+        if (!StringUtils.isBlank(existingCohort.getCohortStatus())
+                && !StringUtils.isBlank(cohort.getCohortStatus())
+                && !existingCohort.getCohortStatus().equals(cohort.getCohortStatus())) {
+            return Boolean.TRUE;
+        }
+        // check for change in cohort samples list
         Set<String> newSamples = cohort.getCohortSamplePrimaryIds();
         newSamples.removeAll(existingCohort.getCohortSamplePrimaryIds());
-        return (hasUpdates || !newSamples.isEmpty());
+        if (!newSamples.isEmpty()) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     @Override

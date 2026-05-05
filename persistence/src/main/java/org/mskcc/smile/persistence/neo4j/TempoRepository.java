@@ -251,7 +251,12 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             ELSE apoc.date.parse(t.initialPipelineRunDate,"ms","yyyy-MM-dd")
             END
            END AS updatedInitRundatetime
-           SET t.initialPipelineRunDate = apoc.date.format(updatedInitRundatetime,"ms","yyyy-MM-dd")
+           WITH s,t,today, updatedInitRundatetime,
+            CASE WHEN (updatedInitRundatetime IS NULL OR updatedInitRundatetime = "")
+              THEN ""
+              ELSE apoc.date.format(updatedInitRundatetime,"ms","yyyy-MM-dd")
+            END AS finalUpdatedInitRundatetime
+           SET t.initialPipelineRunDate = finalUpdatedInitRundatetime
            WITH s, t, today,
            CASE WHEN (t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = "")
             THEN ""

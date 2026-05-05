@@ -24,6 +24,7 @@ public class Cohort implements Serializable {
     @Id @GeneratedValue
     private Long id;
     private String cohortId;
+    private String cohortStatus;
     @Relationship(type = "HAS_COHORT_COMPLETE", direction = Relationship.Direction.OUTGOING)
     private List<CohortComplete> cohortCompleteList;
     @Relationship(type = "HAS_COHORT_SAMPLE", direction = Relationship.Direction.OUTGOING)
@@ -31,8 +32,13 @@ public class Cohort implements Serializable {
 
     public Cohort() {}
 
+    /**
+     * Constructor with CCJson and status.
+     * @param ccJson
+     */
     public Cohort(CohortCompleteJson ccJson) {
         this.cohortId = ccJson.getCohortId();
+        this.cohortStatus = ccJson.getCohortStatus();
         addCohortComplete(new CohortComplete(ccJson));
     }
 
@@ -50,6 +56,14 @@ public class Cohort implements Serializable {
 
     public void setCohortId(String cohortId) {
         this.cohortId = cohortId;
+    }
+
+    public String getCohortStatus() {
+        return cohortStatus;
+    }
+
+    public void setCohortStatus(String cohortStatus) {
+        this.cohortStatus = cohortStatus;
     }
 
     /**

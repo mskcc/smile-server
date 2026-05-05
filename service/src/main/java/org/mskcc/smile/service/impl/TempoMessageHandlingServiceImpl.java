@@ -78,6 +78,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     @Value("${tempo.update_cohort_pub_topic:}")
     private String TEMPO_UPDATE_COHORT_PUB_TOPIC;
 
+    @Value("${tempo.provisional_cohort_sub_topic}")
+    private String TEMPO_PROVISIONAL_COHORT_SUB_TOPIC;
+
     @Value("${num.tempo_msg_handler_threads:1}")
     private int NUM_TEMPO_MSG_HANDLERS;
 
@@ -117,6 +120,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<List<String>>();
     private static final BlockingQueue<CohortCompleteJson> updateTempoCohortQueue =
             new LinkedBlockingQueue<CohortCompleteJson>();
+    private static final BlockingQueue<CohortCompleteJson> provisionalCohortQueue =
+            new LinkedBlockingQueue<CohortCompleteJson>();
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
@@ -126,6 +131,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     private static CountDownLatch tempoEmbargoStatusHandlerShutdownLatch;
     private static CountDownLatch uploadSamplesToS3HandlerShutdownLatch;
     private static CountDownLatch updateTempoCohortHandlerShutdownLatch;
+    private static CountDownLatch provisionalCohortHandlerShutdownLatch;
 
     private class BamCompleteHandler implements Runnable {
         final Phaser phaser;
@@ -310,6 +316,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         } else if (cohortCompleteService.hasUpdates(existingCohort,
                                 cohort)) {
                             LOG.info("Received updates for cohort: " + ccJson.getCohortId());
+                            existingCohort.setCohortStatus("DELIVERED");
                             if (cohortCompleteService.hasCohortCompleteUpdates(existingCohort, cohort)) {
                                 existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
                             }
@@ -534,6 +541,52 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
+    private class ProvisionalCohortHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        ProvisionalCohortHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    CohortCompleteJson ccJson
+                            = provisionalCohortQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (ccJson != null) {
+                        Cohort cohort = new Cohort(ccJson);
+                        Cohort existingCohort =
+                                cohortCompleteService.getCohortByCohortId(ccJson.getCohortId());
+
+                        // if cohort does not already exist then persist as provisional cohort
+                        if (existingCohort == null) {
+                            LOG.info("Persisting provisional cohort to SMILE...");
+                            cohortCompleteService.saveCohort(cohort,
+                                    ccJson.getTumorPrimaryIdsAsSet());
+                        } else if (cohortCompleteService.hasUpdates(existingCohort,
+                                cohort)) {
+                            LOG.info("Received updates for provisional cohort: " + ccJson.getCohortId());
+                            existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
+                            cohortCompleteService.saveCohort(existingCohort,
+                                    ccJson.getTumorPrimaryIdsAsSet());
+                        } else {
+                            LOG.error("No new updates to persist for provisional cohort:  "
+                                    + ccJson.getCohortId());
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of provisional cohort message", e);
+                }
+                provisionalCohortHandlerShutdownLatch.countDown();
+            }
+        }
+    }
+
     private TempoSampleUpdateMessage genTempoSampleUpdateMessage(Set<String> samplePrimaryIds)
             throws Exception {
         // validate and build tempo samples to publish to cBioPortal
@@ -615,6 +668,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             setupTempoEmbargoStatusHandler(messagingGateway, this);
             setupUploadSamplesToS3BucketHandler(messagingGateway, this);
             setupUpdateTempoCohortHandler(messagingGateway, this);
+            setupProvisionalCohortHandler(messagingGateway, this);
             initializeMessageHandlers();
             initialized = true;
         } else {
@@ -730,6 +784,21 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     }
 
     @Override
+    public void provisionalCohortHandler(CohortCompleteJson ccJson) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            provisionalCohortQueue.put(ccJson);
+        } else {
+            LOG.error("Shutdown initiated, not accepting request to persist provisional TEMPO cohort: "
+                    + ccJson);
+            throw new IllegalStateException("Shutdown initiated, not handling any "
+                    + "more provisional TEMPO cohort events");
+        }
+    }
+
+    @Override
     public void shutdown() throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
@@ -743,6 +812,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         tempoEmbargoStatusHandlerShutdownLatch.await();
         uploadSamplesToS3HandlerShutdownLatch.await();
         updateTempoCohortHandlerShutdownLatch.await();
+        provisionalCohortHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -826,6 +896,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new UpdateTempoCohortHandler(updateTempoCohortPhaser));
         }
         updateTempoCohortPhaser.arriveAndAwaitAdvance();
+
+        // provisional cohort handler
+        provisionalCohortHandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
+        final Phaser provisionalCohortPhaser = new Phaser();
+        provisionalCohortPhaser.register();
+        for (int lc = 0; lc < NUM_TEMPO_MSG_HANDLERS; lc++) {
+            provisionalCohortPhaser.register();
+            exec.execute(new ProvisionalCohortHandler(provisionalCohortPhaser));
+        }
+        provisionalCohortPhaser.arriveAndAwaitAdvance();
     }
 
     private void setupBamCompleteHandler(Gateway gateway,
@@ -946,7 +1026,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     CohortCompleteJson cohortCompleteData =
                             (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
                                     cohortCompleteJson, new TypeReference<CohortCompleteJson>() {});
-
+                    cohortCompleteData.setCohortStatus("DELIVERED");
                     tempoMessageHandlingService.cohortCompleteHandler(cohortCompleteData);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of Cohort Complete event: "
@@ -1045,11 +1125,37 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     }
                     CohortCompleteJson ccJson = (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
                                     ccJsonString, new TypeReference<CohortCompleteJson>() {});
+                    ccJson.setCohortStatus("DELIVERED");
                     tempoMessageHandlingService.updateTempoCohortHandler(ccJson);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of TEMPO "
                             + "cohort update message: "
                             + TEMPO_UPDATE_COHORT_SUB_TOPIC, e);
+                }
+            }
+        });
+    }
+
+    private void setupProvisionalCohortHandler(Gateway gateway,
+            TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
+        gateway.subscribe(TEMPO_PROVISIONAL_COHORT_SUB_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                try {
+                    LOG.info("Received message on topic: " + TEMPO_PROVISIONAL_COHORT_SUB_TOPIC);
+                    String ccJsonString = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (ccJsonString == null) {
+                        LOG.error("Exception occurred during processing of NATS message data");
+                        return;
+                    }
+                    CohortCompleteJson ccJson = (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
+                                    ccJsonString, new TypeReference<CohortCompleteJson>() {});
+                    ccJson.setCohortStatus("PROVISIONAL");
+                    tempoMessageHandlingService.provisionalCohortHandler(ccJson);
+                } catch (Exception e) {
+                    LOG.error("Exception occurred during processing of provisional TEMPO "
+                            + "cohort message: "
+                            + TEMPO_PROVISIONAL_COHORT_SUB_TOPIC, e);
                 }
             }
         });

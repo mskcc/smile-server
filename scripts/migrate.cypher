@@ -194,3 +194,8 @@ SET rm.importDate = apoc.date.parse(rm.importDate, "ms", "yyyy-MM-dd")
 
 MATCH (sm: SampleMetadata)
 SET sm.importDate = apoc.date.parse(sm.importDate, "ms", "yyyy-MM-dd")
+
+// add cohortStatus to Cohort node
+MATCH (c: Cohort)
+SET c.cohortStatus = "DELIVERED"
+
