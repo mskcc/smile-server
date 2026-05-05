@@ -281,6 +281,32 @@ public class TempoServiceTest {
         Assertions.assertTrue(hasUpdates);
     }
 
+    /**
+     * Mocks the checks that happen when determining if a valid update has arrived for an existing cohort.
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateProvisionalCohortToDelivered() throws Exception {
+        CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        Cohort provisionalCohort = new Cohort(ccJson);
+        provisionalCohort.setCohortStatus("PROVISIONAL");
+        cohortCompleteService.saveCohort(provisionalCohort, ccJson.getTumorNormalPairsAsSet());
+        Cohort savedCohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertEquals("PROVISIONAL", savedCohort.getCohortStatus());
+
+        CohortCompleteJson ccJsonUpdate = getCohortEventData("mockCohortCompleteCCSPPPQQQQUpdated");
+        Cohort updatedCohort = new Cohort(ccJsonUpdate);
+        updatedCohort.setCohortStatus("DELIVERED");
+        savedCohort.addCohortComplete(updatedCohort.getLatestCohortComplete());
+
+        Boolean hasUpdates = cohortCompleteService.hasUpdates(savedCohort, updatedCohort);
+        Assertions.assertTrue(hasUpdates);
+        savedCohort.setCohortStatus("DELIVERED");
+        cohortCompleteService.saveCohort(savedCohort, updatedCohort.getCohortSamplePrimaryIds());
+        Cohort cohortAfterUpdate = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertEquals("DELIVERED", cohortAfterUpdate.getCohortStatus());
+    }
+
     @Test
     public void testPopulatingTempoDataNoInitialRunDate() throws Exception {
         // using a tumor sample to trigger population of tempo data
