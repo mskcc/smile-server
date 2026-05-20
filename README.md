@@ -46,6 +46,12 @@ Build image with Docker
 docker build -t <repo>/<tag>:<version> .
 ```
 
+or with Apple silicon
+
+```
+docker build --platform linux/amd64 -t <repo>/<tag>:<version> .
+```
+
 Push image to DockerHub
 
 ```
