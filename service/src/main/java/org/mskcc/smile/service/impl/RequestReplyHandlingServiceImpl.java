@@ -331,7 +331,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         gateway.replySub(PATIENT_SAMPLES_REQREPLY_TOPIC, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
-                LOG.info("Received message on topic: " + PATIENT_SAMPLES_REQREPLY_TOPIC);
+                LOG.debug("Received message on topic: " + PATIENT_SAMPLES_REQREPLY_TOPIC);
                 try {
                     if (StringUtils.isBlank(new String(msg.getData()))) {
                         LOG.error("Expected a patient ID but message received is empty: " + msg
@@ -353,7 +353,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         gateway.replySub(SAMPLES_BY_CMO_LABEL_REQREPLY_TOPIC, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
-                LOG.info("Received message on topic: " + SAMPLES_BY_CMO_LABEL_REQREPLY_TOPIC);
+                LOG.debug("Received message on topic: " + SAMPLES_BY_CMO_LABEL_REQREPLY_TOPIC);
                 try {
                     if (StringUtils.isBlank(new String(msg.getData()))) {
                         LOG.error("Expected a CMO label but message received is empty: " + msg
@@ -375,7 +375,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         gateway.replySub(SAMPLES_BY_ALT_ID_REQREPLY_TOPIC, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
-                LOG.info("Received message on topic: " + SAMPLES_BY_ALT_ID_REQREPLY_TOPIC);
+                LOG.debug("Received message on topic: " + SAMPLES_BY_ALT_ID_REQREPLY_TOPIC);
                 try {
                     if (StringUtils.isBlank(new String(msg.getData()))) {
                         LOG.error("Expected an alt ID but message received is empty: " + msg
@@ -397,7 +397,7 @@ public class RequestReplyHandlingServiceImpl implements RequestReplyHandlingServ
         gateway.replySub(PATIENT_MAPPING_REQREPLY_TOPIC, new MessageConsumer() {
             @Override
             public void onMessage(Message msg, Object message) {
-                LOG.info("Received message on topic: " + PATIENT_MAPPING_REQREPLY_TOPIC);
+                LOG.debug("Received message on topic: " + PATIENT_MAPPING_REQREPLY_TOPIC);
                 try {
                     requestReplyHandlingServiceImpl.patientIdMappingHandler(
                             new String(msg.getData()), msg.getReplyTo());
