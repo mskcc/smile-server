@@ -122,6 +122,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     + smileSample.getPrimarySampleAlias());
 
                             sampleService.saveSmileSample(smileSample);
+                            sampleService.setSampleRevisableTrue(smileSample.getSmileSampleId());
                             LOG.info("Publishing metadata history for new sample: "
                                     + smileSample.getPrimarySampleAlias());
                             messagingGateway.publish(CONS_DMP_NEW_SAMPLE_TOPIC,
@@ -133,6 +134,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     + smileSample.getPrimarySampleAlias());
                             existingSample.updateSampleMetadata(smileSample.getLatestSampleMetadata());
                             sampleService.saveSmileSample(existingSample);
+                            sampleService.setSampleRevisableTrue(existingSample.getSmileSampleId());
                             messagingGateway.publish(CONS_DMP_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(smileSample));
                         } else {
@@ -176,6 +178,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     + smileSample.getPrimarySampleAlias());
 
                             sampleService.saveSmileSample(smileSample);
+                            sampleService.setSampleRevisableTrue(smileSample.getSmileSampleId());
                             LOG.info("Publishing metadata history for new sample: "
                                     + smileSample.getPrimarySampleAlias());
                             messagingGateway.publish(CONS_DMP_NEW_SAMPLE_TOPIC,
@@ -187,6 +190,7 @@ public class ClinicalMessageHandlingServiceImpl implements ClinicalMessageHandli
                                     + smileSample.getPrimarySampleAlias());
                             existingSample.updateSampleMetadata(smileSample.getLatestSampleMetadata());
                             sampleService.saveSmileSample(existingSample);
+                            sampleService.setSampleRevisableTrue(existingSample.getSmileSampleId());
                             messagingGateway.publish(CONS_DMP_SAMPLE_UPDATE_TOPIC,
                                     mapper.writeValueAsString(smileSample));
                         } else {

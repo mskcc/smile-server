@@ -63,7 +63,9 @@ public class RequestServiceImpl implements SmileRequestService {
                 for (SmileSample s: request.getSmileSampleList()) {
                     // considering adding the patientService.savePatient() stuff here
                     // and remove from the sample service.
-                    updatedSamples.add(sampleService.saveSmileSample(s));
+                    sampleService.saveSmileSample(s);
+                    sampleService.setSampleRevisableTrue(s.getSmileSampleId());
+                    updatedSamples.add(s);
                 }
                 request.setSmileSampleList(updatedSamples);
             }
