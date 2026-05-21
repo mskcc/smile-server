@@ -206,6 +206,11 @@ public class SmileSample implements Serializable {
         addSampleMetadata(sampleMetadata);
     }
 
+    /**
+     * Updates sample instance with given metadata.
+     * @param sampleMetadata
+     * @throws ParseException 
+     */
     public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
         sampleMetadata.setId(null);
         this.sampleClass = sampleMetadata.getTumorOrNormal();
