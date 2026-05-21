@@ -18,12 +18,24 @@ public class DbGap implements Serializable {
     private UUID smileDbGapId;
     private String dbGapStudy;
     private String irbConsentProtocol;
+    private String collectionStudy;
+    private String dateOfConsent;
+    private String genomicResearchUseStudy;
+    private String consentVersion;
 
     public DbGap() {}
 
+    /**
+     * DbGap constructor.
+     * @param dbGapJson
+     */
     public DbGap(DbGapJson dbGapJson) {
         this.dbGapStudy = dbGapJson.getDbGapStudy();
         this.irbConsentProtocol = dbGapJson.getIrbConsentProtocol();
+        this.collectionStudy = dbGapJson.getCollectionStudy();
+        this.dateOfConsent = dbGapJson.getDateOfConsent();
+        this.genomicResearchUseStudy = dbGapJson.getGenomicResearchUseStudy();
+        this.consentVersion = dbGapJson.getConsentVersion();
     }
 
     /**
@@ -56,6 +68,38 @@ public class DbGap implements Serializable {
 
     public void setIrbConsentProtocol(String irbConsentProtocol) {
         this.irbConsentProtocol = irbConsentProtocol;
+    }
+
+    public String getCollectionStudy() {
+        return collectionStudy;
+    }
+
+    public void setCollectionStudy(String collectionStudy) {
+        this.collectionStudy = collectionStudy;
+    }
+
+    public String getDateOfConsent() {
+        return dateOfConsent;
+    }
+
+    public void setDateOfConsent(String dateOfConsent) {
+        this.dateOfConsent = dateOfConsent;
+    }
+
+    public String getGenomicResearchUseStudy() {
+        return genomicResearchUseStudy;
+    }
+
+    public void setGenomicResearchUseStudy(String genomicResearchUseStudy) {
+        this.genomicResearchUseStudy = genomicResearchUseStudy;
+    }
+
+    public String getConsentVersion() {
+        return consentVersion;
+    }
+
+    public void setConsentVersion(String consentVersion) {
+        this.consentVersion = consentVersion;
     }
 
     @Override

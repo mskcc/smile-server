@@ -30,6 +30,22 @@ public interface SmileSampleRepository extends Neo4jRepository<SmileSample, UUID
     SmileSample findSampleBySampleSmileId(@Param("smileSampleId") UUID smileSampleId);
 
     @Query("""
+           MATCH (s: Sample)<-[:IS_ALIAS]-(sa: SampleAlias)
+           WITH s, sa, COLLECT {
+            MATCH (s)-[:HAS_METADATA]->(sm: SampleMetadata)
+            RETURN sm ORDER BY sm.importDate DESC LIMIT 1
+           } as latestSm
+           WITH s, sa, latestSm[0] as latestSm
+           WHERE latestSm.primaryId = $inputId
+           OR latestSm.cmoSampleName = $inputId
+           OR latestSm.investigatorSampleId = $inputId
+           OR s.smileSampleId = $inputId
+           OR sa.value = $inputId
+           RETURN DISTINCT s.smileSampleId
+           """)
+    UUID findSmileSampleIdByInputId(@Param("inputId") String inputId);
+
+    @Query("""
            MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $primaryId})
            RETURN DISTINCT s
            """)

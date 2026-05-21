@@ -473,6 +473,11 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
+    public UUID getSmileSampleIdByInputId(String inputId) throws Exception {
+        return sampleRepository.findSmileSampleIdByInputId(inputId);
+    }
+    
+    @Override
     public void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId) {
         sampleRepository.createSampleRequestRelationship(smileSampleId, smileRequestId);
     }

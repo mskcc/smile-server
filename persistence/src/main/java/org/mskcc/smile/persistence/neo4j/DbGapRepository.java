@@ -27,7 +27,11 @@ public interface DbGapRepository extends Neo4jRepository<DbGap, UUID> {
            MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $dbGap.primaryId})
            MERGE (s)-[:HAS_DBGAP]->(d: DbGap)
            SET d.dbGapStudy = $dbGap.dbGapStudy, d.smileDbGapId = $smileDbGapId,
-           d.irbConsentProtocol = $dbGap.irbConsentProtocol
+           d.irbConsentProtocol = $dbGap.irbConsentProtocol,
+           d.collectionStudy = $dbGap.collectionStudy,
+           d.dateOfConsent = $dbGap.dateOfConsent,
+           d.genomicResearchUseStudy = $dbGap.genomicResearchUseStudy,
+           d.consentVersion = $dbGap.consentVersion
            RETURN DISTINCT d
            """)
     DbGap updateDbGap(@Param("smileDbGapId") UUID smileDbGapId, @Param("dbGap") DbGapJson dbGap);
