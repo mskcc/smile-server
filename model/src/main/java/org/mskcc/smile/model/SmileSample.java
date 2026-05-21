@@ -187,6 +187,7 @@ public class SmileSample implements Serializable {
         SampleMetadata latestSampleMetadata = getLatestSampleMetadata();
 
         sampleMetadata.setId(null);
+        this.sampleClass = latestSampleMetadata.getTumorOrNormal();
         sampleMetadata.setCmoPatientId(latestSampleMetadata.getCmoPatientId());
         sampleMetadata.setInvestigatorSampleId(latestSampleMetadata.getInvestigatorSampleId());
         sampleMetadata.setSampleName(latestSampleMetadata.getSampleName());
@@ -207,6 +208,7 @@ public class SmileSample implements Serializable {
 
     public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
         sampleMetadata.setId(null);
+        this.sampleClass = sampleMetadata.getTumorOrNormal();
         addSampleMetadata(sampleMetadata);
     }
 

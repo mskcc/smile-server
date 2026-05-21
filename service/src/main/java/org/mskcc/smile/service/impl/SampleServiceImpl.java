@@ -96,7 +96,8 @@ public class SampleServiceImpl implements SmileSampleService {
 
             // If there is a TumorOrNormal update in SampleMetadata level,
             // then sampleClass should also be updated in the SmileSample level
-            if (!existingSample.getSampleClass().equals(sampleMetadata.getTumorOrNormal())) {
+            if (StringUtils.isBlank(existingSample.getSampleClass())
+                    || !existingSample.getSampleClass().equals(sampleMetadata.getTumorOrNormal())) {
                 existingSample.setSampleClass(sampleMetadata.getTumorOrNormal());
             }
 
