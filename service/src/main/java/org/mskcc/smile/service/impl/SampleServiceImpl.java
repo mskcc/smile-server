@@ -96,7 +96,8 @@ public class SampleServiceImpl implements SmileSampleService {
 
             // If there is a TumorOrNormal update in SampleMetadata level,
             // then sampleClass should also be updated in the SmileSample level
-            if (!existingSample.getSampleClass().equals(sampleMetadata.getTumorOrNormal())) {
+            if (StringUtils.isBlank(existingSample.getSampleClass())
+                    || !existingSample.getSampleClass().equals(sampleMetadata.getTumorOrNormal())) {
                 existingSample.setSampleClass(sampleMetadata.getTumorOrNormal());
             }
 
@@ -128,8 +129,6 @@ public class SampleServiceImpl implements SmileSampleService {
             sampleRepository.save(existingSample);
             toReturn = existingSample;
         }
-        // update revisable to true for sample
-        sampleRepository.updateRevisableBySampleId(toReturn.getSmileSampleId(), Boolean.TRUE);
         return toReturn;
     }
 
@@ -292,14 +291,6 @@ public class SampleServiceImpl implements SmileSampleService {
             saveSmileSample(existingSample);
             return Boolean.TRUE;
         }
-        // if sample revisable is false then return true so that message handler
-        // publishes message downstream (allows dashboard to make changes to db directly
-        // without having to wait or poll for updates)
-        if (!existingSample.getRevisable()) {
-            sampleRepository.updateRevisableBySampleId(existingSample.getSmileSampleId(), Boolean.TRUE);
-            return Boolean.TRUE;
-        }
-
         // no updates to persist to sample, log and return false
         LOG.info("There are no updates to persist for sample: "
                 + sampleMetadata.getPrimaryId());
@@ -359,32 +350,34 @@ public class SampleServiceImpl implements SmileSampleService {
     }
 
     @Override
-    public Boolean sampleHasMetadataUpdates(SampleMetadata existingSampleMetadata,
-            SampleMetadata sampleMetadata, Boolean isResearchSample, Boolean fromLims) throws Exception {
-        String existingMetadata = mapper.writeValueAsString(existingSampleMetadata);
-        String currentMetadata = mapper.writeValueAsString(sampleMetadata);
+    public Boolean sampleHasMetadataUpdates(SampleMetadata existingMetadata,
+            SampleMetadata newMetadata, Boolean isResearchSample, Boolean fromLims) throws Exception {
+        String existingMetadataStr = mapper.writeValueAsString(existingMetadata);
+        String newMetadataStr = mapper.writeValueAsString(newMetadata);
         // if sample is from LIMS, look for updates by igo properties
-        if (fromLims && !jsonComparator.isConsistentByIgoProperties(currentMetadata, existingMetadata)) {
+        if (fromLims && !jsonComparator.isConsistentByIgoProperties(newMetadataStr, existingMetadataStr)) {
             return Boolean.TRUE;
         }
         // if sample is not from LIMS, look for updates by all properties
-        if (!fromLims && !jsonComparator.isConsistent(currentMetadata, existingMetadata)) {
+        if (!fromLims && !jsonComparator.isConsistent(newMetadataStr, existingMetadataStr)) {
             return Boolean.TRUE;
         }
         // if there is a change to the cmo sample label..
         if (isResearchSample) {
-            String currentLabel = existingSampleMetadata.getCmoSampleName();
-            String newLabel = sampleMetadata.getCmoSampleName();
+            String currentLabel = existingMetadata.getCmoSampleName();
+            String newLabel = newMetadata.getCmoSampleName();
             if ((!StringUtils.isBlank(currentLabel) && !currentLabel.equals(newLabel))
                     || (StringUtils.isBlank(currentLabel) && !StringUtils.isBlank(newLabel))) {
                 return Boolean.TRUE;
             }
         }
+
         // if there needs to be a patient swap..
-        if (!existingSampleMetadata.getCmoPatientId()
-                .equals(sampleMetadata.getCmoPatientId())) {
+        if (StringUtils.isBlank(existingMetadata.getCmoPatientId())
+                || !existingMetadata.getCmoPatientId().equals(newMetadata.getCmoPatientId())) {
             return Boolean.TRUE;
         }
+
         return Boolean.FALSE;
     }
 
@@ -555,5 +548,10 @@ public class SampleServiceImpl implements SmileSampleService {
     @Override
     public Map<String, Object> getMatchedAndUnmatchedInputSampleIds(List<String> inputIds) throws Exception {
         return sampleRepository.findMatchedAndUnmatchedInputSampleIds(inputIds);
+    }
+
+    @Override
+    public void setSampleRevisableTrue(UUID smileSampleId) {
+        sampleRepository.updateRevisableBySampleId(smileSampleId, Boolean.TRUE);
     }
 }

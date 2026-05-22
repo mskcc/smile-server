@@ -241,11 +241,12 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             100, TimeUnit.MILLISECONDS);
                     if (sampleMetadataEntry != null) {
                         // Boolean arg in updateSampleMetadata refers to fromLims
+                        SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
+                                sampleMetadataEntry.getValue().getIgoRequestId(),
+                                sampleMetadataEntry.getValue().getPrimaryId());
+                        Boolean fromLims = sampleMetadataEntry.getKey();
                         if (sampleService.updateSampleMetadata(sampleMetadataEntry.getValue(),
-                                sampleMetadataEntry.getKey())) {
-                            SmileSample existingSample = sampleService.getResearchSampleByRequestAndIgoId(
-                                    sampleMetadataEntry.getValue().getIgoRequestId(),
-                                    sampleMetadataEntry.getValue().getPrimaryId());
+                                fromLims)) {
                             // temp patch to avoid deep-nested circular writing of
                             // sample -> tempo - > sample etc.
                             // tempo isn't needed when publishing sample metadata history
@@ -265,6 +266,7 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                                         Arrays.asList(sampleMetadataEntry.getValue().getPrimaryId()));
                             }
                         }
+                        sampleService.setSampleRevisableTrue(existingSample.getSmileSampleId());
                     }
                     if (interrupted && researchSampleUpdateQueue.isEmpty()) {
                         break;

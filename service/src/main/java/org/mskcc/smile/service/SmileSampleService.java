@@ -42,4 +42,5 @@ public interface SmileSampleService {
     List<String> getSamplePrimaryIdsBySmileTempoIds(List<UUID> smileTempoIds) throws Exception;
     String getSamplePrimaryIdBySampleInputId(String inputId) throws Exception;
     Map<String, Object> getMatchedAndUnmatchedInputSampleIds(List<String> inputIds) throws Exception;
+    void setSampleRevisableTrue(UUID smileSampleId);
 }

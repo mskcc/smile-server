@@ -164,6 +164,7 @@ public class CorrectCmoPatientHandlingServiceImpl implements CorrectCmoPatientHa
                             // the cmo patient id we are swapping to
                             sample.updateSampleMetadata(updatedMetadata);
                             sampleService.saveSmileSample(sample);
+                            sampleService.setSampleRevisableTrue(sample.getSmileSampleId());
                         }
 
                         // sample service is handling patient swapping now so we can simply rely on deleting
