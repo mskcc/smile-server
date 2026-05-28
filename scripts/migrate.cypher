@@ -199,3 +199,10 @@ SET sm.importDate = apoc.date.parse(sm.importDate, "ms", "yyyy-MM-dd")
 MATCH (c: Cohort)
 SET c.cohortStatus = "DELIVERED"
 
+// default new DbGap fields to empty string on all existing DbGap nodes
+MATCH (d: DbGap)
+SET d.collectionStudy = coalesce(d.collectionStudy, ""),
+    d.dateOfConsent = coalesce(d.dateOfConsent, ""),
+    d.genomicResearchUseStudy = coalesce(d.genomicResearchUseStudy, ""),
+    d.consentVersion = coalesce(d.consentVersion, "")
+

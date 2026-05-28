@@ -13,6 +13,14 @@ public class DbGapJson implements Serializable {
     private String dbGapStudy;
     @JsonProperty("irbConsentProtocol")
     private String irbConsentProtocol;
+    @JsonProperty("collectionStudy")
+    private String collectionStudy;
+    @JsonProperty("dateOfConsent")
+    private String dateOfConsent;
+    @JsonProperty("genomicResearchUseStudy")
+    private String genomicResearchUseStudy;
+    @JsonProperty("consentVersion")
+    private String consentVersion;
 
     public DbGapJson() {}
 
@@ -50,6 +58,38 @@ public class DbGapJson implements Serializable {
 
     public void setIrbConsentProtocol(String irbConsentProtocol) {
         this.irbConsentProtocol = irbConsentProtocol;
+    }
+
+    public String getCollectionStudy() {
+        return collectionStudy;
+    }
+
+    public void setCollectionStudy(String collectionStudy) {
+        this.collectionStudy = collectionStudy;
+    }
+
+    public String getDateOfConsent() {
+        return dateOfConsent;
+    }
+
+    public void setDateOfConsent(String dateOfConsent) {
+        this.dateOfConsent = dateOfConsent;
+    }
+
+    public String getGenomicResearchUseStudy() {
+        return genomicResearchUseStudy;
+    }
+
+    public void setGenomicResearchUseStudy(String genomicResearchUseStudy) {
+        this.genomicResearchUseStudy = genomicResearchUseStudy;
+    }
+
+    public String getConsentVersion() {
+        return consentVersion;
+    }
+
+    public void setConsentVersion(String consentVersion) {
+        this.consentVersion = consentVersion;
     }
 
     @Override

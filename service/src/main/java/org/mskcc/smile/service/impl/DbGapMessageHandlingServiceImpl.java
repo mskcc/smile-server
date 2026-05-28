@@ -2,6 +2,7 @@ package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.nats.client.Message;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -68,12 +69,14 @@ public class DbGapMessageHandlingServiceImpl implements DbGapMessageHandlingServ
                         // however this check will make extra sure that the primary id received
                         // in the nats message actually exists in the database before conducting
                         // further operations in the db
-                        if (sampleService.sampleExistsByInputId(dbGap.getPrimaryId())) {
+                        UUID sampleId = sampleService.getSmileSampleIdByInputId(dbGap.getPrimaryId());
+                        if (sampleId != null) {
                             StringBuilder builder = new StringBuilder();
                             builder.append("Updating dbGap information for sample: ")
                                     .append(dbGap.getPrimaryId());
                             LOG.info(builder.toString());
                             dbGapService.updateDbGap(dbGap);
+                            sampleService.setSampleRevisableTrue(sampleId);
                         } else {
                             LOG.error("[DBGAP UPDATE ERROR] Cannot update dbGap information for "
                                     + "sample that does not exist: " + dbGap.getPrimaryId());
