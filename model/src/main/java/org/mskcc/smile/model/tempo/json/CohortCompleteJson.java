@@ -36,7 +36,6 @@ public class CohortCompleteJson implements Serializable {
     private String status;
     @JsonProperty("pipelineVersion")
     private String pipelineVersion;
-    private String cohortStatus;
 
     public CohortCompleteJson() {}
 
@@ -149,14 +148,6 @@ public class CohortCompleteJson implements Serializable {
             }
         }
         return primaryIds;
-    }
-
-    public String getCohortStatus() {
-        return cohortStatus;
-    }
-
-    public void setCohortStatus(String cohortStatus) {
-        this.cohortStatus = cohortStatus;
     }
 
     @Override
