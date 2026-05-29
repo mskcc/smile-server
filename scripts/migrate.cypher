@@ -206,3 +206,9 @@ SET d.collectionStudy = coalesce(d.collectionStudy, ""),
     d.genomicResearchUseStudy = coalesce(d.genomicResearchUseStudy, ""),
     d.consentVersion = coalesce(d.consentVersion, "")
 
+// transfer PROVISIONAL Cohort.cohortStatus to CohortComplete.status
+MATCH (c:Cohort{cohortStatus:"PROVISIONAL"})-[:HAS_COHORT_COMPLETE]->(cc:CohortComplete)
+SET cc.status = "PROVISIONAL"
+
+// remove cohortStatus from Cohort node
+MATCH (c:Cohort) REMOVE c.cohortStatus
