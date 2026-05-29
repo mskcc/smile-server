@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.model.tempo.Cohort;
+import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
 import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
@@ -44,10 +45,6 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void saveCohort(Cohort cohort, Set<String> sampleIds) throws Exception {
-        if (StringUtils.isBlank(cohort.getCohortStatus())) {
-            cohort.setCohortStatus("DELIVERED");
-        }
-
         // persist new cohort complete event to the db
         cohortCompleteRepository.save(cohort);
         if (sampleIds == null || sampleIds.isEmpty()) {
@@ -158,10 +155,13 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
         if (hasCohortCompleteUpdates(existingCohort, cohort)) {
             return Boolean.TRUE;
         }
-        // check for change in cohort status
-        if (!StringUtils.isBlank(existingCohort.getCohortStatus())
-                && !StringUtils.isBlank(cohort.getCohortStatus())
-                && !existingCohort.getCohortStatus().equals(cohort.getCohortStatus())) {
+        // check for change in status of the latest cohort complete event
+        CohortComplete existingLatest = existingCohort.getLatestCohortComplete();
+        CohortComplete incomingLatest = cohort.getLatestCohortComplete();
+        if (existingLatest != null && incomingLatest != null
+                && !StringUtils.isBlank(existingLatest.getStatus())
+                && !StringUtils.isBlank(incomingLatest.getStatus())
+                && !existingLatest.getStatus().equals(incomingLatest.getStatus())) {
             return Boolean.TRUE;
         }
         // check for change in cohort samples list

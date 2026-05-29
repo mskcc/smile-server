@@ -288,23 +288,21 @@ public class TempoServiceTest {
     @Test
     public void testUpdateProvisionalCohortToDelivered() throws Exception {
         CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        ccJson.setStatus("PROVISIONAL");
         Cohort provisionalCohort = new Cohort(ccJson);
-        provisionalCohort.setCohortStatus("PROVISIONAL");
         cohortCompleteService.saveCohort(provisionalCohort, ccJson.getTumorNormalPairsAsSet());
         Cohort savedCohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
-        Assertions.assertEquals("PROVISIONAL", savedCohort.getCohortStatus());
+        Assertions.assertEquals("PROVISIONAL", savedCohort.getLatestCohortComplete().getStatus());
 
         CohortCompleteJson ccJsonUpdate = getCohortEventData("mockCohortCompleteCCSPPPQQQQUpdated");
         Cohort updatedCohort = new Cohort(ccJsonUpdate);
-        updatedCohort.setCohortStatus("DELIVERED");
-        savedCohort.addCohortComplete(updatedCohort.getLatestCohortComplete());
 
         Boolean hasUpdates = cohortCompleteService.hasUpdates(savedCohort, updatedCohort);
         Assertions.assertTrue(hasUpdates);
-        savedCohort.setCohortStatus("DELIVERED");
+        savedCohort.addCohortComplete(updatedCohort.getLatestCohortComplete());
         cohortCompleteService.saveCohort(savedCohort, updatedCohort.getCohortSamplePrimaryIds());
         Cohort cohortAfterUpdate = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
-        Assertions.assertEquals("DELIVERED", cohortAfterUpdate.getCohortStatus());
+        Assertions.assertEquals("PASS", cohortAfterUpdate.getLatestCohortComplete().getStatus());
     }
 
     @Test

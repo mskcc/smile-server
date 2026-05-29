@@ -316,7 +316,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         } else if (cohortCompleteService.hasUpdates(existingCohort,
                                 cohort)) {
                             LOG.info("Received updates for cohort: " + ccJson.getCohortId());
-                            existingCohort.setCohortStatus("DELIVERED");
                             if (cohortCompleteService.hasCohortCompleteUpdates(existingCohort, cohort)) {
                                 existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
                             }
@@ -1026,7 +1025,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     CohortCompleteJson cohortCompleteData =
                             (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
                                     cohortCompleteJson, new TypeReference<CohortCompleteJson>() {});
-                    cohortCompleteData.setCohortStatus("DELIVERED");
                     tempoMessageHandlingService.cohortCompleteHandler(cohortCompleteData);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of Cohort Complete event: "
@@ -1125,7 +1123,6 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     }
                     CohortCompleteJson ccJson = (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
                                     ccJsonString, new TypeReference<CohortCompleteJson>() {});
-                    ccJson.setCohortStatus("DELIVERED");
                     tempoMessageHandlingService.updateTempoCohortHandler(ccJson);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of TEMPO "
@@ -1150,7 +1147,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     }
                     CohortCompleteJson ccJson = (CohortCompleteJson) NatsMsgUtil.convertObjectFromString(
                                     ccJsonString, new TypeReference<CohortCompleteJson>() {});
-                    ccJson.setCohortStatus("PROVISIONAL");
+                    ccJson.setStatus("PROVISIONAL");
                     tempoMessageHandlingService.provisionalCohortHandler(ccJson);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of provisional TEMPO "
