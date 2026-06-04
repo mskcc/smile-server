@@ -120,7 +120,8 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
 
     @Query("""
            MATCH (s: Sample)-[:HAS_METADATA]->(sm: SampleMetadata {primaryId: $billing.primaryId})
-           MATCH (s)-[:HAS_TEMPO]->(t: Tempo)
+           MERGE (s)-[:HAS_TEMPO]->(t: Tempo)
+           ON CREATE SET t.smileTempoId = randomUUID()
            SET t.billed = $billing.billed, t.billedBy = $billing.billedBy,
             t.costCenter = $billing.costCenter, t.custodianInformation = $billing.custodianInformation,
             t.accessLevel = $billing.accessLevel
@@ -150,12 +151,14 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             @Param("accessLevel") String accessLevel);
 
     @Query("""
-           MATCH (s:Sample)-[:HAS_TEMPO]->(t:Tempo)
+           MATCH (s:Sample)
+           OPTIONAL MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
            WITH s, t, COLLECT {
             MATCH (s)-[:HAS_METADATA]->(sm:SampleMetadata)
             RETURN sm ORDER BY sm.importDate DESC LIMIT 1
            } AS latestSm
            WITH s, t, latestSm[0] as latestSm
+           WHERE latestSm.primaryId = $primaryId
            MATCH (p:Patient)-[:HAS_SAMPLE]->(s)
            OPTIONAL MATCH (p)<-[:IS_ALIAS]-(pa:PatientAlias{namespace: 'cmoId'})
            WITH s, t, latestSm, p, pa AS cmoIdAlias
@@ -173,7 +176,6 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             custodianInformation: custodianInformation, baitSet: baitSet, genePanel: genePanel,
             oncotreeCode: oncotreeCode, cmoPatientId: cmoPatientId, dmpPatientId: dmpPatientId,
             recapture: recapture, dmpSampleId: dmpSampleId }) AS result
-           WHERE result.primaryId = $primaryId
            RETURN result
            """)
     Map<String, Object> findTempoSampleDataBySamplePrimaryId(@Param("primaryId") String primaryId);
