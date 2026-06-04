@@ -171,6 +171,10 @@ public class RequestServiceImpl implements SmileRequestService {
     @Override
     public Boolean requestHasMetadataUpdates(RequestMetadata existingRequestMetadata,
             RequestMetadata requestMetadata, Boolean fromLims) throws Exception {
+        if (!requestMetadata.getStatus().getValidationStatus().equals(
+                existingRequestMetadata.getStatus().getValidationStatus())) {
+            return Boolean.TRUE;
+        }
         // if request is  from LIMS, look for updates by igo properties
         if (fromLims) {
             return !jsonComparator.isConsistentByIgoProperties(
