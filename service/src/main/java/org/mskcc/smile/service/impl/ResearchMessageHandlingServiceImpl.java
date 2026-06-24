@@ -250,6 +250,11 @@ public class ResearchMessageHandlingServiceImpl implements ResearchMessageHandli
                             // temp patch to avoid deep-nested circular writing of
                             // sample -> tempo - > sample etc.
                             // tempo isn't needed when publishing sample metadata history
+                            // update reference to existingSample in case this is a new sample
+                            // recovered for an existing request
+                            existingSample = sampleService.getResearchSampleByRequestAndIgoId(
+                                sampleMetadataEntry.getValue().getIgoRequestId(),
+                                sampleMetadataEntry.getValue().getPrimaryId());
                             existingSample.setTempo(null);
                             LOG.info("Publishing sample-level metadata history for research sample: "
                                     + sampleMetadataEntry.getValue().getPrimaryId());
