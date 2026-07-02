@@ -586,45 +586,51 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
-    private TempoSampleUpdateMessage genTempoSampleUpdateMessage(Set<String> samplePrimaryIds)
+    private TempoSampleUpdateMessage genTempoSampleUpdateMessage(Set<String> sampleIds)
             throws Exception {
         // validate and build tempo samples to publish to cBioPortal
         Set<TempoSample> validTempoSamples = new HashSet<>();
         LOG.info("Assembling TEMPO data per sample for uploading to AWS s3 bucket for cBioPortal");
-        for (String primaryId : samplePrimaryIds) {
+        for (String inputId : sampleIds) {
             try {
+                String primaryId = sampleService.getSamplePrimaryIdBySampleInputId(inputId);
                 TempoSample tempoSample = tempoService.getTempoSampleDataBySamplePrimaryId(primaryId);
 
                 // confirm tempo data exists by primary id
                 if (tempoSample == null) {
-                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Tempo data not found "
-                            + "for sample: " + primaryId);
+                    LOG.error("[TEMPO S3 UPLOAD DATA CHECK ERROR] Tempo data not found "
+                            + "for sample: " + inputId);
                     continue;
                 }
                 // validate props before adding tempo sample to set of samples to be published
                 if (StringUtils.isBlank(tempoSample.getCmoSampleName())) {
-                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid CMO Sample Name "
-                            + "for sample: " + primaryId + ", " + tempoSample.toString());
+                    LOG.error("[TEMPO S3 UPLOAD DATA CHECK ERROR] Invalid CMO Sample Name "
+                            + "for sample: " + inputId + ", " + tempoSample.toString());
                     continue;
                 }
                 if (StringUtils.isBlank(tempoSample.getAccessLevel())) {
-                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid Access Level "
-                            + "for sample: " + primaryId + ", " + tempoSample.toString());
+                    LOG.error("[TEMPO S3 UPLOAD DATA CHECK ERROR] Invalid Access Level "
+                            + "for sample: " + inputId + ", " + tempoSample.toString());
                     continue;
                 }
                 if (StringUtils.isBlank(tempoSample.getCustodianInformation())) {
-                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid Custodian Information "
-                            + "for sample: " + primaryId + ", " + tempoSample.toString());
+                    LOG.error("[TEMPO S3 UPLOAD DATA CHECK ERROR] Invalid Custodian Information "
+                            + "for sample: " + inputId + ", " + tempoSample.toString());
                     continue;
                 }
                 if (StringUtils.isBlank(tempoSample.getDmpSampleId())) {
-                    LOG.error("[TEMPO EMBARGO UPDATE ERROR] Invalid DMP WES ID "
-                            + "for sample: " + primaryId + ", " + tempoSample.toString());
+                    LOG.error("[TEMPO S3 UPLOAD DATA CHECK ERROR] Invalid DMP WES ID "
+                            + "for sample: " + inputId + ", " + tempoSample.toString());
+                    continue;
+                }
+                if (!StringUtils.equalsIgnoreCase("Yes", tempoSample.getRecapture())) {
+                    LOG.error("[TEMPO S3 UPLOAD DATA CHECK ERROR] Sample " + inputId + " is not a "
+                            + "WES recapture - will not be uploading to s3 bucket");
                     continue;
                 }
                 validTempoSamples.add(tempoSample);
             } catch (Exception e) {
-                LOG.error("Error building TEMPO data to publish to cBioPortal for sample: " + primaryId, e);
+                LOG.error("Error building TEMPO data to publish to cBioPortal for sample: " + inputId, e);
             }
         }
         // bundle together all valid tempo samples and publish to cBioPortal
@@ -640,8 +646,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
-    private void uploadTempoSamplesToAwsS3Bucket(Set<String> samplePrimaryIds) throws Exception {
-        TempoSampleUpdateMessage tempoSampleUpdateMessage = genTempoSampleUpdateMessage(samplePrimaryIds);
+    private void uploadTempoSamplesToAwsS3Bucket(Set<String> sampleInputIds) throws Exception {
+        TempoSampleUpdateMessage tempoSampleUpdateMessage = genTempoSampleUpdateMessage(sampleInputIds);
         if (tempoSampleUpdateMessage != null) {
             try {
                 LOG.info("Pushing TEMPO samples to AWS s3 bucket for cBioPortal:\n"
@@ -1091,15 +1097,15 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             public void onMessage(Message msg, Object message) {
                 try {
                     LOG.info("Received message on topic: " + TEMPO_UPLOAD_SAMPLES_TO_S3_TOPIC);
-                    String samplePrimaryIdsString = NatsMsgUtil.extractNatsJsonString(msg);
-                    if (samplePrimaryIdsString == null) {
+                    String sampleIdsString = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (sampleIdsString == null) {
                         LOG.error("Exception occurred during processing of NATS message data");
                         return;
                     }
-                    List<String> samplePrimaryIds =
-                            (List<String>) NatsMsgUtil.convertObjectFromString(
-                                    samplePrimaryIdsString, new TypeReference<List<String>>() {});
-                    tempoMessageHandlingService.uploadSamplesToS3BucketHandler(samplePrimaryIds);
+                    List<String> sampleIds =
+                            (List<String>) NatsMsgUtil.convertObjectFromString(sampleIdsString,
+                                    new TypeReference<List<String>>() {});
+                    tempoMessageHandlingService.uploadSamplesToS3BucketHandler(sampleIds);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of TEMPO "
                             + "samples upload to s3 bucket message: "
