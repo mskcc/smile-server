@@ -157,6 +157,7 @@ public class SampleServiceImpl implements SmileSampleService {
      *      - in save(...) call,
      *          MATCH (p:Patient {smilePatientId: $p.smilePatientId})
      *          WITH p, UNWIND $psList as $ps
+     *          MATCH (ps:PooledSample {sampleId: $ps.sampleId, poolDataType: $ps.poolDataType})
      *          MERGE (p)-[:HAS_POOLED_SAMPLE]->($ps)
      *          ON CREATE SET $ps.smilePooledSampleId = randomUUID()
      *
