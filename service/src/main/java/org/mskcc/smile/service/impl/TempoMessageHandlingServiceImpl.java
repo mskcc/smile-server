@@ -29,10 +29,10 @@ import org.mskcc.smile.commons.generated.Smile.TempoSampleUpdateMessage;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
+import org.mskcc.smile.model.tempo.CohortValidationStatus;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
-import org.mskcc.smile.model.tempo.CohortValidationStatus;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
 import org.mskcc.smile.model.tempo.json.CohortValidationResultsJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
@@ -1253,8 +1253,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         LOG.error("Exception occurred during processing of NATS message data: " + msg);
                         return;
                     }
-                    CohortValidationResultsJson vrJson = (CohortValidationResultsJson) NatsMsgUtil.convertObjectFromString(
-                                    cohortValidationString, new TypeReference<CohortValidationResultsJson>() {});
+                    CohortValidationResultsJson vrJson = (CohortValidationResultsJson)
+                            NatsMsgUtil.convertObjectFromString(cohortValidationString,
+                                    new TypeReference<CohortValidationResultsJson>() {});
                     tempoMessageHandlingService.cohortValidationHandler(vrJson);
                 } catch (Exception e) {
                     LOG.error("Exception occurred during processing of TEMPO cohort "

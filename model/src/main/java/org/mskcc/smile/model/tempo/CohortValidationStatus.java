@@ -26,6 +26,10 @@ public class CohortValidationStatus {
 
     public CohortValidationStatus() {}
 
+    /**
+     * Constructor with input validation results json.
+     * @param vrJson
+     */
     public CohortValidationStatus(CohortValidationResultsJson vrJson) {
         this.jsonSchemaValidated = vrJson.getJsonSchemaValidated();
         this.passesAllChecks = vrJson.getPassesAllChecks();
