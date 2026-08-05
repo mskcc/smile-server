@@ -74,6 +74,7 @@ tempo.update_samples_embargo_topic=
 tempo.update_cohort_sub_topic=
 tempo.update_cohort_pub_topic=
 tempo.provisional_cohort_sub_topic=
+tempo.cohort_validation_sub_topic=
 
 # dbgap topics
 num.dbgap_msg_handler_threads=

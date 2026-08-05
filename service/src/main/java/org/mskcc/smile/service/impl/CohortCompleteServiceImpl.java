@@ -183,8 +183,15 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Cohort updateCohort(Cohort cohort) throws Exception {
-        return cohortCompleteRepository.save(cohort);
+    public Boolean updateCohortValidationStatus(Cohort cohort) throws Exception {
+        try {
+            cohortCompleteRepository.mergeCohortValidationStatus(cohort.getCohortId(),
+                    cohort.getValidationStatus());
+            return Boolean.TRUE;
+        } catch (Exception e) {
+            LOG.error("Error updating cohort validation status: " + cohort.getCohortId(), e);
+            return Boolean.FALSE;
+        }
     }
 
     private Cohort getDetailedCohortData(Cohort cohort) throws Exception {

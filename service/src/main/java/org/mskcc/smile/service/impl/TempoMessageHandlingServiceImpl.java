@@ -32,7 +32,9 @@ import org.mskcc.smile.model.tempo.Cohort;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
+import org.mskcc.smile.model.tempo.CohortValidationStatus;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
+import org.mskcc.smile.model.tempo.json.CohortValidationResultsJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.service.AwsS3Service;
 import org.mskcc.smile.service.CohortCompleteService;
@@ -81,6 +83,9 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     @Value("${tempo.provisional_cohort_sub_topic}")
     private String TEMPO_PROVISIONAL_COHORT_SUB_TOPIC;
 
+    @Value("${tempo.cohort_validation_sub_topic}")
+    private String TEMPO_COHORT_VALIDATION_SUB_TOPIC;
+
     @Value("${num.tempo_msg_handler_threads:1}")
     private int NUM_TEMPO_MSG_HANDLERS;
 
@@ -122,6 +127,8 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             new LinkedBlockingQueue<CohortCompleteJson>();
     private static final BlockingQueue<CohortCompleteJson> provisionalCohortQueue =
             new LinkedBlockingQueue<CohortCompleteJson>();
+    private static final BlockingQueue<CohortValidationResultsJson> cohortValidationQueue =
+            new LinkedBlockingQueue<CohortValidationResultsJson>();
 
     private static CountDownLatch bamCompleteHandlerShutdownLatch;
     private static CountDownLatch qcCompleteHandlerShutdownLatch;
@@ -132,6 +139,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     private static CountDownLatch uploadSamplesToS3HandlerShutdownLatch;
     private static CountDownLatch updateTempoCohortHandlerShutdownLatch;
     private static CountDownLatch provisionalCohortHandlerShutdownLatch;
+    private static CountDownLatch cohortValidationHandlerShutdownLatch;
 
     private class BamCompleteHandler implements Runnable {
         final Phaser phaser;
@@ -586,6 +594,48 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
+    private class CohortValidationHandler implements Runnable {
+        final Phaser phaser;
+        boolean interrupted = false;
+
+        CohortValidationHandler(Phaser phaser) {
+            this.phaser = phaser;
+        }
+
+        @Override
+        public void run() {
+            phaser.arrive();
+            while (true) {
+                try {
+                    CohortValidationResultsJson vrJson
+                            = cohortValidationQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (vrJson != null) {
+                        Cohort cohort = cohortCompleteService.getCohortByCohortId(vrJson.getCohortId());
+                        if (cohort == null) {
+                            LOG.error(("Cannot save validation results for cohort that does not exist "
+                                    + "in SMILE: " + vrJson.getCohortId()));
+                        } else {
+                            LOG.info("Persisting TEMPO cohort validation results for cohort: "
+                                    + cohort.getCohortId());
+                            CohortValidationStatus validationStatus = new CohortValidationStatus(vrJson);
+                            cohort.setValidationStatus(validationStatus);
+                            Boolean updated = cohortCompleteService.updateCohortValidationStatus(cohort);
+                            if (!updated) {
+                                LOG.error("Failed to persist validation results for cohort: "
+                                        + cohort.getCohortId());
+                            }
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    LOG.error("Error during handling of cohort validation results message", e);
+                }
+                cohortValidationHandlerShutdownLatch.countDown();
+            }
+        }
+    }
+
     private TempoSampleUpdateMessage genTempoSampleUpdateMessage(Set<String> sampleIds)
             throws Exception {
         // validate and build tempo samples to publish to cBioPortal
@@ -674,6 +724,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             setupUploadSamplesToS3BucketHandler(messagingGateway, this);
             setupUpdateTempoCohortHandler(messagingGateway, this);
             setupProvisionalCohortHandler(messagingGateway, this);
+            setupCohortValidationHandler(messagingGateway, this);
             initializeMessageHandlers();
             initialized = true;
         } else {
@@ -804,6 +855,21 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     }
 
     @Override
+    public void cohortValidationHandler(CohortValidationResultsJson vrJson) throws Exception {
+        if (!initialized) {
+            throw new IllegalStateException("Message Handling Service has not been initialized");
+        }
+        if (!shutdownInitiated) {
+            cohortValidationQueue.put(vrJson);
+        } else {
+            LOG.error("Shutdown initiated, not accepting request to persist TEMPO cohort validation results "
+                    + vrJson);
+            throw new IllegalStateException("Shutdown initiated, not handling any "
+                    + "more TEMPO cohort validation results events");
+        }
+    }
+
+    @Override
     public void shutdown() throws Exception {
         if (!initialized) {
             throw new IllegalStateException("Message Handling Service has not been initialized");
@@ -818,6 +884,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         uploadSamplesToS3HandlerShutdownLatch.await();
         updateTempoCohortHandlerShutdownLatch.await();
         provisionalCohortHandlerShutdownLatch.await();
+        cohortValidationHandlerShutdownLatch.await();
         shutdownInitiated = true;
     }
 
@@ -911,6 +978,16 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
             exec.execute(new ProvisionalCohortHandler(provisionalCohortPhaser));
         }
         provisionalCohortPhaser.arriveAndAwaitAdvance();
+
+        // cohort validation  handler
+        cohortValidationHandlerShutdownLatch = new CountDownLatch(NUM_TEMPO_MSG_HANDLERS);
+        final Phaser cohortValidationPhaser = new Phaser();
+        cohortValidationPhaser.register();
+        for (int lc = 0; lc < NUM_TEMPO_MSG_HANDLERS; lc++) {
+            cohortValidationPhaser.register();
+            exec.execute(new CohortValidationHandler(cohortValidationPhaser));
+        }
+        cohortValidationPhaser.arriveAndAwaitAdvance();
     }
 
     private void setupBamCompleteHandler(Gateway gateway,
@@ -1159,6 +1236,30 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                     LOG.error("Exception occurred during processing of provisional TEMPO "
                             + "cohort message: "
                             + TEMPO_PROVISIONAL_COHORT_SUB_TOPIC, e);
+                }
+            }
+        });
+    }
+
+    private void setupCohortValidationHandler(Gateway gateway,
+            TempoMessageHandlingService tempoMessageHandlingService) throws Exception {
+        gateway.subscribe(TEMPO_COHORT_VALIDATION_SUB_TOPIC, Object.class, new MessageConsumer() {
+            @Override
+            public void onMessage(Message msg, Object message) {
+                try {
+                    LOG.info("Received message on topic: " + TEMPO_COHORT_VALIDATION_SUB_TOPIC);
+                    String cohortValidationString = NatsMsgUtil.extractNatsJsonString(msg);
+                    if (cohortValidationString == null) {
+                        LOG.error("Exception occurred during processing of NATS message data: " + msg);
+                        return;
+                    }
+                    CohortValidationResultsJson vrJson = (CohortValidationResultsJson) NatsMsgUtil.convertObjectFromString(
+                                    cohortValidationString, new TypeReference<CohortValidationResultsJson>() {});
+                    tempoMessageHandlingService.cohortValidationHandler(vrJson);
+                } catch (Exception e) {
+                    LOG.error("Exception occurred during processing of TEMPO cohort "
+                            + "validation results message: "
+                            + TEMPO_COHORT_VALIDATION_SUB_TOPIC, e);
                 }
             }
         });
