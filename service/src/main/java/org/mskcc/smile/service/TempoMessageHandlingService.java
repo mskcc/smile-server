@@ -7,6 +7,7 @@ import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
+import org.mskcc.smile.model.tempo.json.CohortValidationResultsJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 
 /**
@@ -24,5 +25,6 @@ public interface TempoMessageHandlingService {
     void uploadSamplesToS3BucketHandler(List<String> samplePrimaryIds) throws Exception;
     void updateTempoCohortHandler(CohortCompleteJson ccJson) throws Exception;
     void provisionalCohortHandler(CohortCompleteJson ccJson) throws Exception;
+    void cohortValidationHandler(CohortValidationResultsJson vrJson) throws Exception;
     void shutdown() throws Exception;
 }

@@ -28,6 +28,8 @@ public class Cohort implements Serializable {
     private List<CohortComplete> cohortCompleteList;
     @Relationship(type = "HAS_COHORT_SAMPLE", direction = Relationship.Direction.OUTGOING)
     private List<SmileSample> cohortSamples;
+    @Relationship(type = "HAS_STATUS", direction = Relationship.Direction.OUTGOING)
+    CohortValidationStatus validationStatus;
 
     public Cohort() {}
 
@@ -106,6 +108,14 @@ public class Cohort implements Serializable {
 
     public void setCohortSamples(List<SmileSample> cohortSamples) {
         this.cohortSamples = cohortSamples;
+    }
+
+    public CohortValidationStatus getValidationStatus() {
+        return validationStatus;
+    }
+
+    public void setValidationStatus(CohortValidationStatus validationStatus) {
+        this.validationStatus = validationStatus;
     }
 
     /**

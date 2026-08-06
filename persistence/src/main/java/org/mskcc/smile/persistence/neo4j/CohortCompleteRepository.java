@@ -1,6 +1,7 @@
 package org.mskcc.smile.persistence.neo4j;
 
 import java.util.List;
+import java.util.Map;
 import org.mskcc.smile.model.tempo.Cohort;
 import org.mskcc.smile.model.tempo.CohortComplete;
 import org.springframework.data.neo4j.annotation.Query;
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Repository;
 public interface CohortCompleteRepository extends Neo4jRepository<Cohort, Long> {
     @Query("""
            MATCH (c: Cohort {cohortId: $cohortId})-[hcc:HAS_COHORT_COMPLETE]->(cc: CohortComplete)
-           RETURN DISTINCT c, hcc, cc
+           OPTIONAL MATCH (c)-[hs:HAS_STATUS]->(cvs: CohortValidationStatus)
+           RETURN DISTINCT c, hcc, cc, hs, cvs
            """)
     Cohort findCohortByCohortId(@Param("cohortId") String cohortId);
 
@@ -42,4 +44,16 @@ public interface CohortCompleteRepository extends Neo4jRepository<Cohort, Long> 
            """)
     void addCohortSampleRelationship(@Param("cohortId") String cohortId,
             @Param("primaryIds") List<String> primaryIds);
+
+    @Query("""
+           MATCH (c: Cohort {cohortId: $cohortId})
+           MERGE (c)-[:HAS_STATUS]->(cvs: CohortValidationStatus)
+           SET cvs.jsonSchemaValidated = $validationStatus.jsonSchemaValidated,
+            cvs.passesAllChecks = $validationStatus.passesAllChecks,
+            cvs.invalidEndUsers = $validationStatus.invalidEndUsers,
+            cvs.invalidPmUsers = $validationStatus.invalidPmUsers,
+            cvs.invalidTempoSamples = $validationStatus.invalidTempoSamples
+           """)
+    void mergeCohortValidationStatus(@Param("cohortId") String cohortId,
+            @Param("validationStatus") Map<String, Object> validationStatus);
 }

@@ -17,6 +17,7 @@ import org.mskcc.smile.model.SmileRequest;
 import org.mskcc.smile.model.SmileSample;
 import org.mskcc.smile.model.tempo.BamComplete;
 import org.mskcc.smile.model.tempo.Cohort;
+import org.mskcc.smile.model.tempo.CohortValidationStatus;
 import org.mskcc.smile.model.tempo.MafComplete;
 import org.mskcc.smile.model.tempo.QcComplete;
 import org.mskcc.smile.model.tempo.Tempo;
@@ -303,6 +304,52 @@ public class TempoServiceTest {
         cohortCompleteService.saveCohort(savedCohort, updatedCohort.getCohortSamplePrimaryIds());
         Cohort cohortAfterUpdate = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
         Assertions.assertEquals("PASS", cohortAfterUpdate.getLatestCohortComplete().getStatus());
+    }
+
+    /**
+     * Confirms that a cohort's validation status can be persisted and retrieved,
+     * and that a subsequent update to the validation status overwrites the previous one.
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateCohortValidationStatus() throws Exception {
+        CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        Cohort cohort = new Cohort(ccJson);
+        cohortCompleteService.saveCohort(cohort, ccJson.getTumorNormalPairsAsSet());
+        Cohort savedCohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        // no validation status persisted yet
+        Assertions.assertNull(savedCohort.getValidationStatus());
+
+        CohortValidationStatus validationStatus = new CohortValidationStatus();
+        validationStatus.setJsonSchemaValidated(Boolean.TRUE);
+        validationStatus.setPassesAllChecks(Boolean.FALSE);
+        validationStatus.setInvalidEndUsers(Arrays.asList("enduser1"));
+        validationStatus.setInvalidPmUsers(Arrays.asList("pmuser1"));
+        savedCohort.setValidationStatus(validationStatus);
+
+        Boolean updated = cohortCompleteService.updateCohortValidationStatus(savedCohort);
+        Assertions.assertTrue(updated);
+
+        Cohort cohortAfterUpdate = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertNotNull(cohortAfterUpdate.getValidationStatus());
+        Assertions.assertEquals(Boolean.TRUE,
+                cohortAfterUpdate.getValidationStatus().getJsonSchemaValidated());
+        Assertions.assertEquals(Boolean.FALSE,
+                cohortAfterUpdate.getValidationStatus().getPassesAllChecks());
+        Assertions.assertEquals(Arrays.asList("enduser1"),
+                cohortAfterUpdate.getValidationStatus().getInvalidEndUsers());
+
+        // persisting a new validation status should overwrite the previous one, not duplicate it
+        CohortValidationStatus updatedValidationStatus = new CohortValidationStatus();
+        updatedValidationStatus.setJsonSchemaValidated(Boolean.TRUE);
+        updatedValidationStatus.setPassesAllChecks(Boolean.TRUE);
+        cohortAfterUpdate.setValidationStatus(updatedValidationStatus);
+        Boolean updatedAgain = cohortCompleteService.updateCohortValidationStatus(cohortAfterUpdate);
+        Assertions.assertTrue(updatedAgain);
+
+        Cohort cohortAfterSecondUpdate = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertEquals(Boolean.TRUE,
+                cohortAfterSecondUpdate.getValidationStatus().getPassesAllChecks());
     }
 
     @Test
