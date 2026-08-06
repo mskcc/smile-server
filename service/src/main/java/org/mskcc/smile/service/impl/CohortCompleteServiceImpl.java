@@ -9,8 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
+import org.mskcc.smile.model.converter.ArrayMapConverter;
 import org.mskcc.smile.model.tempo.Cohort;
 import org.mskcc.smile.model.tempo.CohortComplete;
+import org.mskcc.smile.model.tempo.CohortValidationStatus;
 import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
 import org.mskcc.smile.service.CohortCompleteService;
 import org.mskcc.smile.service.SmileSampleService;
@@ -37,6 +39,8 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
 
     @Autowired @Lazy // prevents circular dependencies and initializes when component is first needed
     private TempoService tempoService;
+
+    private final ArrayMapConverter arrayMapConverter = new ArrayMapConverter();
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -185,8 +189,15 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Transactional(rollbackFor = {Exception.class})
     public Boolean updateCohortValidationStatus(Cohort cohort) throws Exception {
         try {
+            CohortValidationStatus validationStatus = cohort.getValidationStatus();
+            // invalidTempoSamples is a List<Map<String, String>> which neo4j cannot store
+            // directly as a property value - serialize it to JSON via the same converter
+            // used for ogm entity persistence before binding it as a query parameter
+            Map<String, Object> validationStatusParams = mapper.convertValue(validationStatus, Map.class);
+            validationStatusParams.put("invalidTempoSamples",
+                    arrayMapConverter.toGraphProperty((List) validationStatus.getInvalidTempoSamples()));
             cohortCompleteRepository.mergeCohortValidationStatus(cohort.getCohortId(),
-                    cohort.getValidationStatus());
+                    validationStatusParams);
             return Boolean.TRUE;
         } catch (Exception e) {
             LOG.error("Error updating cohort validation status: " + cohort.getCohortId(), e);

@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.mskcc.smile.model.converter.ArrayMapConverter;
 import org.mskcc.smile.model.tempo.json.CohortValidationResultsJson;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
 
 /**
  *
@@ -22,6 +24,7 @@ public class CohortValidationStatus {
     private Boolean passesAllChecks;
     private List<String> invalidEndUsers;
     private List<String> invalidPmUsers;
+    @Convert(ArrayMapConverter.class)
     private List<Map<String, String>> invalidTempoSamples;
 
     public CohortValidationStatus() {}
