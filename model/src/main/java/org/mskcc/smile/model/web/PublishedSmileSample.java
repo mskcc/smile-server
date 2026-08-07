@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SampleAlias;
 import org.mskcc.smile.model.SampleMetadata;

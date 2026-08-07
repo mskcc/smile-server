@@ -2,7 +2,7 @@ package org.mskcc.smile.model;
 
 import java.io.Serializable;
 import java.util.UUID;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mskcc.smile.model.json.DbGapJson;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;

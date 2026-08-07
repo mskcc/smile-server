@@ -427,6 +427,10 @@ public class TempoServiceTest {
         Assertions.assertTrue(!tempoAfterSave3.getAccessLevel().isBlank());
     }
 
+    /**
+     * Tests updates (appending) cohort sample list.
+     * @throws Exception
+     */
     @Test
     public void testCohortSampleListUpdate() throws Exception {
         CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
@@ -451,6 +455,33 @@ public class TempoServiceTest {
         cohortCompleteService.saveCohort(cohort, newSamples);
         Cohort cohortAfterSave = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
         Assertions.assertEquals(6, cohortAfterSave.getCohortSamplePrimaryIds().size());
+    }
+
+    /**
+     * Tests replacement of cohort sample list (mocks intake of cohort update) - first all existing
+     * cohort-sample relationships are detached before re-adding the incoming sample list - fully replacing
+     * the cohort's sample list rather than appending to it only if there are differences to capture.
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateCohortSamplesListReplacesExistingSamples() throws Exception {
+        CohortCompleteJson ccJson = getCohortEventData("mockCohortCompleteCCSPPPQQQQ");
+        Cohort cohort = new Cohort(ccJson);
+        cohortCompleteService.saveCohort(cohort, ccJson.getTumorNormalPairsAsSet());
+        Cohort savedCohort = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertEquals(4, savedCohort.getCohortSamplePrimaryIds().size());
+
+        // replace the cohort's sample list with a smaller, non-overlapping-count subset
+        Set<String> replacementSampleIds = Set.of("MOCKREQUEST1_B_1", "MOCKREQUEST1_B_3");
+        Boolean updated = cohortCompleteService.updateCohortSamplesList(savedCohort, replacementSampleIds);
+        Assertions.assertTrue(updated);
+
+        // verify the cohort's sample list was fully replaced (detached + re-added)
+        // rather than merged with the previously persisted 4 samples
+        Cohort cohortAfterUpdate = cohortCompleteService.getCohortByCohortId("CCS_PPPQQQQ");
+        Assertions.assertEquals(2, cohortAfterUpdate.getCohortSamplePrimaryIds().size());
+        Assertions.assertTrue(
+                cohortAfterUpdate.getCohortSamplePrimaryIds().containsAll(replacementSampleIds));
     }
 
     @Test
