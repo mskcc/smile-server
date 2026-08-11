@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  *
@@ -127,7 +127,9 @@ public class CohortCompleteJson implements Serializable {
         Set<String> samplePrimaryIds = new HashSet<>();
         tumorNormalPairs.forEach((pairs) -> {
             pairs.entrySet().forEach((entry) -> {
-                samplePrimaryIds.add(entry.getValue());
+                if (entry.getKey().endsWith("Id")) {
+                    samplePrimaryIds.add(entry.getValue());
+                }
             });
         });
         return samplePrimaryIds;

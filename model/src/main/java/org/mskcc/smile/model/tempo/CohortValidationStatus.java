@@ -3,7 +3,7 @@ package org.mskcc.smile.model.tempo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mskcc.smile.model.converter.ArrayMapConverter;
 import org.mskcc.smile.model.tempo.json.CohortValidationResultsJson;
 import org.neo4j.ogm.annotation.GeneratedValue;

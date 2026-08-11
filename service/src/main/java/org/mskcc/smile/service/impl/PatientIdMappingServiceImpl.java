@@ -1,6 +1,6 @@
 package org.mskcc.smile.service.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mskcc.smile.model.internal.PatientIdTriplet;
 import org.mskcc.smile.persistence.jdbc.DatabricksRepository;
 import org.mskcc.smile.service.PatientIdMappingService;
