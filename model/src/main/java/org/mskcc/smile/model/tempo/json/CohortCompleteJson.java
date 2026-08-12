@@ -127,7 +127,8 @@ public class CohortCompleteJson implements Serializable {
         Set<String> samplePrimaryIds = new HashSet<>();
         tumorNormalPairs.forEach((pairs) -> {
             pairs.entrySet().forEach((entry) -> {
-                if (entry.getKey().endsWith("Id")) {
+                if (entry.getKey().endsWith("Id")
+                        && !StringUtils.isBlank(entry.getValue())) {
                     samplePrimaryIds.add(entry.getValue());
                 }
             });
