@@ -191,29 +191,33 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
 
 
     @Query("""
-           MATCH (r:Request)-[:HAS_SAMPLE]->(s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
+           MATCH (s:Sample)-[:HAS_METADATA]->(sm:SampleMetadata)
            WHERE sm.primaryId in $primaryIds
-           WITH r, s,
+           WITH DISTINCT s
+           MATCH (r:Request)-[:HAS_SAMPLE]->(s)
+           WITH s, COLLECT(r)[0] AS r
+           WITH s, s.smileSampleId AS smileSampleId,
            CASE WHEN (r.labHeadName IS NULL OR r.labHeadName = "")
             THEN r.investigatorName ELSE r.labHeadName END AS custodianInformation,
            COLLECT {
             OPTIONAL MATCH (cc:CohortComplete)<-[:HAS_COHORT_COMPLETE]-(c:Cohort)-[:HAS_COHORT_SAMPLE]->(s)
             RETURN cc.date ORDER BY cc.date ASC LIMIT 1
            }[0] AS earliestDeliveryDate
-           WITH custodianInformation, s.smileSampleId as smileSampleId, earliestDeliveryDate,
+           WITH smileSampleId, custodianInformation, earliestDeliveryDate,
            CASE WHEN (earliestDeliveryDate IS NULL OR earliestDeliveryDate = "")
             THEN apoc.date.parse($ccDeliveryDate,"ms","yyyy-MM-dd HH:mm")
             ELSE apoc.date.parse(earliestDeliveryDate,"ms","yyyy-MM-dd HH:mm") END AS initPipelineRunDatetime
-           WITH custodianInformation, smileSampleId, earliestDeliveryDate,
-            apoc.date.format(initPipelineRunDatetime, "ms", "yyyy-MM-dd") AS initialPipelineRunDate
-           WITH custodianInformation, smileSampleId, earliestDeliveryDate, initialPipelineRunDate,
-           CASE WHEN (initialPipelineRunDate IS NULL OR initialPipelineRunDate = "") THEN ""
+           WITH smileSampleId, custodianInformation, earliestDeliveryDate,
+            COALESCE(apoc.date.format(initPipelineRunDatetime, "ms", "yyyy-MM-dd"), "")
+             AS initialPipelineRunDate
+           WITH smileSampleId, custodianInformation, earliestDeliveryDate, initialPipelineRunDate,
+           CASE WHEN initialPipelineRunDate = "" THEN ""
             ELSE  apoc.temporal.format(datetime(apoc.date.format(
               apoc.date.parse(initialPipelineRunDate, "ms", "yyyy-MM-dd"), "ms", "yyyy-MM-dd"))
               + Duration({months:18}), "yyyy-MM-dd") END AS embargoDate,
-           apoc.date.format(apoc.date.currentTimestamp(), "ms", "yyyy-MM-dd HHM:mm") AS today
+           apoc.date.format(apoc.date.currentTimestamp(), "ms", "yyyy-MM-dd") AS today
            WITH smileSampleId, today, custodianInformation, initialPipelineRunDate, embargoDate,
-           CASE WHEN (today <= embargoDate OR initialPipelineRunDate = "")
+           CASE WHEN (initialPipelineRunDate = "" OR today <= embargoDate)
             THEN "MSK Embargo" ELSE "MSK Public"
             END AS accessLevel
            WITH DISTINCT smileSampleId, custodianInformation,
@@ -242,7 +246,7 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
             RETURN cc.date ORDER BY cc.date ASC LIMIT 1
            }[0] AS earliestDeliveryDate
            WITH s, earliestDeliveryDate,
-            apoc.date.format(apoc.date.currentTimestamp(), 'ms', 'yyyy-MM-dd HHM:mm') AS today
+            apoc.date.format(apoc.date.currentTimestamp(), 'ms', 'yyyy-MM-dd') AS today
            MATCH (s)-[:HAS_TEMPO]->(t:Tempo)
            WITH s, t, earliestDeliveryDate, today,
            CASE WHEN ((t.initialPipelineRunDate IS NULL OR t.initialPipelineRunDate = "")
