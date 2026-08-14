@@ -516,38 +516,51 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                         if (existingCohort == null) {
                             LOG.error("Cannot update cohort that does not exist in SMILE: "
                                     + ccJson.getCohortId());
-                            return;
-                        }
-
-                        // check if there are updates to persist for cohort complete data
-                        Boolean updated = Boolean.FALSE;
-                        if (cohortCompleteService.hasCohortCompleteUpdates(existingCohort,
-                                cohort)) {
-                            LOG.info("Received updates for cohort: " + ccJson.getCohortId());
-                            existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
-                            cohortCompleteService.saveCohortComplete(existingCohort);
-                            updated = Boolean.TRUE;
-                        }
-
-                        // only allow updates to cohort sample list only if cohort is provisional or mskwesrp
-                        String cohortStatus = existingCohort.getLatestCohortComplete().getStatus();
-                        if ((cohortStatus.equalsIgnoreCase("PROVISIONAL")
-                                || ccJson.getCohortId().equalsIgnoreCase("MSKWESRP"))
-                                && cohortCompleteService.hasCohortSampleListUpdates(existingCohort, cohort)) {
-                            LOG.info("Updating cohort sample list: " + ccJson.getCohortId());
-                            cohortCompleteService.updateCohortSamplesList(cohort,
-                                    ccJson.getTumorNormalPairsAsSet());
-                            updated = Boolean.TRUE;
-                        }
-
-                        if (updated) {
-                            TempoCohortUpdate cohortUpdateMessage
-                                    = genTempoCohortUpdateMessage(ccJson.getCohortId());
-                            LOG.info("Publishing updates to TEMPO bot: " + cohortUpdateMessage.toString());
-                            messagingGateway.publish(TEMPO_UPDATE_COHORT_PUB_TOPIC,
-                                    cohortUpdateMessage.toByteArray());
                         } else {
-                            LOG.error("No new updates to persist for cohort:  " + ccJson.getCohortId());
+                            LOG.info("Checking for valid updates for cohort: " + cohort.getCohortId());
+                            // check if there are updates to persist for cohort complete data
+                            Boolean updated = Boolean.FALSE;
+                            if (cohortCompleteService.hasCohortCompleteUpdates(existingCohort,
+                                    cohort)) {
+                                LOG.info("Received updates for cohort: " + ccJson.getCohortId());
+                                existingCohort.addCohortComplete(cohort.getLatestCohortComplete());
+                                cohortCompleteService.saveCohortComplete(existingCohort);
+                                updated = Boolean.TRUE;
+                            }
+
+                            // resolve the incoming tumor-normal pair sample ids to their SMILE
+                            // primary ids so the incoming sample list can be accurately compared
+                            // against the cohort's currently persisted sample list
+                            Set<String> incomingSamples = new HashSet<>();
+                            for (String inputId : ccJson.getTumorNormalPairsAsSet()) {
+                                String primaryId = sampleService.getSamplePrimaryIdBySampleInputId(inputId);
+                                if (primaryId != null) {
+                                    incomingSamples.add(primaryId);
+                                }
+                            }
+                            Set<String> existingSamples = existingCohort.getCohortSamplePrimaryIds();
+
+                            // only allow updates to cohort sample list if cohort is provisional or mskwesrp
+                            String cohortStatus = existingCohort.getLatestCohortComplete().getStatus();
+                            if ((cohortStatus.equalsIgnoreCase("PROVISIONAL")
+                                    || ccJson.getCohortId().equalsIgnoreCase("MSKWESRP"))
+                                    && cohortCompleteService.hasCohortSampleListUpdates(existingSamples,
+                                            incomingSamples)) {
+                                LOG.info("Updating cohort sample list: " + ccJson.getCohortId());
+                                cohortCompleteService.updateCohortSamplesList(cohort, incomingSamples);
+                                updated = Boolean.TRUE;
+                            }
+
+                            if (updated) {
+                                TempoCohortUpdate cohortUpdateMessage
+                                        = genTempoCohortUpdateMessage(ccJson.getCohortId());
+                                LOG.info("Publishing updates to TEMPO bot: "
+                                        + cohortUpdateMessage.toString());
+                                messagingGateway.publish(TEMPO_UPDATE_COHORT_PUB_TOPIC,
+                                        cohortUpdateMessage.toByteArray());
+                            } else {
+                                LOG.error("No new updates to persist for cohort:  " + ccJson.getCohortId());
+                            }
                         }
                     }
                 } catch (InterruptedException e) {

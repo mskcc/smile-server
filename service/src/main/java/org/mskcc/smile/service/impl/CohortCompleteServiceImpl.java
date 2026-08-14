@@ -94,7 +94,8 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
             return Boolean.TRUE;
         }
         // check for changes to cohort sample list
-        return hasCohortSampleListUpdates(existingCohort, cohort);
+        return hasCohortSampleListUpdates(existingCohort.getCohortSamplePrimaryIds(),
+                cohort.getCohortSamplePrimaryIds());
     }
 
     @Override
@@ -149,16 +150,9 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     }
 
     @Override
-    public Boolean hasCohortSampleListUpdates(Cohort existingCohort, Cohort cohort) throws Exception {
-        Set<String> newSamples = cohort.getCohortSamplePrimaryIds();
-        Set<String> existingSamples = existingCohort.getCohortSamplePrimaryIds();
-        // check changes in sample list size
-        if (newSamples.size() != existingSamples.size()) {
-            return Boolean.TRUE;
-        }
-        // check for change in cohort samples list
-        newSamples.removeAll(existingSamples);
-        return !newSamples.isEmpty();
+    public Boolean hasCohortSampleListUpdates(Set<String> existingSamples,
+            Set<String> incomingSamples) throws Exception {
+        return !incomingSamples.equals(existingSamples);
     }
 
     private Boolean updateCohortSampleList(Cohort cohort, Set<String> sampleIds) throws Exception {
