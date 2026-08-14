@@ -16,7 +16,8 @@ public interface CohortCompleteService {
     Boolean hasUpdates(Cohort existingCohort, Cohort cohort) throws Exception;
     Boolean hasCohortCompleteUpdates(Cohort existingCohort, Cohort cohort)
             throws Exception;
-    Boolean hasCohortSampleListUpdates(Cohort existingCohort, Cohort cohort) throws Exception;
+    Boolean hasCohortSampleListUpdates(Set<String> existingSamples, Set<String> incomingSamples)
+            throws Exception;
     Boolean updateCohortSamplesList(Cohort cohort, Set<String> sampleIds)
             throws Exception;
     Boolean updateCohortValidationStatus(Cohort cohort) throws Exception;
