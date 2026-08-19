@@ -137,7 +137,8 @@ public interface TempoRepository extends Neo4jRepository<Tempo, UUID> {
 
     @Query("""
            MATCH (t:Tempo {accessLevel: 'MSK Embargo'})
-           WHERE date(t.embargoDate) < date()
+           WHERE t.embargoDate IS NOT NULL AND t.embargoDate <> ""
+            AND date(t.embargoDate) < date()
            RETURN t.smileTempoId
            """)
     List<UUID> findTempoIdsNoLongerEmbargoed();
