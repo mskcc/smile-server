@@ -2,6 +2,7 @@ package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.model.converter.ArrayMapConverter;
+import org.mskcc.smile.model.converter.ArrayStringConverter;
 import org.mskcc.smile.model.tempo.Cohort;
 import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.model.tempo.CohortValidationStatus;
@@ -42,6 +44,8 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
 
     private final ArrayMapConverter arrayMapConverter = new ArrayMapConverter();
 
+    private final ArrayStringConverter arrayStringConverter = new ArrayStringConverter();
+
     private ObjectMapper mapper = new ObjectMapper();
 
     private static final Log LOG = LogFactory.getLog(CohortCompleteServiceImpl.class);
@@ -62,8 +66,27 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void saveCohortComplete(Cohort cohort) throws Exception {
-        cohortCompleteRepository.save(cohort);
+        // persist the new cohort-complete node and its relationship to the cohort via a
+        // scoped Cypher query (MERGE/CREATE) rather than the generic repository save(),
+        // which uses Neo4j-OGM's default unbounded save depth and would otherwise cascade
+        // through every relationship currently populated on the in-memory Cohort object -
+        // including its full cohortSamples list, which can be very large for some cohorts
+        CohortComplete latestCohortComplete = cohort.getLatestCohortComplete();
+        Map<String, Object> cohortCompleteProps = new HashMap<>();
+        cohortCompleteProps.put("importDate", latestCohortComplete.getImportDate());
+        cohortCompleteProps.put("date", latestCohortComplete.getDate());
+        cohortCompleteProps.put("status", latestCohortComplete.getStatus());
+        cohortCompleteProps.put("type", latestCohortComplete.getType());
+        cohortCompleteProps.put("endUsers",
+                arrayStringConverter.toGraphProperty(latestCohortComplete.getEndUsers()));
+        cohortCompleteProps.put("pmUsers",
+                arrayStringConverter.toGraphProperty(latestCohortComplete.getPmUsers()));
+        cohortCompleteProps.put("projectTitle", latestCohortComplete.getProjectTitle());
+        cohortCompleteProps.put("projectSubtitle", latestCohortComplete.getProjectSubtitle());
+        cohortCompleteProps.put("pipelineVersion", latestCohortComplete.getPipelineVersion());
+        cohortCompleteRepository.addCohortCompleteEvent(cohort.getCohortId(), cohortCompleteProps);
     }
 
     @Override
@@ -187,8 +210,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
 
             if (!anyChunkMatched) {
                 LOG.error("None of the samples provided in the cohort sample list are known to SMILE.");
-                throw new RuntimeException("Cohort does not have any known samples in SMILE"
-                        + " - check data before reattempting.");
+                return Boolean.FALSE;
             }
 
             // merge cohort-samples in chunks

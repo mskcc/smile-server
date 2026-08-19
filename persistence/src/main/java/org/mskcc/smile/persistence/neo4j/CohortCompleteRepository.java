@@ -51,6 +51,15 @@ public interface CohortCompleteRepository extends Neo4jRepository<Cohort, Long> 
     void detachExistingCohortSamples(@Param("cohortId") String cohortId);
 
     @Query("""
+           MERGE (c: Cohort {cohortId: $cohortId})
+           CREATE (cc: CohortComplete)
+           SET cc = $cohortCompleteProps
+           CREATE (c)-[:HAS_COHORT_COMPLETE]->(cc)
+           """)
+    void addCohortCompleteEvent(@Param("cohortId") String cohortId,
+            @Param("cohortCompleteProps") Map<String, Object> cohortCompleteProps);
+
+    @Query("""
            MATCH (c: Cohort {cohortId: $cohortId})
            MERGE (c)-[:HAS_STATUS]->(cvs: CohortValidationStatus)
            SET cvs.jsonSchemaValidated = $validationStatus.jsonSchemaValidated,
