@@ -41,6 +41,14 @@ public class CohortValidationStatus {
         this.invalidTempoSamples = vrJson.getSamples();
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Boolean getJsonSchemaValidated() {
         return jsonSchemaValidated;
     }

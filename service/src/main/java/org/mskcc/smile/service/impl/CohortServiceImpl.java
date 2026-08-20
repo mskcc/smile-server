@@ -2,7 +2,6 @@ package org.mskcc.smile.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,12 +10,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.model.converter.ArrayMapConverter;
-import org.mskcc.smile.model.converter.ArrayStringConverter;
 import org.mskcc.smile.model.tempo.Cohort;
 import org.mskcc.smile.model.tempo.CohortComplete;
 import org.mskcc.smile.model.tempo.CohortValidationStatus;
 import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
-import org.mskcc.smile.service.CohortCompleteService;
+import org.mskcc.smile.persistence.neo4j.CohortRepository;
+import org.mskcc.smile.persistence.neo4j.CohortValidationStatusRepository;
+import org.mskcc.smile.service.CohortService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +29,18 @@ import org.springframework.transaction.annotation.Transactional;
  * @author ochoaa
  */
 @Component
-public class CohortCompleteServiceImpl implements CohortCompleteService {
+public class CohortServiceImpl implements CohortService {
     @Autowired
     private JsonComparator jsonComparator;
 
     @Autowired
+    private CohortRepository cohortRepository;
+
+    @Autowired
     private CohortCompleteRepository cohortCompleteRepository;
+
+    @Autowired
+    private CohortValidationStatusRepository cohortValidationRepository;
 
     @Autowired
     private SmileSampleService sampleService;
@@ -44,11 +50,9 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
 
     private final ArrayMapConverter arrayMapConverter = new ArrayMapConverter();
 
-    private final ArrayStringConverter arrayStringConverter = new ArrayStringConverter();
-
     private ObjectMapper mapper = new ObjectMapper();
 
-    private static final Log LOG = LogFactory.getLog(CohortCompleteServiceImpl.class);
+    private static final Log LOG = LogFactory.getLog(CohortServiceImpl.class);
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
@@ -68,36 +72,29 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public void saveCohortComplete(Cohort cohort) throws Exception {
-        // persist the new cohort-complete node and its relationship to the cohort via a
-        // scoped Cypher query (MERGE/CREATE) rather than the generic repository save(),
-        // which uses Neo4j-OGM's default unbounded save depth and would otherwise cascade
-        // through every relationship currently populated on the in-memory Cohort object -
-        // including its full cohortSamples list, which can be very large for some cohorts
-        CohortComplete latestCohortComplete = cohort.getLatestCohortComplete();
-        Map<String, Object> cohortCompleteProps = new HashMap<>();
-        cohortCompleteProps.put("importDate", latestCohortComplete.getImportDate());
-        cohortCompleteProps.put("date", latestCohortComplete.getDate());
-        cohortCompleteProps.put("status", latestCohortComplete.getStatus());
-        cohortCompleteProps.put("type", latestCohortComplete.getType());
-        cohortCompleteProps.put("endUsers",
-                arrayStringConverter.toGraphProperty(latestCohortComplete.getEndUsers()));
-        cohortCompleteProps.put("pmUsers",
-                arrayStringConverter.toGraphProperty(latestCohortComplete.getPmUsers()));
-        cohortCompleteProps.put("projectTitle", latestCohortComplete.getProjectTitle());
-        cohortCompleteProps.put("projectSubtitle", latestCohortComplete.getProjectSubtitle());
-        cohortCompleteProps.put("pipelineVersion", latestCohortComplete.getPipelineVersion());
-        cohortCompleteRepository.addCohortCompleteEvent(cohort.getCohortId(), cohortCompleteProps);
+        // persist the new cohort-complete node via its own dedicated repository first -
+        // CohortComplete declares no relationships of its own, so Neo4j-OGM's save() here
+        // only ever touches that single node's properties (handled automatically, including
+        // the endUsers/pmUsers @Convert(ArrayStringConverter.class) mapping) with zero
+        // traversal risk, regardless of what's populated on the in-memory Cohort object
+        CohortComplete savedCohortComplete = cohortCompleteRepository.save(
+                cohort.getLatestCohortComplete());
+        // link the new event to its cohort via a scoped, id-based match/merge - this never
+        // touches the cohort's other relationships (e.g. its potentially large cohortSamples
+        // list), unlike the generic repository save() which cascades the whole object graph
+        cohortCompleteRepository.mergeCohortCompleteEvent(cohort.getCohortId(),
+                savedCohortComplete.getId());
     }
 
     @Override
     public Cohort getCohortByCohortId(String cohortId) throws Exception {
-        Cohort cohort = cohortCompleteRepository.findCohortByCohortId(cohortId);
+        Cohort cohort = cohortRepository.findCohortByCohortId(cohortId);
         return getDetailedCohortData(cohort);
     }
 
     @Override
     public List<Cohort> getCohortsBySamplePrimaryId(String primaryId) throws Exception {
-        return cohortCompleteRepository.findCohortsBySamplePrimaryId(primaryId);
+        return cohortRepository.findCohortsBySamplePrimaryId(primaryId);
     }
 
     @Override
@@ -134,7 +131,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     public Boolean updateCohortSamplesList(Cohort cohort, Set<String> sampleIds)
             throws Exception {
         try {
-            cohortCompleteRepository.detachExistingCohortSamples(cohort.getCohortId());
+            cohortRepository.detachExistingCohortSamples(cohort.getCohortId());
             updateCohortSampleList(cohort, sampleIds);
             return Boolean.TRUE;
         } catch (Exception e) {
@@ -147,15 +144,10 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
     @Transactional(rollbackFor = {Exception.class})
     public Boolean updateCohortValidationStatus(Cohort cohort) throws Exception {
         try {
-            CohortValidationStatus validationStatus = cohort.getValidationStatus();
-            // invalidTempoSamples is a List<Map<String, String>> which neo4j cannot store
-            // directly as a property value - serialize it to JSON via the same converter
-            // used for ogm entity persistence before binding it as a query parameter
-            Map<String, Object> validationStatusParams = mapper.convertValue(validationStatus, Map.class);
-            validationStatusParams.put("invalidTempoSamples",
-                    arrayMapConverter.toGraphProperty((List) validationStatus.getInvalidTempoSamples()));
-            cohortCompleteRepository.mergeCohortValidationStatus(cohort.getCohortId(),
-                    validationStatusParams);
+            CohortValidationStatus savedValidationStatus
+                    = cohortValidationRepository.save(cohort.getValidationStatus());
+            cohortValidationRepository.mergeCohortValidationStatus(cohort.getCohortId(),
+                    savedValidationStatus.getId());
             return Boolean.TRUE;
         } catch (Exception e) {
             LOG.error("Error updating cohort validation status: " + cohort.getCohortId(), e);
@@ -217,7 +209,7 @@ public class CohortCompleteServiceImpl implements CohortCompleteService {
             LOG.info("Adding cohort-sample edges in database for " + primaryIds.size() + " samples...");
             for (int i = 0; i < primaryIds.size(); i += chunkSize) {
                 List<String> chunk = primaryIds.subList(i, Math.min(i + chunkSize, primaryIds.size()));
-                cohortCompleteRepository.addCohortSampleRelationship(cohort.getCohortId(), chunk);
+                cohortRepository.addCohortSampleRelationship(cohort.getCohortId(), chunk);
             }
             LOG.info("Done.");
 

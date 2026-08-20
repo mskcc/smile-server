@@ -8,7 +8,7 @@ import org.mskcc.smile.commons.JsonComparator;
 import org.mskcc.smile.commons.impl.JsonComparatorImpl;
 import org.mskcc.smile.persistence.jdbc.DatabricksRepository;
 import org.mskcc.smile.service.impl.ClinicalMessageHandlingServiceImpl;
-import org.mskcc.smile.service.impl.CohortCompleteServiceImpl;
+import org.mskcc.smile.service.impl.CohortServiceImpl;
 import org.mskcc.smile.service.impl.CorrectCmoPatientHandlingServiceImpl;
 import org.mskcc.smile.service.impl.DbGapMessageHandlingServiceImpl;
 import org.mskcc.smile.service.impl.DbGapServiceImpl;
@@ -63,8 +63,8 @@ public class SmileTestApp {
     }
 
     @Bean
-    public CohortCompleteService cohortCompleteService() {
-        return new CohortCompleteServiceImpl();
+    public CohortService cohortService() {
+        return new CohortServiceImpl();
     }
 
     @Bean

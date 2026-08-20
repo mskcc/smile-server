@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +39,7 @@ import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
 import org.mskcc.smile.model.tempo.json.CohortValidationResultsJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.service.AwsS3Service;
-import org.mskcc.smile.service.CohortCompleteService;
+import org.mskcc.smile.service.CohortService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
 import org.mskcc.smile.service.TempoService;
@@ -99,7 +98,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     private TempoService tempoService;
 
     @Autowired
-    private CohortCompleteService cohortCompleteService;
+    private CohortService cohortCompleteService;
 
     @Autowired
     private AwsS3Service awsS3Service;

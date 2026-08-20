@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mskcc.smile.model.PatientAlias;
 import org.mskcc.smile.model.SmilePatient;
 import org.mskcc.smile.model.SmileRequest;
-import org.mskcc.smile.persistence.neo4j.CohortCompleteRepository;
+import org.mskcc.smile.persistence.neo4j.CohortRepository;
 import org.mskcc.smile.persistence.neo4j.SmilePatientRepository;
 import org.mskcc.smile.persistence.neo4j.SmileRequestRepository;
 import org.mskcc.smile.persistence.neo4j.SmileSampleRepository;
@@ -88,7 +88,7 @@ public class PatientServiceTest {
     private final SmileSampleRepository sampleRepository;
     private final SmilePatientRepository patientRepository;
     private final TempoRepository tempoRepository;
-    private final CohortCompleteRepository cohortCompleteRepository;
+    private final CohortRepository cohortRepository;
 
 
     /**
@@ -97,17 +97,17 @@ public class PatientServiceTest {
      * @param sampleRepository
      * @param patientRepository
      * @param tempoRepository
-     * @param cohortCompleteRepository
+     * @param cohortRepository
      */
     @Autowired
     public PatientServiceTest(SmileRequestRepository requestRepository,
             SmileSampleRepository sampleRepository, SmilePatientRepository patientRepository,
-            TempoRepository tempoRepository, CohortCompleteRepository cohortCompleteRepository) {
+            TempoRepository tempoRepository, CohortRepository cohortRepository) {
         this.requestRepository = requestRepository;
         this.sampleRepository = sampleRepository;
         this.patientRepository = patientRepository;
         this.tempoRepository = tempoRepository;
-        this.cohortCompleteRepository = cohortCompleteRepository;
+        this.cohortRepository = cohortRepository;
     }
 
     /**
