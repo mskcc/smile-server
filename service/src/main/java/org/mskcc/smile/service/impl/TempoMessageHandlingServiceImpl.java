@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Message;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +39,7 @@ import org.mskcc.smile.model.tempo.json.CohortCompleteJson;
 import org.mskcc.smile.model.tempo.json.CohortValidationResultsJson;
 import org.mskcc.smile.model.tempo.json.SampleBillingJson;
 import org.mskcc.smile.service.AwsS3Service;
-import org.mskcc.smile.service.CohortCompleteService;
+import org.mskcc.smile.service.CohortService;
 import org.mskcc.smile.service.SmileSampleService;
 import org.mskcc.smile.service.TempoMessageHandlingService;
 import org.mskcc.smile.service.TempoService;
@@ -99,7 +98,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
     private TempoService tempoService;
 
     @Autowired
-    private CohortCompleteService cohortCompleteService;
+    private CohortService cohortCompleteService;
 
     @Autowired
     private AwsS3Service awsS3Service;
@@ -520,6 +519,7 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                             LOG.info("Checking for valid updates for cohort: " + cohort.getCohortId());
                             // check if there are updates to persist for cohort complete data
                             Boolean updated = Boolean.FALSE;
+                            Boolean sampleListUpdated = Boolean.FALSE;
                             if (cohortCompleteService.hasCohortCompleteUpdates(existingCohort,
                                     cohort)) {
                                 LOG.info("Received updates for cohort: " + ccJson.getCohortId());
@@ -528,32 +528,51 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
                                 updated = Boolean.TRUE;
                             }
 
-                            // resolve the incoming tumor-normal pair sample ids to their SMILE
-                            // primary ids so the incoming sample list can be accurately compared
-                            // against the cohort's currently persisted sample list
-                            Set<String> incomingSamples = new HashSet<>();
-                            for (String inputId : ccJson.getTumorNormalPairsAsSet()) {
-                                String primaryId = sampleService.getSamplePrimaryIdBySampleInputId(inputId);
-                                if (primaryId != null) {
-                                    incomingSamples.add(primaryId);
+                            // if the incoming update has no samples attached to it then skip
+                            // resolving/comparing the sample list entirely - this avoids an
+                            // avoidable per-sample lookup (and the associated delay before the
+                            // cohort-complete-only update below can be published to TEMPO)
+                            if (ccJson.getTumorNormalPairs() != null
+                                    && !ccJson.getTumorNormalPairs().isEmpty()) {
+                                // resolve the incoming tumor-normal pair sample ids to their SMILE
+                                // primary ids so the incoming sample list can be accurately compared
+                                // against the cohort's currently persisted sample list
+                                Set<String> incomingSamples = new HashSet<>();
+                                for (String inputId : ccJson.getTumorNormalPairsAsSet()) {
+                                    String primaryId =
+                                            sampleService.getSamplePrimaryIdBySampleInputId(inputId);
+                                    if (primaryId != null) {
+                                        incomingSamples.add(primaryId);
+                                    }
                                 }
-                            }
-                            Set<String> existingSamples = existingCohort.getCohortSamplePrimaryIds();
+                                Set<String> existingSamples = existingCohort.getCohortSamplePrimaryIds();
 
-                            // only allow updates to cohort sample list if cohort is provisional or mskwesrp
-                            String cohortStatus = existingCohort.getLatestCohortComplete().getStatus();
-                            if ((cohortStatus.equalsIgnoreCase("PROVISIONAL")
-                                    || ccJson.getCohortId().equalsIgnoreCase("MSKWESRP"))
-                                    && cohortCompleteService.hasCohortSampleListUpdates(existingSamples,
-                                            incomingSamples)) {
-                                LOG.info("Updating cohort sample list: " + ccJson.getCohortId());
-                                cohortCompleteService.updateCohortSamplesList(cohort, incomingSamples);
-                                updated = Boolean.TRUE;
+                                // only allow updates to cohort sample list if cohort is
+                                // provisional or mskwesrp
+                                String cohortStatus = existingCohort.getLatestCohortComplete().getStatus();
+                                if ((cohortStatus.equalsIgnoreCase("PROVISIONAL")
+                                        || ccJson.getCohortId().equalsIgnoreCase("MSKWESRP"))
+                                        && cohortCompleteService.hasCohortSampleListUpdates(existingSamples,
+                                                incomingSamples)) {
+                                    LOG.info("Updating cohort sample list: " + ccJson.getCohortId());
+                                    cohortCompleteService.updateCohortSamplesList(cohort, incomingSamples);
+                                    updated = Boolean.TRUE;
+                                    sampleListUpdated = Boolean.TRUE;
+                                }
                             }
 
                             if (updated) {
+                                // build the outbound message from the cohort data already held
+                                // in memory instead of re-fetching the cohort from the database -
+                                // 'existingCohort' already reflects the latest cohort complete
+                                // data (added above) and, if the sample list was not touched,
+                                // its previously loaded sample list is still accurate
+                                if (sampleListUpdated) {
+                                    existingCohort.setCohortSamples(
+                                            sampleService.getSamplesByCohortId(ccJson.getCohortId()));
+                                }
                                 TempoCohortUpdate cohortUpdateMessage
-                                        = genTempoCohortUpdateMessage(ccJson.getCohortId());
+                                        = genTempoCohortUpdateMessage(existingCohort);
                                 LOG.info("Publishing updates to TEMPO bot: "
                                         + cohortUpdateMessage.toString());
                                 messagingGateway.publish(TEMPO_UPDATE_COHORT_PUB_TOPIC,
@@ -661,30 +680,28 @@ public class TempoMessageHandlingServiceImpl implements TempoMessageHandlingServ
         }
     }
 
-    private TempoCohortUpdate genTempoCohortUpdateMessage(String cohortId) throws Exception {
-        Cohort cohort = cohortCompleteService.getCohortByCohortId(cohortId);
-        // build sample list
-        List<TempoSample> samples = new ArrayList<>();
-        for (SmileSample s : cohort.getCohortSamples()) {
+    private TempoCohortUpdate genTempoCohortUpdateMessage(Cohort cohort) throws Exception {
+        CohortComplete latestCohortComplete = cohort.getLatestCohortComplete();
+        List<SmileSample> cohortSamples = cohort.getCohortSamples();
+        // build the message directly on the builder (avoids the extra intermediate
+        // TempoSample list + the copy performed internally by addAllSamples) and guard
+        // against null string fields, which protobuf setters reject with an NPE
+        TempoCohortUpdate.Builder cohortUpdateMessageBuilder = TempoCohortUpdate.newBuilder()
+                .setCohortId(cohort.getCohortId())
+                .setDate(StringUtils.defaultString(latestCohortComplete.getDate()))
+                .setType(StringUtils.defaultString(latestCohortComplete.getType()))
+                .setProjectTitle(StringUtils.defaultString(latestCohortComplete.getProjectTitle()))
+                .setProjectSubtitle(StringUtils.defaultString(latestCohortComplete.getProjectSubtitle()))
+                .addAllEndUsers(latestCohortComplete.getEndUsers())
+                .addAllPmUsers(latestCohortComplete.getPmUsers());
+        for (SmileSample s : cohortSamples) {
             SampleMetadata latestSm = s.getLatestSampleMetadata();
-            TempoSample ts = TempoSample.newBuilder()
+            cohortUpdateMessageBuilder.addSamples(TempoSample.newBuilder()
                     .setPrimaryId(latestSm.getPrimaryId())
                     .setCmoSampleName(latestSm.getCmoSampleName())
-                    .build();
-            samples.add(ts);
+                    .build());
         }
-        CohortComplete latestCohortComplete = cohort.getLatestCohortComplete();
-        TempoCohortUpdate cohortUpdateMessage = TempoCohortUpdate.newBuilder()
-                .setCohortId(cohortId)
-                .setDate(StringUtils.defaultString(latestCohortComplete.getDate()))
-                .setType(latestCohortComplete.getType())
-                .setProjectTitle(latestCohortComplete.getProjectTitle())
-                .setProjectSubtitle(latestCohortComplete.getProjectSubtitle())
-                .addAllEndUsers(latestCohortComplete.getEndUsers())
-                .addAllPmUsers(latestCohortComplete.getPmUsers())
-                .addAllSamples(samples)
-                .build();
-        return cohortUpdateMessage;
+        return cohortUpdateMessageBuilder.build();
     }
 
     private TempoSampleUpdateMessage genTempoSampleUpdateMessage(Set<String> sampleIds)

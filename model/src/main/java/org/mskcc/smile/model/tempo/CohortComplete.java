@@ -54,6 +54,14 @@ public class CohortComplete implements Serializable, Comparable<CohortComplete> 
         this.pipelineVersion = ccJson.getPipelineVersion();
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getImportDate() {
         return importDate;
     }

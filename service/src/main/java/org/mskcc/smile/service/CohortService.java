@@ -8,7 +8,7 @@ import org.mskcc.smile.model.tempo.Cohort;
  *
  * @author ochoaa
  */
-public interface CohortCompleteService {
+public interface CohortService {
     void saveCohort(Cohort cohort, Set<String> samplePrimaryIds) throws Exception;
     void saveCohortComplete(Cohort cohort) throws Exception;
     Cohort getCohortByCohortId(String cohortId) throws Exception;

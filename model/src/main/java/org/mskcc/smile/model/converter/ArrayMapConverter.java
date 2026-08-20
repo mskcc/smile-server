@@ -2,6 +2,7 @@ package org.mskcc.smile.model.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,10 @@ public class ArrayMapConverter implements AttributeConverter<List<Map>, String> 
 
     @Override
     public String toGraphProperty(List<Map> value) {
-        String toReturn = null;
+        if (value == null) {
+            value = new ArrayList<>();
+        }
+        String toReturn = "";
         try {
             toReturn = mapper.writeValueAsString(value);
         } catch (JsonProcessingException ex) {
@@ -30,7 +34,10 @@ public class ArrayMapConverter implements AttributeConverter<List<Map>, String> 
 
     @Override
     public List<Map> toEntityAttribute(String value) {
-        List<Map> toReturn = null;
+        if (value == null) {
+            value = "[]";
+        }
+        List<Map> toReturn = new ArrayList<>();
         try {
             toReturn = Arrays.asList(mapper.readValue(value, Map[].class));
         } catch (Exception ex) {
