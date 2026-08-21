@@ -129,8 +129,40 @@ public class SampleServiceImpl implements SmileSampleService {
             sampleRepository.save(existingSample);
             toReturn = existingSample;
         }
+
+        // if sample class (IGO specimen type) is microbiome then establish edges to pooled samples if possible
+        // SampleMetadata sm = toReturn.getLatestSampleMetadata();
+        // if (sm.getSampleClass().equalsIgnoreCase("microbiome")){
+        //     Boolean success = sampleRepository.mergePooledSamplesByPoolId(sm.getInvestigatorSampleId());
+        //     if (!success) {
+        //         LOG.warn("Identified sample " + sm.getPrimaryId() + " as a pooled sample with poolId "
+        //          + sm.getInvestigatorSampleId() + " but failed to establish the Sample-PooledSample edges. "
+        //          + "Please check that ID mappings data also exists for this pool ID.");
+        //     }
+        // }
         return toReturn;
     }
+
+    /**
+     * TO-DO: this will go into its own repo class - only making note of it here for convenience
+     * savePooledSamplesByPatient(Patient p, List<PooledSample> pooledSamples) {
+     *     Before this method call:
+     *      - message handler will resolve or create new patient node with ID mappings from CRDB if available
+     *      - message handler to organize all of the samples in the pool by patient id (lets us save multiple pooled sample instances in one go
+     *          instead of having to look up a patient id for every sample as we iterate through the list)
+     *
+     *     During save:
+     *      - since saves are happening on a per-patient basis, only need to call the repo method once:
+     *              pooledSampleRepository.save(List<PooledSample> pooledSamples)
+     *      - in save(...) call,
+     *          MATCH (p:Patient {smilePatientId: $p.smilePatientId})
+     *          WITH p, UNWIND $psList as $ps
+     *          MATCH (ps:PooledSample {sampleId: $ps.sampleId, poolDataType: $ps.poolDataType})
+     *          MERGE (p)-[:HAS_POOLED_SAMPLE]->($ps)
+     *          ON CREATE SET $ps.smilePooledSampleId = randomUUID()
+     *
+     * }
+     */
 
     /**
      * Fetching and loading patient details explained.
@@ -476,7 +508,7 @@ public class SampleServiceImpl implements SmileSampleService {
     public UUID getSmileSampleIdByInputId(String inputId) throws Exception {
         return sampleRepository.findSmileSampleIdByInputId(inputId);
     }
-    
+
     @Override
     public void createSampleRequestRelationship(UUID smileSampleId, UUID smileRequestId) {
         sampleRepository.createSampleRequestRelationship(smileSampleId, smileRequestId);
