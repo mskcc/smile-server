@@ -36,6 +36,8 @@ public class CohortCompleteJson implements Serializable {
     private String status;
     @JsonProperty("pipelineVersion")
     private String pipelineVersion;
+    @JsonProperty("piName")
+    private String piName;
 
     public CohortCompleteJson() {}
 
@@ -117,6 +119,14 @@ public class CohortCompleteJson implements Serializable {
 
     public void setPipelineVersion(String pipelineVersion) {
         this.pipelineVersion = pipelineVersion;
+    }
+
+    public String getPiName() {
+        return piName;
+    }
+
+    public void setPiName(String piName) {
+        this.piName = piName;
     }
 
     /**
