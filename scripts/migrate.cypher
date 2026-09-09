@@ -212,3 +212,8 @@ SET cc.status = "PROVISIONAL"
 
 // remove cohortStatus from Cohort node
 MATCH (c:Cohort) REMOVE c.cohortStatus
+
+// add piName to CohortComplete
+MATCH (cc:CohortComplete)
+WHERE cc.piName IS NULL
+SET cc.piName = ""
