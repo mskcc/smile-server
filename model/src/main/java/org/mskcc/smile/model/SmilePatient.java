@@ -29,6 +29,9 @@ public class SmilePatient implements Serializable {
     private List<SmileSample> smileSampleList;
     @Relationship(type = "IS_ALIAS", direction = Relationship.Direction.INCOMING)
     private List<PatientAlias>  patientAliases;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Relationship(type = "HAS_POOLED_SAMPLE", direction = Relationship.Direction.OUTGOING)
+    private List<PooledSample> pooledSamples;
 
     public SmilePatient() {}
 
@@ -93,6 +96,35 @@ public class SmilePatient implements Serializable {
 
     public void setPatientAliases(List<PatientAlias> patientAliases) {
         this.patientAliases = patientAliases;
+    }
+
+    /**
+     * Returns list of PooledSample entries that this patient contributed to,
+     * i.e., pooled/multiplexed samples (such as pooled microbiome samples) that
+     * this patient is a part of. Returns empty list if patient is not a member
+     * of any pooled samples.
+     * @return List
+     */
+    public List<PooledSample> getPooledSamples() {
+        if (pooledSamples == null) {
+            pooledSamples = new ArrayList<>();
+        }
+        return pooledSamples;
+    }
+
+    public void setPooledSamples(List<PooledSample> pooledSamples) {
+        this.pooledSamples = pooledSamples;
+    }
+
+    /**
+     * Add pooled sample to array list.
+     * @param pooledSample
+     */
+    public void addPooledSample(PooledSample pooledSample) {
+        if (pooledSamples == null) {
+            pooledSamples = new ArrayList<>();
+        }
+        pooledSamples.add(pooledSample);
     }
 
     /**

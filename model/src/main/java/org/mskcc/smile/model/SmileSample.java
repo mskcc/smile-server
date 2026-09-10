@@ -31,6 +31,8 @@ public class SmileSample implements Serializable {
     private Tempo tempo;
     @Relationship(type = "HAS_DBGAP", direction = Relationship.Direction.OUTGOING)
     private DbGap dbGap;
+    @Relationship(type = "IS_POOLED_SAMPLE", direction = Relationship.Direction.INCOMING)
+    private List<PooledSample> pooledSamples;
     private String sampleClass;
     private String sampleCategory;
     private String datasource;
@@ -209,7 +211,7 @@ public class SmileSample implements Serializable {
     /**
      * Updates sample instance with given metadata.
      * @param sampleMetadata
-     * @throws ParseException 
+     * @throws ParseException
      */
     public void updateSampleMetadata(SampleMetadata sampleMetadata) throws ParseException {
         sampleMetadata.setId(null);
@@ -255,6 +257,35 @@ public class SmileSample implements Serializable {
 
     public void setDbGap(DbGap dbGap) {
         this.dbGap = dbGap;
+    }
+
+    /**
+     * Returns list of PooledSample entries derived from this Sample, i.e., this
+     * Sample is a multiplexed/pooled sample and each PooledSample entry identifies
+     * a patient/sample that makes up part of the pool. Returns empty list if
+     * this Sample is not a pooled sample.
+     * @return List
+     */
+    public List<PooledSample> getPooledSamples() {
+        if (pooledSamples == null) {
+            pooledSamples = new ArrayList<>();
+        }
+        return pooledSamples;
+    }
+
+    public void setPooledSamples(List<PooledSample> pooledSamples) {
+        this.pooledSamples = pooledSamples;
+    }
+
+    /**
+     * Adds a PooledSample to the list.
+     * @param pooledSample
+     */
+    public void addPooledSample(PooledSample pooledSample) {
+        if (pooledSamples == null) {
+            pooledSamples = new ArrayList<>();
+        }
+        pooledSamples.add(pooledSample);
     }
 
     @Override
