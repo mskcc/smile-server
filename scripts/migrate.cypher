@@ -217,3 +217,9 @@ MATCH (c:Cohort) REMOVE c.cohortStatus
 MATCH (cc:CohortComplete)
 WHERE cc.piName IS NULL
 SET cc.piName = ""
+
+// populate all request nodes with empty additionalProperties
+MATCH (r: Request)
+WHERE r.additionalProperties IS NULL
+SET r.additionalProperties = "{}"
+RETURN true;
