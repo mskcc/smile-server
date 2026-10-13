@@ -1,6 +1,5 @@
 package org.mskcc.smile.service.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -144,8 +141,7 @@ public class RequestServiceImpl implements SmileRequestService {
                     + requestMetadata.getIgoRequestId());
             return Boolean.FALSE;
         }
-        if (requestHasAdditionalPropertiesUpdates(existingRequest, requestMetadata)
-                || requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(),
+        if (requestHasMetadataUpdates(existingRequest.getLatestRequestMetadata(),
                 requestMetadata, fromLims)) {
             if (fromLims) {
                 LOG.info("Persisting igo property updates for request: " + existingRequest.getIgoRequestId());
@@ -159,19 +155,6 @@ public class RequestServiceImpl implements SmileRequestService {
         }
         LOG.warn("No updates to persist for request: " + existingRequest.getIgoRequestId());
         return Boolean.FALSE;
-    }
-
-    private Boolean requestHasAdditionalPropertiesUpdates(SmileRequest existingRequest,
-            RequestMetadata requestMetadata) throws Exception {
-        Map<String, Object> metadataMap = mapper.readValue(requestMetadata.getRequestMetadataJson(),
-                new TypeReference<Map<String, Object>>() {});
-        Object props = metadataMap.get("additionalProperties");
-        if (props == null) {
-            return Boolean.FALSE;
-        }
-        Map<String, String> newProps = mapper.convertValue(props,
-                new TypeReference<Map<String, String>>() {});
-        return !Objects.equals(newProps, existingRequest.getAdditionalProperties());
     }
 
     @Override
