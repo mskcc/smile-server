@@ -4,14 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.mskcc.smile.model.converter.MapStringConverter;
 import org.mskcc.smile.model.igo.IgoRequest;
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
@@ -67,6 +70,8 @@ public class SmileRequest implements Serializable {
     private boolean isCmoRequest;
     private boolean bicAnalysis;
     private Boolean revisable;
+    @Convert(MapStringConverter.class)
+    private Map<String, String> additionalProperties = new HashMap<>();
 
     public SmileRequest() {}
 
@@ -370,6 +375,15 @@ public class SmileRequest implements Serializable {
         this.revisable = revisable;
     }
 
+    public Map<String, String> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(Map<String, String> additionalProperties) {
+        this.additionalProperties = additionalProperties == null
+                ? new HashMap<>() : additionalProperties;
+    }
+
     /**
      * Updates the RequestMetadata with provided request.
      * @param updatedRequest
@@ -394,6 +408,7 @@ public class SmileRequest implements Serializable {
         this.igoDeliveryDate = updatedRequest.getIgoDeliveryDate();
         this.ilabRequestId = updatedRequest.getIlabRequestId();
         this.requestJson = updatedRequest.getRequestJson();
+        setAdditionalProperties(updatedRequest.getAdditionalProperties());
         addRequestMetadata(updatedRequest.getLatestRequestMetadata());
     }
 
@@ -425,6 +440,7 @@ public class SmileRequest implements Serializable {
         this.igoDeliveryDate = mapper.convertValue(metadataMap.get("deliveryDate"), Long.class);
         this.ilabRequestId = String.valueOf(metadataMap.get("ilabRequestId"));
         this.requestJson = requestMetadata.getRequestMetadataJson();
+        setAdditionalProperties(resolveAdditionalProperties(metadataMap));
         addRequestMetadata(requestMetadata);
     }
 
@@ -447,7 +463,17 @@ public class SmileRequest implements Serializable {
         this.igoDeliveryDate = mapper.convertValue(metadataMap.get("deliveryDate"), Long.class);
         this.ilabRequestId = String.valueOf(metadataMap.get("ilabRequestId"));
         this.requestJson = requestMetadata.getRequestMetadataJson();
+        setAdditionalProperties(resolveAdditionalProperties(metadataMap));
         addRequestMetadata(requestMetadata);
+    }
+
+    private Map<String, String> resolveAdditionalProperties(Map<String, Object> metadataMap) {
+        Object props = metadataMap.get("additionalProperties");
+        // preserve existing additionalProperties when the incoming json does not provide any
+        if (props == null) {
+            return additionalProperties;
+        }
+        return mapper.convertValue(props, new TypeReference<Map<String, String>>() {});
     }
 
     /**

@@ -1,6 +1,8 @@
 package org.mskcc.smile.model.web;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mskcc.smile.model.SmileRequest;
@@ -39,6 +41,7 @@ public class PublishedSmileRequest {
     private String requestJson;
     private List<String> pooledNormals;
     private List<PublishedSmileSample> samples;
+    private Map<String, String> additionalProperties = new HashMap<>();
 
     public PublishedSmileRequest() {}
 
@@ -73,6 +76,7 @@ public class PublishedSmileRequest {
         this.requestJson = smileRequest.getRequestJson();
         this.pooledNormals = smileRequest.getPooledNormals();
         this.samples = samples;
+        this.additionalProperties = smileRequest.getAdditionalProperties();
     }
 
     /**
@@ -333,6 +337,14 @@ public class PublishedSmileRequest {
 
     public void setSamples(List<PublishedSmileSample> samples) {
         this.samples = samples;
+    }
+
+    public Map<String, String> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(Map<String, String> additionalProperties) {
+        this.additionalProperties = additionalProperties;
     }
 
     @Override
